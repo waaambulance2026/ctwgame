@@ -369,7 +369,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v5-ctwgame-tree'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v6-public-root'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -389,7 +389,13 @@ const CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' :
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 const CLOUDINARY_TREE_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const CLOUDINARY_TREE_VERSION = 'v1781797065';
-const CLOUDINARY_ASSET_ROOT = 'ctwgame';
+const CLOUDINARY_ASSET_ROOT = '';
+const CHARACTER_PUBLIC_VERSIONS = {
+  ax:'v1781797065',
+  pura:'v1781798378',
+  owl:'v1781738357',
+  unicorn:'v1781798498'
+};
 const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without hammering Cloudinary
 const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
 const RESOLVED_CHARACTERS = new Set();
@@ -412,11 +418,14 @@ function exactTreeFileName(char, action, n){
 }
 function exactTreeUrls(char, action, n){
   const file = exactTreeFileName(char, action, n);
-  const root = `${CLOUDINARY_ASSET_ROOT}/characters/${char}/${action}/${file}`;
+  const version = CHARACTER_PUBLIC_VERSIONS[char] || CLOUDINARY_TREE_VERSION;
+  // The Cloudinary media-library folder is not the public delivery path for these sprites.
+  // The confirmed delivery URLs are root public IDs such as:
+  // https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png
   return [
-    `${CLOUDINARY_TREE_BASE}${CLOUDINARY_TREE_VERSION}/${root}`,
-    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${root}`,
-    `${CLOUDINARY_TREE_BASE}${root}`
+    `${CLOUDINARY_TREE_BASE}${version}/${file}`,
+    `${CLOUDINARY_TREE_BASE}${file}`,
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${file}`
   ];
 }
 function cloudCandidateUrls(char, action, n){
@@ -435,7 +444,7 @@ function cloudCandidateUrls(char, action, n){
   const extras=[];
   for(const folder of folders){
     for(const raw of rawNames){
-      extras.push(`${CLOUDINARY_TREE_BASE}${CLOUDINARY_TREE_VERSION}/${folder}${raw}.png`);
+      extras.push(`${CLOUDINARY_TREE_BASE}${CHARACTER_PUBLIC_VERSIONS[char]||CLOUDINARY_TREE_VERSION}/${folder}${raw}.png`);
       extras.push(`${CLOUDINARY_TREE_BASE}${folder}${raw}.png`);
     }
   }

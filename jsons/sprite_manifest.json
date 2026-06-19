@@ -1,814 +1,753 @@
 {
   "cloudName": "dpwlfmhia",
   "baseUrl": "https://res.cloudinary.com/dpwlfmhia/image/upload",
-  "assetRoot": "ctwgame",
-  "note": "Cloudinary-only manifest matching the user Cloudinary folder tree: ctwgame/characters/... and ctwgame/layers/... No character images should be uploaded to GitHub.",
+  "note": "Cloudinary-only manifest. Character public IDs are root file names, not media-library folder paths. Versions: Ax v1781797065, Pura v1781798378, Owl v1781738357, Unicorn v1781798498.",
   "backgrounds": {
     "day": {
       "sky": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/backgrounds/day_sky.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/backgrounds/day_sky.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/backgrounds/day_sky.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/day_sky.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/backgrounds/day_sky.png"
       ],
       "hills": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/middle-ground/day_hills.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/middle-ground/day_hills.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/middle-ground/day_hills.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/middle-ground/day_hills.png"
       ],
       "ground": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/ground/day_ground.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/ground/day_ground.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/ground/day_ground.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/ground/day_ground.png"
       ]
     },
     "night": {
       "sky": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/backgrounds/night_sky.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/backgrounds/night_sky.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/backgrounds/night_sky.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/night_sky.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/night_sky.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/backgrounds/night_sky.png"
       ],
       "hills": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/middle-ground/night_hills.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/middle-ground/night_hills.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/middle-ground/night_hills.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/night_hills.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/middle-ground/night_hills.png"
       ],
       "ground": [
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/layers/ground/night_ground.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/ground/night_ground.png",
-        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/layers/ground/night_ground.png"
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/night_ground.png",
+        "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/layers/ground/night_ground.png"
       ]
     }
   },
   "characters": {
     "ax": {
       "name": "Ax",
-      "scale": 1.0,
-      "aspect": 0.78,
-      "frameMs": {
-        "idle": 180,
-        "walk": 180,
-        "jump": 125
-      },
       "frames": {
         "idle": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/idle/ax_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/idle/ax_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/idle/ax_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_idle_010.png"
           ]
         ],
         "walk": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/walk/ax_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/walk/ax_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/walk/ax_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_walk_010.png"
           ]
         ],
         "jump": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/ax/jump/ax_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/ax/jump/ax_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/ax/jump/ax_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/ax_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ax_jump_010.png"
           ]
         ]
       }
     },
     "pura": {
       "name": "Pura",
-      "scale": 1.0,
-      "aspect": 0.52,
-      "frameMs": {
-        "idle": 180,
-        "walk": 120,
-        "jump": 125
-      },
       "frames": {
         "idle": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/idle/pura_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/idle/pura_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/idle/pura_idle_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_idle_010.png"
           ]
         ],
         "walk": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/walk/pura_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/walk/pura_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/walk/pura_walk_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_walk_010.png"
           ]
         ],
         "jump": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_001.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_001.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_002.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_002.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_003.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_003.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_004.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_004.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_005.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_005.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_006.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_006.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_007.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_007.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_008.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_008.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_009.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_009.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/pura/jump/pura_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/pura/jump/pura_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/pura/jump/pura_jump_010.png"
-          ]
-        ]
-      }
-    },
-    "unicorn": {
-      "name": "Unicorn",
-      "scale": 1.0,
-      "aspect": 1.0,
-      "frameMs": {
-        "idle": 180,
-        "walk": 140,
-        "jump": 125
-      },
-      "frames": {
-        "idle": [
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_001.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_002.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_003.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_004.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_005.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_006.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_007.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_008.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_009.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/idle/unicorn_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/idle/unicorn_idle_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/idle/unicorn_idle_010.png"
-          ]
-        ],
-        "walk": [
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_001.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_002.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_003.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_004.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_005.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_006.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_007.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_008.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_009.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/walk/unicorn_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/walk/unicorn_walk_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/walk/unicorn_walk_010.png"
-          ]
-        ],
-        "jump": [
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_001.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_001.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_002.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_002.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_003.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_003.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_004.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_004.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_005.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_005.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_006.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_006.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_007.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_007.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_008.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_008.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_009.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_009.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/unicorn/jump/unicorn_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/unicorn/jump/unicorn_jump_010.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/unicorn/jump/unicorn_jump_010.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/pura_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/pura_jump_010.png"
           ]
         ]
       }
     },
     "owl": {
       "name": "Owl",
-      "scale": 1.0,
-      "aspect": 1.1,
-      "frameMs": {
-        "idle": 180,
-        "walk": 120,
-        "jump": 130,
-        "rest": 220,
-        "play": 150
-      },
       "frames": {
         "idle": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_1.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_1.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_2.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_2.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_3.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_3.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_4.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_4.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_5.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_5.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_6.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_6.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_7.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_7.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_8.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_8.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_8.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_8.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_8.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_8.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_9.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_9.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_9.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_9.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_9.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_9.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/idle/owl_idle_10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/idle/owl_idle_10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/idle/owl_idle_10.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_idle_10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_idle_10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_idle_10.png"
           ]
         ],
         "walk": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk01.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk01.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk01.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk01.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk01.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk01.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk02.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk02.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk02.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk02.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk02.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk02.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk03.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk03.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk03.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk03.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk03.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk03.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk04.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk04.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk04.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk04.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk04.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk04.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk05.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk05.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk05.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk05.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk05.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk05.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk06.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk06.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk06.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk06.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk06.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk06.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk07.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk07.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk07.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk07.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk07.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk07.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk08.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk08.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk08.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk08.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk08.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk08.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk09.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk09.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk09.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk09.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk09.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk09.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/walk/owl_walk10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/walk/owl_walk10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/walk/owl_walk10.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_walk10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_walk10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_walk10.png"
           ]
         ],
         "jump": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_1.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_1.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_2.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_2.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_3.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_3.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_4.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_4.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_5.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_5.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_6.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_6.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/jump/owl_jump_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/jump/owl_jump_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/jump/owl_jump_7.png"
-          ]
-        ],
-        "rest": [
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_1.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_2.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_3.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_4.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_5.png"
-          ],
-          [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/rest/owl_rest_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/rest/owl_rest_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/rest/owl_rest_6.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_jump_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_jump_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_jump_7.png"
           ]
         ],
         "play": [
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_1.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_1.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_1.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_2.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_2.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_2.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_3.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_3.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_3.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_4.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_4.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_4.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_5.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_5.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_5.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_6.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_6.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_6.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_7.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_7.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_7.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_7.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_8.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_8.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_8.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_8.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_8.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_8.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_9.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_9.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_9.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_9.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_9.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_9.png"
           ],
           [
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ctwgame/characters/owl/play/owl_play_10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/ctwgame/characters/owl/play/owl_play_10.png",
-            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/ctwgame/characters/owl/play/owl_play_10.png"
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_play_10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_play_10.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_play_10.png"
+          ]
+        ],
+        "rest": [
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_1.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_1.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_2.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_2.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_3.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_3.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_4.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_4.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_5.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_5.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781738357/owl_rest_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/owl_rest_6.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/owl_rest_6.png"
+          ]
+        ]
+      }
+    },
+    "unicorn": {
+      "name": "Unicorn",
+      "frames": {
+        "idle": [
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_001.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_002.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_003.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_004.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_005.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_006.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_007.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_008.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_009.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_idle_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_idle_010.png"
+          ]
+        ],
+        "walk": [
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_001.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_002.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_003.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_004.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_005.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_006.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_007.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_008.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_009.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_walk_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_walk_010.png"
+          ]
+        ],
+        "jump": [
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_001.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_001.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_002.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_002.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_003.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_003.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_004.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_004.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_005.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_005.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_006.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_006.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_007.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_007.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_008.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_008.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_009.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_009.png"
+          ],
+          [
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798498/unicorn_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/unicorn_jump_010.png",
+            "https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/unicorn_jump_010.png"
           ]
         ]
       }
