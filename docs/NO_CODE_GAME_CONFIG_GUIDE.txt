@@ -1,0 +1,8 @@
+CTW Game no-code setup
+
+1. Use index.html from this ZIP.
+2. Developer Mode can save sprite sizes/layers to this browser.
+3. For permanent changes, click Download game_config.json in Developer Mode.
+4. Upload/replace game_config.json in GitHub. You do not need to edit index.html for sprite size/layout changes.
+5. To add a character: upload Cloudinary files named key_idle1.png, key_walk1.png, key_jump1.png etc. Add it in Developer Mode, then download/replace game_config.json.
+6. To change level length: Developer Mode > Quest / level setup > Level length / goal.

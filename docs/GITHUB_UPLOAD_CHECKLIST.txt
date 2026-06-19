@@ -1,0 +1,14 @@
+GitHub upload checklist
+
+1. Delete old loose files you no longer want at the repo root.
+2. Keep these root items:
+   - index.html
+   - README.md
+   - assets/
+   - docs/
+   - htmls/
+   - jsons/
+3. Do not delete root index.html. Cloudflare needs it.
+4. Do not upload large character sprite folders to GitHub. They stay on Cloudinary.
+5. After upload, wait for Cloudflare Pages to redeploy.
+6. Open https://your-site.pages.dev/
