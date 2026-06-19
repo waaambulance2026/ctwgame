@@ -14,9 +14,10 @@
   --ink:#130b1d;
   --panel:#21142d;
   --floor:82px;
-  --sky:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png');
-  --hills:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png');
-  --ground:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png');
+  /* Stable local SVG backgrounds. Cloudinary backgrounds are optional and should not block the game. */
+  --sky:linear-gradient(#72d9ff 0%, #82dcff 58%, #c5f2ff 100%);
+  --hills:url('assets/parallax_far.svg');
+  --ground:url('assets/parallax_mid.svg');
 }
 *{box-sizing:border-box}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}
@@ -399,8 +400,17 @@ const CHARACTER_PUBLIC_VERSIONS = {
   owl:'v1781738357',
   unicorn:'v1781798498'
 };
-const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without hammering Cloudinary
-const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
+// FAST LOAD FIX: do not probe Cloudinary frame-by-frame during game start.
+// These counts match the files we have been using for the current characters.
+const USE_FIXED_PUBLIC_URL_FRAMES = true;
+const KNOWN_FRAME_COUNTS = {
+  ax:{idle:10,walk:10,jump:10},
+  pura:{idle:10,walk:10,jump:10},
+  unicorn:{idle:10,walk:10,jump:10},
+  owl:{idle:10,walk:10,jump:7,play:10,rest:6}
+};
+const MAX_FRAME_PROBE = 12;        // fallback only; not used for known current characters
+const STOP_AFTER_MISSES = 1;       // fallback only
 const RESOLVED_CHARACTERS = new Set();
 let WORKING_SPRITE_URL_CACHE = readSpriteUrlCache();
 
@@ -432,6 +442,14 @@ function setImageSrc(img, src){
   img.onload = function(){ img.classList.remove('spriteMissing'); };
   img.onerror = function(){ img.classList.add('spriteMissing'); };
   img.src = src;
+}
+function buildFixedPublicFrames(char, action){
+  const count = KNOWN_FRAME_COUNTS?.[char]?.[action] || 0;
+  const frames = [];
+  for(let n=1; n<=count; n++){
+    frames.push(`${CLOUDINARY_TREE_BASE}f_auto,q_auto,w_384/${exactTreeFileName(char, action, n)}`);
+  }
+  return frames;
 }
 function exactTreeFileName(char, action, n){
   const num = String(n);
@@ -512,6 +530,11 @@ async function findWorkingFrame(manifest, char, action, index){
   return null;
 }
 async function discoverActionFrames(manifest, char, action){
+  // FAST LOAD FIX: use predictable public Cloudinary filenames instead of slow browser probing.
+  // This is the exact place that was making the game sit on "Loading sprites…".
+  if(USE_FIXED_PUBLIC_URL_FRAMES && KNOWN_FRAME_COUNTS?.[char]?.[action]){
+    return buildFixedPublicFrames(char, action);
+  }
   const direct = manifestFramesForAction(manifest, char, action);
   if(direct.length){
     // The generated manifest only contains files that Cloudinary says exist, so do not
@@ -578,20 +601,14 @@ async function getBackgroundCandidates(){
 }
 async function applyBackgrounds(){
   const status=document.getElementById('backgroundStatus');
-  if(status)status.textContent='Checking background links...';
-  const c=await getBackgroundCandidates();
-  const found={
-    sky: await firstWorking(c.sky),
-    hills: await firstWorking(c.hills),
-    ground: await firstWorking(c.ground)
-  };
-  if(found.sky)document.documentElement.style.setProperty('--sky',`url('${found.sky}')`);
-  if(found.hills)document.documentElement.style.setProperty('--hills',`url('${found.hills}')`);
-  if(found.ground)document.documentElement.style.setProperty('--ground',`url('${found.ground}')`);
-  const msg=`Backgrounds: sky ${found.sky?'ok':'missing'}, hills ${found.hills?'ok':'missing'}, ground ${found.ground?'ok':'missing'}.`;
-  if(status)status.textContent=msg;
-  console.log(msg, found);
+  // FAST BG FIX: use the small local SVG layers immediately. Do not wait for Cloudinary background probes.
+  document.documentElement.style.setProperty('--sky', 'linear-gradient(#72d9ff 0%, #82dcff 58%, #c5f2ff 100%)');
+  document.documentElement.style.setProperty('--hills', `url('assets/parallax_far.svg')`);
+  document.documentElement.style.setProperty('--ground', `url('assets/parallax_mid.svg')`);
+  if(status) status.textContent='Backgrounds: using stable local SVG layers. Cloudinary backgrounds are optional.';
+  console.log('Backgrounds: local SVG layers applied immediately.');
 }
+
 applyBackgrounds();
 
 /* =========================
@@ -709,7 +726,14 @@ function selectedSpriteUrls(){
 function preloadSelected(){ selectedSpriteUrls().forEach(u=>preload(u)); }
 async function preloadSelectedAsync(){
   const urls=selectedSpriteUrls();
-  await Promise.all(urls.map(u=>preloadAsync(u,2600)));
+  await Promise.all(urls.map(u=>preloadAsync(u,1200)));
+}
+async function preloadCriticalAsync(){
+  // FAST LOAD FIX: wait only for the first active idle frame so the character appears,
+  // then let the rest preload in the background.
+  const active = selected[activeIndex] || selected[0] || 'ax';
+  const first = CHARACTERS[active]?.actions?.idle?.[0] || CHARACTERS[active]?.actions?.walk?.[0];
+  if(first) await preloadAsync(first,1200);
 }
 function warmSpriteCache(){
   // Warm the first idle frame for every character as soon as the page opens.
@@ -727,7 +751,9 @@ async function startGame(openDev=false){
   document.getElementById('startScreen').classList.add('hidden');
   showToast('Loading sprites…');
   try{await resolveCharacterSprites(selected);}catch(e){console.warn('Sprite resolve failed',e)}
-  try{await preloadSelectedAsync();}catch(e){console.warn('Sprite preload failed',e)}
+  try{await preloadCriticalAsync();}catch(e){console.warn('Critical sprite preload failed',e)}
+  // Preload the rest in the background; do not keep the player waiting on every animation frame.
+  preloadSelectedAsync().catch(e=>console.warn('Background sprite preload failed',e));
   running=true;paused=false;level=0;score=0;lives=3;distance=0;player={x:0,y:0,vy:0,grounded:true,facing:1};worldObjs=[];objectsEl.innerHTML='';
   createCharacterEls();preloadSelected();setHud();if(openDev)toggleDev(true);requestAnimationFrame(loop)
 }
