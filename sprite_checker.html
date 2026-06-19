@@ -1,0 +1,24 @@
+<!doctype html><meta charset="utf-8"><title>CTW Sprite Checker</title>
+<style>body{font-family:system-ui;background:#10172a;color:#fff;padding:24px}.card{background:#1b2540;margin:10px 0;padding:12px;border-radius:10px}.ok{color:#39e58c}.bad{color:#ff7272}code{color:#ffe66b}img{max-width:110px;max-height:110px;background:#333;margin-top:8px}</style>
+<h1>CTW Sprite Checker</h1><p>This uses <code>/api/sprite-manifest</code>. It should show the exact frame counts Cloudinary found.</p><button onclick="location.reload()">Reload</button><a style="color:#9ee" href="/api/sprite-manifest" target="_blank"> Open generated manifest</a><div id="out">Loading…</div>
+<script>
+async function imgOk(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=src;});}
+(async()=>{
+ const out=document.getElementById('out'); out.innerHTML='';
+ let m; try{const res=await fetch('/api/sprite-manifest?ctw='+Date.now(),{cache:'no-store'}); m=await res.json();}catch(e){out.textContent='Could not load /api/sprite-manifest: '+e; return;}
+ if(!m.ok){out.innerHTML='<div class="card bad">Generated manifest failed: '+(m.error||'unknown error')+'</div>'; return;}
+ out.innerHTML+='<div class="card ok">Manifest OK. Generated: '+m.generatedAt+'</div>';
+ for(const [theme,layers] of Object.entries(m.backgrounds||{})){
+   for(const [layer,url] of Object.entries(layers||{})){
+     const ok=url?await imgOk(url):false;
+     out.innerHTML+=`<div class="card ${ok?'ok':'bad'}">background ${theme}/${layer}: ${ok?'OK':'MISSING'}<br><code>${url||''}</code>${ok?`<br><img src="${url}">`:''}</div>`;
+   }
+ }
+ for(const [char,c] of Object.entries(m.characters||{})){
+   for(const [action,frames] of Object.entries(c.frames||{})){
+     const first=frames&&frames[0]; const ok=first?await imgOk(first):false;
+     out.innerHTML+=`<div class="card ${frames.length&&ok?'ok':'bad'}">${char}/${action}: ${frames.length} frame(s), first ${ok?'OK':'MISSING'}<br><code>${first||''}</code>${ok?`<br><img src="${first}">`:''}</div>`;
+   }
+ }
+})();
+</script>

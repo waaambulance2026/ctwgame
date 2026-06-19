@@ -1,0 +1,7 @@
+<!doctype html><meta charset="utf-8"><title>CTW Image Test</title>
+<style>body{font-family:system-ui;background:#10172a;color:#fff;padding:24px}.card{background:#1b2540;margin:10px 0;padding:12px;border-radius:10px}.ok{color:#39e58c}.bad{color:#ff7272}code{color:#ffe66b}img{max-width:160px;max-height:120px;background:#333;margin-top:8px}</style>
+<h1>CTW Image Test</h1><p>Tests the generated Cloudinary manifest and first frames.</p><a style="color:#9ee" href="/api/sprite-manifest" target="_blank">Open /api/sprite-manifest</a><div id="out">Loading…</div>
+<script>
+function okImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=src;});}
+(async()=>{const out=document.getElementById('out');out.innerHTML='';let m;try{const res=await fetch('/api/sprite-manifest?ctw='+Date.now(),{cache:'no-store'});m=await res.json();}catch(e){out.textContent=e;return;}if(!m.ok){out.innerHTML=`<div class="card bad">${m.error}</div>`;return;}const tests=[];for(const [theme,layers] of Object.entries(m.backgrounds||{})) for(const [layer,u] of Object.entries(layers||{})) tests.push([`background ${theme}/${layer}`,u]);for(const [char,c] of Object.entries(m.characters||{})) for(const [action,frames] of Object.entries(c.frames||{})) tests.push([`${char} ${action} first (${frames.length} frames)`,frames[0]]);for(const [label,u] of tests){const ok=u?await okImg(u):false;out.innerHTML+=`<div class="card ${ok?'ok':'bad'}">${label}: ${ok?'OK':'FAILED'}<br><code>${u||''}</code>${ok?`<br><img src="${u}">`:''}</div>`}}})();
+</script>
