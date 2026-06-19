@@ -248,7 +248,7 @@ button{cursor:pointer}
     <div class="devNote">To add a new character later: upload files with a simple pattern, then add one entry to the character config. Backgrounds can stay in <b>sprite_manifest.json</b>; character sprites load from Cloudinary via jsons/sprite_manifest.json.</div>
     <textarea id="copyBox" class="copyBox" readonly></textarea>
   </aside>
-  <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>Choose your characters. This is the proper game build with developer mode, not a separate sprite fixer.</p><div class="choiceGrid" id="choiceGrid"></div><button id="startBtn">Start game</button><button id="startDevBtn">Start in developer mode</button><p style="font-size:13px;opacity:.85">Controls: arrows/A-D to walk, space/W/up to jump, Tab/Q to switch character.</p></div></div>
+  <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>Choose your characters. This build loads sprites from Cloudinary public URLs and preloads working frames before gameplay.</p><div class="choiceGrid" id="choiceGrid"></div><button id="startBtn">Start game</button><button id="startDevBtn">Start in developer mode</button><p style="font-size:13px;opacity:.85">Controls: arrows/A-D to walk, space/W/up to jump, Tab/Q to switch character.</p></div></div>
 </div>
 <script>
 /* =========================
@@ -281,7 +281,7 @@ const QUESTS=[
   {name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨'],hazards:['🟫','🐌','🧦']},
   {name:'Wrong Moon',goal:1100,tokens:['🌙','⭐','🔮'],hazards:['🌚','📢','🕳️']}
 ];
-const LS_KEY='ctw-real-game-dev-v8-auto-cloudinary';
+const LS_KEY='ctw-real-game-dev-v9-public-probe';
 let devConfig=loadDevConfig();
 function loadDevConfig(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch{return {}}}
 function saveDevConfig(){localStorage.setItem(LS_KEY,JSON.stringify(devConfig));}
@@ -339,12 +339,14 @@ function testImage(src, timeoutMs=1800){
     const im=new Image();
     im.crossOrigin='anonymous';
     im.decoding='async';
-    const done=(ok)=>{ clearTimeout(t); resolve(ok ? src : null); };
+    // Use a stable query only while probing Cloudinary. This avoids stale CDN/browser 404s
+    // after a new file has just been uploaded, but still lets the browser cache the result.
+    const loadSrc = (String(src).includes('res.cloudinary.com') && !String(src).includes('?')) ? src + '?ctw=1' : src;
+    const done=(ok)=>{ clearTimeout(t); resolve(ok ? loadSrc : null); };
     const t=setTimeout(()=>done(false), timeoutMs);
     im.onload=()=>done(true);
     im.onerror=()=>done(false);
-    // Do not add cache-busting query strings here. Cloudinary/browser cache is what makes sprites fast.
-    im.src=src;
+    im.src=loadSrc;
   });
 }
 async function firstWorking(list){
@@ -400,6 +402,7 @@ const CHARACTER_PUBLIC_VERSIONS = {
 const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without hammering Cloudinary
 const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
 const RESOLVED_CHARACTERS = new Set();
+let WORKING_SPRITE_URL_CACHE = readSpriteUrlCache();
 
 async function fetchSpriteManifest(){
   // Try the generated Cloudinary manifest first. If Cloudflare secrets are not configured yet,
@@ -441,13 +444,14 @@ function exactTreeFileName(char, action, n){
 function exactTreeUrls(char, action, n){
   const file = exactTreeFileName(char, action, n);
   const version = CHARACTER_PUBLIC_VERSIONS[char] || CLOUDINARY_TREE_VERSION;
-  // The Cloudinary media-library folder is not the public delivery path for these sprites.
-  // The confirmed delivery URLs are root public IDs such as:
-  // https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png
+  // Use public-root filenames first. The version can differ per file in Cloudinary,
+  // so a single hard-coded version cannot be trusted for an entire animation.
   return [
-    `${CLOUDINARY_TREE_BASE}${version}/${file}`,
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto,w_384/${file}`,
     `${CLOUDINARY_TREE_BASE}${file}`,
-    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${file}`
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${file}`,
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto,w_384/${version}/${file}`,
+    `${CLOUDINARY_TREE_BASE}${version}/${file}`
   ];
 }
 function cloudCandidateUrls(char, action, n){
@@ -480,17 +484,30 @@ function candidateListFromManifest(manifest, char, action, index){
 }
 async function findWorkingFrame(manifest, char, action, index){
   const n = index + 1;
-  // Fast path: your actual Cloudinary tree. This avoids long waits on missing frames.
+  const cacheKey = `${char}/${action}/${n}`;
+  if(WORKING_SPRITE_URL_CACHE && WORKING_SPRITE_URL_CACHE[cacheKey]) return WORKING_SPRITE_URL_CACHE[cacheKey];
+
+  // Fast path: public-root Cloudinary filenames. This matches your working links like
+  // https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798367/pura_idle_003.png
   const exactHit = await firstWorking(exactTreeUrls(char, action, n));
-  if(exactHit) return exactHit;
+  if(exactHit){
+    WORKING_SPRITE_URL_CACHE[cacheKey]=exactHit;
+    writeSpriteUrlCache(WORKING_SPRITE_URL_CACHE);
+    return exactHit;
+  }
+
   // Fallback path: only use slower guessed/manifest checks near the start of an action.
-  // This protects older uploads, but prevents frame 009/010 misses from causing long delays.
   if(index < 2){
     const candidates = unique([
       ...candidateListFromManifest(manifest, char, action, index),
       ...cloudCandidateUrls(char, action, n)
     ]);
-    return await firstWorking(candidates);
+    const hit = await firstWorking(candidates);
+    if(hit){
+      WORKING_SPRITE_URL_CACHE[cacheKey]=hit;
+      writeSpriteUrlCache(WORKING_SPRITE_URL_CACHE);
+    }
+    return hit;
   }
   return null;
 }
