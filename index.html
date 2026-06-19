@@ -297,6 +297,9 @@ function actionFrames(char,action){const acts=CHARACTERS[char]?.actions||{};retu
 const CLOUDINARY_RAW = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const DEFAULT_BACKGROUND_CANDIDATES = {
   sky: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/backgrounds/day_sky.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/backgrounds/day_sky.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/backgrounds/day_sky.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_sky.png',
     CLOUDINARY_RAW + 'day_sky.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/backgrounds/day_sky.png',
@@ -304,6 +307,9 @@ const DEFAULT_BACKGROUND_CANDIDATES = {
     'assets/parallax_far.svg'
   ],
   hills: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/middle-ground/day_hills.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/middle-ground/day_hills.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/middle-ground/day_hills.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_hills.png',
     CLOUDINARY_RAW + 'day_hills.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/middle-ground/day_hills.png',
@@ -311,6 +317,9 @@ const DEFAULT_BACKGROUND_CANDIDATES = {
     'assets/parallax_far.svg'
   ],
   ground: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/ground/day_ground.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/ground/day_ground.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/ground/day_ground.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_ground.png',
     CLOUDINARY_RAW + 'day_ground.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/ground/day_ground.png',
@@ -360,7 +369,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v4-cloudinary-only'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v5-ctwgame-tree'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -406,7 +415,11 @@ function cloudCandidateUrls(char, action, n){
     ...(char==='unicorn' && action==='jump' ? [`unicorn_Idle_jump${num}`,`unicorn_Idle_jump_${num}`,`unicorn_idle_jump${num}`,`unicorn_idle_jump_${num}`] : [])
   ];
   const folders = [
-    // Most Cloudinary uploads in this project have used action folders, for example walk/ax_walk_008.png.
+    // Current real Cloudinary tree: ctwgame/characters/<char>/<action>/<file>.png
+    `v1781797065/ctwgame/characters/${char}/${action}/`,
+    `ctwgame/characters/${char}/${action}/`,
+    `f_auto,q_auto/ctwgame/characters/${char}/${action}/`,
+    // Older fallbacks kept below.
     `${action}/`,
     '',
     `characters/${char}/${action}/`,

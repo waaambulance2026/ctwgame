@@ -1,18 +1,20 @@
-CLOUDINARY-ONLY UPLOAD PACKAGE
+UPLOAD THIS CLOUDINARY-TREE VERSION ONLY
 
-Upload ONLY these files/folders to the GitHub repo root:
+Upload only the contents of this folder to GitHub/Cloudflare Pages.
 
-index.html
-sprite_checker.html
-image_test.html
-UPLOAD_THIS_README.txt
-assets/                 (background SVGs only, no character PNGs)
-jsons/                  (game_config.json and sprite_manifest.json)
-functions/              (Cloudflare Pages Functions)
+This package does NOT contain character PNGs. Character and background images are loaded from Cloudinary using your real folder tree:
 
-Do NOT upload assets/characters. Character sprites are loaded from Cloudinary.
+ctwgame/characters/ax/idle/ax_idle_001.png
+ctwgame/characters/pura/walk/pura_walk_001.png
+ctwgame/characters/unicorn/jump/unicorn_jump_001.png
+ctwgame/layers/backgrounds/day_sky.png
+ctwgame/layers/middle-ground/day_hills.png
+ctwgame/layers/ground/day_ground.png
 
-After Cloudflare deploys, test:
+After deployment test:
 https://ctwgame.pages.dev/image_test.html
 
-If Ax walk fails there, the Cloudinary file name/version is wrong, not GitHub.
+If the test fails for a file, that exact Cloudinary path/public ID does not exist or is not publicly readable.
+
+Also clear old saved config in Cloudflare KV if sprites/backgrounds still act wrong:
+Workers & Pages -> KV -> ctw_game_config -> Keys -> delete game_config
