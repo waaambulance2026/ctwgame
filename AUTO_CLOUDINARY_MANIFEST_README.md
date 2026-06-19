@@ -1,24 +1,27 @@
-# CTW Game Cloudinary Manifest Fix
+# CTW Game - Prefix List Cloudinary Manifest
 
-This build uses `functions/api/sprite-manifest.js` to generate the sprite list from Cloudinary.
+This build fixes the previous sprite-manifest issue where the Cloudinary Search API returned 0 resources.
 
-It now prefers the Cloudinary Admin API and searches by public ID prefix, such as:
+It uses a small set of Cloudinary Admin API prefix calls instead:
 
-- `pura_idle_`
-- `pura_walk_`
-- `unicorn_idle_`
-- `owl_walk`
+- ax_
+- pura_
+- unicorn_
+- Uni_
+- owl_
+- day_
+- night_
+- ctwgame/characters/
+- ctwgame/layers/
 
-This is more reliable than guessing versionless URLs, because your files have different Cloudinary version numbers.
+This should find root public IDs such as `pura_idle_003` and build exact versioned URLs automatically.
 
-Required Cloudflare Pages variables/secrets:
-
-- `CLOUDINARY_CLOUD_NAME` = `dpwlfmhia`
-- `CLOUDINARY_API_KEY`
-- `CLOUDINARY_API_SECRET`
-
-After uploading, redeploy Cloudflare and test:
+Test after deploy:
 
 `https://ctwgame.pages.dev/api/sprite-manifest?fresh=1`
 
-You should see `usedAdminApi: true` and frame counts above 0.
+Look for:
+
+- `mode: "prefix-list"`
+- `debug.prefixCounts`
+- non-zero `counts`

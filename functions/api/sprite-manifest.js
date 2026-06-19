@@ -1,13 +1,27 @@
 // Cloudflare Pages Function: /api/sprite-manifest
-// One-search Cloudinary manifest builder.
-// This avoids the Cloudflare "Too many subrequests" problem by asking Cloudinary for the asset list once,
-// then building the game manifest from the returned public_id/version values.
+// Prefix-list Cloudinary manifest builder.
+// Uses a small number of Cloudinary Admin "resources by prefix" calls instead of hundreds of probes.
+// This avoids both: (1) Search API returning 0 resources, and (2) Worker too-many-subrequests errors.
 
 const DEFAULT_CLOUD = 'dpwlfmhia';
 const CHARACTER_WIDTH = 384;
 const BACKGROUND_WIDTH = 1800;
-const MAX_SEARCH_PAGES = 3; // 3 Cloudinary requests max, not hundreds.
 const MAX_RESULTS = 500;
+
+// Keep this small. Cloudflare Workers have a subrequest limit.
+const PREFIXES_TO_LIST = [
+  'ax_',
+  'pura_',
+  'unicorn_',
+  'Uni_',
+  'owl_',
+  'day_',
+  'night_',
+  // These two are only for accounts where Cloudinary public_id includes folders.
+  // They are extra safety, not the main expected pattern.
+  'ctwgame/characters/',
+  'ctwgame/layers/'
+];
 
 const CHARACTER_DEFS = {
   ax: {
@@ -30,7 +44,7 @@ const CHARACTER_DEFS = {
     name: 'Unicorn',
     actions: {
       idle: [/^unicorn_idle_(\d+)$/i, /^unicorn_idle(\d+)$/i],
-      walk: [/^unicorn_walk_(\d+)$/i, /^unicorn_walk(\d+)$/i, /^uni_walk_(\d+)$/i],
+      walk: [/^unicorn_walk_(\d+)$/i, /^unicorn_walk(\d+)$/i, /^uni_walk_(\d+)$/i, /^Uni_Walk_(\d+)$/],
       jump: [/^unicorn_jump_(\d+)$/i, /^unicorn_jump(\d+)$/i]
     }
   },
@@ -54,7 +68,10 @@ const BACKGROUND_NAMES = {
 function json(data, status = 200) {
   return new Response(JSON.stringify(data, null, 2), {
     status,
-    headers: { 'content-type': 'application/json; charset=utf-8', 'cache-control': 'no-store' }
+    headers: {
+      'content-type': 'application/json; charset=utf-8',
+      'cache-control': 'no-store, no-cache, must-revalidate'
+    }
   });
 }
 
@@ -87,51 +104,62 @@ function matchesAny(publicId, regexes) {
   return regexes.some(re => re.test(name));
 }
 
-async function searchCloudinaryResources(cloud, key, secret, debug) {
-  const resources = [];
+function dedupeResources(resources) {
+  const map = new Map();
+  for (const r of resources) {
+    const key = `${r.resource_type || 'image'}|${r.type || 'upload'}|${r.public_id}|${r.format || ''}`;
+    const prev = map.get(key);
+    if (!prev || Number(r.version || 0) >= Number(prev.version || 0)) map.set(key, r);
+  }
+  return [...map.values()];
+}
+
+async function listByPrefix(cloud, key, secret, prefix, debug) {
+  const out = [];
   let nextCursor = '';
+  let pages = 0;
 
-  // Keep the expression broad. We filter filenames in code.
-  // This costs 1 request per page instead of many requests per character/action.
-  const expression = 'resource_type:image AND type:upload';
+  do {
+    const url = new URL(`https://api.cloudinary.com/v1_1/${cloud}/resources/image/upload`);
+    url.searchParams.set('prefix', prefix);
+    url.searchParams.set('max_results', String(MAX_RESULTS));
+    if (nextCursor) url.searchParams.set('next_cursor', nextCursor);
 
-  for (let page = 0; page < MAX_SEARCH_PAGES; page++) {
-    const body = {
-      expression,
-      max_results: MAX_RESULTS,
-      sort_by: [{ public_id: 'asc' }]
-    };
-    if (nextCursor) body.next_cursor = nextCursor;
-
-    const url = `https://api.cloudinary.com/v1_1/${cloud}/resources/search`;
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: {
-        Authorization: basicAuth(key, secret),
-        'content-type': 'application/json'
-      },
-      body: JSON.stringify(body)
+    const res = await fetch(url.toString(), {
+      method: 'GET',
+      headers: { Authorization: basicAuth(key, secret) }
     });
-
     const text = await res.text();
     if (!res.ok) {
-      debug.searchErrors.push({ status: res.status, body: text.slice(0, 600) });
-      break;
+      debug.prefixErrors.push({ prefix, status: res.status, body: text.slice(0, 500) });
+      return out;
     }
 
     let data;
     try { data = JSON.parse(text); }
     catch (err) {
-      debug.searchErrors.push({ error: 'Cloudinary search returned non-JSON', body: text.slice(0, 600) });
-      break;
+      debug.prefixErrors.push({ prefix, error: 'non-json response', body: text.slice(0, 500) });
+      return out;
     }
 
-    resources.push(...(data.resources || []));
+    out.push(...(data.resources || []));
     nextCursor = data.next_cursor || '';
-    if (!nextCursor) break;
-  }
+    pages++;
+    // Avoid accidentally burning lots of subrequests if a prefix has many assets.
+    if (pages >= 2) break;
+  } while (nextCursor);
 
-  return resources;
+  debug.prefixCounts[prefix] = out.length;
+  return out;
+}
+
+async function getCloudinaryResources(cloud, key, secret, debug) {
+  let resources = [];
+  for (const prefix of PREFIXES_TO_LIST) {
+    const found = await listByPrefix(cloud, key, secret, prefix, debug);
+    resources.push(...found);
+  }
+  return dedupeResources(resources);
 }
 
 function buildCharacterFrames(cloud, resources) {
@@ -149,7 +177,6 @@ function buildCharacterFrames(cloud, resources) {
         .filter(item => item.n > 0)
         .sort((a, b) => a.n - b.n || String(a.r.public_id).localeCompare(String(b.r.public_id)));
 
-      // De-dupe by frame number. If Cloudinary has two versions/names for one number, keep the newest version.
       const byNumber = new Map();
       for (const item of matched) {
         const prev = byNumber.get(item.n);
@@ -182,7 +209,7 @@ function buildBackgrounds(cloud, resources) {
 }
 
 export async function onRequestGet(context) {
-  const debug = { searchErrors: [], resourceCount: 0, matchedPublicIds: [] };
+  const debug = { prefixErrors: [], prefixCounts: {}, resourceCount: 0, matchedPublicIds: [] };
   try {
     const env = context.env || {};
     const cloud = env.CLOUDINARY_CLOUD_NAME || DEFAULT_CLOUD;
@@ -197,12 +224,12 @@ export async function onRequestGet(context) {
       }, 500);
     }
 
-    const resources = await searchCloudinaryResources(cloud, key, secret, debug);
+    const resources = await getCloudinaryResources(cloud, key, secret, debug);
     debug.resourceCount = resources.length;
     debug.matchedPublicIds = resources
       .map(r => r.public_id)
-      .filter(id => /^(ax|pura|unicorn|Uni|owl|day_|night_)/i.test(baseName(id)))
-      .slice(0, 200);
+      .filter(id => /^(ax_|pura_|unicorn_|Uni_|owl_|day_|night_|ctwgame\/)/i.test(id))
+      .slice(0, 300);
 
     const { characters, counts } = buildCharacterFrames(cloud, resources);
     const backgrounds = buildBackgrounds(cloud, resources);
@@ -213,13 +240,14 @@ export async function onRequestGet(context) {
       cloudName: cloud,
       baseUrl: `https://res.cloudinary.com/${cloud}/image/upload`,
       usedAdminApi: true,
-      note: 'Generated with one Cloudinary Search API pass, then grouped by public_id filename. This avoids Cloudflare too-many-subrequests errors.',
+      mode: 'prefix-list',
+      note: 'Generated from a small set of Cloudinary resources-by-prefix calls. This avoids Search returning 0 resources and avoids too-many-subrequests.',
       backgrounds,
       characters,
       counts,
       debug
     });
   } catch (err) {
-    return json({ ok: false, error: String(err && err.message || err), debug }, 500);
+    return json({ ok: false, error: String(err && err.stack || err && err.message || err), debug }, 500);
   }
 }
