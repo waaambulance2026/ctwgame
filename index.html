@@ -380,11 +380,20 @@ function writeSpriteUrlCache(cache){
 
 /* =========================
    ROBUST CLOUDINARY CHARACTER SPRITES
-   - resolves Cloudinary candidates once before gameplay
-   - avoids resetting img.src every animation tick, which caused flicker
+   - Cloudinary is the source of truth for character images.
+   - The game discovers how many frames are actually present in each folder.
+   - It no longer assumes every action has 10 frames.
+   - It stops at the first few missing numbers, so Ax walk can be 8 frames, owl jump can be 7, etc.
    ========================= */
 const CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/sprite_manifest.json';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+const CLOUDINARY_TREE_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const CLOUDINARY_TREE_VERSION = 'v1781797065';
+const CLOUDINARY_ASSET_ROOT = 'ctwgame';
+const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without hammering Cloudinary
+const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
+const RESOLVED_CHARACTERS = new Set();
+
 function setImageSrc(img, src){
   if(!img || !src) return;
   if(img.dataset && img.dataset.srcKey === src) return;
@@ -393,50 +402,44 @@ function setImageSrc(img, src){
   img.onerror = function(){ img.classList.add('spriteMissing'); };
   img.src = src;
 }
+function exactTreeFileName(char, action, n){
+  const num = String(n);
+  const p2 = String(n).padStart(2,'0');
+  const p3 = String(n).padStart(3,'0');
+  if(char === 'owl' && action === 'walk') return `owl_walk${p2}.png`;
+  if(char === 'owl') return `owl_${action}_${num}.png`;
+  return `${char}_${action}_${p3}.png`;
+}
+function exactTreeUrls(char, action, n){
+  const file = exactTreeFileName(char, action, n);
+  const root = `${CLOUDINARY_ASSET_ROOT}/characters/${char}/${action}/${file}`;
+  return [
+    `${CLOUDINARY_TREE_BASE}${CLOUDINARY_TREE_VERSION}/${root}`,
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${root}`,
+    `${CLOUDINARY_TREE_BASE}${root}`
+  ];
+}
 function cloudCandidateUrls(char, action, n){
+  // Keep the real tree first. Older fallbacks only run if the real tree fails.
   const num = String(n);
   const p3 = String(n).padStart(3,'0');
   const p2 = String(n).padStart(2,'0');
-  const base = CLOUDINARY_RAW;
-  const exactAxRoot = (char==='ax') ? [
-    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${p3}.png`,
-    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${p2}.png`,
-    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${num}.png`,
-    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}${num}.png`
-  ] : [];
-  const charCaps = char.charAt(0).toUpperCase()+char.slice(1);
-  const actionCaps = action.charAt(0).toUpperCase()+action.slice(1);
+  const exact = exactTreeUrls(char, action, n);
   const rawNames = [
-    `${char}_${action}_${p3}`, `${char}_${action}${p3}`, `${char}_${action}_${p2}`, `${char}_${action}${p2}`, `${char}_${action}_${num}`, `${char}_${action}${num}`,
-    `${charCaps}_${actionCaps}_${p3}`, `${charCaps}_${actionCaps}${p3}`, `${charCaps}_${actionCaps}_${num}`, `${charCaps}_${actionCaps}${num}`,
-    // Older unicorn files use Uni_Walk_1 style names.
-    ...(char==='unicorn' && action==='walk' ? [`Uni_Walk_${num}`,`Uni_Walk_${p2}`,`Uni_Walk_${p3}`,`Uni_walk_${num}`,`Uni_walk_${p2}`,`Uni_walk_${p3}`] : []),
-    // Some uploaded jump files were named unicorn_Idle_jump1 in a folder called idle jump.
-    ...(char==='unicorn' && action==='jump' ? [`unicorn_Idle_jump${num}`,`unicorn_Idle_jump_${num}`,`unicorn_idle_jump${num}`,`unicorn_idle_jump_${num}`] : [])
+    `${char}_${action}_${p3}`, `${char}_${action}${p3}`,
+    `${char}_${action}_${p2}`, `${char}_${action}${p2}`,
+    `${char}_${action}_${num}`, `${char}_${action}${num}`,
+    ...(char==='unicorn' && action==='walk' ? [`Uni_Walk_${num}`,`Uni_walk_${num}`] : [])
   ];
-  const folders = [
-    // Current real Cloudinary tree: ctwgame/characters/<char>/<action>/<file>.png
-    `v1781797065/ctwgame/characters/${char}/${action}/`,
-    `ctwgame/characters/${char}/${action}/`,
-    `f_auto,q_auto/ctwgame/characters/${char}/${action}/`,
-    // Older fallbacks kept below.
-    `${action}/`,
-    '',
-    `characters/${char}/${action}/`,
-    `${char}/${action}/`,
-    ...(char==='unicorn' && action==='jump' ? ['idle%20jump/','idle jump/'] : [])
-  ];
-  const exts = ['.png','.PNG'];
-  const names=[];
+  const folders = [`${action}/`, '', `characters/${char}/${action}/`, `${char}/${action}/`];
+  const extras=[];
   for(const folder of folders){
     for(const raw of rawNames){
-      for(const ext of exts) names.push(folder+raw+ext);
+      extras.push(`${CLOUDINARY_TREE_BASE}${CLOUDINARY_TREE_VERSION}/${folder}${raw}.png`);
+      extras.push(`${CLOUDINARY_TREE_BASE}${folder}${raw}.png`);
     }
   }
-  return unique([
-    ...exactAxRoot,
-    ...names.flatMap(name=>[base+'f_auto,q_auto/'+name, base+name])
-  ]);
+  return unique([...exact, ...extras]);
 }
 function candidateListFromManifest(manifest, char, action, index){
   const frame = manifest?.characters?.[char]?.frames?.[action]?.[index];
@@ -444,49 +447,55 @@ function candidateListFromManifest(manifest, char, action, index){
   if(typeof frame === 'string') return cloudinaryFirst([frame]);
   return [];
 }
-async function resolveCharacterSprites(){
+async function findWorkingFrame(manifest, char, action, index){
+  const n = index + 1;
+  // Fast path: your actual Cloudinary tree. This avoids long waits on missing frames.
+  const exactHit = await firstWorking(exactTreeUrls(char, action, n));
+  if(exactHit) return exactHit;
+  // Fallback path: only use slower guessed/manifest checks near the start of an action.
+  // This protects older uploads, but prevents frame 009/010 misses from causing long delays.
+  if(index < 2){
+    const candidates = unique([
+      ...candidateListFromManifest(manifest, char, action, index),
+      ...cloudCandidateUrls(char, action, n)
+    ]);
+    return await firstWorking(candidates);
+  }
+  return null;
+}
+async function discoverActionFrames(manifest, char, action){
+  const out=[];
+  let misses=0;
+  for(let i=0; i<MAX_FRAME_PROBE; i++){
+    const hit = await findWorkingFrame(manifest, char, action, i);
+    if(hit){
+      out.push(hit);
+      misses=0;
+    }else{
+      misses++;
+      if(out.length > 0 && misses >= STOP_AFTER_MISSES) break;
+      // If the first two don't exist, this action folder probably does not exist.
+      if(out.length === 0 && misses >= STOP_AFTER_MISSES) break;
+    }
+  }
+  return out;
+}
+async function resolveCharacterSprites(charList){
   let manifest=null;
   try{
     const res=await fetch(CHARACTER_MANIFEST_FILE, {cache:'force-cache'});
     if(res.ok) manifest=await res.json();
   }catch(e){ console.warn('Could not read sprite_manifest character section.', e); }
 
-  const cache=readSpriteUrlCache();
-  const changed={value:false};
-  async function resolveOne(char, action, i, existing){
-    const key=`${char}/${action}/${i+1}`;
-    if(cache[key]){
-      // Verify cached URL quickly. If it fails, fall through and re-detect.
-      const ok=await testImage(cache[key],700);
-      if(ok) return ok;
-      delete cache[key]; changed.value=true;
-    }
-    const n=i+1;
-    const candidates=unique([
-      ...candidateListFromManifest(manifest,char,action,i),
-      ...cloudCandidateUrls(char,action,n),
-      ...(existing ? [existing] : [])
-    ]);
-    const hit=await firstWorking(candidates);
-    if(hit){ cache[key]=hit; changed.value=true; return hit; }
-    return null;
-  }
-
-  for(const [char,cfg] of Object.entries(CHARACTERS)){
-    const actions=cfg.actions||{};
-    const actionNames=Object.keys(actions);
+  const chars = Array.isArray(charList) && charList.length ? charList : Object.keys(CHARACTERS);
+  for(const char of chars){
+    if(!CHARACTERS[char] || RESOLVED_CHARACTERS.has(char)) continue;
+    const cfg = CHARACTERS[char];
+    const actionNames = Object.keys(cfg.actions || {});
     for(const action of actionNames){
-      const arr=actions[action]||[];
-      const count=Math.max(Array.isArray(arr)?arr.length:0, manifest?.characters?.[char]?.frames?.[action]?.length || 10);
-      const checks=[];
-      for(let i=0;i<count;i++) checks.push(resolveOne(char,action,i, Array.isArray(arr)?arr[i]:null));
-      const resolved=(await Promise.all(checks)).filter(Boolean);
-      if(resolved.length){
-        cfg.actions[action]=resolved;
-      }else{
-        console.warn(`No working sprites found for ${char}/${action}`);
-        cfg.actions[action]=[];
-      }
+      const frames = await discoverActionFrames(manifest, char, action);
+      cfg.actions[action] = frames;
+      console.log(`${char}/${action}: ${frames.length} frame(s) found`, frames);
     }
     // Fallbacks so the character is never invisible just because one action folder is missing.
     const idle=cfg.actions.idle||[], walk=cfg.actions.walk||[], jump=cfg.actions.jump||[];
@@ -494,14 +503,14 @@ async function resolveCharacterSprites(){
     if(!idle.length && jump.length) cfg.actions.idle=jump;
     if(!walk.length && cfg.actions.idle?.length) cfg.actions.walk=cfg.actions.idle;
     if(!jump.length && cfg.actions.idle?.length) cfg.actions.jump=cfg.actions.idle;
+    RESOLVED_CHARACTERS.add(char);
   }
-  if(changed.value) writeSpriteUrlCache(cache);
   warmSpriteCache();
   console.log('Character sprites resolved to working URLs:', CHARACTERS);
 }
 
 
-window.CTW_SPRITES_READY = resolveCharacterSprites();
+window.CTW_SPRITES_READY = Promise.resolve();
 async function getBackgroundCandidates(){
   const c={sky:[...DEFAULT_BACKGROUND_CANDIDATES.sky],hills:[...DEFAULT_BACKGROUND_CANDIDATES.hills],ground:[...DEFAULT_BACKGROUND_CANDIDATES.ground]};
   try{
@@ -668,7 +677,7 @@ function switchChar(){if(selected.length<2)return;activeIndex=(activeIndex+1)%se
 async function startGame(openDev=false){
   document.getElementById('startScreen').classList.add('hidden');
   showToast('Loading sprites…');
-  try{await window.CTW_SPRITES_READY;}catch(e){console.warn('Sprite resolve failed',e)}
+  try{await resolveCharacterSprites(selected);}catch(e){console.warn('Sprite resolve failed',e)}
   try{await preloadSelectedAsync();}catch(e){console.warn('Sprite preload failed',e)}
   running=true;paused=false;level=0;score=0;lives=3;distance=0;player={x:0,y:0,vy:0,grounded:true,facing:1};worldObjs=[];objectsEl.innerHTML='';
   createCharacterEls();preloadSelected();setHud();if(openDev)toggleDev(true);requestAnimationFrame(loop)
@@ -688,7 +697,7 @@ function currentDevChar(){return devCharacter.value||selected[activeIndex]||'ax'
 function applyDevInputs(){const c=currentDevChar();devConfig[c]=Object.assign({},devConfig[c]||{}, {height:Number(devHeight.value),feet:Number(devFeet.value),x:Number(devX.value),fps:Number(devFps.value),flip:devFlip.value==='true'});devConfig._gameSpeed=Number(devSpeed.value);syncDevLabels();if(characterEls[c])applyCharStyle(c,selected[activeIndex]===c);updateCopyBox();}
 function renderFrames(){const c=currentDevChar(), a=devAction.value||'idle';const strip=document.getElementById('frameStrip');strip.innerHTML='';actionFrames(c,a).forEach((src,i)=>{const b=document.createElement('button');b.className='frameBtn';b.title=src;const im=document.createElement('img');setImageSrc(im,src);b.appendChild(im);b.onclick=()=>{if(characterEls[c]){characterEls[c].action=a;characterEls[c].frame=i;setImageSrc(characterEls[c].img,src)}strip.querySelectorAll('.frameBtn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};strip.appendChild(b);});}
 function updateCopyBox(){copyBox.value=JSON.stringify({devConfig, characters:Object.keys(CHARACTERS)},null,2)}
-['devHeight','devFeet','devX','devFps','devFlip','devSpeed'].forEach(id=>document.getElementById(id).addEventListener('input',applyDevInputs));devCharacter.addEventListener('change',()=>{activeIndex=selected.indexOf(devCharacter.value);if(activeIndex<0){selected=[devCharacter.value,...selected];activeIndex=0;createCharacterEls();preloadSelected()}renderDev();setHud();});devAction.addEventListener('change',()=>{renderFrames();});saveDev.onclick=()=>{applyDevInputs();saveDevConfig();showToast('Developer settings saved')};resetDev.onclick=()=>{localStorage.removeItem(LS_KEY);devConfig={};document.body.classList.remove('gridOn');renderDev();createCharacterEls();showToast('Developer settings reset')};copyDev.onclick=()=>{updateCopyBox();copyBox.select();document.execCommand('copy');showToast('Config copied')};
+['devHeight','devFeet','devX','devFps','devFlip','devSpeed'].forEach(id=>document.getElementById(id).addEventListener('input',applyDevInputs));devCharacter.addEventListener('change',async()=>{activeIndex=selected.indexOf(devCharacter.value);if(activeIndex<0){selected=[devCharacter.value,...selected];activeIndex=0;}try{await resolveCharacterSprites([devCharacter.value]);}catch(e){console.warn('Sprite resolve failed',e)}createCharacterEls();preloadSelected();renderDev();setHud();});devAction.addEventListener('change',()=>{renderFrames();});saveDev.onclick=()=>{applyDevInputs();saveDevConfig();showToast('Developer settings saved')};resetDev.onclick=()=>{localStorage.removeItem(LS_KEY);devConfig={};document.body.classList.remove('gridOn');renderDev();createCharacterEls();showToast('Developer settings reset')};copyDev.onclick=()=>{updateCopyBox();copyBox.select();document.execCommand('copy');showToast('Config copied')};
 if(gridBtn){gridBtn.onclick=()=>{devConfig._grid=!devConfig._grid;document.body.classList.toggle('gridOn',!!devConfig._grid);gridBtn.textContent=devConfig._grid?'Grid: on':'Grid: off';saveDevConfig();};}
 if(reloadBgBtn){reloadBgBtn.onclick=()=>{applyBackgrounds();showToast('Reloading backgrounds')};}
 ['devLayer','layerShow','layerHeight','layerBottom','layerZoom','layerX','layerY','layerZ','layerOpacity'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',id==='devLayer'?renderLayerPanel:applyLayerInputs);if(el&&id==='devLayer')el.addEventListener('change',renderLayerPanel);});
