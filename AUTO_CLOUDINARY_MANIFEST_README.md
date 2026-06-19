@@ -1,38 +1,24 @@
-# CTW Game Cloudinary Manifest
+# CTW Game Cloudinary Manifest Fix
 
-This build uses Cloudinary for sprite/background images and GitHub/Cloudflare only for code.
+This build uses `functions/api/sprite-manifest.js` to generate the sprite list from Cloudinary.
 
-The important function is:
+It now prefers the Cloudinary Admin API and searches by public ID prefix, such as:
 
-```text
-functions/api/sprite-manifest.js
-```
+- `pura_idle_`
+- `pura_walk_`
+- `unicorn_idle_`
+- `owl_walk`
 
-It now probes public Cloudinary delivery URLs directly instead of relying on Cloudinary Media Library folder paths.
+This is more reliable than guessing versionless URLs, because your files have different Cloudinary version numbers.
 
-Why: Cloudinary's visible folder tree does not always match the public delivery URL. Your working Ax/Pura/Owl/Unicorn files are root-level public IDs such as:
+Required Cloudflare Pages variables/secrets:
 
-```text
-ax_idle_001.png
-pura_idle_001.png
-owl_idle_10.png
-unicorn_idle_010.png
-```
+- `CLOUDINARY_CLOUD_NAME` = `dpwlfmhia`
+- `CLOUDINARY_API_KEY`
+- `CLOUDINARY_API_SECRET`
 
-The function generates versionless optimized URLs like:
+After uploading, redeploy Cloudflare and test:
 
-```text
-https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto,w_384/ax_walk_001.png
-```
+`https://ctwgame.pages.dev/api/sprite-manifest?fresh=1`
 
-This avoids hard-coding upload version numbers like `v1781797065` and reduces sprite size for faster gameplay.
-
-After upload, test:
-
-```text
-https://ctwgame.pages.dev/api/sprite-manifest?fresh=1
-https://ctwgame.pages.dev/sprite_checker.html
-https://ctwgame.pages.dev/image_test.html
-```
-
-You do not need to upload character PNGs to GitHub.
+You should see `usedAdminApi: true` and frame counts above 0.
