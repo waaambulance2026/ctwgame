@@ -221,7 +221,7 @@ button{cursor:pointer}
       <button class="blueBtn" id="reloadBgBtn">Reload backgrounds</button>
     </div>
     <h2>Backgrounds</h2>
-    <div class="devNote" id="backgroundStatus">Backgrounds loading from sprite_manifest.json, then Cloudinary root fallbacks.</div>
+    <div class="devNote" id="backgroundStatus">Backgrounds and character sprites load from Cloudinary / sprite_manifest.json.</div>
 
     <h2>Layer setup</h2>
     <div class="devNote">Use this to line up the scene layers. Turn the grid on, choose a layer, then adjust height, bottom, zoom, position and layer level.</div>
@@ -245,7 +245,7 @@ button{cursor:pointer}
     <h2>Frames</h2>
     <div class="frames" id="frameStrip"></div>
     <h2>Add more later</h2>
-    <div class="devNote">To add a new character later: upload files with a simple pattern, then add one entry to the character config. Backgrounds can stay in <b>sprite_manifest.json</b>; character sprites do not need thousands of links.</div>
+    <div class="devNote">To add a new character later: upload files with a simple pattern, then add one entry to the character config. Backgrounds can stay in <b>sprite_manifest.json</b>; character sprites load from Cloudinary via jsons/sprite_manifest.json.</div>
     <textarea id="copyBox" class="copyBox" readonly></textarea>
   </aside>
   <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>Choose your characters. This is the proper game build with developer mode, not a separate sprite fixer.</p><div class="choiceGrid" id="choiceGrid"></div><button id="startBtn">Start game</button><button id="startDevBtn">Start in developer mode</button><p style="font-size:13px;opacity:.85">Controls: arrows/A-D to walk, space/W/up to jump, Tab/Q to switch character.</p></div></div>
@@ -260,24 +260,28 @@ function frames(prefix,count){ return Array.from({length:count},(_,i)=>file(pref
 function framesUnderscore(prefix,count){ return Array.from({length:count},(_,i)=>file(prefix+'_'+(i+1))); }
 function framesPadded(prefix,numbers){ return numbers.map(n=>file(prefix+String(n).padStart(2,'0'))); }
 
-// Local game-ready transparent sprites. These are fixed-size frame canvases, so
-// idle/walk/jump stay the same size when the animation changes.
-const LOCAL_SPRITE_PREFIX = (location.pathname.includes('/htmls/') ? '../' : '') + 'assets/characters/';
+// Cloudinary-only character sprites. GitHub stores the code/JSON only; the PNGs stay in Cloudinary.
+// Ax uses the exact Cloudinary root pattern confirmed by the user.
 function pad3(n){ return String(n).padStart(3,'0'); }
-function localFrames(char, action, count){
-  return Array.from({length:count}, (_,i)=>`${LOCAL_SPRITE_PREFIX}${char}/frames/${action}/${char}_${action}_${pad3(i+1)}.png`);
+const AX_CLOUDINARY_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/';
+function axCloudFrames(action, count){
+  return Array.from({length:count}, (_,i)=>`${AX_CLOUDINARY_BASE}ax_${action}_${pad3(i+1)}.png`);
 }
+// Placeholder arrays give the resolver the frame count; resolveCharacterSprites() replaces them
+// with working Cloudinary URLs from jsons/sprite_manifest.json before gameplay starts.
+function frameSlots(count){ return Array.from({length:count}, ()=>null); }
+
 const CHARACTERS={
-  ax:{name:'Ax',height:220,feet:0,x:24,aspect:896/1024,flip:false,actions:{idle:localFrames('ax','idle',10),walk:localFrames('ax','walk',10),jump:localFrames('ax','jump',10)}},
-  pura:{name:'Pura',height:235,feet:0,x:24,aspect:704/1344,flip:false,fps:10,actionFps:{idle:8,walk:12,jump:10},walkBob:4,actions:{idle:localFrames('pura','idle',10),walk:localFrames('pura','walk',10),jump:localFrames('pura','jump',10)}},
-  owl:{name:'Owl',height:150,feet:0,x:24,aspect:512/384,flip:false,actions:{idle:localFrames('owl','idle',10),walk:localFrames('owl','walk',10),jump:localFrames('owl','jump',7),play:localFrames('owl','play',10),rest:localFrames('owl','rest',6)}},
-  unicorn:{name:'Unicorn',height:205,feet:0,x:24,aspect:1088/1088,flip:false,actions:{idle:localFrames('unicorn','idle',10),walk:localFrames('unicorn','walk',10),jump:localFrames('unicorn','jump',10)}}
+  ax:{name:'Ax',height:220,feet:0,x:24,aspect:896/1024,flip:false,actions:{idle:axCloudFrames('idle',10),walk:axCloudFrames('walk',10),jump:axCloudFrames('jump',10)}},
+  pura:{name:'Pura',height:235,feet:0,x:24,aspect:704/1344,flip:false,fps:10,actionFps:{idle:8,walk:12,jump:10},walkBob:4,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(10)}},
+  owl:{name:'Owl',height:150,feet:0,x:24,aspect:512/384,flip:false,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(7),play:frameSlots(10),rest:frameSlots(6)}},
+  unicorn:{name:'Unicorn',height:205,feet:0,x:24,aspect:1088/1088,flip:false,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(10)}}
 };
 const QUESTS=[
   {name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨'],hazards:['🟫','🐌','🧦']},
   {name:'Wrong Moon',goal:1100,tokens:['🌙','⭐','🔮'],hazards:['🌚','📢','🕳️']}
 ];
-const LS_KEY='ctw-real-game-dev-v5-cloudinary-stable';
+const LS_KEY='ctw-real-game-dev-v7-cloudinary-only';
 let devConfig=loadDevConfig();
 function loadDevConfig(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch{return {}}}
 function saveDevConfig(){localStorage.setItem(LS_KEY,JSON.stringify(devConfig));}
@@ -356,7 +360,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v2'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v4-cloudinary-only'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -385,6 +389,12 @@ function cloudCandidateUrls(char, action, n){
   const p3 = String(n).padStart(3,'0');
   const p2 = String(n).padStart(2,'0');
   const base = CLOUDINARY_RAW;
+  const exactAxRoot = (char==='ax') ? [
+    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${p3}.png`,
+    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${p2}.png`,
+    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${num}.png`,
+    `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}${num}.png`
+  ] : [];
   const charCaps = char.charAt(0).toUpperCase()+char.slice(1);
   const actionCaps = action.charAt(0).toUpperCase()+action.slice(1);
   const rawNames = [
@@ -410,7 +420,10 @@ function cloudCandidateUrls(char, action, n){
       for(const ext of exts) names.push(folder+raw+ext);
     }
   }
-  return unique(names.flatMap(name=>[base+'f_auto,q_auto/'+name, base+name]));
+  return unique([
+    ...exactAxRoot,
+    ...names.flatMap(name=>[base+'f_auto,q_auto/'+name, base+name])
+  ]);
 }
 function candidateListFromManifest(manifest, char, action, index){
   const frame = manifest?.characters?.[char]?.frames?.[action]?.[index];
@@ -1064,7 +1077,7 @@ buildChoices();setHud();renderDev();
 */
 (function(){
   const CONFIG_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/game_config.json';
-  const CONFIG_KEY = 'ctw-game-content-config-v5-cloudinary-stable';
+  const CONFIG_KEY = 'ctw-game-content-config-v6-ax-exact-cloudinary';
 
   function $(id){return document.getElementById(id)}
   function safeToast(msg){try{ if(typeof showToast==='function') showToast(msg); }catch(e){console.log(msg)}}
@@ -1137,24 +1150,11 @@ buildChoices();setHud();renderDev();
       Object.assign(devConfig, data.devConfig);
       try{ saveDevConfig(); }catch(e){}
     }
+    // Do NOT replace CHARACTERS from game_config.json here.
+    // Character frame URLs are now defined in this script / sprite_manifest and tested before use.
+    // Old saved configs were overwriting good sprite URLs with broken Cloudinary guesses, making characters invisible.
     if(data.characters && typeof data.characters==='object'){
-      Object.entries(data.characters).forEach(([key,c])=>{
-        if(!key || !c) return;
-        const actions={};
-        Object.entries(c.actions||{}).forEach(([action,spec])=>{ actions[action]=makeActionFrames(spec); });
-        if(!actions.idle && c.idleCount) actions.idle=makeActionFrames({prefix:key+'_idle',count:c.idleCount});
-        if(!actions.walk && c.walkCount) actions.walk=makeActionFrames({prefix:key+'_walk',count:c.walkCount});
-        if(!actions.jump && c.jumpCount) actions.jump=makeActionFrames({prefix:key+'_jump',count:c.jumpCount});
-        CHARACTERS[key]={
-          name:c.name||key,
-          height:Number(c.height||200),
-          feet:Number(c.feet||0),
-          x:Number(c.x||24),
-          aspect:Number(c.aspect||1),
-          flip:!!c.flip,
-          actions:actions
-        };
-      });
+      console.warn('Ignored config.characters to protect the working sprite script paths. Edit index.html/sprite_manifest for sprite URLs.');
     }
     if(Array.isArray(data.quests)){
       QUESTS.splice(0, QUESTS.length, ...data.quests);
@@ -1382,7 +1382,7 @@ buildChoices();setHud();renderDev();
   window.__ctwFrameScopeEditorInstalled = true;
   window.CTW_SELECTED_FRAME_INDEX = window.CTW_SELECTED_FRAME_INDEX || 0;
 
-  const CONTENT_CONFIG_KEY = 'ctw-game-content-config-v5-cloudinary-stable';
+  const CONTENT_CONFIG_KEY = 'ctw-game-content-config-v6-ax-exact-cloudinary';
   function $(id){return document.getElementById(id)}
   function toast(msg){try{showToast(msg)}catch(e){console.log(msg)}}
   function hasGlobal(name){try{return typeof window[name] !== 'undefined'}catch(e){return false}}
@@ -2478,7 +2478,7 @@ body.showAllFrameColours .devFrameColourLegend{
   window.__ctwEasyConfigNumbersPatch = true;
 
   const CONTENT_KEY = 'ctw-game-content-config-v2-fixed-sprites';
-  const DEV_KEY = 'ctw-real-game-dev-v2-fixed-sprites';
+  const DEV_KEY = 'ctw-real-game-dev-v7-cloudinary-only';
   const $ = id => document.getElementById(id);
 
   function say(msg){
@@ -3336,8 +3336,7 @@ body.devMode textarea{
     }catch(e){console.warn('Could not apply devConfig',e)}
     try{
       if(config.characters && typeof CHARACTERS!=='undefined'){
-        Object.keys(CHARACTERS).forEach(k=>delete CHARACTERS[k]);
-        Object.assign(CHARACTERS, JSON.parse(JSON.stringify(config.characters)));
+        console.warn('Ignored Cloudflare KV config.characters so saved old sprite URLs cannot hide characters.');
       }
     }catch(e){console.warn('Could not apply characters',e)}
     try{

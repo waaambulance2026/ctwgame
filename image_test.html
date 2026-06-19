@@ -1,0 +1,12 @@
+<!doctype html><html><head><meta charset="utf-8"><title>CTW Cloudinary Sprite Test</title><style>body{font-family:Arial;background:#101827;color:#fff;padding:20px}.ok{color:#66ff99}.bad{color:#ff7777}img{max-width:160px;max-height:160px;background:#333;margin:8px;border:1px solid #555}.row{margin:10px 0;padding:10px;background:#1d2740;border-radius:8px}code{color:#ffe484}</style></head><body><h1>CTW Cloudinary Sprite Test</h1><p>This checks Cloudinary sprite URLs only. No local character PNGs are required in GitHub.</p><div id="out"></div><script>
+const out=document.getElementById('out');
+const tests=[
+ ['Ax idle 001','https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png'],
+ ['Ax walk 001','https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_001.png'],
+ ['Ax jump 001','https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_001.png'],
+ ['Manifest','jsons/sprite_manifest.json']
+];
+function row(name,url){const r=document.createElement('div');r.className='row';r.innerHTML=`${name} — testing <code>${url}</code>`;out.appendChild(r);return r;}
+function testImg(name,url){const r=row(name,url);const img=new Image();img.onload=()=>{r.innerHTML=`${name} — <b class="ok">OK</b> ${img.naturalWidth}×${img.naturalHeight}<br><code>${url}</code><br>`;r.appendChild(img)};img.onerror=()=>{r.innerHTML=`${name} — <b class="bad">FAILED</b><br><code>${url}</code>`};img.src=url;}
+for(const [name,url] of tests){ if(url.endsWith('.json')){const r=row(name,url);fetch(url,{cache:'no-store'}).then(res=>{r.innerHTML=`${name} — ${res.ok?'<b class="ok">OK</b>':'<b class="bad">FAILED '+res.status+'</b>'}<br><code>${url}</code>`;return res.ok?res.json():null}).then(j=>{if(!j)return; ['pura','owl','unicorn'].forEach(c=>{const frames=j.characters?.[c]?.frames?.idle?.[0]; const u=Array.isArray(frames)?frames.find(x=>String(x).startsWith('http')):frames; if(u)testImg(c+' idle 001 from manifest',u);});}).catch(e=>r.innerHTML=`${name} — <b class="bad">FAILED</b> ${e}`)} else testImg(name,url); }
+</script></body></html>
