@@ -405,7 +405,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v9-easy-edit-cloudinary'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v8-auto-cloudinary'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -3553,6 +3553,213 @@ body.devMode textarea{
   install(); setTimeout(install,300); setTimeout(install,1200); document.addEventListener('click',()=>setTimeout(install,60));
   // Auto-load live config quietly on first page load if API is connected.
   window.addEventListener('load',()=>setTimeout(()=>loadLive(false),800));
+})();
+</script>
+
+
+
+<style id="ctw-simple-developer-cleanup-css">
+/* ===== CTW SIMPLE DEVELOPER CLEANUP =====
+   This hides confusing/unfinished tools and keeps only:
+   1 Character, 2 Backgrounds/Layers, 3 Save Live.
+*/
+.devMode #devFrameDock,
+.devMode .ctwEditorTabs button[data-tab="frame"],
+.devMode .ctwEditorSection[data-section="frame"],
+.devMode #noCodeManager,
+.devMode #spriteScopePanel,
+.devMode #copyBox,
+.devMode .miniReadout,
+.devMode #copyDev,
+.devMode #copyLayerBtn,
+.devMode #downloadConfigBtn,
+.devMode #importConfigBtn,
+.devMode #clearBrowserConfigBtn,
+.devMode #addCharBtn,
+.devMode #addQuestBtn,
+.devMode #saveQuestBtn,
+.devMode .devControlsPane h2:has(+ #frameStrip),
+.devMode .devControlsPane .frames{
+  display:none!important;
+}
+.devMode .devPanel{
+  grid-template-columns:minmax(520px,1fr) minmax(340px,420px)!important;
+  grid-template-rows:1fr!important;
+  grid-template-areas:"preview controls"!important;
+}
+.devMode .devControlsPane h1{
+  font-size:22px!important;
+  margin-bottom:6px!important;
+}
+#ctwSimpleDevHelp{
+  background:#fff7bd!important;
+  border:3px solid #F5C542!important;
+  border-radius:16px!important;
+  padding:10px!important;
+  margin:8px 0!important;
+  color:#21142d!important;
+  font-weight:900!important;
+  font-size:13px!important;
+  line-height:1.35!important;
+}
+#ctwSimpleDevHelp b{color:#21142d!important;}
+.ctwEditorTabs button[data-tab="sprite"]::after{content:' Character';}
+.ctwEditorTabs button[data-tab="layers"]::after{content:' Backgrounds';}
+.ctwEditorTabs button[data-tab="save"]::after{content:' Save';}
+.ctwEditorTabs button[data-tab="sprite"],
+.ctwEditorTabs button[data-tab="layers"],
+.ctwEditorTabs button[data-tab="save"]{
+  font-size:0!important;
+}
+.ctwEditorTabs button[data-tab="sprite"]::before{content:'1';font-size:13px!important;}
+.ctwEditorTabs button[data-tab="layers"]::before{content:'2';font-size:13px!important;}
+.ctwEditorTabs button[data-tab="save"]::before{content:'3';font-size:13px!important;}
+.ctwEditorTabs button[data-tab="sprite"]::after,
+.ctwEditorTabs button[data-tab="layers"]::after,
+.ctwEditorTabs button[data-tab="save"]::after{font-size:13px!important;}
+.devMode .devNote{
+  font-size:12px!important;
+}
+.devMode .devButtons button{
+  font-size:13px!important;
+}
+#ctwLiveSaveBox{
+  border:3px solid #76C7D8!important;
+  background:#f3fcff!important;
+}
+#ctwLiveSaveBox h2::before{content:'🔐 ';}
+#ctwLiveSaveBox .liveHelp::after{
+  content:'  This is the save that matters for the real game.';
+}
+@media(max-width:980px){
+  .devMode .devPanel{
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(260px,42dvh) minmax(260px,1fr)!important;
+    grid-template-areas:"preview" "controls"!important;
+  }
+}
+</style>
+
+<script id="ctw-simple-developer-cleanup-js">
+/* ===== CTW SIMPLE DEVELOPER CLEANUP =====
+   Password gate + clearer tabs + live-save first workflow.
+*/
+(function(){
+  if(window.__ctwSimpleDeveloperCleanup) return;
+  window.__ctwSimpleDeveloperCleanup=true;
+  const ADMIN_KEY_STORAGE='ctw-live-admin-key-v2';
+  const DEV_UNLOCK='ctw-dev-unlocked-this-session';
+  function $(id){return document.getElementById(id)}
+  function q(sel,root=document){return root.querySelector(sel)}
+  function qa(sel,root=document){return Array.from(root.querySelectorAll(sel))}
+  function toast(t){try{showToast(t)}catch(e){console.log(t)}}
+
+  function getSavedKey(){return (localStorage.getItem(ADMIN_KEY_STORAGE)||'').trim();}
+  function askDevPassword(){
+    let key=getSavedKey();
+    if(!key){
+      key=prompt('Developer password: paste your CTW_GAME_ADMIN_KEY');
+      if(!key){toast('Developer mode locked.');return false;}
+      localStorage.setItem(ADMIN_KEY_STORAGE,key.trim());
+    }
+    sessionStorage.setItem(DEV_UNLOCK,'yes');
+    const input=$('ctwAdminKey'); if(input && !input.value) input.value=key;
+    return true;
+  }
+  function devUnlocked(){return sessionStorage.getItem(DEV_UNLOCK)==='yes' || !!getSavedKey();}
+  function openDeveloper(){
+    if(!devUnlocked() && !askDevPassword()) return;
+    if(typeof toggleDev==='function') toggleDev(true);
+    setTimeout(cleanDevMenu,80);
+  }
+  function closeDeveloper(){ if(typeof toggleDev==='function') toggleDev(false); }
+
+  function cleanDevMenu(){
+    const panel=$('devPanel');
+    const pane=q('.devControlsPane',panel||document);
+    if(!panel || !pane) return;
+
+    // Add a simple instruction box once.
+    if(!$('ctwSimpleDevHelp')){
+      const help=document.createElement('div');
+      help.id='ctwSimpleDevHelp';
+      help.innerHTML='🛠️ <b>Simple Developer Mode</b><br>1️⃣ Character = size, feet line, speed, flip.<br>2️⃣ Backgrounds = sky/hills/ground layer position.<br>3️⃣ Save = enter admin key, then Save to live game.<br><br>Use <b>Save to live game</b> for changes everyone should see.';
+      const tabs=q('.ctwEditorTabs',pane);
+      if(tabs) pane.insertBefore(help,tabs);
+      else pane.insertBefore(help,pane.children[1]||null);
+    }
+
+    // Make tab labels simpler and remove frame tab.
+    qa('.ctwEditorTabs button').forEach(btn=>{
+      const tab=btn.dataset.tab;
+      if(tab==='sprite') btn.textContent='1 Character';
+      if(tab==='layers') btn.textContent='2 Backgrounds';
+      if(tab==='save') btn.textContent='3 Save';
+      if(tab==='frame') btn.style.display='none';
+    });
+    // If the old Frame tab was active, move to Character.
+    const active=q('.ctwEditorTabs button.active');
+    if(active && active.dataset.tab==='frame'){
+      const sprite=q('.ctwEditorTabs button[data-tab="sprite"]');
+      if(sprite) sprite.click();
+    }
+
+    // Rename confusing buttons.
+    const save=$('saveDev'); if(save) save.textContent='Save on this browser only';
+    const reset=$('resetDev'); if(reset) reset.textContent='Reset browser settings';
+    const grid=$('gridBtn'); if(grid && !grid.textContent.includes('Grid')) grid.textContent='Grid';
+    const reload=$('reloadBgBtn'); if(reload) reload.textContent='Reload BGs';
+
+    // Make the live save box wording clearer.
+    const live=$('ctwLiveSaveBox');
+    if(live){
+      const h=q('h2',live); if(h) h.textContent='Save to real game';
+      const label=q('label[for="ctwAdminKey"]',live); if(label) label.textContent='Developer password / CTW_GAME_ADMIN_KEY';
+      const saveLive=$('ctwSaveLiveBtn'); if(saveLive) saveLive.textContent='Save to live game';
+      const loadLive=$('ctwLoadLiveBtn'); if(loadLive) loadLive.textContent='Load live save';
+      const forget=$('ctwForgetKeyBtn'); if(forget) forget.textContent='Forget password';
+    }
+  }
+
+  // Replace Developer buttons with password-gated versions.
+  function wireButtons(){
+    const devBtn=$('devBtn');
+    if(devBtn && !devBtn.dataset.simpleGate){
+      devBtn.dataset.simpleGate='true';
+      devBtn.onclick=function(){ document.body.classList.contains('devMode') ? closeDeveloper() : openDeveloper(); };
+    }
+    const startDev=$('startDevBtn');
+    if(startDev && !startDev.dataset.simpleGate){
+      startDev.dataset.simpleGate='true';
+      startDev.onclick=function(){ if(askDevPassword() && typeof startGame==='function') startGame(true); };
+    }
+  }
+
+  // Stop the old E-key dev toggle and use the password gate instead.
+  window.addEventListener('keydown',function(e){
+    if(e.key && e.key.toLowerCase()==='e'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      document.body.classList.contains('devMode') ? closeDeveloper() : openDeveloper();
+    }
+  },true);
+
+  // Patch saveDev so it is clearly local-only.
+  function patchLocalSave(){
+    const btn=$('saveDev');
+    if(!btn || btn.dataset.simplePatched) return;
+    btn.dataset.simplePatched='true';
+    const old=btn.onclick;
+    btn.onclick=function(){
+      try{ old && old.call(this); }catch(e){}
+      toast('Saved on this browser only. Use Save to live game for the real site.');
+    };
+  }
+
+  function boot(){ wireButtons(); cleanDevMenu(); patchLocalSave(); }
+  window.addEventListener('load',()=>setTimeout(boot,300));
+  document.addEventListener('click',()=>setTimeout(boot,80));
+  setInterval(()=>{ if(document.body.classList.contains('devMode')) boot(); },800);
 })();
 </script>
 
