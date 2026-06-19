@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
 <link rel="dns-prefetch" href="https://res.cloudinary.com">
-<title>Waaambulance Quest Dash - Developer Build Fixed</title>
+<title>Waaambulance Quest Dash - Easy Edit Build</title>
 <style>
 :root{
   --pink:#d282c2;
@@ -296,37 +296,70 @@ function actionFrames(char,action){const acts=CHARACTERS[char]?.actions||{};retu
    It tries the manifest first, then root Cloudinary names, then local SVG fallbacks.
    ========================= */
 const CLOUDINARY_RAW = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
+
+/* ======================================================
+   EASY EDIT AREA — backgrounds
+   This is the part to edit yourself later.
+
+   Put your real Cloudinary delivery URLs here.
+   You can use versioned URLs, for example:
+   https://res.cloudinary.com/dpwlfmhia/image/upload/v1781799000/day_sky.png
+
+   The game tries the first URL, then the next one, then the next one.
+   If none work, it falls back to the small local SVGs so the game still runs.
+   ====================================================== */
+const CTW_THEME = 'day';
+const CTW_BACKGROUND_URLS = {
+  day: {
+    sky: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/day_sky.png',
+      CLOUDINARY_RAW + 'day_sky.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/backgrounds/day_sky.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/backgrounds/day_sky.png'
+    ],
+    hills: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/day_hills.png',
+      CLOUDINARY_RAW + 'day_hills.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/middle-ground/day_hills.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/middle-ground/day_hills.png'
+    ],
+    ground: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/day_ground.png',
+      CLOUDINARY_RAW + 'day_ground.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/ground/day_ground.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/ground/day_ground.png'
+    ]
+  },
+  night: {
+    sky: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/night_sky.png',
+      CLOUDINARY_RAW + 'night_sky.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/backgrounds/night_sky.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/backgrounds/night_sky.png'
+    ],
+    hills: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/night_hills.png',
+      CLOUDINARY_RAW + 'night_hills.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/middle-ground/night_hills.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/middle-ground/night_hills.png'
+    ],
+    ground: [
+      CLOUDINARY_RAW + 'f_auto,q_auto/night_ground.png',
+      CLOUDINARY_RAW + 'night_ground.png',
+      CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/ground/night_ground.png',
+      CLOUDINARY_RAW + 'ctwgame/layers/ground/night_ground.png'
+    ]
+  }
+};
+const LOCAL_BACKGROUND_FALLBACKS = {
+  sky: 'linear-gradient(#72d9ff 0%, #82dcff 58%, #c5f2ff 100%)',
+  hills: "url('assets/parallax_far.svg')",
+  ground: "url('assets/parallax_mid.svg')"
+};
 const DEFAULT_BACKGROUND_CANDIDATES = {
-  sky: [
-    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/backgrounds/day_sky.png',
-    CLOUDINARY_RAW + 'ctwgame/layers/backgrounds/day_sky.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/backgrounds/day_sky.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/day_sky.png',
-    CLOUDINARY_RAW + 'day_sky.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/layers/backgrounds/day_sky.png',
-    CLOUDINARY_RAW + 'layers/backgrounds/day_sky.png',
-    'assets/parallax_far.svg'
-  ],
-  hills: [
-    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/middle-ground/day_hills.png',
-    CLOUDINARY_RAW + 'ctwgame/layers/middle-ground/day_hills.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/middle-ground/day_hills.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/day_hills.png',
-    CLOUDINARY_RAW + 'day_hills.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/layers/middle-ground/day_hills.png',
-    CLOUDINARY_RAW + 'layers/middle-ground/day_hills.png',
-    'assets/parallax_far.svg'
-  ],
-  ground: [
-    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/ground/day_ground.png',
-    CLOUDINARY_RAW + 'ctwgame/layers/ground/day_ground.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/ground/day_ground.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/day_ground.png',
-    CLOUDINARY_RAW + 'day_ground.png',
-    CLOUDINARY_RAW + 'f_auto,q_auto/layers/ground/day_ground.png',
-    CLOUDINARY_RAW + 'layers/ground/day_ground.png',
-    'assets/parallax_mid.svg'
-  ]
+  sky: CTW_BACKGROUND_URLS[CTW_THEME].sky,
+  hills: CTW_BACKGROUND_URLS[CTW_THEME].hills,
+  ground: CTW_BACKGROUND_URLS[CTW_THEME].ground
 };
 function asArray(v){return Array.isArray(v)?v.filter(Boolean):(v?[v]:[])}
 function unique(list){return [...new Set(list.filter(Boolean))]}
@@ -372,7 +405,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v8-auto-cloudinary'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v9-easy-edit-cloudinary'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -394,14 +427,26 @@ const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 const CLOUDINARY_TREE_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const CLOUDINARY_TREE_VERSION = 'v1781797065';
 const CLOUDINARY_ASSET_ROOT = '';
+/* ======================================================
+   EASY EDIT AREA — characters
+   This is the part to edit when you add future sprite frames.
+
+   1) Upload the PNGs to Cloudinary using these names:
+      pura_walk_001.png, pura_walk_002.png, pura_walk_003.png
+
+   2) Update the number below.
+      Example: if Pura walk becomes 12 frames, change walk:10 to walk:12.
+
+   3) Keep CTW_USE_OPTIMIZED_SPRITES true for faster loading.
+      If a sprite refuses to appear, set it to false for raw Cloudinary PNGs.
+   ====================================================== */
+const CTW_USE_OPTIMIZED_SPRITES = true;
 const CHARACTER_PUBLIC_VERSIONS = {
   ax:'v1781797065',
   pura:'v1781798378',
   owl:'v1781738357',
   unicorn:'v1781798498'
 };
-// FAST LOAD FIX: do not probe Cloudinary frame-by-frame during game start.
-// These counts match the files we have been using for the current characters.
 const USE_FIXED_PUBLIC_URL_FRAMES = true;
 const KNOWN_FRAME_COUNTS = {
   ax:{idle:10,walk:10,jump:10},
@@ -443,11 +488,15 @@ function setImageSrc(img, src){
   img.onerror = function(){ img.classList.add('spriteMissing'); };
   img.src = src;
 }
+function spriteDeliveryUrl(file){
+  const transform = CTW_USE_OPTIMIZED_SPRITES ? 'f_auto,q_auto,w_384/' : '';
+  return `${CLOUDINARY_TREE_BASE}${transform}${file}`;
+}
 function buildFixedPublicFrames(char, action){
   const count = KNOWN_FRAME_COUNTS?.[char]?.[action] || 0;
   const frames = [];
   for(let n=1; n<=count; n++){
-    frames.push(`${CLOUDINARY_TREE_BASE}f_auto,q_auto,w_384/${exactTreeFileName(char, action, n)}`);
+    frames.push(spriteDeliveryUrl(exactTreeFileName(char, action, n)));
   }
   return frames;
 }
@@ -601,12 +650,27 @@ async function getBackgroundCandidates(){
 }
 async function applyBackgrounds(){
   const status=document.getElementById('backgroundStatus');
-  // FAST BG FIX: use the small local SVG layers immediately. Do not wait for Cloudinary background probes.
-  document.documentElement.style.setProperty('--sky', 'linear-gradient(#72d9ff 0%, #82dcff 58%, #c5f2ff 100%)');
-  document.documentElement.style.setProperty('--hills', `url('assets/parallax_far.svg')`);
-  document.documentElement.style.setProperty('--ground', `url('assets/parallax_mid.svg')`);
-  if(status) status.textContent='Backgrounds: using stable local SVG layers. Cloudinary backgrounds are optional.';
-  console.log('Backgrounds: local SVG layers applied immediately.');
+
+  // Show safe backgrounds immediately so the screen is never blank.
+  document.documentElement.style.setProperty('--sky', LOCAL_BACKGROUND_FALLBACKS.sky);
+  document.documentElement.style.setProperty('--hills', LOCAL_BACKGROUND_FALLBACKS.hills);
+  document.documentElement.style.setProperty('--ground', LOCAL_BACKGROUND_FALLBACKS.ground);
+  if(status) status.textContent='Backgrounds: checking Cloudinary...';
+
+  const c = await getBackgroundCandidates();
+  const [sky, hills, ground] = await Promise.all([
+    firstWorking(c.sky),
+    firstWorking(c.hills),
+    firstWorking(c.ground)
+  ]);
+
+  if(sky) document.documentElement.style.setProperty('--sky', `url('${sky}')`);
+  if(hills) document.documentElement.style.setProperty('--hills', `url('${hills}')`);
+  if(ground) document.documentElement.style.setProperty('--ground', `url('${ground}')`);
+
+  const summary = `Backgrounds: sky ${sky?'Cloudinary':'fallback'}, hills ${hills?'Cloudinary':'fallback'}, ground ${ground?'Cloudinary':'fallback'}`;
+  if(status) status.textContent = summary;
+  console.log(summary, {sky, hills, ground});
 }
 
 applyBackgrounds();
