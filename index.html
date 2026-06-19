@@ -3763,5 +3763,224 @@ body.devMode textarea{
 })();
 </script>
 
+
+
+<!-- CTW TRUE DEVELOPER WORKSPACE FIX - added by ChatGPT -->
+<style id="ctw-true-dev-workspace-fix-css">
+/* In developer mode the player should NOT see the normal play screen.
+   Only this full-screen editor and its preview window should be visible. */
+body.devMode #game{
+  background:#160f24!important;
+  outline:none!important;
+}
+body.devMode #game > :not(#devPanel):not(#toast){
+  display:none!important;
+}
+body.devMode #toast{z-index:10050!important;display:block!important;}
+body.devMode #devPanel{
+  position:fixed!important;
+  inset:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  max-height:100dvh!important;
+  transform:none!important;
+  border:0!important;
+  border-radius:0!important;
+  padding:12px!important;
+  display:grid!important;
+  grid-template-columns:minmax(520px,1fr) minmax(340px,430px)!important;
+  grid-template-rows:1fr!important;
+  grid-template-areas:"preview controls"!important;
+  gap:12px!important;
+  background:#fffaff!important;
+  color:#21142d!important;
+  z-index:10000!important;
+  overflow:hidden!important;
+}
+body.devMode #devPanel .devWindowPreview{grid-area:preview!important;display:flex!important;min-width:0!important;min-height:0!important;flex-direction:column!important;}
+body.devMode #devPanel .devControlsPane{grid-area:controls!important;display:block!important;overflow:auto!important;min-width:0!important;min-height:0!important;padding-right:6px!important;}
+body.devMode #devPanel .devPreviewScreen{flex:1 1 auto!important;min-height:0!important;height:auto!important;border:4px solid #76C7D8!important;border-radius:18px!important;background:#72d9ff!important;}
+body.devMode #devPanel .devPreviewHeader{font-size:14px!important;}
+body.devMode #devPanel .devPreviewReadout{font-size:12px!important;}
+/* Hide old/confusing extras. Keep only character, backgrounds/layers, and save. */
+body.devMode #copyDev,
+body.devMode #copyLayerBtn,
+body.devMode #copyBox,
+body.devMode .copyBox,
+body.devMode #devFrameDock,
+body.devMode #frameStrip,
+body.devMode .frames,
+body.devMode .miniReadout,
+body.devMode #noCodeManager,
+body.devMode #spriteScopePanel,
+body.devMode #downloadConfigBtn,
+body.devMode #importConfigBtn,
+body.devMode #addCharBtn,
+body.devMode #addQuestBtn{display:none!important;}
+@media(max-width:980px){
+  body.devMode #devPanel{
+    grid-template-columns:1fr!important;
+    grid-template-rows:minmax(260px,45dvh) minmax(260px,1fr)!important;
+    grid-template-areas:"preview" "controls"!important;
+  }
+}
+</style>
+<script id="ctw-true-dev-workspace-fix-js">
+(function(){
+  if(window.__ctwTrueDevWorkspaceFix)return;
+  window.__ctwTrueDevWorkspaceFix=true;
+  function $(id){return document.getElementById(id)}
+  function q(sel,root=document){return root.querySelector(sel)}
+  function toast(t){try{showToast(t)}catch(e){console.log(t)}}
+
+  function ensurePreviewWindow(){
+    const panel=$('devPanel');
+    if(!panel)return;
+    let controls=q('.devControlsPane',panel);
+    if(!controls){
+      controls=document.createElement('div');
+      controls.className='devControlsPane';
+      while(panel.firstChild)controls.appendChild(panel.firstChild);
+      panel.appendChild(controls);
+    }
+    let preview=q('.devWindowPreview',panel);
+    if(!preview){
+      preview=document.createElement('div');
+      preview.className='devWindowPreview';
+      preview.innerHTML=`
+        <div class="devPreviewHeader">
+          <span>🛠️ Developer workspace — edit in this preview, then save</span>
+          <button type="button" id="closeDevWindowBtn">Close editor</button>
+        </div>
+        <div class="devPreviewScreen" id="devPreviewScreen">
+          <div class="devPreviewLayer devPreviewSky" id="devPreviewSky"></div>
+          <div class="devPreviewLayer devPreviewHills" id="devPreviewHills"></div>
+          <div class="devPreviewLayer devPreviewGround" id="devPreviewGround"></div>
+          <div class="devPreviewPlatform" id="devPreviewPlatform"></div>
+          <div class="devPreviewBaseline" id="devPreviewBaseline"></div>
+          <div class="devPreviewSprite devPreviewSpriteBox" id="devPreviewSprite"><img id="devPreviewSpriteImg" alt="sprite preview"></div>
+          <div class="devPreviewGrid" id="devPreviewGridInside"></div>
+        </div>
+        <div class="devPreviewReadout" id="devPreviewReadout">Preview ready. Use the controls on the right.</div>`;
+      panel.insertBefore(preview, controls);
+    }
+    const close=$('closeDevWindowBtn');
+    if(close && !close.dataset.wired){
+      close.dataset.wired='true';
+      close.onclick=function(){ if(typeof toggleDev==='function')toggleDev(false); };
+    }
+  }
+
+  function safeLayerCfg(key){
+    try{ if(typeof layerCfg==='function')return layerCfg(key); }catch(e){}
+    const d={sky:{show:true,height:100,bottom:0,zoom:100,x:0,y:0,z:0,opacity:1},hills:{show:true,height:56,bottom:40,zoom:100,x:0,y:0,z:1,opacity:1},ground:{show:true,height:35,bottom:-10,zoom:100,x:0,y:0,z:4,opacity:1},platform:{show:true,height:35,bottom:47,zoom:100,x:0,y:0,z:6,opacity:1}};
+    return d[key]||d.sky;
+  }
+  function previewLayer(key,el,sw,sh,scrollX){
+    if(!el)return;
+    const c=safeLayerCfg(key);
+    el.classList.toggle('devPreviewSelectedLayer', $('devLayer') && $('devLayer').value===key);
+    el.style.display=c.show===false?'none':'';
+    el.style.opacity=String(c.opacity ?? 1);
+    el.style.zIndex=String(c.z ?? 0);
+    const s=Math.min(sw/window.innerWidth, sh/window.innerHeight)||1;
+    if(key==='sky'){
+      el.style.top='0'; el.style.bottom='0'; el.style.height='auto';
+      el.style.backgroundImage=getComputedStyle(document.documentElement).getPropertyValue('--sky');
+      el.style.backgroundSize=`${c.zoom||100}% auto`;
+      el.style.backgroundPosition=`calc(50% + ${(c.x||0)*s}px) calc(50% + ${(c.y||0)*s}px)`;
+    }else{
+      el.style.height=(sh*((c.height||35)/100))+'px';
+      el.style.bottom=((c.bottom||0)*s)+'px';
+      el.style.backgroundImage=getComputedStyle(document.documentElement).getPropertyValue(key==='hills'?'--hills':'--ground');
+      el.style.backgroundSize=`auto ${c.zoom||100}%`;
+      el.style.backgroundPosition=`${((scrollX||0)+(c.x||0))*s}px calc(100% + ${(c.y||0)*s}px)`;
+    }
+  }
+  function currentChar(){return $('devCharacter')?.value || (window.selected&&selected[activeIndex]) || 'ax'}
+  function currentAction(){return $('devAction')?.value || 'idle'}
+  function cCfg(ch){try{return cfg(ch)}catch(e){return {height:220,feet:0,x:24,aspect:1,flip:false}}}
+  function frames(ch,act){try{return actionFrames(ch,act)||[]}catch(e){return []}}
+
+  window.CTW_updateDeveloperWorkspacePreview=function(){
+    ensurePreviewWindow();
+    if(!document.body.classList.contains('devMode'))return;
+    const screen=$('devPreviewScreen'); if(!screen)return;
+    const sw=screen.clientWidth||800, sh=screen.clientHeight||450;
+    const s=Math.min(sw/window.innerWidth, sh/window.innerHeight)||1;
+    let dist=0, py=0, px=0;
+    try{dist=distance||0; py=player?.y||0; px=player?.x||0;}catch(e){}
+    previewLayer('sky',$('devPreviewSky'),sw,sh,0);
+    previewLayer('hills',$('devPreviewHills'),sw,sh,-(dist*0.22)%900);
+    previewLayer('ground',$('devPreviewGround'),sw,sh,-(dist*0.9)%900);
+    const pc=safeLayerCfg('platform'), platform=$('devPreviewPlatform');
+    if(platform){
+      platform.classList.toggle('devPreviewSelectedLayer', $('devLayer') && $('devLayer').value==='platform');
+      platform.style.display=pc.show===false?'none':'';
+      platform.style.opacity=String(pc.opacity ?? 1);
+      platform.style.zIndex=String(pc.z ?? 6);
+      platform.style.height=((pc.height||35)*s)+'px';
+      platform.style.bottom=((pc.bottom||47)*s)+'px';
+      platform.style.left=((pc.x||0)*s)+'px';
+      platform.style.right=(-(pc.x||0)*s)+'px';
+    }
+    const ch=currentChar(), act=currentAction(), cc=cCfg(ch);
+    const img=$('devPreviewSpriteImg'), sprite=$('devPreviewSprite');
+    const fs=frames(ch,act);
+    let idx=0; try{idx=(characterEls[ch]?.frame||0)%Math.max(1,fs.length)}catch(e){}
+    const src=fs[idx]||fs[0]||''; if(img && src){try{setImageSrc(img,src)}catch(e){img.src=src}}
+    const h=(Number($('devHeight')?.value)||cc.height||220)*s;
+    const aspect=cc.aspect||1;
+    const floor=(typeof floorPx==='function'?floorPx():82)*s;
+    const feet=(Number($('devFeet')?.value)||cc.feet||0)*s;
+    const xvw=Number($('devX')?.value)||cc.x||24;
+    const x=(window.innerWidth*(xvw/100)+px)*s;
+    if(sprite){
+      sprite.style.width=(h*aspect)+'px';
+      sprite.style.height=h+'px';
+      sprite.style.left=x+'px';
+      sprite.style.bottom=(floor+feet+py*s)+'px';
+      const flip=(String($('devFlip')?.value)==='true'||cc.flip)?-1:1;
+      sprite.style.transform=`translateX(-50%) scaleX(${flip})`;
+    }
+    const base=$('devPreviewBaseline'); if(base)base.style.bottom=floor+'px';
+    const read=$('devPreviewReadout');
+    if(read)read.textContent=`Editing: ${ch} / ${act}\nBackground/layer changes show here. Save to live game when happy.`;
+  };
+
+  function patchOnce(){
+    ensurePreviewWindow();
+    try{
+      if(typeof applyLayerInputs==='function' && !applyLayerInputs.__ctwPreviewPatched){
+        const old=applyLayerInputs;
+        applyLayerInputs=function(){const r=old.apply(this,arguments); setTimeout(window.CTW_updateDeveloperWorkspacePreview,0); return r;};
+        applyLayerInputs.__ctwPreviewPatched=true;
+      }
+    }catch(e){}
+    try{
+      if(typeof applyDevInputs==='function' && !applyDevInputs.__ctwPreviewPatched){
+        const old=applyDevInputs;
+        applyDevInputs=function(){const r=old.apply(this,arguments); setTimeout(window.CTW_updateDeveloperWorkspacePreview,0); return r;};
+        applyDevInputs.__ctwPreviewPatched=true;
+      }
+    }catch(e){}
+    try{
+      if(typeof renderLayerPanel==='function' && !renderLayerPanel.__ctwPreviewPatched){
+        const old=renderLayerPanel;
+        renderLayerPanel=function(){const r=old.apply(this,arguments); setTimeout(window.CTW_updateDeveloperWorkspacePreview,0); return r;};
+        renderLayerPanel.__ctwPreviewPatched=true;
+      }
+    }catch(e){}
+    const head=q('.devPreviewHeader span'); if(head)head.textContent='🛠️ Developer workspace — preview on left, controls on right';
+  }
+  function loop(){patchOnce(); window.CTW_updateDeveloperWorkspacePreview(); requestAnimationFrame(loop)}
+  document.addEventListener('input',e=>{if(e.target&&e.target.closest&&e.target.closest('#devPanel'))setTimeout(window.CTW_updateDeveloperWorkspacePreview,0)});
+  document.addEventListener('change',e=>{if(e.target&&e.target.closest&&e.target.closest('#devPanel'))setTimeout(window.CTW_updateDeveloperWorkspacePreview,0)});
+  document.addEventListener('click',e=>{if(e.target&&(e.target.id==='devBtn'||e.target.id==='startDevBtn'||e.target.closest('#devPanel')))setTimeout(()=>{patchOnce();window.CTW_updateDeveloperWorkspacePreview();},80)});
+  window.addEventListener('load',()=>setTimeout(()=>{patchOnce();window.CTW_updateDeveloperWorkspacePreview();},500));
+  loop();
+})();
+</script>
+
 </body>
 </html>
