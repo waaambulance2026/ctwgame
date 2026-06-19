@@ -1,7 +1,35 @@
 <!doctype html><meta charset="utf-8"><title>CTW Image Test</title>
-<style>body{font-family:system-ui;background:#10172a;color:#fff;padding:24px}.card{background:#1b2540;margin:10px 0;padding:12px;border-radius:10px}.ok{color:#39e58c}.bad{color:#ff7272}code{color:#ffe66b}img{max-width:160px;max-height:120px;background:#333;margin-top:8px}</style>
-<h1>CTW Image Test</h1><p>Tests the generated Cloudinary manifest and first frames.</p><a style="color:#9ee" href="/api/sprite-manifest" target="_blank">Open /api/sprite-manifest</a><div id="out">Loading…</div>
+<style>
+body{font-family:system-ui;background:#10172a;color:#fff;padding:24px}.card{background:#1b2540;margin:10px 0;padding:12px;border-radius:10px}.ok{color:#39e58c}.bad{color:#ff7272}.warn{color:#ffe66b}code{color:#ffe66b;word-break:break-all}img{max-width:160px;max-height:120px;background:#333;margin-top:8px}button{padding:8px 12px;border-radius:8px;border:0;margin-right:8px}
+</style>
+<h1>CTW Image Test</h1>
+<p>Quick test for first public Cloudinary sprite URLs. This does not depend on Admin API.</p>
+<button onclick="location.reload()">Reload</button>
+<a style="color:#9ee" href="/api/sprite-manifest" target="_blank">Open /api/sprite-manifest</a>
+<div id="out">Loading…</div>
 <script>
-function okImg(src){return new Promise(r=>{const i=new Image();i.onload=()=>r(true);i.onerror=()=>r(false);i.src=src;});}
-(async()=>{const out=document.getElementById('out');out.innerHTML='';let m;try{const res=await fetch('/api/sprite-manifest?ctw='+Date.now(),{cache:'no-store'});m=await res.json();}catch(e){out.textContent=e;return;}if(!m.ok){out.innerHTML=`<div class="card bad">${m.error}</div>`;return;}const tests=[];for(const [theme,layers] of Object.entries(m.backgrounds||{})) for(const [layer,u] of Object.entries(layers||{})) tests.push([`background ${theme}/${layer}`,u]);for(const [char,c] of Object.entries(m.characters||{})) for(const [action,frames] of Object.entries(c.frames||{})) tests.push([`${char} ${action} first (${frames.length} frames)`,frames[0]]);for(const [label,u] of tests){const ok=u?await okImg(u):false;out.innerHTML+=`<div class="card ${ok?'ok':'bad'}">${label}: ${ok?'OK':'FAILED'}<br><code>${u||''}</code>${ok?`<br><img src="${u}">`:''}</div>`}}})();
+const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const V={ax:'v1781797065',pura:'v1781798378',owl:'v1781738357',unicorn:'v1781798498'};
+const TESTS={
+ 'ax idle 001':['ax_idle_001.png',`${V.ax}/ax_idle_001.png`],
+ 'ax walk 001':['ax_walk_001.png',`${V.ax}/ax_walk_001.png`],
+ 'ax jump 001':['ax_jump_001.png',`${V.ax}/ax_jump_001.png`],
+ 'pura idle 001':['pura_idle_001.png',`${V.pura}/pura_idle_001.png`],
+ 'pura idle 003':['pura_idle_003.png','v1781798367/pura_idle_003.png'],
+ 'pura walk 001':['pura_walk_001.png',`${V.pura}/pura_walk_001.png`],
+ 'pura jump 001':['pura_jump_001.png',`${V.pura}/pura_jump_001.png`],
+ 'unicorn idle 001':['unicorn_idle_001.png',`${V.unicorn}/unicorn_idle_001.png`],
+ 'unicorn idle 010':['unicorn_idle_010.png',`${V.unicorn}/unicorn_idle_010.png`],
+ 'unicorn walk 001':['unicorn_walk_001.png',`${V.unicorn}/unicorn_walk_001.png`,'Uni_Walk_1.png','Uni_walk_1.png'],
+ 'owl idle 1':['owl_idle_1.png',`${V.owl}/owl_idle_1.png`],
+ 'owl idle 10':['owl_idle_10.png',`${V.owl}/owl_idle_10.png`],
+ 'owl walk01':['owl_walk01.png',`${V.owl}/owl_walk01.png`]
+};
+function imgOk(src,timeout=1800){return new Promise(r=>{const i=new Image();let done=false;const finish=v=>{if(done)return;done=true;r(v?src:null)};const t=setTimeout(()=>finish(null),timeout);i.onload=()=>{clearTimeout(t);finish(true)};i.onerror=()=>{clearTimeout(t);finish(null)};i.src=src+(src.includes('?')?'&':'?')+'ctwtest='+Date.now();});}
+async function firstWorking(files){
+ const urls=[]; for(const f of files){urls.push(`${CLOUD}f_auto,q_auto,w_384/${f}`,`${CLOUD}${f}`)}
+ for(let i=0;i<urls.length;i+=4){const res=await Promise.all(urls.slice(i,i+4).map(u=>imgOk(u))); const hit=res.find(Boolean); if(hit)return hit.replace(/([?&])ctwtest=\d+$/,'');}
+ return null;
+}
+(async()=>{const out=document.getElementById('out');out.innerHTML='';for(const [label,files] of Object.entries(TESTS)){const u=await firstWorking(files);out.innerHTML+=`<div class="card ${u?'ok':'bad'}">${label}: ${u?'OK':'FAILED'}<br><code>${u||files.join(' OR ')}</code>${u?`<br><img src="${u}">`:''}</div>`}})();
 </script>

@@ -23,7 +23,7 @@ Do not upload character PNGs to GitHub. Character and background images live in 
 
 The game does not use the Cloudinary Admin API in this version.
 
-Instead, when the game starts it probes public Cloudinary delivery URLs, finds the frames that actually load, preloads them, and caches the working URLs in the browser.
+The `/api/sprite-manifest` route is only a small status/config endpoint, so it will show empty frame arrays. That is expected. The real frame counting happens in the browser. `index.html`, `sprite_checker.html`, and `image_test.html` probe public Cloudinary delivery URLs, find the frames that actually load, preload them, and cache the working URLs in the browser.
 
 Examples of expected public filenames:
 
