@@ -281,7 +281,7 @@ const QUESTS=[
   {name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨'],hazards:['🟫','🐌','🧦']},
   {name:'Wrong Moon',goal:1100,tokens:['🌙','⭐','🔮'],hazards:['🌚','📢','🕳️']}
 ];
-const LS_KEY='ctw-real-game-dev-v7-cloudinary-only';
+const LS_KEY='ctw-real-game-dev-v8-auto-cloudinary';
 let devConfig=loadDevConfig();
 function loadDevConfig(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch{return {}}}
 function saveDevConfig(){localStorage.setItem(LS_KEY,JSON.stringify(devConfig));}
@@ -369,7 +369,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v6-public-root'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v8-auto-cloudinary'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -385,7 +385,8 @@ function writeSpriteUrlCache(cache){
    - It no longer assumes every action has 10 frames.
    - It stops at the first few missing numbers, so Ax walk can be 8 frames, owl jump can be 7, etc.
    ========================= */
-const CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/sprite_manifest.json';
+const STATIC_CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/sprite_manifest.json';
+const CHARACTER_MANIFEST_FILE = '/api/sprite-manifest';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 const CLOUDINARY_TREE_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const CLOUDINARY_TREE_VERSION = 'v1781797065';
@@ -400,6 +401,27 @@ const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without ham
 const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
 const RESOLVED_CHARACTERS = new Set();
 
+async function fetchSpriteManifest(){
+  // Try the generated Cloudinary manifest first. If Cloudflare secrets are not configured yet,
+  // fall back to the static JSON file so the game still opens.
+  const urls=[CHARACTER_MANIFEST_FILE, STATIC_CHARACTER_MANIFEST_FILE];
+  for(const url of urls){
+    try{
+      const res=await fetch(url + (url.includes('?')?'&':'?') + 'ctw=' + Date.now(), {cache:'no-store'});
+      if(res.ok){
+        const data=await res.json();
+        if(data && data.characters) return data;
+      }
+    }catch(e){ console.warn('Could not fetch sprite manifest', url, e); }
+  }
+  return null;
+}
+function manifestFramesForAction(manifest, char, action){
+  const frames = manifest?.characters?.[char]?.frames?.[action];
+  if(!Array.isArray(frames)) return [];
+  // Supports either [url,url] or [[url candidates],[url candidates]]
+  return frames.map(f => Array.isArray(f) ? f.find(Boolean) : f).filter(Boolean);
+}
 function setImageSrc(img, src){
   if(!img || !src) return;
   if(img.dataset && img.dataset.srcKey === src) return;
@@ -473,6 +495,12 @@ async function findWorkingFrame(manifest, char, action, index){
   return null;
 }
 async function discoverActionFrames(manifest, char, action){
+  const direct = manifestFramesForAction(manifest, char, action);
+  if(direct.length){
+    // The generated manifest only contains files that Cloudinary says exist, so do not
+    // re-test every frame in the browser. This removes the flicker/slow-start problem.
+    return direct;
+  }
   const out=[];
   let misses=0;
   for(let i=0; i<MAX_FRAME_PROBE; i++){
@@ -483,7 +511,6 @@ async function discoverActionFrames(manifest, char, action){
     }else{
       misses++;
       if(out.length > 0 && misses >= STOP_AFTER_MISSES) break;
-      // If the first two don't exist, this action folder probably does not exist.
       if(out.length === 0 && misses >= STOP_AFTER_MISSES) break;
     }
   }
@@ -492,9 +519,8 @@ async function discoverActionFrames(manifest, char, action){
 async function resolveCharacterSprites(charList){
   let manifest=null;
   try{
-    const res=await fetch(CHARACTER_MANIFEST_FILE, {cache:'force-cache'});
-    if(res.ok) manifest=await res.json();
-  }catch(e){ console.warn('Could not read sprite_manifest character section.', e); }
+    manifest = await fetchSpriteManifest();
+  }catch(e){ console.warn('Could not read sprite manifest character section.', e); }
 
   const chars = Array.isArray(charList) && charList.length ? charList : Object.keys(CHARACTERS);
   for(const char of chars){
@@ -523,16 +549,13 @@ window.CTW_SPRITES_READY = Promise.resolve();
 async function getBackgroundCandidates(){
   const c={sky:[...DEFAULT_BACKGROUND_CANDIDATES.sky],hills:[...DEFAULT_BACKGROUND_CANDIDATES.hills],ground:[...DEFAULT_BACKGROUND_CANDIDATES.ground]};
   try{
-    const res=await fetch(CHARACTER_MANIFEST_FILE + '?ctw=' + Date.now(), {cache:'no-store'});
-    if(res.ok){
-      const manifest=await res.json();
-      const day=manifest?.backgrounds?.day || {};
-      c.sky=unique([...asArray(day.sky),...c.sky]);
-      c.hills=unique([...asArray(day.hills),...c.hills]);
-      c.ground=unique([...asArray(day.ground),...c.ground]);
-    }
+    const manifest=await fetchSpriteManifest();
+    const day=manifest?.backgrounds?.day || {};
+    c.sky=unique([...asArray(day.sky),...c.sky]);
+    c.hills=unique([...asArray(day.hills),...c.hills]);
+    c.ground=unique([...asArray(day.ground),...c.ground]);
   }catch(e){
-    console.warn('Could not read sprite_manifest.json for backgrounds. Using fallbacks.', e);
+    console.warn('Could not read generated sprite manifest for backgrounds. Using fallbacks.', e);
   }
   return c;
 }
@@ -2509,7 +2532,7 @@ body.showAllFrameColours .devFrameColourLegend{
   window.__ctwEasyConfigNumbersPatch = true;
 
   const CONTENT_KEY = 'ctw-game-content-config-v2-fixed-sprites';
-  const DEV_KEY = 'ctw-real-game-dev-v7-cloudinary-only';
+  const DEV_KEY = 'ctw-real-game-dev-v8-auto-cloudinary';
   const $ = id => document.getElementById(id);
 
   function say(msg){

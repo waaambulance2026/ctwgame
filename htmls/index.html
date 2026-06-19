@@ -221,7 +221,7 @@ button{cursor:pointer}
       <button class="blueBtn" id="reloadBgBtn">Reload backgrounds</button>
     </div>
     <h2>Backgrounds</h2>
-    <div class="devNote" id="backgroundStatus">Backgrounds loading from sprite_manifest.json, then Cloudinary root fallbacks.</div>
+    <div class="devNote" id="backgroundStatus">Backgrounds and character sprites load from Cloudinary / sprite_manifest.json.</div>
 
     <h2>Layer setup</h2>
     <div class="devNote">Use this to line up the scene layers. Turn the grid on, choose a layer, then adjust height, bottom, zoom, position and layer level.</div>
@@ -245,7 +245,7 @@ button{cursor:pointer}
     <h2>Frames</h2>
     <div class="frames" id="frameStrip"></div>
     <h2>Add more later</h2>
-    <div class="devNote">To add a new character later: upload files with a simple pattern, then add one entry to the character config. Backgrounds can stay in <b>sprite_manifest.json</b>; character sprites do not need thousands of links.</div>
+    <div class="devNote">To add a new character later: upload files with a simple pattern, then add one entry to the character config. Backgrounds can stay in <b>sprite_manifest.json</b>; character sprites load from Cloudinary via jsons/sprite_manifest.json.</div>
     <textarea id="copyBox" class="copyBox" readonly></textarea>
   </aside>
   <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>Choose your characters. This is the proper game build with developer mode, not a separate sprite fixer.</p><div class="choiceGrid" id="choiceGrid"></div><button id="startBtn">Start game</button><button id="startDevBtn">Start in developer mode</button><p style="font-size:13px;opacity:.85">Controls: arrows/A-D to walk, space/W/up to jump, Tab/Q to switch character.</p></div></div>
@@ -260,24 +260,28 @@ function frames(prefix,count){ return Array.from({length:count},(_,i)=>file(pref
 function framesUnderscore(prefix,count){ return Array.from({length:count},(_,i)=>file(prefix+'_'+(i+1))); }
 function framesPadded(prefix,numbers){ return numbers.map(n=>file(prefix+String(n).padStart(2,'0'))); }
 
-// Local game-ready transparent sprites. These are fixed-size frame canvases, so
-// idle/walk/jump stay the same size when the animation changes.
-const LOCAL_SPRITE_PREFIX = (location.pathname.includes('/htmls/') ? '../' : '') + 'assets/characters/';
+// Cloudinary-only character sprites. GitHub stores the code/JSON only; the PNGs stay in Cloudinary.
+// Ax uses the exact Cloudinary root pattern confirmed by the user.
 function pad3(n){ return String(n).padStart(3,'0'); }
-function localFrames(char, action, count){
-  return Array.from({length:count}, (_,i)=>`${LOCAL_SPRITE_PREFIX}${char}/frames/${action}/${char}_${action}_${pad3(i+1)}.png`);
+const AX_CLOUDINARY_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/';
+function axCloudFrames(action, count){
+  return Array.from({length:count}, (_,i)=>`${AX_CLOUDINARY_BASE}ax_${action}_${pad3(i+1)}.png`);
 }
+// Placeholder arrays give the resolver the frame count; resolveCharacterSprites() replaces them
+// with working Cloudinary URLs from jsons/sprite_manifest.json before gameplay starts.
+function frameSlots(count){ return Array.from({length:count}, ()=>null); }
+
 const CHARACTERS={
-  ax:{name:'Ax',height:220,feet:0,x:24,aspect:896/1024,flip:false,actions:{idle:localFrames('ax','idle',10),walk:localFrames('ax','walk',10),jump:localFrames('ax','jump',10)}},
-  pura:{name:'Pura',height:235,feet:0,x:24,aspect:704/1344,flip:false,fps:10,actionFps:{idle:8,walk:12,jump:10},walkBob:4,actions:{idle:localFrames('pura','idle',10),walk:localFrames('pura','walk',10),jump:localFrames('pura','jump',10)}},
-  owl:{name:'Owl',height:150,feet:0,x:24,aspect:512/384,flip:false,actions:{idle:localFrames('owl','idle',10),walk:localFrames('owl','walk',10),jump:localFrames('owl','jump',7),play:localFrames('owl','play',10),rest:localFrames('owl','rest',6)}},
-  unicorn:{name:'Unicorn',height:205,feet:0,x:24,aspect:1088/1088,flip:false,actions:{idle:localFrames('unicorn','idle',10),walk:localFrames('unicorn','walk',10),jump:localFrames('unicorn','jump',10)}}
+  ax:{name:'Ax',height:220,feet:0,x:24,aspect:896/1024,flip:false,actions:{idle:axCloudFrames('idle',10),walk:axCloudFrames('walk',10),jump:axCloudFrames('jump',10)}},
+  pura:{name:'Pura',height:235,feet:0,x:24,aspect:704/1344,flip:false,fps:10,actionFps:{idle:8,walk:12,jump:10},walkBob:4,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(10)}},
+  owl:{name:'Owl',height:150,feet:0,x:24,aspect:512/384,flip:false,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(7),play:frameSlots(10),rest:frameSlots(6)}},
+  unicorn:{name:'Unicorn',height:205,feet:0,x:24,aspect:1088/1088,flip:false,actions:{idle:frameSlots(10),walk:frameSlots(10),jump:frameSlots(10)}}
 };
 const QUESTS=[
   {name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨'],hazards:['🟫','🐌','🧦']},
   {name:'Wrong Moon',goal:1100,tokens:['🌙','⭐','🔮'],hazards:['🌚','📢','🕳️']}
 ];
-const LS_KEY='ctw-real-game-dev-v5-cloudinary-stable';
+const LS_KEY='ctw-real-game-dev-v8-auto-cloudinary';
 let devConfig=loadDevConfig();
 function loadDevConfig(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch{return {}}}
 function saveDevConfig(){localStorage.setItem(LS_KEY,JSON.stringify(devConfig));}
@@ -293,6 +297,9 @@ function actionFrames(char,action){const acts=CHARACTERS[char]?.actions||{};retu
 const CLOUDINARY_RAW = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const DEFAULT_BACKGROUND_CANDIDATES = {
   sky: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/backgrounds/day_sky.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/backgrounds/day_sky.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/backgrounds/day_sky.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_sky.png',
     CLOUDINARY_RAW + 'day_sky.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/backgrounds/day_sky.png',
@@ -300,6 +307,9 @@ const DEFAULT_BACKGROUND_CANDIDATES = {
     'assets/parallax_far.svg'
   ],
   hills: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/middle-ground/day_hills.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/middle-ground/day_hills.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/middle-ground/day_hills.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_hills.png',
     CLOUDINARY_RAW + 'day_hills.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/middle-ground/day_hills.png',
@@ -307,6 +317,9 @@ const DEFAULT_BACKGROUND_CANDIDATES = {
     'assets/parallax_far.svg'
   ],
   ground: [
+    CLOUDINARY_RAW + 'v1781797065/ctwgame/layers/ground/day_ground.png',
+    CLOUDINARY_RAW + 'ctwgame/layers/ground/day_ground.png',
+    CLOUDINARY_RAW + 'f_auto,q_auto/ctwgame/layers/ground/day_ground.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/day_ground.png',
     CLOUDINARY_RAW + 'day_ground.png',
     CLOUDINARY_RAW + 'f_auto,q_auto/layers/ground/day_ground.png',
@@ -356,7 +369,7 @@ function preferredFrameUrl(list){
   const ordered=cloudinaryFirst(list);
   return ordered[0] || TRANSPARENT_PIXEL;
 }
-function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v2'; }
+function localSpriteCacheKey(){ return 'ctw-working-sprite-url-cache-v8-auto-cloudinary'; }
 function readSpriteUrlCache(){
   try{return JSON.parse(localStorage.getItem(localSpriteCacheKey())||'{}')}catch{return {}}
 }
@@ -367,11 +380,48 @@ function writeSpriteUrlCache(cache){
 
 /* =========================
    ROBUST CLOUDINARY CHARACTER SPRITES
-   - resolves Cloudinary candidates once before gameplay
-   - avoids resetting img.src every animation tick, which caused flicker
+   - Cloudinary is the source of truth for character images.
+   - The game discovers how many frames are actually present in each folder.
+   - It no longer assumes every action has 10 frames.
+   - It stops at the first few missing numbers, so Ax walk can be 8 frames, owl jump can be 7, etc.
    ========================= */
-const CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/sprite_manifest.json';
+const STATIC_CHARACTER_MANIFEST_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/sprite_manifest.json';
+const CHARACTER_MANIFEST_FILE = '/api/sprite-manifest';
 const TRANSPARENT_PIXEL = 'data:image/gif;base64,R0lGODlhAQABAAAAACw=';
+const CLOUDINARY_TREE_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const CLOUDINARY_TREE_VERSION = 'v1781797065';
+const CLOUDINARY_ASSET_ROOT = '';
+const CHARACTER_PUBLIC_VERSIONS = {
+  ax:'v1781797065',
+  pura:'v1781798378',
+  owl:'v1781738357',
+  unicorn:'v1781798498'
+};
+const MAX_FRAME_PROBE = 60;        // enough for normal sprite loops without hammering Cloudinary
+const STOP_AFTER_MISSES = 2;       // if 009 and 010 are missing after 001-008, stop at 8
+const RESOLVED_CHARACTERS = new Set();
+
+async function fetchSpriteManifest(){
+  // Try the generated Cloudinary manifest first. If Cloudflare secrets are not configured yet,
+  // fall back to the static JSON file so the game still opens.
+  const urls=[CHARACTER_MANIFEST_FILE, STATIC_CHARACTER_MANIFEST_FILE];
+  for(const url of urls){
+    try{
+      const res=await fetch(url + (url.includes('?')?'&':'?') + 'ctw=' + Date.now(), {cache:'no-store'});
+      if(res.ok){
+        const data=await res.json();
+        if(data && data.characters) return data;
+      }
+    }catch(e){ console.warn('Could not fetch sprite manifest', url, e); }
+  }
+  return null;
+}
+function manifestFramesForAction(manifest, char, action){
+  const frames = manifest?.characters?.[char]?.frames?.[action];
+  if(!Array.isArray(frames)) return [];
+  // Supports either [url,url] or [[url candidates],[url candidates]]
+  return frames.map(f => Array.isArray(f) ? f.find(Boolean) : f).filter(Boolean);
+}
 function setImageSrc(img, src){
   if(!img || !src) return;
   if(img.dataset && img.dataset.srcKey === src) return;
@@ -380,37 +430,47 @@ function setImageSrc(img, src){
   img.onerror = function(){ img.classList.add('spriteMissing'); };
   img.src = src;
 }
+function exactTreeFileName(char, action, n){
+  const num = String(n);
+  const p2 = String(n).padStart(2,'0');
+  const p3 = String(n).padStart(3,'0');
+  if(char === 'owl' && action === 'walk') return `owl_walk${p2}.png`;
+  if(char === 'owl') return `owl_${action}_${num}.png`;
+  return `${char}_${action}_${p3}.png`;
+}
+function exactTreeUrls(char, action, n){
+  const file = exactTreeFileName(char, action, n);
+  const version = CHARACTER_PUBLIC_VERSIONS[char] || CLOUDINARY_TREE_VERSION;
+  // The Cloudinary media-library folder is not the public delivery path for these sprites.
+  // The confirmed delivery URLs are root public IDs such as:
+  // https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png
+  return [
+    `${CLOUDINARY_TREE_BASE}${version}/${file}`,
+    `${CLOUDINARY_TREE_BASE}${file}`,
+    `${CLOUDINARY_TREE_BASE}f_auto,q_auto/${file}`
+  ];
+}
 function cloudCandidateUrls(char, action, n){
+  // Keep the real tree first. Older fallbacks only run if the real tree fails.
   const num = String(n);
   const p3 = String(n).padStart(3,'0');
   const p2 = String(n).padStart(2,'0');
-  const base = CLOUDINARY_RAW;
-  const charCaps = char.charAt(0).toUpperCase()+char.slice(1);
-  const actionCaps = action.charAt(0).toUpperCase()+action.slice(1);
+  const exact = exactTreeUrls(char, action, n);
   const rawNames = [
-    `${char}_${action}_${p3}`, `${char}_${action}${p3}`, `${char}_${action}_${p2}`, `${char}_${action}${p2}`, `${char}_${action}_${num}`, `${char}_${action}${num}`,
-    `${charCaps}_${actionCaps}_${p3}`, `${charCaps}_${actionCaps}${p3}`, `${charCaps}_${actionCaps}_${num}`, `${charCaps}_${actionCaps}${num}`,
-    // Older unicorn files use Uni_Walk_1 style names.
-    ...(char==='unicorn' && action==='walk' ? [`Uni_Walk_${num}`,`Uni_Walk_${p2}`,`Uni_Walk_${p3}`,`Uni_walk_${num}`,`Uni_walk_${p2}`,`Uni_walk_${p3}`] : []),
-    // Some uploaded jump files were named unicorn_Idle_jump1 in a folder called idle jump.
-    ...(char==='unicorn' && action==='jump' ? [`unicorn_Idle_jump${num}`,`unicorn_Idle_jump_${num}`,`unicorn_idle_jump${num}`,`unicorn_idle_jump_${num}`] : [])
+    `${char}_${action}_${p3}`, `${char}_${action}${p3}`,
+    `${char}_${action}_${p2}`, `${char}_${action}${p2}`,
+    `${char}_${action}_${num}`, `${char}_${action}${num}`,
+    ...(char==='unicorn' && action==='walk' ? [`Uni_Walk_${num}`,`Uni_walk_${num}`] : [])
   ];
-  const folders = [
-    // Most Cloudinary uploads in this project have used action folders, for example walk/ax_walk_008.png.
-    `${action}/`,
-    '',
-    `characters/${char}/${action}/`,
-    `${char}/${action}/`,
-    ...(char==='unicorn' && action==='jump' ? ['idle%20jump/','idle jump/'] : [])
-  ];
-  const exts = ['.png','.PNG'];
-  const names=[];
+  const folders = [`${action}/`, '', `characters/${char}/${action}/`, `${char}/${action}/`];
+  const extras=[];
   for(const folder of folders){
     for(const raw of rawNames){
-      for(const ext of exts) names.push(folder+raw+ext);
+      extras.push(`${CLOUDINARY_TREE_BASE}${CHARACTER_PUBLIC_VERSIONS[char]||CLOUDINARY_TREE_VERSION}/${folder}${raw}.png`);
+      extras.push(`${CLOUDINARY_TREE_BASE}${folder}${raw}.png`);
     }
   }
-  return unique(names.flatMap(name=>[base+'f_auto,q_auto/'+name, base+name]));
+  return unique([...exact, ...extras]);
 }
 function candidateListFromManifest(manifest, char, action, index){
   const frame = manifest?.characters?.[char]?.frames?.[action]?.[index];
@@ -418,49 +478,59 @@ function candidateListFromManifest(manifest, char, action, index){
   if(typeof frame === 'string') return cloudinaryFirst([frame]);
   return [];
 }
-async function resolveCharacterSprites(){
+async function findWorkingFrame(manifest, char, action, index){
+  const n = index + 1;
+  // Fast path: your actual Cloudinary tree. This avoids long waits on missing frames.
+  const exactHit = await firstWorking(exactTreeUrls(char, action, n));
+  if(exactHit) return exactHit;
+  // Fallback path: only use slower guessed/manifest checks near the start of an action.
+  // This protects older uploads, but prevents frame 009/010 misses from causing long delays.
+  if(index < 2){
+    const candidates = unique([
+      ...candidateListFromManifest(manifest, char, action, index),
+      ...cloudCandidateUrls(char, action, n)
+    ]);
+    return await firstWorking(candidates);
+  }
+  return null;
+}
+async function discoverActionFrames(manifest, char, action){
+  const direct = manifestFramesForAction(manifest, char, action);
+  if(direct.length){
+    // The generated manifest only contains files that Cloudinary says exist, so do not
+    // re-test every frame in the browser. This removes the flicker/slow-start problem.
+    return direct;
+  }
+  const out=[];
+  let misses=0;
+  for(let i=0; i<MAX_FRAME_PROBE; i++){
+    const hit = await findWorkingFrame(manifest, char, action, i);
+    if(hit){
+      out.push(hit);
+      misses=0;
+    }else{
+      misses++;
+      if(out.length > 0 && misses >= STOP_AFTER_MISSES) break;
+      if(out.length === 0 && misses >= STOP_AFTER_MISSES) break;
+    }
+  }
+  return out;
+}
+async function resolveCharacterSprites(charList){
   let manifest=null;
   try{
-    const res=await fetch(CHARACTER_MANIFEST_FILE, {cache:'force-cache'});
-    if(res.ok) manifest=await res.json();
-  }catch(e){ console.warn('Could not read sprite_manifest character section.', e); }
+    manifest = await fetchSpriteManifest();
+  }catch(e){ console.warn('Could not read sprite manifest character section.', e); }
 
-  const cache=readSpriteUrlCache();
-  const changed={value:false};
-  async function resolveOne(char, action, i, existing){
-    const key=`${char}/${action}/${i+1}`;
-    if(cache[key]){
-      // Verify cached URL quickly. If it fails, fall through and re-detect.
-      const ok=await testImage(cache[key],700);
-      if(ok) return ok;
-      delete cache[key]; changed.value=true;
-    }
-    const n=i+1;
-    const candidates=unique([
-      ...candidateListFromManifest(manifest,char,action,i),
-      ...cloudCandidateUrls(char,action,n),
-      ...(existing ? [existing] : [])
-    ]);
-    const hit=await firstWorking(candidates);
-    if(hit){ cache[key]=hit; changed.value=true; return hit; }
-    return null;
-  }
-
-  for(const [char,cfg] of Object.entries(CHARACTERS)){
-    const actions=cfg.actions||{};
-    const actionNames=Object.keys(actions);
+  const chars = Array.isArray(charList) && charList.length ? charList : Object.keys(CHARACTERS);
+  for(const char of chars){
+    if(!CHARACTERS[char] || RESOLVED_CHARACTERS.has(char)) continue;
+    const cfg = CHARACTERS[char];
+    const actionNames = Object.keys(cfg.actions || {});
     for(const action of actionNames){
-      const arr=actions[action]||[];
-      const count=Math.max(Array.isArray(arr)?arr.length:0, manifest?.characters?.[char]?.frames?.[action]?.length || 10);
-      const checks=[];
-      for(let i=0;i<count;i++) checks.push(resolveOne(char,action,i, Array.isArray(arr)?arr[i]:null));
-      const resolved=(await Promise.all(checks)).filter(Boolean);
-      if(resolved.length){
-        cfg.actions[action]=resolved;
-      }else{
-        console.warn(`No working sprites found for ${char}/${action}`);
-        cfg.actions[action]=[];
-      }
+      const frames = await discoverActionFrames(manifest, char, action);
+      cfg.actions[action] = frames;
+      console.log(`${char}/${action}: ${frames.length} frame(s) found`, frames);
     }
     // Fallbacks so the character is never invisible just because one action folder is missing.
     const idle=cfg.actions.idle||[], walk=cfg.actions.walk||[], jump=cfg.actions.jump||[];
@@ -468,27 +538,24 @@ async function resolveCharacterSprites(){
     if(!idle.length && jump.length) cfg.actions.idle=jump;
     if(!walk.length && cfg.actions.idle?.length) cfg.actions.walk=cfg.actions.idle;
     if(!jump.length && cfg.actions.idle?.length) cfg.actions.jump=cfg.actions.idle;
+    RESOLVED_CHARACTERS.add(char);
   }
-  if(changed.value) writeSpriteUrlCache(cache);
   warmSpriteCache();
   console.log('Character sprites resolved to working URLs:', CHARACTERS);
 }
 
 
-window.CTW_SPRITES_READY = resolveCharacterSprites();
+window.CTW_SPRITES_READY = Promise.resolve();
 async function getBackgroundCandidates(){
   const c={sky:[...DEFAULT_BACKGROUND_CANDIDATES.sky],hills:[...DEFAULT_BACKGROUND_CANDIDATES.hills],ground:[...DEFAULT_BACKGROUND_CANDIDATES.ground]};
   try{
-    const res=await fetch(CHARACTER_MANIFEST_FILE + '?ctw=' + Date.now(), {cache:'no-store'});
-    if(res.ok){
-      const manifest=await res.json();
-      const day=manifest?.backgrounds?.day || {};
-      c.sky=unique([...asArray(day.sky),...c.sky]);
-      c.hills=unique([...asArray(day.hills),...c.hills]);
-      c.ground=unique([...asArray(day.ground),...c.ground]);
-    }
+    const manifest=await fetchSpriteManifest();
+    const day=manifest?.backgrounds?.day || {};
+    c.sky=unique([...asArray(day.sky),...c.sky]);
+    c.hills=unique([...asArray(day.hills),...c.hills]);
+    c.ground=unique([...asArray(day.ground),...c.ground]);
   }catch(e){
-    console.warn('Could not read sprite_manifest.json for backgrounds. Using fallbacks.', e);
+    console.warn('Could not read generated sprite manifest for backgrounds. Using fallbacks.', e);
   }
   return c;
 }
@@ -642,7 +709,7 @@ function switchChar(){if(selected.length<2)return;activeIndex=(activeIndex+1)%se
 async function startGame(openDev=false){
   document.getElementById('startScreen').classList.add('hidden');
   showToast('Loading sprites…');
-  try{await window.CTW_SPRITES_READY;}catch(e){console.warn('Sprite resolve failed',e)}
+  try{await resolveCharacterSprites(selected);}catch(e){console.warn('Sprite resolve failed',e)}
   try{await preloadSelectedAsync();}catch(e){console.warn('Sprite preload failed',e)}
   running=true;paused=false;level=0;score=0;lives=3;distance=0;player={x:0,y:0,vy:0,grounded:true,facing:1};worldObjs=[];objectsEl.innerHTML='';
   createCharacterEls();preloadSelected();setHud();if(openDev)toggleDev(true);requestAnimationFrame(loop)
@@ -662,7 +729,7 @@ function currentDevChar(){return devCharacter.value||selected[activeIndex]||'ax'
 function applyDevInputs(){const c=currentDevChar();devConfig[c]=Object.assign({},devConfig[c]||{}, {height:Number(devHeight.value),feet:Number(devFeet.value),x:Number(devX.value),fps:Number(devFps.value),flip:devFlip.value==='true'});devConfig._gameSpeed=Number(devSpeed.value);syncDevLabels();if(characterEls[c])applyCharStyle(c,selected[activeIndex]===c);updateCopyBox();}
 function renderFrames(){const c=currentDevChar(), a=devAction.value||'idle';const strip=document.getElementById('frameStrip');strip.innerHTML='';actionFrames(c,a).forEach((src,i)=>{const b=document.createElement('button');b.className='frameBtn';b.title=src;const im=document.createElement('img');setImageSrc(im,src);b.appendChild(im);b.onclick=()=>{if(characterEls[c]){characterEls[c].action=a;characterEls[c].frame=i;setImageSrc(characterEls[c].img,src)}strip.querySelectorAll('.frameBtn').forEach(x=>x.classList.remove('active'));b.classList.add('active')};strip.appendChild(b);});}
 function updateCopyBox(){copyBox.value=JSON.stringify({devConfig, characters:Object.keys(CHARACTERS)},null,2)}
-['devHeight','devFeet','devX','devFps','devFlip','devSpeed'].forEach(id=>document.getElementById(id).addEventListener('input',applyDevInputs));devCharacter.addEventListener('change',()=>{activeIndex=selected.indexOf(devCharacter.value);if(activeIndex<0){selected=[devCharacter.value,...selected];activeIndex=0;createCharacterEls();preloadSelected()}renderDev();setHud();});devAction.addEventListener('change',()=>{renderFrames();});saveDev.onclick=()=>{applyDevInputs();saveDevConfig();showToast('Developer settings saved')};resetDev.onclick=()=>{localStorage.removeItem(LS_KEY);devConfig={};document.body.classList.remove('gridOn');renderDev();createCharacterEls();showToast('Developer settings reset')};copyDev.onclick=()=>{updateCopyBox();copyBox.select();document.execCommand('copy');showToast('Config copied')};
+['devHeight','devFeet','devX','devFps','devFlip','devSpeed'].forEach(id=>document.getElementById(id).addEventListener('input',applyDevInputs));devCharacter.addEventListener('change',async()=>{activeIndex=selected.indexOf(devCharacter.value);if(activeIndex<0){selected=[devCharacter.value,...selected];activeIndex=0;}try{await resolveCharacterSprites([devCharacter.value]);}catch(e){console.warn('Sprite resolve failed',e)}createCharacterEls();preloadSelected();renderDev();setHud();});devAction.addEventListener('change',()=>{renderFrames();});saveDev.onclick=()=>{applyDevInputs();saveDevConfig();showToast('Developer settings saved')};resetDev.onclick=()=>{localStorage.removeItem(LS_KEY);devConfig={};document.body.classList.remove('gridOn');renderDev();createCharacterEls();showToast('Developer settings reset')};copyDev.onclick=()=>{updateCopyBox();copyBox.select();document.execCommand('copy');showToast('Config copied')};
 if(gridBtn){gridBtn.onclick=()=>{devConfig._grid=!devConfig._grid;document.body.classList.toggle('gridOn',!!devConfig._grid);gridBtn.textContent=devConfig._grid?'Grid: on':'Grid: off';saveDevConfig();};}
 if(reloadBgBtn){reloadBgBtn.onclick=()=>{applyBackgrounds();showToast('Reloading backgrounds')};}
 ['devLayer','layerShow','layerHeight','layerBottom','layerZoom','layerX','layerY','layerZ','layerOpacity'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('input',id==='devLayer'?renderLayerPanel:applyLayerInputs);if(el&&id==='devLayer')el.addEventListener('change',renderLayerPanel);});
@@ -1064,7 +1131,7 @@ buildChoices();setHud();renderDev();
 */
 (function(){
   const CONFIG_FILE = (location.pathname.includes('/htmls/') ? '../' : '') + 'jsons/game_config.json';
-  const CONFIG_KEY = 'ctw-game-content-config-v5-cloudinary-stable';
+  const CONFIG_KEY = 'ctw-game-content-config-v6-ax-exact-cloudinary';
 
   function $(id){return document.getElementById(id)}
   function safeToast(msg){try{ if(typeof showToast==='function') showToast(msg); }catch(e){console.log(msg)}}
@@ -1137,24 +1204,11 @@ buildChoices();setHud();renderDev();
       Object.assign(devConfig, data.devConfig);
       try{ saveDevConfig(); }catch(e){}
     }
+    // Do NOT replace CHARACTERS from game_config.json here.
+    // Character frame URLs are now defined in this script / sprite_manifest and tested before use.
+    // Old saved configs were overwriting good sprite URLs with broken Cloudinary guesses, making characters invisible.
     if(data.characters && typeof data.characters==='object'){
-      Object.entries(data.characters).forEach(([key,c])=>{
-        if(!key || !c) return;
-        const actions={};
-        Object.entries(c.actions||{}).forEach(([action,spec])=>{ actions[action]=makeActionFrames(spec); });
-        if(!actions.idle && c.idleCount) actions.idle=makeActionFrames({prefix:key+'_idle',count:c.idleCount});
-        if(!actions.walk && c.walkCount) actions.walk=makeActionFrames({prefix:key+'_walk',count:c.walkCount});
-        if(!actions.jump && c.jumpCount) actions.jump=makeActionFrames({prefix:key+'_jump',count:c.jumpCount});
-        CHARACTERS[key]={
-          name:c.name||key,
-          height:Number(c.height||200),
-          feet:Number(c.feet||0),
-          x:Number(c.x||24),
-          aspect:Number(c.aspect||1),
-          flip:!!c.flip,
-          actions:actions
-        };
-      });
+      console.warn('Ignored config.characters to protect the working sprite script paths. Edit index.html/sprite_manifest for sprite URLs.');
     }
     if(Array.isArray(data.quests)){
       QUESTS.splice(0, QUESTS.length, ...data.quests);
@@ -1382,7 +1436,7 @@ buildChoices();setHud();renderDev();
   window.__ctwFrameScopeEditorInstalled = true;
   window.CTW_SELECTED_FRAME_INDEX = window.CTW_SELECTED_FRAME_INDEX || 0;
 
-  const CONTENT_CONFIG_KEY = 'ctw-game-content-config-v5-cloudinary-stable';
+  const CONTENT_CONFIG_KEY = 'ctw-game-content-config-v6-ax-exact-cloudinary';
   function $(id){return document.getElementById(id)}
   function toast(msg){try{showToast(msg)}catch(e){console.log(msg)}}
   function hasGlobal(name){try{return typeof window[name] !== 'undefined'}catch(e){return false}}
@@ -2478,7 +2532,7 @@ body.showAllFrameColours .devFrameColourLegend{
   window.__ctwEasyConfigNumbersPatch = true;
 
   const CONTENT_KEY = 'ctw-game-content-config-v2-fixed-sprites';
-  const DEV_KEY = 'ctw-real-game-dev-v2-fixed-sprites';
+  const DEV_KEY = 'ctw-real-game-dev-v8-auto-cloudinary';
   const $ = id => document.getElementById(id);
 
   function say(msg){
@@ -3336,8 +3390,7 @@ body.devMode textarea{
     }catch(e){console.warn('Could not apply devConfig',e)}
     try{
       if(config.characters && typeof CHARACTERS!=='undefined'){
-        Object.keys(CHARACTERS).forEach(k=>delete CHARACTERS[k]);
-        Object.assign(CHARACTERS, JSON.parse(JSON.stringify(config.characters)));
+        console.warn('Ignored Cloudflare KV config.characters so saved old sprite URLs cannot hide characters.');
       }
     }catch(e){console.warn('Could not apply characters',e)}
     try{
