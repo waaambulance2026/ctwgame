@@ -34,7 +34,7 @@ body.devMode #game{background:#160f24}body.devMode #game > :not(#devPanel):not(#
     <section class="devPreview"><div class="devPreviewHead"><span>🛠️ Developer workspace — edit preview, then save</span><button id="closeDevBtn">Close</button></div><div class="devPreviewScreen" id="devPreviewScreen"><div class="devPreviewLayer devPreviewSky" id="devPreviewSky"></div><div class="devPreviewLayer devPreviewHills" id="devPreviewHills"></div><div class="devPreviewLayer devPreviewGround" id="devPreviewGround"></div><div class="devPreviewPlatform" id="devPreviewPlatform"></div><div class="devPreviewBaseline" id="devPreviewBaseline"></div><div class="devPreviewSprite" id="devPreviewSprite"><img id="devPreviewSpriteImg" alt="sprite preview"></div><div class="devPreviewGrid"></div></div><div class="devReadout" id="devReadout">Preview ready.</div><div class="frameStrip" id="frameStrip"></div></section>
     <section class="devControls"><h1>Simple Developer Mode</h1><div class="devNote">1️⃣ Character = size/fps. 2️⃣ Backgrounds = layer positions and URLs. 3️⃣ Save = save to live game with your password.</div><div class="devTabs"><button data-tab="character" class="active">1 Character</button><button data-tab="backgrounds">2 Backgrounds</button><button data-tab="save">3 Save</button></div>
       <div class="devSection active" data-section="character"><h2>Character</h2><div class="devRow"><div class="devField"><label>Character</label><select id="devCharacter"></select></div><div class="devField"><label>Action</label><select id="devAction"></select></div><div class="devField"><label>Sprite height <span id="heightVal"></span></label><input id="devHeight" type="range" min="80" max="420" step="1"><input class="numBox" id="devHeightNum" type="number"></div><div class="devField"><label>Feet/baseline offset <span id="feetVal"></span></label><input id="devFeet" type="range" min="-90" max="160" step="1"><input class="numBox" id="devFeetNum" type="number"></div><div class="devField"><label>X start position <span id="xVal"></span></label><input id="devX" type="range" min="8" max="80" step="1"><input class="numBox" id="devXNum" type="number"></div><div class="devField"><label>Animation FPS <span id="fpsVal"></span></label><input id="devFps" type="range" min="2" max="18" step="1"><input class="numBox" id="devFpsNum" type="number"></div><div class="devField"><label>Walk bob <span id="bobVal"></span></label><input id="devBob" type="range" min="0" max="20" step="1"><input class="numBox" id="devBobNum" type="number"></div><div class="devField"><label>Facing / flip</label><select id="devFlip"><option value="false">Normal</option><option value="true">Flipped</option></select></div><div class="devField"><label>Game speed <span id="speedVal"></span></label><input id="devSpeed" type="range" min="0" max="8" step="0.1"><input class="numBox" id="devSpeedNum" type="number" step="0.1"></div></div><div class="devButtons"><button id="gridBtn" class="blueBtn">Grid: off</button><button id="saveLocalBtn">Save on this browser only</button><button id="resetLocalBtn" class="pinkBtn">Reset browser settings</button></div></div>
-      <div class="devSection" data-section="backgrounds"><h2>Backgrounds / Layers</h2><div class="devNote">Paste exact Cloudinary delivery URLs here if the automatic names do not show. Leave blank to use default candidates/fallbacks.</div><div class="devRow"><div class="devField"><label>Sky URL</label><textarea id="bgSkyUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_sky.png"></textarea></div><div class="devField"><label>Hills URL</label><textarea id="bgHillsUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_hills.png"></textarea></div><div class="devField"><label>Ground URL</label><textarea id="bgGroundUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_ground.png"></textarea></div><div class="devField"><label>Layer</label><select id="devLayer"><option value="sky">Sky</option><option value="hills">Hills</option><option value="ground">Ground</option><option value="platform">Platform</option></select></div><div class="devField"><label>Show layer</label><select id="layerShow"><option value="true">show</option><option value="false">hide</option></select></div><div class="devField"><label>Layer height <span id="layerHeightVal"></span></label><input id="layerHeight" type="range" min="0" max="120" step="1"><input class="numBox" id="layerHeightNum" type="number"></div><div class="devField"><label>Bottom position <span id="layerBottomVal"></span></label><input id="layerBottom" type="range" min="-300" max="300" step="1"><input class="numBox" id="layerBottomNum" type="number"></div><div class="devField"><label>Zoom <span id="layerZoomVal"></span></label><input id="layerZoom" type="range" min="20" max="250" step="1"><input class="numBox" id="layerZoomNum" type="number"></div><div class="devField"><label>X position <span id="layerXVal"></span></label><input id="layerX" type="range" min="-800" max="800" step="1"><input class="numBox" id="layerXNum" type="number"></div><div class="devField"><label>Y position <span id="layerYVal"></span></label><input id="layerY" type="range" min="-500" max="500" step="1"><input class="numBox" id="layerYNum" type="number"></div><div class="devField"><label>Z-index <span id="layerZVal"></span></label><input id="layerZ" type="range" min="0" max="60" step="1"><input class="numBox" id="layerZNum" type="number"></div><div class="devField"><label>Opacity <span id="layerOpacityVal"></span></label><input id="layerOpacity" type="range" min="0" max="1" step="0.05"><input class="numBox" id="layerOpacityNum" type="number" step="0.05"></div></div><div class="devButtons"><button id="applyBgBtn" class="blueBtn">Apply / reload BGs</button><button id="resetLayerBtn" class="pinkBtn">Reset selected layer</button></div><div class="devNote" id="backgroundStatus">Background status: ready.</div></div>
+      <div class="devSection" data-section="backgrounds"><h2>Backgrounds / Layers</h2><div class="devNote">Paste exact Cloudinary delivery URLs here if needed. For level platforms, choose Layer = Platform, then change Opacity or Z-index. Lower Z puts platforms behind background art; higher Z shows them clearly. Collision still uses the level platform positions.</div><div class="devRow"><div class="devField"><label>Sky URL</label><textarea id="bgSkyUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_sky.png"></textarea></div><div class="devField"><label>Hills URL</label><textarea id="bgHillsUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_hills.png"></textarea></div><div class="devField"><label>Ground URL</label><textarea id="bgGroundUrl" rows="2" placeholder="https://res.cloudinary.com/.../day_ground.png"></textarea></div><div class="devField"><label>Layer</label><select id="devLayer"><option value="sky">Sky</option><option value="hills">Hills</option><option value="ground">Ground</option><option value="platform">Platform</option></select></div><div class="devField"><label>Show layer</label><select id="layerShow"><option value="true">show</option><option value="false">hide</option></select></div><div class="devField"><label>Layer height <span id="layerHeightVal"></span></label><input id="layerHeight" type="range" min="0" max="120" step="1"><input class="numBox" id="layerHeightNum" type="number"></div><div class="devField"><label>Bottom position <span id="layerBottomVal"></span></label><input id="layerBottom" type="range" min="-300" max="300" step="1"><input class="numBox" id="layerBottomNum" type="number"></div><div class="devField"><label>Zoom <span id="layerZoomVal"></span></label><input id="layerZoom" type="range" min="20" max="250" step="1"><input class="numBox" id="layerZoomNum" type="number"></div><div class="devField"><label>X position <span id="layerXVal"></span></label><input id="layerX" type="range" min="-800" max="800" step="1"><input class="numBox" id="layerXNum" type="number"></div><div class="devField"><label>Y position <span id="layerYVal"></span></label><input id="layerY" type="range" min="-500" max="500" step="1"><input class="numBox" id="layerYNum" type="number"></div><div class="devField"><label>Z-index <span id="layerZVal"></span></label><input id="layerZ" type="range" min="0" max="60" step="1"><input class="numBox" id="layerZNum" type="number"></div><div class="devField"><label>Opacity <span id="layerOpacityVal"></span></label><input id="layerOpacity" type="range" min="0" max="1" step="0.05"><input class="numBox" id="layerOpacityNum" type="number" step="0.05"></div></div><div class="devButtons"><button id="applyBgBtn" class="blueBtn">Apply / reload BGs</button><button id="resetLayerBtn" class="pinkBtn">Reset selected layer</button></div><div class="devNote" id="backgroundStatus">Background status: ready.</div></div>
       <div class="devSection" data-section="save"><h2>Save to real game</h2><div class="liveBox"><div class="devNote">This is the save that matters. It uses your CTW_GAME_ADMIN_KEY and saves to Cloudflare KV.</div><div class="devField"><label>Developer password / CTW_GAME_ADMIN_KEY</label><input id="ctwAdminKey" type="password" placeholder="Paste admin key"></div><div class="devButtons"><button id="ctwSaveLiveBtn">Save to live game</button><button id="ctwLoadLiveBtn" class="blueBtn">Load live save</button><button id="ctwForgetKeyBtn" class="pinkBtn">Forget password</button></div><div class="liveStatus" id="ctwLiveStatus">Ready.</div></div></div>
     </section>
   </aside>
@@ -125,7 +125,7 @@ const QUESTS=[{name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨']
 /* ======================================================
 🟨 EDIT ZONE 6 — LAYER DEFAULTS
 ====================================================== */
-const LAYER_DEFAULTS={sky:{show:true,height:100,bottom:0,zoom:100,x:0,y:0,z:0,opacity:1},hills:{show:true,height:56,bottom:40,zoom:100,x:0,y:0,z:1,opacity:1},ground:{show:true,height:35,bottom:-10,zoom:100,x:0,y:0,z:4,opacity:1},platform:{show:true,height:35,bottom:47,zoom:100,x:0,y:0,z:6,opacity:1}};
+const LAYER_DEFAULTS={sky:{show:true,height:100,bottom:0,zoom:100,x:0,y:0,z:0,opacity:1},hills:{show:true,height:56,bottom:40,zoom:100,x:0,y:0,z:1,opacity:1},ground:{show:true,height:35,bottom:-10,zoom:100,x:0,y:0,z:4,opacity:1},platform:{show:true,height:35,bottom:47,zoom:100,x:0,y:0,z:6,opacity:.55}};
 let devConfig=loadDevConfig();function loadDevConfig(){try{return normalizeDevConfig(JSON.parse(localStorage.getItem(LS_KEY)||'{}'))}catch{return normalizeDevConfig({})}}function saveDevConfig(){devConfig=normalizeDevConfig(devConfig);localStorage.setItem(LS_KEY,JSON.stringify(devConfig))}
 function cfg(char){return Object.assign({},CHARACTERS[char]||CHARACTERS.ax,devConfig.characters?.[char]||{})}
 function getActions(char){return CHARACTERS[char]?.actions||{}}
@@ -562,7 +562,7 @@ async function boot(){buildChoices();setHud();renderDev();applyLayerStyles();awa
 
 <!-- CTW PLATFORM LEVEL SYSTEM v1 - Mario/Sonic style example level -->
 <style id="ctw-platform-level-system-css">
-  #objects{z-index:9!important}.levelPlatform{position:absolute;z-index:1;height:22px;border-radius:12px;background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 4px,rgba(210,130,194,.78) 4px 14px,rgba(118,199,216,.72) 14px 19px,rgba(33,69,124,.62) 19px);box-shadow:0 5px 10px rgba(0,0,0,.16);border:2px solid rgba(255,255,255,.35);pointer-events:none;opacity:.78}
+  #levelPlatforms{position:absolute;inset:0;z-index:6;pointer-events:none}.levelPlatform{position:absolute;height:22px;border-radius:12px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 4px,rgba(210,130,194,.58) 4px 14px,rgba(118,199,216,.52) 14px 19px,rgba(33,69,124,.46) 19px);box-shadow:0 5px 10px rgba(0,0,0,.12);border:2px solid rgba(255,255,255,.28);pointer-events:none;opacity:.55}#objects{z-index:32!important}
   .finishGate{position:absolute;z-index:6;width:72px;height:112px;display:grid;place-items:center;font-size:42px;border-radius:18px;background:linear-gradient(#fff7bd,#f5c542);border:4px solid #fff;color:#21142d;box-shadow:0 12px 22px rgba(0,0,0,.25);pointer-events:none}
   .obj{z-index:5;position:absolute}.obj.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.obj.collect{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink)}
 </style>
@@ -631,6 +631,28 @@ This is the Mario/Sonic-style gameplay system:
 
   function activeLevel(){return LEVELS[level] || LEVELS[0]}
 
+  function platformLayer(){
+    let layer=document.getElementById('levelPlatforms');
+    if(!layer){
+      layer=document.createElement('div');
+      layer.id='levelPlatforms';
+      const game=document.getElementById('game');
+      const objects=document.getElementById('objects');
+      if(game && objects) game.insertBefore(layer, objects);
+      else (game||document.body).appendChild(layer);
+    }
+    return layer;
+  }
+
+  function updatePlatformVisualLayer(){
+    const layer=platformLayer();
+    let pc={show:true,z:6,opacity:.55};
+    try{ pc=Object.assign(pc, layerCfg('platform')||{}); }catch(e){}
+    layer.style.display=pc.show===false?'none':'';
+    layer.style.zIndex=String(Number(pc.z ?? 6));
+    layer.style.opacity=String(pc.opacity ?? .55);
+  }
+
   function getPlayerHeight(){
     const active=selected[activeIndex]||'ax';
     const ent=characterEls[active];
@@ -663,12 +685,13 @@ This is the Mario/Sonic-style gameplay system:
 
   function buildLevelEntities(){
     clearLevelEntities();
+    updatePlatformVisualLayer();
     const lvl=activeLevel();
     for(const p of lvl.platforms||[]){
       const el=document.createElement('div');
       el.className='levelPlatform';
       el.title=p.label||'platform';
-      objectsEl.appendChild(el);
+      platformLayer().appendChild(el);
       levelState.platformEls.push({el,...p});
     }
     for(const c of lvl.collectibles||[]){
@@ -694,6 +717,7 @@ This is the Mario/Sonic-style gameplay system:
   }
 
   function renderLevelEntities(){
+    updatePlatformVisualLayer();
     const floor=floorPx();
     const cam=levelState.cameraX||0;
     for(const p of levelState.platformEls||[]){
