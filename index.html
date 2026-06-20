@@ -26,52 +26,512 @@
 </div>
 <script>
 'use strict';
-const DEFAULT_SHEET_ID='1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
-const CONFIG={sheetId:DEFAULT_SHEET_ID,petTabs:['user_pets','pets','user_pet_images','pet_action_images','pet_layer_catalog','user_pet_effects','feed_responses','play_responses','rest_responses','medicine_responses','item_catalog','user_inventory'],hookTabs:['hook_catalog','hook_images','hook_items','hook_a_waaambulance','minigame_images','minigame_assets','item_catalog','collectible_catalog']};
-const TEST_USERS={
-  ryan:{key:'ryan',displayName:"💚 𝕽𝖞𝖆𝖓's 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚",username:'ryansaxolotl',discordId:'1214671839205396481',fallbackPet:{name:'Odin',species:'Raven',level:1,xp:0,coins:0,hunger:70,happy:70,energy:80,userId:'1214671839205396481'}},
-  ashely:{key:'ashely',displayName:'Ashely',username:'alyj420',discordId:'1407957358683885670',fallbackPet:{name:'Ashely Pet',species:'Pet',level:1,xp:0,coins:0,hunger:70,happy:70,energy:80,userId:'1407957358683885670'}}
+
+const DEFAULT_SHEET_ID = '1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
+const CLOUDINARY_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
+
+const CONFIG = {
+  sheetId: DEFAULT_SHEET_ID,
+  // These are the real tabs visible in your sheet index. The game reads them only.
+  petTabs: [
+    'user_profile','user_pets','pets','user_pet_images','pet_action_images','user_pet_skill_images',
+    'user_pet_effects','user_pet_coins','user_inventory','item_catalog','pet_layer_catalog',
+    'feed_responses','play_responses','rest_responses','medicine_responses','shop_responses',
+    'inventory_responses','coin_responses','train_responses','user_pet_traits','user_pet_skills',
+    'pet_relationships','user_view_state','pet_menu'
+  ],
+  hookTabs: [
+    'hook_waaambulance','hook_waaambulance_collection','hook_waaambulance_logs','hook_care_prize_logs',
+    'user_habitat_inventory','item_catalog','collectible_catalog','collectible_responses',
+    'mini_quest_actions','mini_quests','user_mini_quest_logs'
+  ]
 };
-const state={score:0,lives:3,worldX:0,playerY:82,vy:0,onGround:true,activeScreen:'menu',selectedPetIndex:0,selectedHookIndex:0,petRows:[],hookRows:[],allSheets:{},currentPet:null,animationId:null,keys:{},hookScore:0};
-const LEVEL={length:3000,platforms:[{x:0,y:82,w:760,h:26},{x:430,y:190,w:220,h:26},{x:820,y:260,w:210,h:26},{x:1200,y:170,w:260,h:26},{x:1650,y:245,w:260,h:26},{x:2100,y:180,w:230,h:26},{x:2500,y:110,w:320,h:26}],collectibles:[{x:300,y:150,icon:'🪙',points:10},{x:510,y:250,icon:'✨',points:20},{x:890,y:325,icon:'💎',points:40},{x:1300,y:235,icon:'🪙',points:10},{x:1720,y:315,icon:'✨',points:20},{x:2320,y:255,icon:'💎',points:40}],enemies:[{x:700,y:118,icon:'🐌',range:120,dir:1,baseX:700},{x:1120,y:118,icon:'🦠',range:0,dir:1,baseX:1120},{x:1900,y:118,icon:'🐸',range:160,dir:-1,baseX:1900}],finish:{x:2850,y:130,icon:'🏁'}};
-function $(id){return document.getElementById(id)}
-function toast(txt){$('toast').textContent=txt;$('toast').classList.add('show');setTimeout(()=>$('toast').classList.remove('show'),1800)}
-function escapeHtml(s){return String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
-function showScreen(name){state.activeScreen=name;['screenMain','screenPet','screenHook','victory'].forEach(id=>$(id).classList.add('hidden'));if(name==='menu'){$('screenMain').classList.remove('hidden');state.animationId&&cancelAnimationFrame(state.animationId);state.animationId=null}else if(name==='pet'){$('screenPet').classList.remove('hidden');renderPet()}else if(name==='hook'){$('screenHook').classList.remove('hidden');renderHookItems()}else if(name==='platform'){restartLevel();state.animationId=requestAnimationFrame(gameLoop)} }
-function switchDevTab(i,btn){document.querySelectorAll('.devTabBtn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.devTabContent').forEach(c=>c.classList.remove('active'));btn.classList.add('active');document.querySelectorAll('.devTabContent')[i].classList.add('active')}
-function toggleDev(){document.body.classList.toggle('devMode')}
-function saveLocalPrefs(){CONFIG.sheetId=$('devSheetId').value.trim()||DEFAULT_SHEET_ID;CONFIG.petTabs=$('devPetTabs').value.split(',').map(s=>s.trim()).filter(Boolean);CONFIG.hookTabs=$('devHookTabs').value.split(',').map(s=>s.trim()).filter(Boolean);localStorage.setItem('ctw_sheet_prefs',JSON.stringify({sheetId:CONFIG.sheetId,petTabs:CONFIG.petTabs,hookTabs:CONFIG.hookTabs,userId:$('userIdInput').value.trim(),testUser:$('testUserSelect')?$('testUserSelect').value:'ryan'}));$('sheetIdLabel').textContent=CONFIG.sheetId}
-function applyTestingUser(key){const t=TEST_USERS[key];if(t){$('userIdInput').value=t.discordId;toast(`Testing as ${t.username}`)}saveLocalPrefs();loadSheetData()}
-function getActiveTestUser(){const key=$('testUserSelect')?$('testUserSelect').value:'ryan';return TEST_USERS[key]||null}
-function loadLocalPrefs(){try{const p=JSON.parse(localStorage.getItem('ctw_sheet_prefs')||'{}');if(p.sheetId)CONFIG.sheetId=p.sheetId;if(Array.isArray(p.petTabs))CONFIG.petTabs=p.petTabs;if(Array.isArray(p.hookTabs))CONFIG.hookTabs=p.hookTabs;if($('testUserSelect'))$('testUserSelect').value=p.testUser||'ryan';if(p.userId)$('userIdInput').value=p.userId}catch(e){}if(!$('userIdInput').value){const t=getActiveTestUser();if(t)$('userIdInput').value=t.discordId}$('devSheetId').value=CONFIG.sheetId;$('devPetTabs').value=CONFIG.petTabs.join(', ');$('devHookTabs').value=CONFIG.hookTabs.join(', ');$('sheetIdLabel').textContent=CONFIG.sheetId}
-async function fetchSheetTab(sheetName){const url=`https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.sheetId)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;const res=await fetch(url,{method:'GET'});if(!res.ok)throw new Error(`${sheetName}: HTTP ${res.status}`);const txt=await res.text();const json=JSON.parse(txt.substring(txt.indexOf('{'),txt.lastIndexOf('}')+1));const cols=(json.table.cols||[]).map((c,i)=>String(c.label||c.id||`col_${i}`).trim()||`col_${i}`);return (json.table.rows||[]).map(r=>{const obj={};(r.c||[]).forEach((cell,i)=>{obj[cols[i]]=cell?cell.v:''});return obj}).filter(row=>Object.values(row).some(v=>String(v).trim()!==''))}
-function val(row,names){if(!row)return'';const keys=Object.keys(row);for(const wanted of names){const hit=keys.find(k=>k.toLowerCase().replace(/[^a-z0-9]/g,'')===wanted.toLowerCase().replace(/[^a-z0-9]/g,''));if(hit&&String(row[hit]??'').trim()!=='')return row[hit]}for(const wanted of names){const hit=keys.find(k=>k.toLowerCase().includes(wanted.toLowerCase()));if(hit&&String(row[hit]??'').trim()!=='')return row[hit]}return''}
-function looksImage(s){return /^https?:\/\//i.test(String(s||''))||/^data:image\//i.test(String(s||''))}
-function firstImage(row){for(const [k,v] of Object.entries(row||{})){if(/image|img|url|asset|sprite|graphic|cloudinary/i.test(k)&&looksImage(v))return v}for(const v of Object.values(row||{})){if(looksImage(v))return v}return''}
-function normalizePetRows(rows){const userNeed=($('userIdInput').value||'').trim().toLowerCase();const activeTest=getActiveTestUser();const aliases=activeTest?[activeTest.discordId,activeTest.username,activeTest.displayName].map(v=>String(v).toLowerCase()):[];let pets=rows.map((r,idx)=>({idx,raw:r,userId:String(val(r,['user_id','discord_id','discord','owner_id','player_id','member_id','user','discordid','discord_user_id'])||'').toLowerCase(),username:String(val(r,['username','discord_username','handle','user_name'])||'').toLowerCase(),displayName:String(val(r,['display_name','server_name','nickname','member_name'])||''),name:val(r,['pet_name','custom_name','name','display_name','pet']),species:val(r,['species','type','pet_type','animal','breed','variant']),level:Number(val(r,['level','lv'])||1),xp:Number(val(r,['xp','experience'])||0),coins:Number(val(r,['coins','coin','balance','tokens'])||0),hunger:Number(val(r,['hunger','hungry'])||70),happy:Number(val(r,['happy','happiness','mood'])||60),energy:Number(val(r,['energy','stamina','battery'])||70),base:firstImage(r),feed:val(r,['feed_image','feed_url','feeding_image','eat_image'])||'',play:val(r,['play_image','play_url','toy_image'])||'',rest:val(r,['rest_image','sleep_image','rest_url','sleep_url'])||'',medicine:val(r,['medicine_image','heal_image','med_image','heal_url'])||'',happyBubble:val(r,['happy_overlay','happy_bubble','status_happy','sparkle_image'])||'',sleepBubble:val(r,['sleep_overlay','sleep_bubble','zzz_image'])||''})).filter(p=>p.name||p.species||p.base||p.userId||p.username);if(userNeed||aliases.length){const needs=[userNeed,...aliases].filter(Boolean);const filtered=pets.filter(p=>needs.some(n=>p.userId===n||p.username===n||String(p.displayName).toLowerCase()===n||String(p.name).toLowerCase()===n||String(p.species).toLowerCase()===n));if(filtered.length)pets=filtered;else if(activeTest){pets=[{...activeTest.fallbackPet,fromTestFallback:true}];}}
-return pets}
-function normalizeHooks(rows){return rows.map((r,idx)=>({idx,raw:r,name:val(r,['name','item','title','label','prize'])||`Prize ${idx+1}`,points:Number(val(r,['points','score','value','coins','reward'])||50),image:firstImage(r),icon:val(r,['icon','emoji'])||''})).filter(h=>h.name||h.image||h.icon)}
-async function loadSheetData(){saveLocalPrefs();$('sheetStatus').textContent='loading read-only...';$('devReadout').textContent='Reading sheet tabs only. No writes.';const unique=[...new Set([...CONFIG.petTabs,...CONFIG.hookTabs])];const all={};const errors=[];for(const tab of unique){try{all[tab]=await fetchSheetTab(tab)}catch(e){errors.push(e.message)}}state.allSheets=all;const petRows=[];CONFIG.petTabs.forEach(t=>{if(all[t])petRows.push(...all[t])});const hookRows=[];CONFIG.hookTabs.forEach(t=>{if(all[t])hookRows.push(...all[t])});state.petRows=normalizePetRows(petRows);state.hookRows=normalizeHooks(hookRows);if(state.petRows.length){state.currentPet=state.petRows[0];state.selectedPetIndex=0}renderSelectors();renderPet();renderHookItems();$('sheetStatus').textContent=`loaded ${Object.keys(all).length} tabs, pets found: ${state.petRows.length}, hook items found: ${state.hookRows.length}${state.currentPet&&state.currentPet.fromTestFallback?' (using testing fallback profile)':''}`;$('devReadout').textContent=`Loaded read-only.\nTesting user: ${getActiveTestUser()?getActiveTestUser().username:'custom'} / ${$('userIdInput').value.trim()}\nPets: ${state.petRows.length}${state.currentPet&&state.currentPet.fromTestFallback?' (test fallback because no matching row was found yet)':''}\nHook items: ${state.hookRows.length}\nMissing tabs/errors: ${errors.slice(0,8).join(' | ')||'none shown'}`;toast('Sheet loaded read-only')}
-function renderSelectors(){const petSel=$('devPetSelect');petSel.innerHTML=state.petRows.map((p,i)=>`<option value="${i}">${escapeHtml(p.name||'Pet')} ${escapeHtml(p.species?`(${p.species})`:'')}</option>`).join('')||'<option>No pets found</option>';const hookSel=$('devHookSelect');hookSel.innerHTML=state.hookRows.map((h,i)=>`<option value="${i}">${escapeHtml(h.name)}</option>`).join('')||'<option>No hook items found</option>';updatePreviews()}
-function updatePreviews(){$('petDataPreview').innerHTML=state.currentPet?`<b>${escapeHtml(state.currentPet.name||'Pet')}</b><br>Species: ${escapeHtml(state.currentPet.species||'')}<br>User: ${escapeHtml(state.currentPet.userId||'')}<br>Image found: ${state.currentPet.base?'yes':'no'}<br>Source: ${state.currentPet.fromTestFallback?'testing fallback':'sheet row'}`:'No pet loaded from sheet yet.';$('hookDataPreview').innerHTML=state.hookRows[state.selectedHookIndex]?`<b>${escapeHtml(state.hookRows[state.selectedHookIndex].name)}</b><br>Image found: ${state.hookRows[state.selectedHookIndex].image?'yes':'no'}<br>Points: ${state.hookRows[state.selectedHookIndex].points}`:'No hook images loaded yet.'}
-function selectPetByIndex(i){state.selectedPetIndex=Number(i)||0;state.currentPet=state.petRows[state.selectedPetIndex]||state.currentPet;renderPet();updatePreviews()}
-function selectHookByIndex(i){state.selectedHookIndex=Number(i)||0;renderHookItems();updatePreviews()}
-function petFallback(species){const emoji=/raven|crow/i.test(species)?'🐦‍⬛':/owl/i.test(species)?'🦉':/unicorn/i.test(species)?'🦄':/dog|pura/i.test(species)?'🐶':'🐾';return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='25' fill='%23fff7bd'/><text x='60' y='78' font-size='64' text-anchor='middle'>${encodeURIComponent(emoji)}</text></svg>`}
-function renderPet(action){const p=state.currentPet||{name:'Odin',species:'Raven',level:1,xp:0,coins:0,hunger:70,happy:60,energy:80};const actionSrc=action&&p[action]?p[action]:p.base;const img=actionSrc||petFallback(p.species);$('petNameDisplay').textContent=`PET: ${(p.name||'Pet').toUpperCase()}${p.species?` THE ${String(p.species).toUpperCase()}`:''}`;$('petXpDisplay').textContent=`LV.${p.level||1} (${p.xp||0} XP)`;$('labelCoins').textContent=`🪙 ${p.coins||state.score||0}`;$('fillHunger').style.width=`${Math.max(0,Math.min(100,p.hunger||70))}%`;$('fillHappy').style.width=`${Math.max(0,Math.min(100,p.happy||60))}%`;$('fillEnergy').style.width=`${Math.max(0,Math.min(100,p.energy||80))}%`;$('petBodyGraphic').src=img;$('petFollowerImg').src=img;$('mainCharacterImg').src='https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_001.png';const shop=$('shopGrid');shop.innerHTML=['Burger','Cake','Energy'].map((name,i)=>`<button onclick="buyPetItem('${name}',${[50,30,45][i]})">${['🍔','🍰','🥤'][i]} ${name}<br>🪙 ${[50,30,45][i]}</button>`).join('')}
-function showBubble(src){if(src){$('petBubble').src=src;$('petBubble').classList.add('show');setTimeout(()=>$('petBubble').classList.remove('show'),1200)}}
-function processCareAction(action){const p=state.currentPet;if(!p){$('careStatusTicker').textContent='No pet loaded from the sheet yet. Try Refresh sheet data.';return}const msg={feed:'fed',play:'played with',rest:'rested',medicine:'healed'}[action]||'cared for';$('careStatusTicker').textContent=`You ${msg} ${p.name||'your pet'}. This is a local test only; sheet data was not changed.`;renderPet(action);if(action==='feed'&&p.happyBubble)showBubble(p.happyBubble);if(action==='rest'&&p.sleepBubble)showBubble(p.sleepBubble);setTimeout(()=>renderPet(),1200)}
-function buyPetItem(name,cost){if(state.score<cost){$('careStatusTicker').textContent=`Need ${cost} coins. Play Hook or Platform first.`;return}state.score-=cost;$('score').textContent=state.score;$('careStatusTicker').textContent=`Bought ${name}. Local test only; sheet data was not changed.`;renderPet()}
-function renderHookItems(){const items=state.hookRows.length?state.hookRows:[{name:'Waaambulance',points:50,icon:'🚑'},{name:'Coin',points:10,icon:'🪙'},{name:'Gift',points:25,icon:'🎁'}];const wrap=$('hookItems');wrap.innerHTML='';items.slice(0,8).forEach((it,i)=>{const el=document.createElement('div');el.className='hookItem';el.style.left=`${15+(i*21)%78}%`;el.style.top=`${62+((i*19)%28)}%`;el.dataset.idx=i;if(it.image){const im=document.createElement('img');im.src=it.image;im.alt=it.name;el.appendChild(im)}else{el.textContent=it.icon||'🚑'}wrap.appendChild(el)});$('hookHelp').textContent=state.hookRows.length?`Loaded ${state.hookRows.length} hook items/images from the sheet.`:'No hook image rows found yet, using safe fallback prizes.'}
-function hookAttempt(){const items=state.hookRows.length?state.hookRows:[{name:'Waaambulance',points:50,icon:'🚑'},{name:'Coin',points:10,icon:'🪙'},{name:'Gift',points:25,icon:'🎁'}];const item=items[Math.floor(Math.random()*items.length)];state.score+=item.points||50;$('score').textContent=state.score;$('hookTicker').textContent=`Hooked ${item.name}! +${item.points||50} coins. Sheet was not changed.`}
-function restartLevel(){state.worldX=0;state.playerY=82;state.vy=0;state.onGround=true;state.lives=3;state.score=state.score||0;LEVEL.collectibles.forEach(c=>c.got=false);LEVEL.enemies.forEach(e=>{e.dead=false;e.x=e.baseX});renderLevel()}
-function worldToScreenX(x){return x-state.worldX+window.innerWidth*0.24}
-function floorAt(x){let best=82;for(const p of LEVEL.platforms){if(x>=p.x&&x<=p.x+p.w)best=Math.max(best,p.y+p.h)}return best}
-function renderLevel(){const lw=$('levelWorld');lw.innerHTML='';LEVEL.platforms.forEach(p=>{const d=document.createElement('div');d.className='levelPlatform';d.style.left=`${worldToScreenX(p.x)}px`;d.style.bottom=`${p.y}px`;d.style.width=`${p.w}px`;lw.appendChild(d)});const ob=$('objects');ob.innerHTML='';LEVEL.collectibles.forEach(c=>{if(c.got)return;const d=document.createElement('div');d.className='obj token';d.textContent=c.icon;d.style.left=`${worldToScreenX(c.x)}px`;d.style.bottom=`${c.y}px`;ob.appendChild(d)});LEVEL.enemies.forEach(e=>{if(e.dead)return;const d=document.createElement('div');d.className='obj enemy';d.textContent=e.icon;d.style.left=`${worldToScreenX(e.x||e.baseX)}px`;d.style.bottom=`${e.y}px`;ob.appendChild(d)});const f=LEVEL.finish;const fd=document.createElement('div');fd.className='obj finishObj';fd.textContent=f.icon;fd.style.left=`${worldToScreenX(f.x)}px`;fd.style.bottom=`${f.y}px`;ob.appendChild(fd)}
-function gameLoop(){if(state.activeScreen!=='platform')return;const speed=5;state.worldX+=speed;if(state.keys.jump&&state.onGround){state.vy=17;state.onGround=false}state.vy-=0.8;state.playerY+=state.vy;const runnerWorldX=state.worldX;const floor=floorAt(runnerWorldX);if(state.playerY<=floor){state.playerY=floor;state.vy=0;state.onGround=true}LEVEL.enemies.forEach(e=>{if(e.range&&!e.dead){e.x=(e.x||e.baseX)+e.dir*1.5;if(Math.abs(e.x-e.baseX)>e.range)e.dir*=-1}});LEVEL.collectibles.forEach(c=>{if(!c.got&&Math.abs(c.x-runnerWorldX)<50&&Math.abs(c.y-state.playerY)<95){c.got=true;state.score+=c.points;$('score').textContent=state.score}});LEVEL.enemies.forEach(e=>{const ex=e.x||e.baseX;if(!e.dead&&Math.abs(ex-runnerWorldX)<55&&Math.abs(e.y-state.playerY)<80){if(state.vy<0&&state.playerY>e.y+35){e.dead=true;state.score+=25}else{state.lives--;state.worldX=Math.max(0,state.worldX-120);if(state.lives<=0)showScreen('menu')}}});if(runnerWorldX>=LEVEL.finish.x-40){$('victory').classList.remove('hidden');state.activeScreen='victory';return}$('lives').textContent=state.lives;$('score').textContent=state.score;$('distance').textContent=`${Math.floor(state.worldX)}m`;$('playerChar').style.bottom=`${state.playerY}px`;$('petFollower').style.left=`calc(24vw - 70px)`;$('petFollower').style.bottom=`${state.playerY+130}px`;renderLevel();state.animationId=requestAnimationFrame(gameLoop)}
-async function saveToCloudflareOnly(){const key=$('adminKey').value.trim();if(!key){toast('Admin key needed');return}const payload={sheetReadOnly:true,score:state.score,selectedPet:state.currentPet?{name:state.currentPet.name,species:state.currentPet.species,userId:state.currentPet.userId}:null,updatedAt:new Date().toISOString()};try{const res=await fetch('/api/save-game-config',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify(payload)});toast(res.ok?'Saved to Cloudflare KV':'Cloudflare save failed')}catch(e){toast('Cloudflare save error')}}
-function showDataDebug(){const names=Object.fromEntries(Object.entries(state.allSheets).map(([k,v])=>[k,v.length]));$('devReadout').textContent=JSON.stringify({tabsLoaded:names,pets:state.petRows.slice(0,3),hooks:state.hookRows.slice(0,3)},null,2)}
-window.addEventListener('keydown',e=>{if([' ','ArrowUp','w','W'].includes(e.key)){state.keys.jump=true;e.preventDefault()}});window.addEventListener('keyup',e=>{if([' ','ArrowUp','w','W'].includes(e.key))state.keys.jump=false});window.addEventListener('pointerdown',e=>{if(state.activeScreen==='platform')state.keys.jump=true});window.addEventListener('pointerup',()=>state.keys.jump=false);
-function init(){loadLocalPrefs();renderPet();renderHookItems();showScreen('menu');setTimeout(loadSheetData,250)}
+
+const TEST_USERS = {
+  ryan: {
+    key: 'ryan',
+    displayName: "💚 𝕽𝖞𝖆𝖓's 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚",
+    username: 'ryansaxolotl',
+    discordId: '1214671839205396481',
+    fallbackPet: { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 70, energy: 80, userId: '1214671839205396481', fromTestFallback: true }
+  },
+  ashely: {
+    key: 'ashely',
+    displayName: 'Ashely',
+    username: 'alyj420',
+    discordId: '1407957358683885670',
+    fallbackPet: { name: 'Ashely Pet', species: 'Pet', level: 1, xp: 0, coins: 0, hunger: 70, happy: 70, energy: 80, userId: '1407957358683885670', fromTestFallback: true }
+  }
+};
+
+const state = {
+  score: 0,
+  lives: 3,
+  worldX: 0,
+  playerY: 82,
+  vy: 0,
+  onGround: true,
+  activeScreen: 'menu',
+  selectedPetIndex: 0,
+  selectedHookIndex: 0,
+  petRows: [],
+  hookRows: [],
+  shopItems: [],
+  inventoryItems: [],
+  allSheets: {},
+  currentPet: null,
+  animationId: null,
+  keys: {},
+  hookScore: 0
+};
+
+const LEVEL = {
+  length: 3000,
+  platforms: [
+    { x: 0, y: 82, w: 760, h: 26 }, { x: 430, y: 190, w: 220, h: 26 },
+    { x: 820, y: 260, w: 210, h: 26 }, { x: 1200, y: 170, w: 260, h: 26 },
+    { x: 1650, y: 245, w: 260, h: 26 }, { x: 2100, y: 180, w: 230, h: 26 },
+    { x: 2500, y: 110, w: 320, h: 26 }
+  ],
+  collectibles: [
+    { x: 300, y: 150, icon: '🪙', points: 10 }, { x: 510, y: 250, icon: '✨', points: 20 },
+    { x: 890, y: 325, icon: '💎', points: 40 }, { x: 1300, y: 235, icon: '🪙', points: 10 },
+    { x: 1720, y: 315, icon: '✨', points: 20 }, { x: 2320, y: 255, icon: '💎', points: 40 }
+  ],
+  enemies: [
+    { x: 700, y: 118, icon: '🐌', range: 120, dir: 1, baseX: 700 },
+    { x: 1120, y: 118, icon: '🦠', range: 0, dir: 1, baseX: 1120 },
+    { x: 1900, y: 118, icon: '🐸', range: 160, dir: -1, baseX: 1900 }
+  ],
+  finish: { x: 2850, y: 130, icon: '🏁' }
+};
+
+function $(id) { return document.getElementById(id); }
+function toast(txt) { const t = $('toast'); if (!t) return; t.textContent = txt; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
+function escapeHtml(s) { return String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])); }
+function cleanKey(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
+function textOf(row) { return Object.values(row || {}).map(v => String(v || '')).join(' ').toLowerCase(); }
+
+function showScreen(name) {
+  state.activeScreen = name;
+  ['screenMain', 'screenPet', 'screenHook', 'victory'].forEach(id => $(id)?.classList.add('hidden'));
+  if (name === 'menu') {
+    $('screenMain')?.classList.remove('hidden');
+    if (state.animationId) cancelAnimationFrame(state.animationId);
+    state.animationId = null;
+  } else if (name === 'pet') {
+    $('screenPet')?.classList.remove('hidden');
+    renderPet();
+  } else if (name === 'hook') {
+    $('screenHook')?.classList.remove('hidden');
+    renderHookItems();
+  } else if (name === 'platform') {
+    restartLevel();
+    state.animationId = requestAnimationFrame(gameLoop);
+  }
+}
+
+function switchDevTab(i, btn) {
+  document.querySelectorAll('.devTabBtn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.devTabContent').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+  const tab = document.querySelectorAll('.devTabContent')[i];
+  if (tab) tab.classList.add('active');
+}
+function toggleDev() { document.body.classList.toggle('devMode'); }
+
+function saveLocalPrefs() {
+  CONFIG.sheetId = $('devSheetId').value.trim() || DEFAULT_SHEET_ID;
+  CONFIG.petTabs = $('devPetTabs').value.split(',').map(s => s.trim()).filter(Boolean);
+  CONFIG.hookTabs = $('devHookTabs').value.split(',').map(s => s.trim()).filter(Boolean);
+  localStorage.setItem('ctw_sheet_prefs', JSON.stringify({
+    sheetId: CONFIG.sheetId,
+    petTabs: CONFIG.petTabs,
+    hookTabs: CONFIG.hookTabs,
+    userId: $('userIdInput').value.trim(),
+    testUser: $('testUserSelect') ? $('testUserSelect').value : 'ryan'
+  }));
+  $('sheetIdLabel').textContent = CONFIG.sheetId;
+}
+
+function applyTestingUser(key) {
+  const t = TEST_USERS[key];
+  if (t) { $('userIdInput').value = t.discordId; toast(`Testing as ${t.username}`); }
+  saveLocalPrefs();
+  loadSheetData();
+}
+function getActiveTestUser() { const key = $('testUserSelect') ? $('testUserSelect').value : 'ryan'; return TEST_USERS[key] || null; }
+
+function loadLocalPrefs() {
+  try {
+    const p = JSON.parse(localStorage.getItem('ctw_sheet_prefs') || '{}');
+    if (p.sheetId) CONFIG.sheetId = p.sheetId;
+    if (Array.isArray(p.petTabs)) CONFIG.petTabs = p.petTabs;
+    if (Array.isArray(p.hookTabs)) CONFIG.hookTabs = p.hookTabs;
+    if ($('testUserSelect')) $('testUserSelect').value = p.testUser || 'ryan';
+    if (p.userId) $('userIdInput').value = p.userId;
+  } catch (e) {}
+  if (!$('userIdInput').value) { const t = getActiveTestUser(); if (t) $('userIdInput').value = t.discordId; }
+  $('devSheetId').value = CONFIG.sheetId;
+  $('devPetTabs').value = CONFIG.petTabs.join(', ');
+  $('devHookTabs').value = CONFIG.hookTabs.join(', ');
+  $('sheetIdLabel').textContent = CONFIG.sheetId;
+}
+
+async function fetchSheetTab(sheetName) {
+  const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.sheetId)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
+  const res = await fetch(url, { method: 'GET' });
+  if (!res.ok) throw new Error(`${sheetName}: HTTP ${res.status}`);
+  const txt = await res.text();
+  const json = JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
+  const cols = (json.table.cols || []).map((c, i) => String(c.label || c.id || `col_${i}`).trim() || `col_${i}`);
+  return (json.table.rows || []).map(r => {
+    const obj = {};
+    (r.c || []).forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : ''; });
+    obj.__sheet = sheetName;
+    return obj;
+  }).filter(row => Object.values(row).some(v => String(v).trim() !== ''));
+}
+
+function val(row, names) {
+  if (!row) return '';
+  const keys = Object.keys(row);
+  for (const wanted of names) {
+    const hit = keys.find(k => cleanKey(k) === cleanKey(wanted));
+    if (hit && String(row[hit] ?? '').trim() !== '') return row[hit];
+  }
+  for (const wanted of names) {
+    const hit = keys.find(k => cleanKey(k).includes(cleanKey(wanted)) || cleanKey(wanted).includes(cleanKey(k)));
+    if (hit && String(row[hit] ?? '').trim() !== '') return row[hit];
+  }
+  return '';
+}
+
+function looksImage(s) {
+  const v = String(s || '').trim();
+  if (!v || /^cloudinary\.com$/i.test(v)) return false;
+  if (/^https?:\/\//i.test(v) || /^data:image\//i.test(v)) return true;
+  if (/\.(png|jpg|jpeg|webp|gif|svg)(\?|$)/i.test(v)) return true;
+  if (/image\/upload\//i.test(v)) return true;
+  return false;
+}
+function resolveImageUrl(value) {
+  let v = String(value || '').trim();
+  if (!looksImage(v)) return '';
+  if (/^data:image\//i.test(v)) return v;
+  if (/^https?:\/\//i.test(v)) return v.replace('https://cloudinary.com/', CLOUDINARY_BASE).replace('http://cloudinary.com/', CLOUDINARY_BASE);
+  if (/^res\.cloudinary\.com\//i.test(v)) return `https://${v}`;
+  if (/^cloudinary\.com\//i.test(v)) return v.replace(/^cloudinary\.com\//i, CLOUDINARY_BASE);
+  if (/^image\/upload\//i.test(v)) return `https://res.cloudinary.com/dpwlfmhia/${v}`;
+  return CLOUDINARY_BASE + v.replace(/^\/+/, '');
+}
+function firstImage(row) {
+  for (const [k, v] of Object.entries(row || {})) {
+    if (/image|img|url|asset|sprite|graphic|cloudinary|picture|icon/i.test(k)) {
+      const u = resolveImageUrl(v);
+      if (u) return u;
+    }
+  }
+  for (const v of Object.values(row || {})) { const u = resolveImageUrl(v); if (u) return u; }
+  return '';
+}
+
+function rowIdentity(row) {
+  return {
+    userId: String(val(row, ['discord_id','discordid','discord_user_id','user_id','owner_id','player_id','member_id','user']) || '').trim(),
+    username: String(val(row, ['username','discord_username','handle','user_name','discord_name']) || '').trim(),
+    displayName: String(val(row, ['display_name','server_name','nickname','member_name','name_display']) || '').trim(),
+    petId: String(val(row, ['pet_id','user_pet_id','active_pet_id','id']) || '').trim(),
+    petName: String(val(row, ['pet_name','custom_name','name','pet','nickname']) || '').trim(),
+    species: String(val(row, ['species','type','pet_type','animal','breed','variant','model']) || '').trim()
+  };
+}
+function rowMatchesUser(row) {
+  const t = getActiveTestUser();
+  const target = String($('userIdInput').value || '').trim().toLowerCase();
+  const aliases = [target];
+  if (t) aliases.push(t.discordId.toLowerCase(), t.username.toLowerCase(), t.displayName.toLowerCase());
+  const ids = rowIdentity(row);
+  const rowBits = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName, ids.species, textOf(row)].map(x => String(x || '').toLowerCase());
+  return aliases.filter(Boolean).some(a => rowBits.some(bit => bit === a || bit.includes(a)));
+}
+
+function setPetField(profile, key, value) {
+  if (value !== '' && value !== null && value !== undefined && (profile[key] === '' || profile[key] === 0 || profile[key] === undefined)) profile[key] = value;
+}
+function mergePetRow(profile, row) {
+  const id = rowIdentity(row);
+  setPetField(profile, 'userId', id.userId);
+  setPetField(profile, 'username', id.username);
+  setPetField(profile, 'displayName', id.displayName);
+  setPetField(profile, 'petId', id.petId);
+  setPetField(profile, 'name', id.petName || id.displayName);
+  setPetField(profile, 'species', id.species);
+  const n = name => Number(val(row, [name]));
+  const lv = n('level') || n('lv'); if (lv) profile.level = lv;
+  const xp = n('xp') || n('experience'); if (xp) profile.xp = xp;
+  const coins = n('coins') || n('coin') || n('balance') || n('tokens'); if (coins) profile.coins = coins;
+  const hunger = n('hunger') || n('hungry'); if (hunger) profile.hunger = hunger;
+  const happy = n('happy') || n('happiness') || n('mood'); if (happy) profile.happy = happy;
+  const energy = n('energy') || n('stamina') || n('battery'); if (energy) profile.energy = energy;
+
+  const img = firstImage(row);
+  const sheet = String(row.__sheet || '').toLowerCase();
+  const action = String(val(row, ['action','state','menu','care_action','type','category','label','name']) || '').toLowerCase();
+  if (img) {
+    if (/pet_action_images/.test(sheet) || /feed|play|rest|sleep|medicine|heal|train/.test(action)) {
+      if (/feed|eat|food|hungry/.test(action)) profile.feed = profile.feed || img;
+      else if (/play|toy|game|happy|train/.test(action)) profile.play = profile.play || img;
+      else if (/rest|sleep|zzz|nap|energy/.test(action)) profile.rest = profile.rest || img;
+      else if (/med|heal|clean|medicine|health/.test(action)) profile.medicine = profile.medicine || img;
+      else profile.base = profile.base || img;
+    } else if (/effect|bubble|status|overlay/.test(sheet) || /bubble|effect|overlay|happy|sleep|zzz/.test(action)) {
+      if (/sleep|zzz|rest/.test(action)) profile.sleepBubble = profile.sleepBubble || img;
+      else profile.happyBubble = profile.happyBubble || img;
+    } else {
+      profile.base = profile.base || img;
+    }
+  }
+  const feedMsg = val(row, ['feed_response','feed_text','response','message','text']);
+  if (/feed_responses/.test(sheet) && feedMsg) profile.feedMessage = profile.feedMessage || String(feedMsg);
+  const playMsg = val(row, ['play_response','play_text','response','message','text']);
+  if (/play_responses/.test(sheet) && playMsg) profile.playMessage = profile.playMessage || String(playMsg);
+  const restMsg = val(row, ['rest_response','rest_text','response','message','text']);
+  if (/rest_responses/.test(sheet) && restMsg) profile.restMessage = profile.restMessage || String(restMsg);
+  const medMsg = val(row, ['medicine_response','medicine_text','response','message','text']);
+  if (/medicine_responses/.test(sheet) && medMsg) profile.medicineMessage = profile.medicineMessage || String(medMsg);
+}
+
+function blankProfile() { return { name: '', species: '', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80, userId: '', username: '', displayName: '', petId: '', base: '', feed: '', play: '', rest: '', medicine: '', happyBubble: '', sleepBubble: '', feedMessage: '', playMessage: '', restMessage: '', medicineMessage: '', rawRows: [] }; }
+function buildPetProfiles(all) {
+  const allRows = CONFIG.petTabs.flatMap(tab => all[tab] || []);
+  const matching = allRows.filter(rowMatchesUser);
+  const sourceRows = matching.length ? matching : allRows;
+  const profilesByKey = new Map();
+  for (const row of sourceRows) {
+    const id = rowIdentity(row);
+    const key = cleanKey(id.userId || id.username || id.petId || id.petName || id.species || `row${profilesByKey.size}`);
+    if (!profilesByKey.has(key)) profilesByKey.set(key, blankProfile());
+    const p = profilesByKey.get(key);
+    p.rawRows.push(row);
+    mergePetRow(p, row);
+  }
+  let pets = Array.from(profilesByKey.values()).filter(p => p.name || p.species || p.base || p.userId || p.username || p.petId);
+  const t = getActiveTestUser();
+  if (t) {
+    const preferred = pets.filter(p => rowMatchesUser({ ...p, __sheet: 'profile' }) || [p.userId, p.username, p.displayName, p.name, p.species].some(v => String(v || '').toLowerCase().includes(t.username.toLowerCase()) || String(v || '').toLowerCase().includes(t.discordId.toLowerCase())));
+    if (preferred.length) pets = preferred;
+    if (!pets.length) pets = [{ ...t.fallbackPet }];
+  }
+  return pets;
+}
+
+function buildShopItems(all) {
+  const rows = [
+    ...(all.item_catalog || []), ...(all.user_inventory || []), ...(all.habitat_shop_catalog || []),
+    ...(all.shop_responses || []), ...(all.inventory_responses || [])
+  ];
+  const matchingInventory = rows.filter(row => row.__sheet === 'user_inventory' && rowMatchesUser(row));
+  const qtyByName = {};
+  for (const row of matchingInventory) {
+    const name = String(val(row, ['item_name','item','name','label','title']) || '').trim();
+    const qty = Number(val(row, ['quantity','qty','amount','count','owned']) || 1);
+    if (name) qtyByName[cleanKey(name)] = (qtyByName[cleanKey(name)] || 0) + qty;
+  }
+  const catalogRows = rows.filter(row => row.__sheet !== 'user_inventory');
+  const items = catalogRows.map((row, idx) => {
+    const name = String(val(row, ['item_name','item','name','label','title','prize']) || '').trim();
+    const category = String(val(row, ['category','type','use','action','effect','menu']) || '').trim();
+    const cost = Number(val(row, ['cost','price','coins','coin_cost','value']) || 0);
+    const emoji = String(val(row, ['emoji','icon','symbol']) || '').trim();
+    const image = firstImage(row);
+    const key = cleanKey(name || category || `item${idx}`);
+    return { name: name || category || `Item ${idx + 1}`, category, cost, emoji, image, qty: qtyByName[key] || 0, raw: row };
+  }).filter(item => item.name || item.image || item.emoji);
+  const unique = [];
+  const seen = new Set();
+  for (const item of items) { const key = cleanKey(item.name); if (!seen.has(key)) { seen.add(key); unique.push(item); } }
+  return unique;
+}
+
+function normalizeHooks(rows) {
+  return rows.map((r, idx) => ({
+    idx,
+    raw: r,
+    name: val(r, ['name','item','title','label','prize','reward']) || `Prize ${idx + 1}`,
+    points: Number(val(r, ['points','score','value','coins','reward_amount']) || 50),
+    image: firstImage(r),
+    icon: val(r, ['icon','emoji','symbol']) || ''
+  })).filter(h => h.name || h.image || h.icon);
+}
+
+async function loadSheetData() {
+  saveLocalPrefs();
+  $('sheetStatus').textContent = 'loading read-only...';
+  $('devReadout').textContent = 'Reading real sheet tabs only. No writes.';
+  const unique = [...new Set([...CONFIG.petTabs, ...CONFIG.hookTabs])];
+  const all = {};
+  const errors = [];
+  for (const tab of unique) {
+    try { all[tab] = await fetchSheetTab(tab); }
+    catch (e) { errors.push(e.message); }
+  }
+  state.allSheets = all;
+  state.petRows = buildPetProfiles(all);
+  state.shopItems = buildShopItems(all);
+  state.hookRows = normalizeHooks(CONFIG.hookTabs.flatMap(t => all[t] || []));
+  if (state.petRows.length) { state.currentPet = state.petRows[0]; state.selectedPetIndex = 0; }
+  renderSelectors();
+  renderPet();
+  renderHookItems();
+  const loadedTabs = Object.keys(all).length;
+  $('sheetStatus').textContent = `loaded ${loadedTabs} tabs, pets found: ${state.petRows.length}, shop/items found: ${state.shopItems.length}, hook items found: ${state.hookRows.length}${state.currentPet && state.currentPet.fromTestFallback ? ' (using testing fallback profile)' : ''}`;
+  $('devReadout').textContent = `Loaded read-only.\nTesting user: ${getActiveTestUser() ? getActiveTestUser().username : 'custom'} / ${$('userIdInput').value.trim()}\nPets: ${state.petRows.length}\nShop/items: ${state.shopItems.length}\nHook items: ${state.hookRows.length}\nMissing tabs/errors: ${errors.slice(0, 12).join(' | ') || 'none shown'}`;
+  toast('Sheet loaded read-only');
+}
+
+function renderSelectors() {
+  const petSel = $('devPetSelect');
+  if (petSel) petSel.innerHTML = state.petRows.map((p, i) => `<option value="${i}">${escapeHtml(p.name || 'Pet')} ${escapeHtml(p.species ? `(${p.species})` : '')}</option>`).join('') || '<option>No pets found</option>';
+  const hookSel = $('devHookSelect');
+  if (hookSel) hookSel.innerHTML = state.hookRows.map((h, i) => `<option value="${i}">${escapeHtml(h.name)}</option>`).join('') || '<option>No hook items found</option>';
+  updatePreviews();
+}
+function updatePreviews() {
+  const p = state.currentPet;
+  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? 'yes' : 'no'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}` : 'No pet loaded from sheet yet.';
+  const h = state.hookRows[state.selectedHookIndex];
+  $('hookDataPreview').innerHTML = h ? `<b>${escapeHtml(h.name)}</b><br>Image found: ${h.image ? 'yes' : 'no'}<br>Points: ${h.points}` : 'No hook images loaded yet.';
+}
+function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.currentPet = state.petRows[state.selectedPetIndex] || state.currentPet; renderPet(); updatePreviews(); }
+function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
+
+function petFallback(species) {
+  const emoji = /raven|crow/i.test(species) ? '🐦‍⬛' : /owl/i.test(species) ? '🦉' : /unicorn/i.test(species) ? '🦄' : /dog|pura/i.test(species) ? '🐶' : '🐾';
+  return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='25' fill='%23fff7bd'/><text x='60' y='78' font-size='64' text-anchor='middle'>${encodeURIComponent(emoji)}</text></svg>`;
+}
+function renderPet(action) {
+  const p = state.currentPet || { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80 };
+  const actionSrc = action && p[action] ? p[action] : p.base;
+  const img = actionSrc || petFallback(p.species);
+  $('petNameDisplay').textContent = `PET: ${(p.name || 'Pet').toUpperCase()}${p.species ? ` THE ${String(p.species).toUpperCase()}` : ''}`;
+  $('petXpDisplay').textContent = `LV.${p.level || 1} (${p.xp || 0} XP)`;
+  $('labelCoins').textContent = `🪙 ${p.coins || state.score || 0}`;
+  $('fillHunger').style.width = `${Math.max(0, Math.min(100, p.hunger || 70))}%`;
+  $('fillHappy').style.width = `${Math.max(0, Math.min(100, p.happy || 60))}%`;
+  $('fillEnergy').style.width = `${Math.max(0, Math.min(100, p.energy || 80))}%`;
+  $('petBodyGraphic').src = img;
+  $('petFollowerImg').src = img;
+  $('mainCharacterImg').src = 'https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_001.png';
+  renderShopGrid();
+}
+function renderShopGrid() {
+  const shop = $('shopGrid');
+  if (!shop) return;
+  if (!state.shopItems.length) {
+    shop.innerHTML = '<button disabled>No sheet shop items found</button>';
+    return;
+  }
+  shop.innerHTML = state.shopItems.slice(0, 6).map((item, i) => {
+    const icon = item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:24px;height:24px;object-fit:contain;vertical-align:middle">` : escapeHtml(item.emoji || '🎁');
+    const cost = item.cost ? `🪙 ${item.cost}` : 'sheet item';
+    const qty = item.qty ? `<br>owned: ${item.qty}` : '';
+    return `<button onclick="buyPetItem(${i})">${icon} ${escapeHtml(item.name)}<br>${cost}${qty}</button>`;
+  }).join('');
+}
+function showBubble(src) { if (src) { $('petBubble').src = src; $('petBubble').classList.add('show'); setTimeout(() => $('petBubble').classList.remove('show'), 1200); } }
+function processCareAction(action) {
+  const p = state.currentPet;
+  if (!p) { $('careStatusTicker').textContent = 'No pet loaded from the sheet yet. Try Refresh sheet data.'; return; }
+  const response = { feed: p.feedMessage, play: p.playMessage, rest: p.restMessage, medicine: p.medicineMessage }[action];
+  const msg = response || ({ feed: 'fed', play: 'played with', rest: 'rested', medicine: 'healed' }[action] || 'cared for');
+  $('careStatusTicker').textContent = response ? response : `You ${msg} ${p.name || 'your pet'}. Local test only; sheet data was not changed.`;
+  renderPet(action);
+  if (action === 'feed' && p.happyBubble) showBubble(p.happyBubble);
+  if (action === 'rest' && p.sleepBubble) showBubble(p.sleepBubble);
+  setTimeout(() => renderPet(), 1200);
+}
+function buyPetItem(index) {
+  const item = state.shopItems[index];
+  if (!item) { $('careStatusTicker').textContent = 'No sheet item selected.'; return; }
+  const cost = Number(item.cost || 0);
+  if (cost && state.score < cost) { $('careStatusTicker').textContent = `Need ${cost} coins for ${item.name}. Play Hook or Platform first.`; return; }
+  if (cost) state.score -= cost;
+  $('score').textContent = state.score;
+  $('careStatusTicker').textContent = `Selected ${item.name}. Local test only; sheet data was not changed.`;
+  renderPet();
+}
+
+function renderHookItems() {
+  const items = state.hookRows.length ? state.hookRows : [{ name: 'Waaambulance', points: 50, icon: '🚑' }, { name: 'Coin', points: 10, icon: '🪙' }, { name: 'Gift', points: 25, icon: '🎁' }];
+  const wrap = $('hookItems');
+  wrap.innerHTML = '';
+  items.slice(0, 8).forEach((it, i) => {
+    const el = document.createElement('div');
+    el.className = 'hookItem';
+    el.style.left = `${15 + (i * 21) % 78}%`;
+    el.style.top = `${62 + ((i * 19) % 28)}%`;
+    el.dataset.idx = i;
+    if (it.image) { const im = document.createElement('img'); im.src = it.image; im.alt = it.name; el.appendChild(im); }
+    else { el.textContent = it.icon || '🚑'; }
+    wrap.appendChild(el);
+  });
+  $('hookHelp').textContent = state.hookRows.length ? `Loaded ${state.hookRows.length} hook items/images from the sheet.` : 'No hook image rows found yet, using safe fallback prizes.';
+}
+function hookAttempt() {
+  const items = state.hookRows.length ? state.hookRows : [{ name: 'Waaambulance', points: 50, icon: '🚑' }, { name: 'Coin', points: 10, icon: '🪙' }, { name: 'Gift', points: 25, icon: '🎁' }];
+  const item = items[Math.floor(Math.random() * items.length)];
+  state.score += item.points || 50;
+  $('score').textContent = state.score;
+  $('hookTicker').textContent = `Hooked ${item.name}! +${item.points || 50} coins. Sheet was not changed.`;
+}
+
+function restartLevel() { state.worldX = 0; state.playerY = 82; state.vy = 0; state.onGround = true; state.lives = 3; state.score = state.score || 0; LEVEL.collectibles.forEach(c => c.got = false); LEVEL.enemies.forEach(e => { e.dead = false; e.x = e.baseX; }); renderLevel(); }
+function worldToScreenX(x) { return x - state.worldX + window.innerWidth * 0.24; }
+function floorAt(x) { let best = 82; for (const p of LEVEL.platforms) if (x >= p.x && x <= p.x + p.w) best = Math.max(best, p.y + p.h); return best; }
+function renderLevel() {
+  const lw = $('levelWorld'); lw.innerHTML = '';
+  LEVEL.platforms.forEach(p => { const d = document.createElement('div'); d.className = 'levelPlatform'; d.style.left = `${worldToScreenX(p.x)}px`; d.style.bottom = `${p.y}px`; d.style.width = `${p.w}px`; lw.appendChild(d); });
+  const ob = $('objects'); ob.innerHTML = '';
+  LEVEL.collectibles.forEach(c => { if (c.got) return; const d = document.createElement('div'); d.className = 'obj token'; d.textContent = c.icon; d.style.left = `${worldToScreenX(c.x)}px`; d.style.bottom = `${c.y}px`; ob.appendChild(d); });
+  LEVEL.enemies.forEach(e => { if (e.dead) return; const d = document.createElement('div'); d.className = 'obj enemy'; d.textContent = e.icon; d.style.left = `${worldToScreenX(e.x || e.baseX)}px`; d.style.bottom = `${e.y}px`; ob.appendChild(d); });
+  const f = LEVEL.finish; const fd = document.createElement('div'); fd.className = 'obj finishObj'; fd.textContent = f.icon; fd.style.left = `${worldToScreenX(f.x)}px`; fd.style.bottom = `${f.y}px`; ob.appendChild(fd);
+}
+function gameLoop() {
+  if (state.activeScreen !== 'platform') return;
+  const speed = 5;
+  state.worldX += speed;
+  if (state.keys.jump && state.onGround) { state.vy = 17; state.onGround = false; }
+  state.vy -= 0.8; state.playerY += state.vy;
+  const runnerWorldX = state.worldX; const floor = floorAt(runnerWorldX);
+  if (state.playerY <= floor) { state.playerY = floor; state.vy = 0; state.onGround = true; }
+  LEVEL.enemies.forEach(e => { if (e.range && !e.dead) { e.x = (e.x || e.baseX) + e.dir * 1.5; if (Math.abs(e.x - e.baseX) > e.range) e.dir *= -1; } });
+  LEVEL.collectibles.forEach(c => { if (!c.got && Math.abs(c.x - runnerWorldX) < 50 && Math.abs(c.y - state.playerY) < 95) { c.got = true; state.score += c.points; $('score').textContent = state.score; } });
+  LEVEL.enemies.forEach(e => { const ex = e.x || e.baseX; if (!e.dead && Math.abs(ex - runnerWorldX) < 55 && Math.abs(e.y - state.playerY) < 80) { if (state.vy < 0 && state.playerY > e.y + 35) { e.dead = true; state.score += 25; } else { state.lives--; state.worldX = Math.max(0, state.worldX - 120); if (state.lives <= 0) showScreen('menu'); } } });
+  if (runnerWorldX >= LEVEL.finish.x - 40) { $('victory').classList.remove('hidden'); state.activeScreen = 'victory'; return; }
+  $('lives').textContent = state.lives; $('score').textContent = state.score; $('distance').textContent = `${Math.floor(state.worldX)}m`; $('playerChar').style.bottom = `${state.playerY}px`; $('petFollower').style.left = `calc(24vw - 70px)`; $('petFollower').style.bottom = `${state.playerY + 130}px`;
+  renderLevel(); state.animationId = requestAnimationFrame(gameLoop);
+}
+
+async function saveToCloudflareOnly() {
+  const key = $('adminKey').value.trim();
+  if (!key) { toast('Admin key needed'); return; }
+  const payload = { sheetReadOnly: true, score: state.score, selectedPet: state.currentPet ? { name: state.currentPet.name, species: state.currentPet.species, userId: state.currentPet.userId } : null, updatedAt: new Date().toISOString() };
+  try {
+    const res = await fetch('/api/save-game-config', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-key': key }, body: JSON.stringify(payload) });
+    toast(res.ok ? 'Saved to Cloudflare KV' : 'Cloudflare save failed');
+  } catch (e) { toast('Cloudflare save error'); }
+}
+function showDataDebug() {
+  const names = Object.fromEntries(Object.entries(state.allSheets).map(([k, v]) => [k, v.length]));
+  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3) }, null, 2);
+}
+
+window.addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) { state.keys.jump = true; e.preventDefault(); } });
+window.addEventListener('keyup', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) state.keys.jump = false; });
+window.addEventListener('pointerdown', e => { if (state.activeScreen === 'platform') state.keys.jump = true; });
+window.addEventListener('pointerup', () => state.keys.jump = false);
+function init() { loadLocalPrefs(); renderPet(); renderHookItems(); showScreen('menu'); setTimeout(loadSheetData, 250); }
 init();
 </script>
 </body>
