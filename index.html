@@ -93,13 +93,13 @@
     </div>
   </section>
 
-  <section id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900"><span id="petNameLabel">PET: Loading...</span><span id="petLevelLabel">LV.1</span></div><div class="petStage"><div id="petBodyFallback" class="noImg">NO PET IMAGE</div><img id="petBodyImg" class="hidden" alt="Pet"><img id="petBubbleImg" class="hidden" alt="bubble" style="position:absolute;right:48px;top:10px;width:42px;height:42px"></div><div class="meters"><div>HUNGER<div class="bar"><div class="fill" id="fillHunger"></div></div></div><div>HAPPY<div class="bar"><div class="fill" id="fillHappy"></div></div></div><div>ENERGY<div class="bar"><div class="fill" id="fillEnergy"></div></div></div><div>COINS<br><span id="petCoins">🪙 0</span></div></div></div><div class="ticker" id="petTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="careAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="careAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="careAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="careAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" style="margin-top:12px" onclick="showScreen('menu')">Return to Menu</button></div></section>
+  <section id="screenPet" class="screen hidden"><div class="modal"><div class="dataBox" style="max-width:440px;margin:0 auto 12px;text-align:left"><b>Choose pet</b><br><select id="petCareSelect" style="width:100%;padding:9px;border-radius:10px;margin-top:6px" onchange="selectPetCare(this.value)"></select><div id="petCareDebug" style="font-size:11px;opacity:.85;margin-top:6px">Petbot read-only display.</div></div><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900"><span id="petNameLabel">PET: Loading...</span><span id="petLevelLabel">LV.1</span></div><div class="petStage"><div id="petBodyFallback" class="noImg">NO PET IMAGE</div><img id="petBodyImg" class="hidden" alt="Pet"><img id="petBubbleImg" class="hidden" alt="bubble" style="position:absolute;right:48px;top:10px;width:42px;height:42px"></div><div class="meters"><div>HUNGER<div class="bar"><div class="fill" id="fillHunger"></div></div></div><div>HAPPY<div class="bar"><div class="fill" id="fillHappy"></div></div></div><div>ENERGY<div class="bar"><div class="fill" id="fillEnergy"></div></div></div><div>COINS<br><span id="petCoins">🪙 0</span></div></div></div><div class="ticker" id="petTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="careAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="careAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="careAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="careAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" style="margin-top:12px" onclick="showScreen('menu')">Return to Menu</button></div></section>
 
   <section id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p>Hook prizes are loaded from your sheet when matching image rows are found.</p><div class="hookPool" id="hookPool"><div class="hookLine" id="hookLine"><div class="hookClaw">🪝</div></div></div><div class="ticker" id="hookTicker">Press Hook to catch an item.</div><button class="pill gold" onclick="dropHook()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></section>
 
   <section id="screenVictory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="startPlatform()">Play Again</button></div></section>
 
-  <div id="devPanel"><div class="devLeft"><div id="devSky" class="layer sky"></div><div id="devHills" class="layer hills"></div><div id="devGround" class="layer ground"></div><div id="devWorld"></div><div class="devTop"><span>🛠 Live Game Preview</span><button class="pill gold" onclick="toggleDev(false)">Close</button></div></div><div class="devRight"><h1>Game Builder</h1><div class="devTabs"><button class="devTabBtn active" onclick="devTab('build',this)">1 Build</button><button class="devTabBtn" onclick="devTab('images',this)">2 Images</button><button class="devTabBtn" onclick="devTab('sprites',this)">3 Sprites</button><button class="devTabBtn" onclick="devTab('sheet',this)">4 Sheet</button><button class="devTabBtn" onclick="devTab('save',this)">5 Save</button></div>
+  <div id="devPanel"><div class="devLeft"><div id="devSky" class="layer sky"></div><div id="devHills" class="layer hills"></div><div id="devGround" class="layer ground"></div><div id="devWorld"></div><div class="devTop"><span>🛠 Live Game Preview</span><button class="pill gold" onclick="toggleDev(false)">Close</button></div></div><div class="devRight"><h1>Game Builder</h1><div class="devTabs"><button class="devTabBtn active" onclick="devTab('build',this)">1 Level</button><button class="devTabBtn" onclick="devTab('images',this)">2 BG</button><button class="devTabBtn" onclick="devTab('sprites',this)">3 Player</button><button class="devTabBtn" onclick="devTab('sheet',this)">4 Petbot</button><button class="devTabBtn" onclick="devTab('save',this)">5 Save</button></div>
     <div id="dev-build" class="devTab active"><div class="devHelp"><b>Drag directly on the preview:</b> click a platform, collectible, enemy, or finish flag and drag it where you want. Use the form only when you want exact numbers.</div><div class="devGroup"><label>Add type</label><select id="addType"><option value="platform">Platform</option><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finish">Finish flag</option></select></div><div class="devRow"><div class="devGroup"><label>X position</label><input id="addX" type="number" value="900"></div><div class="devGroup"><label>Bottom/Y height</label><input id="addY" type="number" value="180"></div></div><div class="devRow"><div class="devGroup"><label>Width for platform</label><input id="addW" type="number" value="220"></div><div class="devGroup"><label>Icon or image URL</label><input id="addIcon" placeholder="✨, 🚨, 🏁 or image URL"></div></div><button class="devButton" onclick="addLevelThing()">Add To Level</button> <button class="devButton alt" onclick="clearLastThing()">Undo Last</button><div class="devList" id="levelList"></div></div>
     <div id="dev-images" class="devTab"><div class="devHelp">These are game images/backgrounds, separate from Petbot images.</div><div class="devGroup"><label>Sky background URL</label><input id="cfgSky" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png"></div><div class="devGroup"><label>Hills background URL</label><input id="cfgHills" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png"></div><div class="devGroup"><label>Ground background URL</label><input id="cfgGround" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png"></div><button class="devButton" onclick="applyBackgrounds()">Apply Backgrounds</button></div>
     <div id="dev-sprites" class="devTab"><div class="devHelp">Player/party choice lives on the main menu so it is clear before starting the platform game. This tab is only for sprite size and custom sprite testing.</div><button class="devButton alt" onclick="toggleDev(false);showScreen('menu');renderPartyPreview()">Open Platform Quest Setup</button><div class="devGroup"><label>Player character</label><select id="cfgCharacter" onchange="setCharacter(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom static URL</option></select></div><div class="devGroup"><label>Custom static sprite URL</label><input id="cfgCustomSprite" placeholder="Only used for Custom"></div><div class="devRow"><div class="devGroup"><label>Sprite width</label><input id="cfgSpriteW" type="number" value="140"></div><div class="devGroup"><label>Sprite height</label><input id="cfgSpriteH" type="number" value="165"></div></div><button class="devButton" onclick="applySpriteSettings()">Apply Sprite</button></div>
@@ -119,11 +119,11 @@ const SPRITES={
   unicorn:{label:'Unicorn',prefix:'unicorn',fallback:'🦄',counts:{idle:10,walk:10,jump:10}},
   owl:{label:'Owl',prefix:'owl',fallback:'🦉',counts:{idle:10,walk:10,jump:10}}
 };
-let state={screen:'menu',score:0,lives:3,cameraX:0,keys:{left:false,right:false,jump:false},running:false,player:{x:170,y:0,vx:0,vy:0,w:140,h:165,onGround:false,facing:1,state:'idle',character:'pura',frame:1,lastFrame:0,customStatic:''},party:{mode:'solo',slot1:'pura',slot2:'none',companionFrame:1,companionLastFrame:0},ownedPets:[],levelWidth:2600,pet:{name:'Odin',type:'Raven',level:1,xp:70,coins:0,hunger:65,happy:45,energy:80,baseImg:'',feedImg:'',playImg:'',restImg:'',medicineImg:'',bubbleImg:''},sheet:{rowsByTab:{},allRows:[],assetRows:[],hookRows:[],shopRows:[]}};
+let state={screen:'menu',score:0,lives:3,cameraX:0,keys:{left:false,right:false,jump:false},running:false,player:{x:170,y:0,vx:0,vy:0,w:140,h:165,onGround:false,facing:1,state:'idle',character:'pura',frame:1,lastFrame:0,customStatic:''},party:{mode:'solo',slot1:'pura',slot2:'none',companionFrame:1,companionLastFrame:0},ownedPets:[],petRows:[],selectedPetCode:'',levelWidth:2600,pet:{name:'Odin',type:'Raven',level:1,xp:70,coins:0,hunger:65,happy:45,energy:80,baseImg:'',feedImg:'',playImg:'',restImg:'',medicineImg:'',bubbleImg:''},sheet:{rowsByTab:{},allRows:[],assetRows:[],hookRows:[],shopRows:[]}};
 const level={platforms:[{x:0,y:70,w:520},{x:610,y:150,w:230},{x:930,y:240,w:220},{x:1260,y:150,w:300},{x:1660,y:220,w:240},{x:2050,y:130,w:360}],objects:[{x:240,y:132,type:'token',icon:'✨'},{x:720,y:210,type:'enemy',icon:'🚨'},{x:1040,y:300,type:'token',icon:'💎'},{x:1390,y:210,type:'enemy',icon:'🐌'},{x:1810,y:280,type:'token',icon:'🪙'},{x:2380,y:190,type:'finish',icon:'🏁'}]};
 function $(id){return document.getElementById(id);} function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
 function safeImageValue(v){if(v==null)return'';let s=String(v).trim();if(!s||/^none$/i.test(s)||/^n\/a$/i.test(s))return'';s=s.replace(/^['"]|['"]$/g,'').trim();if(/^https?:\/\//i.test(s)){ if(s.includes('drive.google.com/file/d/')){const m=s.match(/\/d\/([^/]+)/); if(m)return `https://drive.google.com/uc?export=view&id=${m[1]}`;} return s; } if(s.startsWith('//'))return 'https:'+s; if(s.includes('res.cloudinary.com'))return 'https://'+s.replace(/^https?:\/\//,''); if(s.includes('/image/upload/'))return 'https://res.cloudinary.com/'+s.replace(/^\/+/, ''); if(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i.test(s))return CLOUD+'f_auto,q_auto/'+s.replace(/^\/+/, ''); if(/^[\w\-\/]+$/.test(s))return CLOUD+'f_auto,q_auto/'+s; return '';}
-function setImgOrFallback(img,fb,url,label){const resolved=safeImageValue(url); if(!resolved){img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'NO IMAGE';return false;} img.onerror=()=>{img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'BROKEN IMAGE'}; img.onload=()=>{fb.classList.add('hidden');img.classList.remove('hidden')}; img.src=resolved; return true;}
+function setImgOrFallback(img,fb,url,label){const resolved=safeImageValue(url); if(!resolved){img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'NO IMAGE';return false;} img.referrerPolicy='no-referrer'; img.onerror=()=>{img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'BROKEN IMAGE'}; img.onload=()=>{fb.classList.add('hidden');img.classList.remove('hidden')}; img.src=resolved; return true;}
 function showScreen(name){state.screen=name; ['Menu','Pet','Hook','Victory'].forEach(n=>$('screen'+n).classList.add('hidden')); if(name==='menu')$('screenMenu').classList.remove('hidden'); if(name==='pet'){$('screenPet').classList.remove('hidden');renderPet();} if(name==='hook'){$('screenHook').classList.remove('hidden');renderHook();} if(name==='victory')$('screenVictory').classList.remove('hidden'); if(name!=='play')state.running=false;}
 function startPlatform(){
   readPartyFromMenu();
@@ -234,7 +234,35 @@ function renderShop(){const grid=$('shopGrid');grid.innerHTML='';const items=sta
 function careAction(a){const p=state.pet;if(a==='feed'){p.hunger=clamp(p.hunger+20,0,100);if(p.feedImg)p.baseImg=p.feedImg;$('petTicker').textContent=`${p.name} has been fed.`;}if(a==='play'){p.happy=clamp(p.happy+20,0,100);if(p.playImg)p.baseImg=p.playImg;$('petTicker').textContent=`${p.name} played happily.`;}if(a==='rest'){p.energy=clamp(p.energy+25,0,100);if(p.restImg)p.baseImg=p.restImg;$('petTicker').textContent=`${p.name} is resting.`;}if(a==='medicine'){p.hunger=clamp(p.hunger+5,0,100);if(p.medicineImg)p.baseImg=p.medicineImg;$('petTicker').textContent=`${p.name} feels better.`;}p.xp+=10;renderPet();}
 function renderHook(){const pool=$('hookPool');pool.querySelectorAll('.hookItem').forEach(n=>n.remove());const rows=state.sheet.hookRows.length?state.sheet.hookRows.slice(0,5):[{icon:'🚑',name:'Waaambulance'},{icon:'🪙',name:'Coin'},{icon:'💎',name:'Gem'}];rows.forEach((r,i)=>{const d=document.createElement('div');d.className='hookItem';d.style.left=(18+i*18)+'%';d.style.top=(62+(i%2)*20)+'%';const img=safeImageValue(r.image||r.img||r.url||r.icon);if(img){const im=document.createElement('img');im.src=img;im.onerror=()=>{d.textContent=r.icon||'🚑'};d.appendChild(im);}else d.textContent=r.icon||'🚑';pool.appendChild(d);});$('hookLine').style.height='40px';}
 function dropHook(){const line=$('hookLine');line.style.height='220px';setTimeout(()=>{state.score+=25;$('hookTicker').textContent='Caught a prize! +25 coins';updateHud();line.style.height='40px';},850);}
-async function loadCurrentTestUser(){await loadAllSheetData();const key=$('testUserSelect').value;const user=TEST_USERS[key]||TEST_USERS.ryan;applyUserPet(user);$('loadStatus').textContent=`Loaded read-only. Testing user: ${user.username} / ${user.discordId}. Pets: ${state.sheet.allRows.length} rows checked. Asset rows: ${state.sheet.assetRows.length}. Hook rows: ${state.sheet.hookRows.length}.`;}
+async function loadCurrentTestUser(){
+  const key=$('testUserSelect').value;
+  const user=TEST_USERS[key]||TEST_USERS.ryan;
+  $('loadStatus').textContent=`Loading ${user.username} from read-only Petbot API...`;
+  try{
+    // Load owned pets FIRST. This fixes the bug where pet care used Rune/profile instead of the first real pet list.
+    const viewPets=await petbotApi('view_pets',{user_id:user.discordId,per_page:'25'});
+    const pets=parsePetSlots(viewPets);
+    const chosen=pets.find(p=>String(p.petCode)===String(state.selectedPetCode)) || pets[0] || null;
+    const petCode=chosen ? chosen.petCode : '';
+    const profile=petCode ? await petbotApi('pet_profile_compact',{user_id:user.discordId,pet_code:petCode,selected_pet_code:petCode,include_media:'true'}).catch(err=>({response:err.message})) : {};
+    const inventory=petCode ? await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'}).catch(err=>({response:err.message})) : {};
+    const shop=petCode ? await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(err=>({response:err.message})) : {};
+    const hook=await petbotApi('view_hook_prizes',{user_id:user.discordId}).catch(async()=>petbotApi('get_hook_waaambulance',{user_id:user.discordId}).catch(()=>({})));
+    applyPetbotReadonlyData(user,profile,viewPets,inventory,shop,hook);
+    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Pets: ${pets.length}. Selected pet: ${state.pet.name} (${state.pet.petCode||'no code'}). Items shown: ${state.sheet.shopRows.length}.`;
+    if($('sheetDebug'))$('sheetDebug').textContent=`Petbot connected.
+received_user_id: ${viewPets.received_user_id||''}
+total_pets: ${viewPets.total_pets}
+first pet: ${pets[0]?pets[0].name+' / '+pets[0].petCode:'none'}
+selected pet: ${state.pet.name} / ${state.pet.petCode}
+selected image: ${state.pet.baseImg||'none'}
+inventory: ${inventory.response||'ok'}
+shop: ${shop.response||'ok'}`;
+  }catch(err){
+    $('loadStatus').textContent='Petbot read-only API error: '+err.message;
+    if($('sheetDebug'))$('sheetDebug').textContent='Petbot API error: '+err.message+'\nOpen /api/petbot?mode=view_pets&user_id='+user.discordId+'&per_page=25 to test.';
+  }
+}
 async function loadAllSheetData(){const id=$('cfgSheetId')?$('cfgSheetId').value:'1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';const tabs=['user_pets','pets','user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog','user_inventory','item_catalog','hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'];const rowsByTab={};for(const tab of tabs){try{rowsByTab[tab]=await fetchTab(id,tab);}catch(e){rowsByTab[tab]=[];}}state.sheet.rowsByTab=rowsByTab;state.sheet.allRows=Object.values(rowsByTab).flat();state.sheet.assetRows=['user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r));state.sheet.hookRows=['hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r)||r.icon||r.emoji);state.sheet.shopRows=['user_inventory','item_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>normaliseItem(r,t))).filter(Boolean).slice(0,12);renderAssetPicker();const dbg=Object.entries(rowsByTab).map(([k,v])=>`${k}: ${v.length}`).join('\n');if($('sheetDebug'))$('sheetDebug').textContent=dbg||'No rows loaded';return rowsByTab;}
 async function fetchTab(id,tab){const url=`https://docs.google.com/spreadsheets/d/${encodeURIComponent(id)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;const text=await fetch(url,{method:'GET'}).then(r=>r.text());const json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1));const cols=json.table.cols.map(c=>(c.label||c.id||'').toString().trim()||'col');return json.table.rows.map(row=>{const obj={_tab:tab};(row.c||[]).forEach((cell,i)=>{obj[cols[i]]=cell?cell.v:''});return obj;});}
 function textOfRow(r){return Object.values(r).join(' ').toLowerCase();}
@@ -294,7 +322,11 @@ function parsePetSlots(viewPets){
     const img=viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'] || '';
     pets.push({
       key:'pet:'+code, kind:'ownedPet', label:`${name} (${type})`, name, type, petCode:code,
-      baseImg:img, animated:!!animatedKeyForPet({type})
+      baseImg:img, animated:!!animatedKeyForPet({type}),
+      level:viewPets['pet_'+i+'_level']||1, xp:viewPets['pet_'+i+'_xp']||0,
+      health:viewPets['pet_'+i+'_health']||100, hunger:viewPets['pet_'+i+'_hunger']||80,
+      happiness:viewPets['pet_'+i+'_happiness']||80, energy:viewPets['pet_'+i+'_energy']||80,
+      text:viewPets['pet_'+i+'_text']||'', traits:viewPets['pet_'+i+'_top_traits']||viewPets['pet_'+i+'_traits']||''
     });
   }
   return pets;
@@ -350,26 +382,46 @@ function firstActualPetFromViewPets(viewPets){
   }
   return {};
 }
+function applyPetToCare(pet){
+  if(!pet)return;
+  state.selectedPetCode=pet.petCode||pet.code||'';
+  state.pet.name=pet.name||state.pet.name||'Pet';
+  state.pet.type=pet.type||state.pet.type||'Pet';
+  state.pet.level=Number(pet.level||1);
+  state.pet.xp=Number(pet.xp||0);
+  state.pet.hunger=Number(pet.hunger||80);
+  state.pet.happy=Number(pet.happiness||pet.happy||80);
+  state.pet.energy=Number(pet.energy||80);
+  state.pet.health=Number(pet.health||100);
+  state.pet.baseImg=safeImageValue(pet.baseImg||pet.image||'');
+  state.pet.petCode=state.selectedPetCode;
+  const dbg=$('petCareDebug'); if(dbg)dbg.textContent=`${state.pet.name} / ${state.pet.type} / ${state.pet.petCode || 'no code'}${state.pet.baseImg?'':' — no image returned'}`;
+}
+function renderPetCareSelector(){
+  const sel=$('petCareSelect'); if(!sel)return;
+  const prev=state.selectedPetCode||sel.value;
+  sel.innerHTML='';
+  if(!state.petRows.length){sel.add(new Option('No pets loaded',''));return;}
+  state.petRows.forEach(p=>sel.add(new Option(`${p.name} — ${p.type} L${p.level}`,p.petCode)));
+  sel.value=state.petRows.some(p=>String(p.petCode)===String(prev))?prev:state.petRows[0].petCode;
+}
+function selectPetCare(code){
+  const pet=state.petRows.find(p=>String(p.petCode)===String(code))||state.petRows[0];
+  applyPetToCare(pet); renderPet(); renderPartyPreview();
+}
 function applyPetbotReadonlyData(user, profile, viewPets, inventory, shop, hook){
-  const firstPet = firstActualPetFromViewPets(viewPets);
-  const selectedCode = profile.pet_code || profile.selected_pet_code || profile.code || firstPet.code || '';
-  const slot = firstPetRowForCode(viewPets, selectedCode) || firstPet;
-  state.pet.name = profile.pet_name || slot.name || user.username;
-  state.pet.type = profile.pet || slot.type || 'Pet';
-  state.pet.level = Number(profile.pet_level || profile.level || slot.level || 1);
-  state.pet.xp = Number(profile.pet_xp || profile.xp || slot.xp || 0);
-  state.pet.hunger = Number(profile.hunger || slot.hunger || state.pet.hunger || 80);
-  state.pet.happy = Number(profile.happiness || slot.happiness || state.pet.happy || 80);
-  state.pet.energy = Number(profile.energy || slot.energy || state.pet.energy || 80);
-  state.pet.coins = Number(profile.pet_coin_balance || profile.coins || profile.wallet || profile.pet_coins || 0);
-  state.pet.baseImg = safeImageValue(profile.pet_image_url || profile.image_url || slot.image || firstPet.image || '');
-  state.pet.petCode = selectedCode || slot.code || '';
-
   const owned = parsePetSlots(viewPets);
-  if(state.pet.petCode && !owned.some(p=>String(p.petCode)===String(state.pet.petCode))){
-    owned.unshift({key:'pet:'+state.pet.petCode,kind:'ownedPet',label:`${state.pet.name} (${state.pet.type})`,name:state.pet.name,type:state.pet.type,petCode:state.pet.petCode,baseImg:state.pet.baseImg,animated:!!animatedKeyForPet({type:state.pet.type})});
-  }
-  state.ownedPets = owned;
+  state.petRows = owned.slice();
+  state.ownedPets = owned.slice();
+
+  // Use view_pets as truth. The uploaded raw output proves view_pets has Odin/Ax/etc and direct pet_#_image fields.
+  // pet_profile_compact can point at a different selected pet, so it must not override the main owned-pet list.
+  const chosen = state.selectedPetCode
+    ? (owned.find(p=>String(p.petCode)===String(state.selectedPetCode)) || owned[0])
+    : owned[0];
+  applyPetToCare(chosen);
+  renderPetCareSelector();
+
   state.sheet.shopRows = parseItemsFromPetbot(inventory).concat(parseItemsFromPetbot(shop)).slice(0,12);
   state.sheet.hookRows = parseHookRowsFromPetbot(hook).slice(0,8);
   populatePartySelectors();
@@ -383,17 +435,27 @@ async function loadCurrentTestUser(){
   const user=TEST_USERS[key]||TEST_USERS.ryan;
   $('loadStatus').textContent=`Loading ${user.username} from read-only Petbot API...`;
   try{
-    const profile=await petbotApi('pet_profile_compact',{user_id:user.discordId,include_media:'true'});
     const viewPets=await petbotApi('view_pets',{user_id:user.discordId,per_page:'25'});
-    const firstPet=firstActualPetFromViewPets(viewPets);
-    const petCode=profile.pet_code || profile.selected_pet_code || firstPet.code || '';
-    const inventory=await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'}).catch(err=>({response:err.message}));
-    const shop=await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(err=>({response:err.message}));
+    const pets=parsePetSlots(viewPets);
+    const chosen=pets.find(p=>String(p.petCode)===String(state.selectedPetCode)) || pets[0] || null;
+    const petCode=chosen ? chosen.petCode : '';
+    const profile=petCode ? await petbotApi('pet_profile_compact',{user_id:user.discordId,pet_code:petCode,selected_pet_code:petCode,include_media:'true'}).catch(err=>({response:err.message})) : {};
+    const inventory=petCode ? await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'}).catch(err=>({response:err.message})) : {};
+    const shop=petCode ? await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(err=>({response:err.message})) : {};
     const hook=await petbotApi('view_hook_prizes',{user_id:user.discordId}).catch(async()=>petbotApi('get_hook_waaambulance',{user_id:user.discordId}).catch(()=>({})));
     applyPetbotReadonlyData(user,profile,viewPets,inventory,shop,hook);
-    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Selected pet: ${petCode||'none'} · Pets shown: ${state.ownedPets.length} · Items shown: ${state.sheet.shopRows.length} · Hook prizes: ${state.sheet.hookRows.length}.`; if($('sheetDebug'))$('sheetDebug').textContent=`Petbot connected.\nprofile found: ${!!profile.found}\nview_pets found: ${!!viewPets.found}\npet code used: ${petCode||'none'}\ninventory: ${inventory.response||'ok'}\nshop: ${shop.response||'ok'}\nfirst pet image: ${firstPet.image||'none'}\nprofile image: ${profile.pet_image_url||profile.image_url||'none'}`;
+    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Pets: ${pets.length}. Selected pet: ${state.pet.name} (${state.pet.petCode||'no code'}). Items shown: ${state.sheet.shopRows.length}.`;
+    if($('sheetDebug'))$('sheetDebug').textContent=`Petbot connected.
+received_user_id: ${viewPets.received_user_id||''}
+total_pets: ${viewPets.total_pets}
+first pet: ${pets[0]?pets[0].name+' / '+pets[0].petCode:'none'}
+selected pet: ${state.pet.name} / ${state.pet.petCode}
+selected image: ${state.pet.baseImg||'none'}
+inventory: ${inventory.response||'ok'}
+shop: ${shop.response||'ok'}`;
   }catch(err){
-    $('loadStatus').textContent='Petbot read-only API not connected yet: '+err.message+'\nSet PETBOT_APPS_SCRIPT_URL and PETBOT_API_KEY in Cloudflare, then redeploy.'; if($('sheetDebug'))$('sheetDebug').textContent='Petbot API error: '+err.message+'\nOpen /api/petbot?mode=view_pets&user_id='+user.discordId+' to see the raw error.';
+    $('loadStatus').textContent='Petbot read-only API error: '+err.message;
+    if($('sheetDebug'))$('sheetDebug').textContent='Petbot API error: '+err.message+'\nOpen /api/petbot?mode=view_pets&user_id='+user.discordId+'&per_page=25 to test.';
   }
 }
 async function loadAllSheetData(){
