@@ -45,7 +45,7 @@
         <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas></div>
       </div>
       <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked until password is accepted. Password prompt should accept: waaadmin</div>
+        <div class="statusBox" id="adminStatus">Builder locked. Enter the value from Cloudflare env var CTW_GAME_ADMIN_KEY.</div>
         <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
         <div id="tab-objects" class="toolSec active">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
@@ -101,8 +101,7 @@ const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
 const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
 const imgCache=new Map();
 const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
-const ADMIN_PASSWORD='waaadmin';
-const ADMIN_PASSWORD_HELP='Type waaadmin exactly, all lower-case.';
+const ADMIN_PASSWORD_HELP='Enter the same value you set in Cloudflare Pages as CTW_GAME_ADMIN_KEY.';
 const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
 const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
 const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
@@ -126,14 +125,44 @@ const level={
 const player={x:120,y:540,vx:0,vy:0,w:82,h:96,speed:7.4,jump:-17,gravity:.78,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
 function id(){return 'o'+Math.random().toString(36).slice(2,9)}
 function img(src){ if(!src||src.length<3||!/^https?:\/\//i.test(src)) return null; if(imgCache.has(src)) return imgCache.get(src); const im=new Image(); im.crossOrigin='anonymous'; im.src=src; imgCache.set(src,im); return im; }
-function showPanel(id){ currentPanel=id; document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); if(id==='builder'){ if(!adminUnlocked){openBuilderWithPassword(); return;} running=false; renderEditor(); const s=document.getElementById('adminStatus'); if(s)s.textContent='Builder unlocked. Password accepted for this page load. This is a front-end gate until server saving is added.';} if(id==='game'){running=true;} }
-function openBuilderWithPassword(){
-  if(!adminUnlocked){
-    const pass=(prompt('Builder admin password\n\n'+ADMIN_PASSWORD_HELP)||'').trim().toLowerCase();
-    if(pass!==ADMIN_PASSWORD){ alert('Wrong builder password. Use: waaadmin'); return; }
-    adminUnlocked=true;
+function showPanel(id){
+  if(id==='builder' && !adminUnlocked){ openBuilderWithPassword(); return; }
+  currentPanel=id;
+  document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
+  if(id==='builder'){
+    running=false;
+    renderEditor();
+    const s=document.getElementById('adminStatus');
+    if(s)s.textContent='Builder unlocked using CTW_GAME_ADMIN_KEY for this page load.';
   }
-  showPanel('builder');
+  if(id==='game'){running=true;}
+}
+async function openBuilderWithPassword(){
+  if(adminUnlocked){ showPanel('builder'); return; }
+  const pass=(prompt('Builder admin password\n\n'+ADMIN_PASSWORD_HELP)||'').trim();
+  if(!pass) return;
+  const status=document.getElementById('adminStatus');
+  if(status) status.textContent='Checking CTW_GAME_ADMIN_KEY...';
+  try{
+    const res=await fetch('/api/admin',{
+      method:'POST',
+      headers:{'content-type':'application/json'},
+      body:JSON.stringify({admin_key:pass})
+    });
+    const data=await res.json().catch(()=>({ok:false,error:'Admin check did not return JSON.'}));
+    if(!res.ok || !data.ok){
+      const msg=data.error || 'Wrong admin key.';
+      if(status) status.textContent='Builder locked. '+msg;
+      alert(msg);
+      return;
+    }
+    adminUnlocked=true;
+    showPanel('builder');
+  }catch(err){
+    const msg='Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set in Cloudflare Pages.';
+    if(status) status.textContent=msg;
+    alert(msg);
+  }
 }
 function toggleRun(){running=!running; document.getElementById('pauseBtn').textContent=running?'Pause':'Resume'}
 window.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Escape')showPanel('menu')}); window.addEventListener('keyup',e=>keys[e.code]=false);
