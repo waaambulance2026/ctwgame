@@ -9,7 +9,7 @@
 <style>
 :root{--pink:#d282c2;--blue:#76C7D8;--yellow:#F5C542;--ink:#130b1d;--panel:#21142d;--floor:82px;--sky:linear-gradient(#72d9ff 0%,#82dcff 58%,#c5f2ff 100%);--hills:url('assets/parallax_far.svg');--ground:url('assets/parallax_mid.svg');--lcd:#a3b899;--lcdInk:#2b3a22}
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select{font-family:inherit}button{cursor:pointer}#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}#levelWorld{position:absolute;inset:0;z-index:20;pointer-events:none}.levelPlatform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 5px,rgba(210,130,194,.45) 5px 18px,rgba(118,199,216,.45) 18px 24px,rgba(33,69,124,.35) 24px);box-shadow:0 7px 13px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.35)}#objects{position:absolute;inset:0;z-index:45;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86)}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finishObj{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}#characters{position:absolute;inset:0;z-index:55;pointer-events:none}.char{position:absolute;left:24vw;bottom:var(--floor);transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:bottom}.charBox{height:220px;width:190px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}.char img{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block}.shadow{position:absolute;left:24vw;bottom:calc(var(--floor) - 11px);width:110px;height:22px;border-radius:50%;transform:translateX(-50%);background:rgba(0,0,0,.26);filter:blur(8px);z-index:52}.petFollower{position:absolute;z-index:56;pointer-events:none;display:grid;place-items:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3));animation:petbob 2s ease-in-out infinite}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.86);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:180px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.9);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.48);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(920px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.dataBox code{color:#fff7bd}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:8px 0}.testUserRow select{width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:130px;max-height:130px;object-fit:contain;animation:petbob 1.8s ease-in-out infinite}.bubbleImg{position:absolute;right:68px;top:18px;width:42px;height:42px;object-fit:contain;opacity:0;transition:.2s}.bubbleImg.show{opacity:1}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid,.hookGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel)}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button,.hookGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:120px;background:#21142d;transform:translateX(-50%)}.hookClaw{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-size:34px}.devPanel{display:none}.devMode .screen,.devMode .hud,.devMode .layer,.devMode #levelWorld,.devMode #objects,.devMode #characters{display:none!important}.devMode #game{background:#160f24!important}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(520px,1fr) minmax(360px,460px);gap:12px;padding:12px;background:#fffaff;color:#21142d;overflow:hidden}.devPreview{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}.devPreviewHead{display:flex;justify-content:space-between;align-items:center;background:#21142d;color:#fff7bd;border-radius:14px;padding:8px 10px;font-weight:900}.devPreviewHead button{border:0;border-radius:999px;background:var(--yellow);color:#21142d;font-weight:900;padding:8px 12px}.devPreviewScreen{position:relative;flex:1;min-height:360px;border:3px solid var(--blue);border-radius:18px;overflow:hidden;background:#72d9ff}.devControls{min-height:0;overflow:auto;padding-right:4px}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:0;z-index:50;background:#fffaff;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid #21142d}.devTabBtn{border:2px solid #21142d;background:#21142d;color:#fff7bd;padding:6px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTabContent{display:none}.devTabContent.active{display:block}.formGroup{margin-bottom:10px}.formGroup label{display:block;font-weight:700;margin-bottom:4px;font-size:12px}.formGroup input,.formGroup select{width:100%;padding:7px;border:1px solid #ccc;border-radius:7px;background:#fff}.actionRow{display:flex;gap:6px;margin-top:10px}.actionRow button{flex:1;padding:9px;border:0;border-radius:7px;font-weight:900}.btnPrimary{background:#21142d;color:#fff}.btnSecondary{background:#ccc;color:#21142d}.note{font-size:12px;line-height:1.35;background:#fff3c7;border:1px solid #21142d;border-radius:10px;padding:8px;margin:8px 0}.toast{position:absolute;z-index:500;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@keyframes floaty{0%,100%{margin-top:0}50%{margin-top:-10px}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@media(max-width:760px){.hud{align-items:flex-start;flex-direction:column}.title{min-width:0}.menuGrid{grid-template-columns:1fr}.careGrid{grid-template-columns:repeat(4,1fr)}.devMode #devPanel{grid-template-columns:1fr;grid-template-rows:45vh 1fr;overflow:auto}.devPreviewScreen{min-height:220px}.devTabs{grid-template-columns:repeat(3,1fr)}}
-</style>
+.devPreviewLayer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.devPreviewSky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.devPreviewHills{height:56%;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.devPreviewGround{height:34%;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}.devPreviewPlatform{position:absolute;z-index:10;height:14px;border-radius:10px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 4px,rgba(210,130,194,.55) 4px 10px,rgba(118,199,216,.55) 10px 14px);border:1px solid rgba(255,255,255,.75)}.devPreviewObj{position:absolute;z-index:20;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.82);border:2px solid var(--pink);font-size:19px;transform:translate(-50%,-50%)}.devPreviewChar{position:absolute;left:23%;bottom:82px;z-index:35;width:120px;height:140px;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.32))}.devPreviewChar img,.devPreviewPet img{max-width:100%;max-height:100%;object-fit:contain}.devPreviewPet{position:absolute;left:14%;bottom:210px;z-index:36;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.devImageDebug{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}.devDebugCard{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;font-size:11px;word-break:break-word}</style>
 </head>
 <body>
 <div id="game">
@@ -21,7 +21,18 @@
   <div id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:900"><span id="petNameDisplay">PET: Loading...</span><span id="petXpDisplay">LV.1</span></div><div class="petStage"><img id="petBodyGraphic" alt="Pet"><img id="petBubble" class="bubbleImg" alt="bubble"></div><div class="meters"><div>HUNGER<div class="bar"><div id="fillHunger" class="fill"></div></div></div><div>HAPPY<div class="bar"><div id="fillHappy" class="fill"></div></div></div><div>ENERGY<div class="bar"><div id="fillEnergy" class="fill"></div></div></div><div>COINS<span id="labelCoins" style="display:block;margin-top:2px">🪙 0</span></div></div></div><div class="ticker" id="careStatusTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="processCareAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="processCareAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="processCareAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="processCareAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p id="hookHelp">Hook prizes are loaded from the sheet if matching rows/tabs are found.</p><div class="hookPool"><div class="hookLine"></div><div class="hookClaw">🪝</div><div id="hookItems"></div></div><div class="ticker" id="hookTicker">Press the button to hook an item.</div><button class="pill gold" onclick="hookAttempt()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="victory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="restartLevel();showScreen('platform')">Play Again</button></div></div>
-  <div id="devPanel" class="devPanel"><div class="devPreview"><div class="devPreviewHead"><span>🛠 Developer Preview</span><button onclick="toggleDev()">Close</button></div><div class="devPreviewScreen"><div class="layer sky"></div><div class="layer hills"></div><div class="layer ground"></div></div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Pets should come from sheet rows such as user_pets, pet_action_images, user_pet_images, effects, inventory, and response tabs. The loader tries common column names automatically.</div><div id="petDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
+  <div id="devPanel" class="devPanel"><div class="devPreview"><div class="devPreviewHead"><span>🛠 Developer Preview</span><button onclick="toggleDev()">Close</button></div><div class="devPreviewScreen" id="devPreviewScreen">
+  <div class="devPreviewLayer devPreviewSky"></div>
+  <div class="devPreviewLayer devPreviewHills"></div>
+  <div class="devPreviewLayer devPreviewGround"></div>
+  <div id="devPreviewPlatforms"></div>
+  <div id="devPreviewObjects"></div>
+  <div class="devPreviewChar" id="devPreviewChar"><img id="devPreviewCharImg" alt="character preview"></div>
+  <div class="devPreviewPet" id="devPreviewPet"><img id="devPreviewPetImg" alt="pet preview"></div>
+</div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Pets should come from sheet rows such as user_pets, pet_action_images, user_pet_images, effects, inventory, and response tabs. The loader tries common column names automatically.</div><div id="petDataPreview" class="dataBox"></div>
+<div class="note">Image/catalog debug: this shows whether the game found real image rows in the separate asset sheets. It still does not write to the sheet.</div>
+<div id="petImageDebug" class="devImageDebug"></div>
+</div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
 <div class="formGroup"><label>Character sprite URL</label><input id="devCharacterUrl" placeholder="Cloudinary URL or public id, e.g. pura_walk_001.png"></div>
 <div class="formGroup"><label>Sprite height px</label><input id="devSpriteHeight" type="number" value="220"></div>
 <div class="formGroup"><label>Sky background URL</label><input id="devSkyUrl" placeholder="day_sky.png or full Cloudinary URL"></div>
@@ -50,6 +61,7 @@ const CONFIG = {
   petTabs: [
     'user_profile','user_pets','pets','user_pet_images','pet_action_images','user_pet_skill_images',
     'user_pet_effects','user_pet_coins','user_inventory','item_catalog','pet_layer_catalog',
+    'habitat_catalog','habitat_layout_catalog','habitat_shop_catalog','user_habitat_inventory','user_pet_habitat_loadout',
     'feed_responses','play_responses','rest_responses','medicine_responses','shop_responses',
     'inventory_responses','coin_responses','train_responses','user_pet_traits','user_pet_skills',
     'pet_relationships','user_view_state','pet_menu'
@@ -316,26 +328,75 @@ function mergePetRow(profile, row) {
   if (/medicine_responses/.test(sheet) && medMsg) profile.medicineMessage = profile.medicineMessage || String(medMsg);
 }
 
-function blankProfile() { return { name: '', species: '', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80, userId: '', username: '', displayName: '', petId: '', base: '', feed: '', play: '', rest: '', medicine: '', happyBubble: '', sleepBubble: '', feedMessage: '', playMessage: '', restMessage: '', medicineMessage: '', rawRows: [] }; }
+function blankProfile() { return { name: '', species: '', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80, userId: '', username: '', displayName: '', petId: '', base: '', feed: '', play: '', rest: '', medicine: '', happyBubble: '', sleepBubble: '', feedMessage: '', playMessage: '', restMessage: '', medicineMessage: '', rawRows: [], assetRows: [] }; }
+function profileAliases(profile) {
+  const t = getActiveTestUser();
+  const bits = [profile.userId, profile.username, profile.displayName, profile.petId, profile.name, profile.species];
+  if (t) bits.push(t.discordId, t.username, t.displayName, t.fallbackPet && t.fallbackPet.name, t.fallbackPet && t.fallbackPet.species);
+  return bits.map(x => String(x || '').trim()).filter(Boolean);
+}
+function rowMatchesProfileAsset(row, profile) {
+  const sheet = String(row.__sheet || '').toLowerCase();
+  const assetSheet = /user_pet_images|pet_action_images|user_pet_effects|user_pet_skill_images|pet_layer_catalog|habitat_catalog|habitat_layout_catalog|user_pet_habitat_loadout/.test(sheet);
+  if (!assetSheet) return rowMatchesUser(row);
+  const ids = rowIdentity(row);
+  const rowBits = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName, ids.species, textOf(row)].map(x => cleanKey(x));
+  const aliases = profileAliases(profile).map(x => cleanKey(x)).filter(Boolean);
+  if (aliases.some(a => rowBits.some(bit => bit === a || bit.includes(a)))) return true;
+  // Asset catalog rows often have no owner user, only species/type/model/action.
+  // So for a user pet such as Odin the Raven, join any image row/catalog row that names Raven.
+  const species = cleanKey(profile.species);
+  if (species && rowBits.some(bit => bit.includes(species))) return true;
+  const petName = cleanKey(profile.name);
+  if (petName && rowBits.some(bit => bit.includes(petName))) return true;
+  return false;
+}
+function mergeAssetRowsIntoProfile(profile, allRows) {
+  const assetRows = allRows.filter(row => rowMatchesProfileAsset(row, profile));
+  for (const row of assetRows) {
+    if (!profile.rawRows.includes(row)) profile.rawRows.push(row);
+    profile.assetRows.push(row);
+    mergePetRow(profile, row);
+  }
+  // Final rescue pass: if this is an asset/image tab and still no base image, pick the first image row that matches species.
+  // This prevents the old raven emoji fallback when the owned user row and image catalog row are separate tabs.
+  if (!profile.base && profile.species) {
+    const species = cleanKey(profile.species);
+    const imageRows = allRows.filter(row => /image|action|effect|layer|habitat/.test(String(row.__sheet || '').toLowerCase()) && firstImage(row));
+    const speciesRows = imageRows.filter(row => cleanKey(textOf(row)).includes(species));
+    const rescue = speciesRows[0];
+    if (rescue) {
+      profile.assetRows.push(rescue);
+      mergePetRow(profile, rescue);
+    }
+  }
+}
 function buildPetProfiles(all) {
   const allRows = CONFIG.petTabs.flatMap(tab => all[tab] || []);
-  const matching = allRows.filter(rowMatchesUser);
-  const sourceRows = matching.length ? matching : allRows;
+  const ownedSheets = /user_profile|user_pets|user_pet_coins|user_inventory|user_view_state|pets|pet_relationships|user_pet_traits|user_pet_skills/i;
+  const ownedMatches = allRows.filter(row => ownedSheets.test(String(row.__sheet || '')) && rowMatchesUser(row));
+  const baseRows = ownedMatches.length ? ownedMatches : allRows.filter(rowMatchesUser);
   const profilesByKey = new Map();
-  for (const row of sourceRows) {
+  for (const row of baseRows) {
     const id = rowIdentity(row);
-    const key = cleanKey(id.userId || id.username || id.petId || id.petName || id.species || `row${profilesByKey.size}`);
+    const t = getActiveTestUser();
+    const key = cleanKey(id.userId || id.username || id.petId || id.petName || (t && t.discordId) || `row${profilesByKey.size}`);
     if (!profilesByKey.has(key)) profilesByKey.set(key, blankProfile());
     const p = profilesByKey.get(key);
     p.rawRows.push(row);
     mergePetRow(p, row);
   }
-  let pets = Array.from(profilesByKey.values()).filter(p => p.name || p.species || p.base || p.userId || p.username || p.petId);
   const t = getActiveTestUser();
+  if (!profilesByKey.size && t) {
+    const p = { ...blankProfile(), ...t.fallbackPet, rawRows: [], assetRows: [] };
+    profilesByKey.set(cleanKey(t.discordId), p);
+  }
+  for (const p of profilesByKey.values()) mergeAssetRowsIntoProfile(p, allRows);
+  let pets = Array.from(profilesByKey.values()).filter(p => p.name || p.species || p.base || p.userId || p.username || p.petId);
   if (t) {
-    const preferred = pets.filter(p => rowMatchesUser({ ...p, __sheet: 'profile' }) || [p.userId, p.username, p.displayName, p.name, p.species].some(v => String(v || '').toLowerCase().includes(t.username.toLowerCase()) || String(v || '').toLowerCase().includes(t.discordId.toLowerCase())));
+    const preferred = pets.filter(p => [p.userId, p.username, p.displayName, p.name, p.species].some(v => String(v || '').toLowerCase().includes(t.username.toLowerCase()) || String(v || '').toLowerCase().includes(t.discordId.toLowerCase()) || String(v || '').toLowerCase().includes(String(t.fallbackPet.species || '').toLowerCase())));
     if (preferred.length) pets = preferred;
-    if (!pets.length) pets = [{ ...t.fallbackPet }];
+    if (!pets.length) pets = [{ ...t.fallbackPet, rawRows: [], assetRows: [] }];
   }
   return pets;
 }
@@ -411,11 +472,53 @@ function renderSelectors() {
   if (hookSel) hookSel.innerHTML = state.hookRows.map((h, i) => `<option value="${i}">${escapeHtml(h.name)}</option>`).join('') || '<option>No hook items found</option>';
   updatePreviews();
 }
+function renderDevGamePreview() {
+  const pvP = $('devPreviewPlatforms');
+  const pvO = $('devPreviewObjects');
+  const pvChar = $('devPreviewCharImg');
+  const pvPet = $('devPreviewPetImg');
+  if (!pvP || !pvO) return;
+  const scale = 0.28;
+  pvP.innerHTML = '';
+  LEVEL.platforms.slice(0, 12).forEach(p => {
+    const d = document.createElement('div');
+    d.className = 'devPreviewPlatform';
+    d.style.left = Math.round(70 + p.x * scale) + 'px';
+    d.style.bottom = Math.round(p.y * 0.65) + 'px';
+    d.style.width = Math.max(30, Math.round(p.w * scale)) + 'px';
+    pvP.appendChild(d);
+  });
+  pvO.innerHTML = '';
+  [...LEVEL.collectibles.slice(0, 8), ...LEVEL.enemies.slice(0, 5), LEVEL.finish].forEach(o => {
+    const d = document.createElement('div');
+    d.className = 'devPreviewObj';
+    d.textContent = o.icon || '✨';
+    d.style.left = Math.round(70 + (o.x || o.baseX || 0) * scale) + 'px';
+    d.style.bottom = Math.round((o.y || 120) * 0.65) + 'px';
+    pvO.appendChild(d);
+  });
+  if (pvChar && $('mainCharacterImg')) pvChar.src = $('mainCharacterImg').src;
+  if (pvPet) pvPet.src = (state.currentPet && state.currentPet.base) ? state.currentPet.base : petFallback('');
+}
+function renderPetImageDebug() {
+  const box = $('petImageDebug');
+  if (!box) return;
+  const p = state.currentPet;
+  if (!p) { box.innerHTML = '<div class="devDebugCard">No pet loaded yet.</div>'; return; }
+  const rows = (p.assetRows || []).filter(r => firstImage(r)).slice(0, 8);
+  if (!rows.length) {
+    box.innerHTML = '<div class="devDebugCard"><b>No image/catalog rows joined.</b><br>That means the owned pet row loaded, but the asset sheet rows did not match the pet id/name/species yet.</div>';
+    return;
+  }
+  box.innerHTML = rows.map((r,i) => `<div class="devDebugCard"><b>${i+1}. ${escapeHtml(r.__sheet || 'sheet')}</b><br>${escapeHtml(shortUrl(firstImage(r)))}<br><small>${escapeHtml(Object.keys(r).filter(k=>!k.startsWith('__')).slice(0,6).join(', '))}</small></div>`).join('');
+}
 function updatePreviews() {
   const p = state.currentPet;
-  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If base image says NO IMAGE FOUND, the sheet row loaded but no image URL/public id was detected for that pet.</small>` : 'No pet loaded from sheet yet.';
+  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Asset/catalog rows joined: ${p.assetRows ? p.assetRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If base image says NO IMAGE FOUND, the owned pet row loaded but no matching image/catalog row was found. The loader now joins user_pets to user_pet_images, pet_action_images, pet_layer_catalog, and habitat catalog rows by pet id, pet name, and species.</small>` : 'No pet loaded from sheet yet.';
   const h = state.hookRows[state.selectedHookIndex];
   $('hookDataPreview').innerHTML = h ? `<b>${escapeHtml(h.name)}</b><br>Image found: ${h.image ? 'yes' : 'no'}<br>Points: ${h.points}` : 'No hook images loaded yet.';
+  renderPetImageDebug();
+  renderDevGamePreview();
 }
 function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.currentPet = state.petRows[state.selectedPetIndex] || state.currentPet; renderPet(); updatePreviews(); }
 function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
@@ -538,7 +641,7 @@ async function saveToCloudflareOnly() {
 }
 function showDataDebug() {
   const names = Object.fromEntries(Object.entries(state.allSheets).map(([k, v]) => [k, v.length]));
-  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3) }, null, 2);
+  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3).map(p => ({name:p.name, species:p.species, base:p.base, feed:p.feed, assetRows:(p.assetRows||[]).length, imageAssetRows:(p.assetRows||[]).filter(r=>firstImage(r)).length})), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3) }, null, 2);
 }
 
 window.addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) { state.keys.jump = true; e.preventDefault(); } });
@@ -577,13 +680,15 @@ function addDevLevelObject() {
   const x = Number($('devObjectX')?.value || 900);
   const y = Number($('devObjectY')?.value || 180);
   const w = Number($('devObjectW')?.value || 220);
-  if (type === 'platform') LOCAL_LEVEL.platforms.push({ x, y, w });
-  else LOCAL_LEVEL.objects.push({ x, y, type, icon: iconRaw });
+  if (type === 'platform') LEVEL.platforms.push({ x, y, w, h: 26 });
+  else if (type === 'enemy') LEVEL.enemies.push({ x, y, icon: iconRaw, range: 0, dir: 1, baseX: x });
+  else if (type === 'finishObj') LEVEL.finish = { x, y, icon: iconRaw };
+  else LEVEL.collectibles.push({ x, y, icon: iconRaw, points: 10 });
   restartLevel();
   toast('Level object added');
 }
 
-function init() { loadLocalPrefs(); resetGameImageSettings(); renderPet(); renderHookItems(); showScreen('menu'); setTimeout(loadSheetData, 250); }
+function init() { loadLocalPrefs(); resetGameImageSettings(); renderPet(); renderHookItems(); renderDevGamePreview(); showScreen('menu'); setTimeout(loadSheetData, 250); }
 init();
 </script>
 </body>
