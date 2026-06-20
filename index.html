@@ -29,8 +29,13 @@
   <div id="devPreviewObjects"></div>
   <div class="devPreviewChar" id="devPreviewChar"><img id="devPreviewCharImg" alt="character preview"></div>
   <div class="devPreviewPet" id="devPreviewPet"><img id="devPreviewPetImg" alt="pet preview"></div>
-</div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Pets should come from sheet rows such as user_pets, pet_action_images, user_pet_images, effects, inventory, and response tabs. The loader tries common column names automatically.</div><div id="petDataPreview" class="dataBox"></div>
-<div class="note">Image/catalog debug: this shows whether the game found real image rows in the separate asset sheets. It still does not write to the sheet.</div>
+</div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Owned pets and image catalogs are separate. This tab now lets you choose the exact image row from the sheet instead of guessing and accidentally showing the wrong creature.</div><div id="petDataPreview" class="dataBox"></div>
+<div class="formGroup"><label>Base image row from sheet</label><select id="devPetBaseAssetSelect" onchange="selectPetAsset('base', this.value)"></select></div>
+<div class="formGroup"><label>Feed image row from sheet</label><select id="devPetFeedAssetSelect" onchange="selectPetAsset('feed', this.value)"></select></div>
+<div class="formGroup"><label>Play image row from sheet</label><select id="devPetPlayAssetSelect" onchange="selectPetAsset('play', this.value)"></select></div>
+<div class="formGroup"><label>Rest image row from sheet</label><select id="devPetRestAssetSelect" onchange="selectPetAsset('rest', this.value)"></select></div>
+<div class="formGroup"><label>Medicine/heal image row from sheet</label><select id="devPetMedicineAssetSelect" onchange="selectPetAsset('medicine', this.value)"></select></div>
+<div class="note">Image/catalog debug: it shows which rows matched automatically. Use the dropdowns above when the sheet uses a different key.</div>
 <div id="petImageDebug" class="devImageDebug"></div>
 </div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
 <div class="formGroup"><label>Character sprite URL</label><input id="devCharacterUrl" placeholder="Cloudinary URL or public id, e.g. pura_walk_001.png"></div>
@@ -104,6 +109,7 @@ const state = {
   hookRows: [],
   shopItems: [],
   inventoryItems: [],
+  assetOptions: [],
   allSheets: {},
   currentPet: null,
   animationId: null,
@@ -340,15 +346,14 @@ function rowMatchesProfileAsset(row, profile) {
   const assetSheet = /user_pet_images|pet_action_images|user_pet_effects|user_pet_skill_images|pet_layer_catalog|habitat_catalog|habitat_layout_catalog|user_pet_habitat_loadout/.test(sheet);
   if (!assetSheet) return rowMatchesUser(row);
   const ids = rowIdentity(row);
-  const rowBits = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName, ids.species, textOf(row)].map(x => cleanKey(x));
-  const aliases = profileAliases(profile).map(x => cleanKey(x)).filter(Boolean);
-  if (aliases.some(a => rowBits.some(bit => bit === a || bit.includes(a)))) return true;
-  // Asset catalog rows often have no owner user, only species/type/model/action.
-  // So for a user pet such as Odin the Raven, join any image row/catalog row that names Raven.
-  const species = cleanKey(profile.species);
-  if (species && rowBits.some(bit => bit.includes(species))) return true;
-  const petName = cleanKey(profile.name);
-  if (petName && rowBits.some(bit => bit.includes(petName))) return true;
+  const rowAll = cleanKey(textOf(row));
+  const strongAliases = [profile.userId, profile.username, profile.displayName, profile.petId, profile.name]
+    .map(x => cleanKey(x)).filter(x => x && x.length >= 3);
+  const rowStrong = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName]
+    .map(x => cleanKey(x)).filter(Boolean);
+  // Strong safe matches only. Do not match by species alone, because that made Odin load the wrong creature image.
+  if (strongAliases.some(a => rowStrong.some(bit => bit === a || bit.includes(a) || a.includes(bit)))) return true;
+  if (strongAliases.some(a => rowAll.includes(a))) return true;
   return false;
 }
 function mergeAssetRowsIntoProfile(profile, allRows) {
@@ -357,18 +362,6 @@ function mergeAssetRowsIntoProfile(profile, allRows) {
     if (!profile.rawRows.includes(row)) profile.rawRows.push(row);
     profile.assetRows.push(row);
     mergePetRow(profile, row);
-  }
-  // Final rescue pass: if this is an asset/image tab and still no base image, pick the first image row that matches species.
-  // This prevents the old raven emoji fallback when the owned user row and image catalog row are separate tabs.
-  if (!profile.base && profile.species) {
-    const species = cleanKey(profile.species);
-    const imageRows = allRows.filter(row => /image|action|effect|layer|habitat/.test(String(row.__sheet || '').toLowerCase()) && firstImage(row));
-    const speciesRows = imageRows.filter(row => cleanKey(textOf(row)).includes(species));
-    const rescue = speciesRows[0];
-    if (rescue) {
-      profile.assetRows.push(rescue);
-      mergePetRow(profile, rescue);
-    }
   }
 }
 function buildPetProfiles(all) {
@@ -440,6 +433,44 @@ function normalizeHooks(rows) {
   })).filter(h => h.name || h.image || h.icon);
 }
 
+function collectImageAssets(all) {
+  const rows = Object.values(all || {}).flat();
+  const out = [];
+  rows.forEach((row) => {
+    const image = firstImage(row);
+    if (!image) return;
+    const sheet = String(row.__sheet || 'sheet');
+    const label = String(val(row, ['name','pet_name','species','type','action','state','item','label','title','description']) || textOf(row).slice(0, 48) || 'image row').trim();
+    out.push({ image, sheet, label, row });
+  });
+  return out;
+}
+function imageAssetLabel(asset, i) {
+  if (!asset) return 'No image selected';
+  return `${i + 1}. ${asset.sheet} — ${asset.label}`.slice(0, 120);
+}
+function fillImageAssetSelect(selectId, currentUrl) {
+  const sel = $(selectId);
+  if (!sel) return;
+  const opts = ['<option value="">-- choose exact image row --</option>'];
+  state.assetOptions.forEach((asset, i) => {
+    const selected = currentUrl && asset.image === currentUrl ? ' selected' : '';
+    opts.push(`<option value="${i}"${selected}>${escapeHtml(imageAssetLabel(asset, i))}</option>`);
+  });
+  sel.innerHTML = opts.join('');
+}
+function selectPetAsset(kind, index) {
+  const p = state.currentPet;
+  const asset = state.assetOptions[Number(index)];
+  if (!p || !asset) return;
+  p[kind] = asset.image;
+  if (!p.assetRows) p.assetRows = [];
+  if (!p.assetRows.includes(asset.row)) p.assetRows.push(asset.row);
+  renderPet(kind === 'base' ? undefined : kind);
+  updatePreviews();
+  toast(`Set ${kind} image from ${asset.sheet}`);
+}
+
 async function loadSheetData() {
   saveLocalPrefs();
   $('sheetStatus').textContent = 'loading read-only...';
@@ -452,6 +483,7 @@ async function loadSheetData() {
     catch (e) { errors.push(e.message); }
   }
   state.allSheets = all;
+  state.assetOptions = collectImageAssets(all);
   state.petRows = buildPetProfiles(all);
   state.shopItems = buildShopItems(all);
   state.hookRows = normalizeHooks(CONFIG.hookTabs.flatMap(t => all[t] || []));
@@ -461,7 +493,8 @@ async function loadSheetData() {
   renderHookItems();
   const loadedTabs = Object.keys(all).length;
   $('sheetStatus').textContent = `loaded ${loadedTabs} tabs, pets found: ${state.petRows.length}, shop/items found: ${state.shopItems.length}, hook items found: ${state.hookRows.length}${state.currentPet && state.currentPet.fromTestFallback ? ' (using testing fallback profile)' : ''}`;
-  $('devReadout').textContent = `Loaded read-only.\nTesting user: ${getActiveTestUser() ? getActiveTestUser().username : 'custom'} / ${$('userIdInput').value.trim()}\nPets: ${state.petRows.length}\nShop/items: ${state.shopItems.length}\nHook items: ${state.hookRows.length}\nMissing tabs/errors: ${errors.slice(0, 12).join(' | ') || 'none shown'}`;
+  $('devReadout').textContent = `Loaded read-only.\nTesting user: ${getActiveTestUser() ? getActiveTestUser().username : 'custom'} / ${$('userIdInput').value.trim()}\nPets: ${state.petRows.length}\nShop/items: ${state.shopItems.length}\nHook items: ${state.hookRows.length}
+Image rows: ${state.assetOptions.length}\nMissing tabs/errors: ${errors.slice(0, 12).join(' | ') || 'none shown'}`;
   toast('Sheet loaded read-only');
 }
 
@@ -470,6 +503,12 @@ function renderSelectors() {
   if (petSel) petSel.innerHTML = state.petRows.map((p, i) => `<option value="${i}">${escapeHtml(p.name || 'Pet')} ${escapeHtml(p.species ? `(${p.species})` : '')}</option>`).join('') || '<option>No pets found</option>';
   const hookSel = $('devHookSelect');
   if (hookSel) hookSel.innerHTML = state.hookRows.map((h, i) => `<option value="${i}">${escapeHtml(h.name)}</option>`).join('') || '<option>No hook items found</option>';
+  const p = state.currentPet || {};
+  fillImageAssetSelect('devPetBaseAssetSelect', p.base);
+  fillImageAssetSelect('devPetFeedAssetSelect', p.feed);
+  fillImageAssetSelect('devPetPlayAssetSelect', p.play);
+  fillImageAssetSelect('devPetRestAssetSelect', p.rest);
+  fillImageAssetSelect('devPetMedicineAssetSelect', p.medicine);
   updatePreviews();
 }
 function renderDevGamePreview() {
@@ -514,7 +553,7 @@ function renderPetImageDebug() {
 }
 function updatePreviews() {
   const p = state.currentPet;
-  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Asset/catalog rows joined: ${p.assetRows ? p.assetRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If base image says NO IMAGE FOUND, the owned pet row loaded but no matching image/catalog row was found. The loader now joins user_pets to user_pet_images, pet_action_images, pet_layer_catalog, and habitat catalog rows by pet id, pet name, and species.</small>` : 'No pet loaded from sheet yet.';
+  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Asset/catalog rows joined automatically: ${p.assetRows ? p.assetRows.length : 0}<br>Total image rows available in sheet: ${state.assetOptions.length}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If the image is wrong or missing, use the image-row dropdowns in Developer → Pet. Auto-join now only uses strong keys such as Discord ID, username, pet ID, or pet name; it no longer guesses by species alone.</small>` : 'No pet loaded from sheet yet.';
   const h = state.hookRows[state.selectedHookIndex];
   $('hookDataPreview').innerHTML = h ? `<b>${escapeHtml(h.name)}</b><br>Image found: ${h.image ? 'yes' : 'no'}<br>Points: ${h.points}` : 'No hook images loaded yet.';
   renderPetImageDebug();
@@ -524,8 +563,7 @@ function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.cu
 function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
 
 function petFallback(species) {
-  const label = encodeURIComponent('NO PET\nIMAGE');
-  return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect width='160' height='160' rx='22' fill='%23fff7bd'/><rect x='8' y='8' width='144' height='144' rx='18' fill='none' stroke='%2321142d' stroke-width='4' stroke-dasharray='8 6'/><text x='80' y='72' font-family='Arial' font-size='18' font-weight='900' text-anchor='middle' fill='%2321142d'>NO PET</text><text x='80' y='98' font-family='Arial' font-size='18' font-weight='900' text-anchor='middle' fill='%2321142d'>IMAGE</text></svg>`;
+  return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" rx="18" fill="#fff7bd"/><rect x="10" y="10" width="220" height="140" rx="12" fill="none" stroke="#21142d" stroke-width="4" stroke-dasharray="7 5"/><text x="120" y="72" text-anchor="middle" font-size="18" font-family="Arial" font-weight="900" fill="#21142d">NO PET IMAGE</text><text x="120" y="100" text-anchor="middle" font-size="12" font-family="Arial" fill="#21142d">choose asset row in Developer → Pet</text></svg>`);
 }
 function renderPet(action) {
   const p = state.currentPet || { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80 };
@@ -641,7 +679,7 @@ async function saveToCloudflareOnly() {
 }
 function showDataDebug() {
   const names = Object.fromEntries(Object.entries(state.allSheets).map(([k, v]) => [k, v.length]));
-  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3).map(p => ({name:p.name, species:p.species, base:p.base, feed:p.feed, assetRows:(p.assetRows||[]).length, imageAssetRows:(p.assetRows||[]).filter(r=>firstImage(r)).length})), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3) }, null, 2);
+  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3).map(p => ({name:p.name, species:p.species, base:p.base, feed:p.feed, assetRows:(p.assetRows||[]).length, imageAssetRows:(p.assetRows||[]).filter(r=>firstImage(r)).length})), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3), imageAssets: state.assetOptions.slice(0, 10).map((a,i)=>({i, sheet:a.sheet, label:a.label, image:shortUrl(a.image)})) }, null, 2);
 }
 
 window.addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) { state.keys.jump = true; e.preventDefault(); } });
