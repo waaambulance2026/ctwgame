@@ -8,7 +8,7 @@
 <title>Waaambulance Quest Dash</title>
 <style>
 :root{--pink:#d282c2;--blue:#76C7D8;--yellow:#F5C542;--ink:#130b1d;--panel:#21142d;--floor:82px;--sky:linear-gradient(#72d9ff 0%,#82dcff 58%,#c5f2ff 100%);--hills:url('assets/parallax_far.svg');--ground:url('assets/parallax_mid.svg');--lcd:#a3b899;--lcdInk:#2b3a22}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select{font-family:inherit}button{cursor:pointer}#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}#levelWorld{position:absolute;inset:0;z-index:20;pointer-events:none}.levelPlatform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 5px,rgba(210,130,194,.45) 5px 18px,rgba(118,199,216,.45) 18px 24px,rgba(33,69,124,.35) 24px);box-shadow:0 7px 13px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.35)}#objects{position:absolute;inset:0;z-index:45;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86)}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finishObj{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}#characters{position:absolute;inset:0;z-index:55;pointer-events:none}.char{position:absolute;left:24vw;bottom:var(--floor);transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:bottom}.charBox{height:220px;width:190px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}.char img{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block}.shadow{position:absolute;left:24vw;bottom:calc(var(--floor) - 11px);width:110px;height:22px;border-radius:50%;transform:translateX(-50%);background:rgba(0,0,0,.26);filter:blur(8px);z-index:52}.petFollower{position:absolute;z-index:56;pointer-events:none;display:grid;place-items:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3));animation:petbob 2s ease-in-out infinite}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.86);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:180px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.9);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.48);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(920px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.dataBox code{color:#fff7bd}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:8px 0}.testUserRow select{width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:130px;max-height:130px;object-fit:contain;animation:petbob 1.8s ease-in-out infinite}.bubbleImg{position:absolute;right:68px;top:18px;width:42px;height:42px;object-fit:contain;opacity:0;transition:.2s}.bubbleImg.show{opacity:1}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid,.hookGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel)}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button,.hookGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:120px;background:#21142d;transform:translateX(-50%)}.hookClaw{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-size:34px}.devPanel{display:none}.devMode .screen,.devMode .hud,.devMode .layer,.devMode #levelWorld,.devMode #objects,.devMode #characters{display:none!important}.devMode #game{background:#160f24!important}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(520px,1fr) minmax(360px,460px);gap:12px;padding:12px;background:#fffaff;color:#21142d;overflow:hidden}.devPreview{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}.devPreviewHead{display:flex;justify-content:space-between;align-items:center;background:#21142d;color:#fff7bd;border-radius:14px;padding:8px 10px;font-weight:900}.devPreviewHead button{border:0;border-radius:999px;background:var(--yellow);color:#21142d;font-weight:900;padding:8px 12px}.devPreviewScreen{position:relative;flex:1;min-height:360px;border:3px solid var(--blue);border-radius:18px;overflow:hidden;background:#72d9ff}.devControls{min-height:0;overflow:auto;padding-right:4px}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:0;z-index:50;background:#fffaff;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid #21142d}.devTabBtn{border:2px solid #21142d;background:#21142d;color:#fff7bd;padding:6px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTabContent{display:none}.devTabContent.active{display:block}.formGroup{margin-bottom:10px}.formGroup label{display:block;font-weight:700;margin-bottom:4px;font-size:12px}.formGroup input,.formGroup select{width:100%;padding:7px;border:1px solid #ccc;border-radius:7px;background:#fff}.actionRow{display:flex;gap:6px;margin-top:10px}.actionRow button{flex:1;padding:9px;border:0;border-radius:7px;font-weight:900}.btnPrimary{background:#21142d;color:#fff}.btnSecondary{background:#ccc;color:#21142d}.note{font-size:12px;line-height:1.35;background:#fff3c7;border:1px solid #21142d;border-radius:10px;padding:8px;margin:8px 0}.toast{position:absolute;z-index:500;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@keyframes floaty{0%,100%{margin-top:0}50%{margin-top:-10px}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@media(max-width:760px){.hud{align-items:flex-start;flex-direction:column}.title{min-width:0}.menuGrid{grid-template-columns:1fr}.careGrid{grid-template-columns:repeat(4,1fr)}.devMode #devPanel{grid-template-columns:1fr;grid-template-rows:45vh 1fr;overflow:auto}.devPreviewScreen{min-height:220px}.devTabs{grid-template-columns:repeat(3,1fr)}}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select{font-family:inherit}button{cursor:pointer}#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}#levelWorld{position:absolute;inset:0;z-index:20;pointer-events:none}.levelPlatform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 5px,rgba(210,130,194,.45) 5px 18px,rgba(118,199,216,.45) 18px 24px,rgba(33,69,124,.35) 24px);box-shadow:0 7px 13px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.35)}#objects{position:absolute;inset:0;z-index:45;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86)}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finishObj{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}#characters{position:absolute;inset:0;z-index:55;pointer-events:none}.char{position:absolute;left:24vw;bottom:var(--floor);transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:bottom}.charBox{height:220px;width:190px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}.char img{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block}.shadow{position:absolute;left:24vw;bottom:calc(var(--floor) - 11px);width:110px;height:22px;border-radius:50%;transform:translateX(-50%);background:rgba(0,0,0,.26);filter:blur(8px);z-index:52}.petFollower{position:absolute;z-index:56;pointer-events:none;display:grid;place-items:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3));animation:petbob 2s ease-in-out infinite}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.86);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:180px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.9);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.48);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(920px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.dataBox code{color:#fff7bd}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:8px 0}.testUserRow select{width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:130px;max-height:130px;object-fit:contain;animation:petbob 1.8s ease-in-out infinite}.noImageTile{display:grid;place-items:center;width:150px;height:105px;border:2px dashed #21142d;border-radius:12px;background:#fff7bd;color:#21142d;font-weight:900;font-size:12px;text-align:center;padding:8px}.bubbleImg{position:absolute;right:68px;top:18px;width:42px;height:42px;object-fit:contain;opacity:0;transition:.2s}.bubbleImg.show{opacity:1}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid,.hookGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel)}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button,.hookGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:120px;background:#21142d;transform:translateX(-50%)}.hookClaw{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-size:34px}.devPanel{display:none}.devMode .screen,.devMode .hud,.devMode .layer,.devMode #levelWorld,.devMode #objects,.devMode #characters{display:none!important}.devMode #game{background:#160f24!important}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(520px,1fr) minmax(360px,460px);gap:12px;padding:12px;background:#fffaff;color:#21142d;overflow:hidden}.devPreview{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}.devPreviewHead{display:flex;justify-content:space-between;align-items:center;background:#21142d;color:#fff7bd;border-radius:14px;padding:8px 10px;font-weight:900}.devPreviewHead button{border:0;border-radius:999px;background:var(--yellow);color:#21142d;font-weight:900;padding:8px 12px}.devPreviewScreen{position:relative;flex:1;min-height:360px;border:3px solid var(--blue);border-radius:18px;overflow:hidden;background:#72d9ff}.devControls{min-height:0;overflow:auto;padding-right:4px}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:0;z-index:50;background:#fffaff;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid #21142d}.devTabBtn{border:2px solid #21142d;background:#21142d;color:#fff7bd;padding:6px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTabContent{display:none}.devTabContent.active{display:block}.formGroup{margin-bottom:10px}.formGroup label{display:block;font-weight:700;margin-bottom:4px;font-size:12px}.formGroup input,.formGroup select{width:100%;padding:7px;border:1px solid #ccc;border-radius:7px;background:#fff}.actionRow{display:flex;gap:6px;margin-top:10px}.actionRow button{flex:1;padding:9px;border:0;border-radius:7px;font-weight:900}.btnPrimary{background:#21142d;color:#fff}.btnSecondary{background:#ccc;color:#21142d}.note{font-size:12px;line-height:1.35;background:#fff3c7;border:1px solid #21142d;border-radius:10px;padding:8px;margin:8px 0}.toast{position:absolute;z-index:500;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@keyframes floaty{0%,100%{margin-top:0}50%{margin-top:-10px}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@media(max-width:760px){.hud{align-items:flex-start;flex-direction:column}.title{min-width:0}.menuGrid{grid-template-columns:1fr}.careGrid{grid-template-columns:repeat(4,1fr)}.devMode #devPanel{grid-template-columns:1fr;grid-template-rows:45vh 1fr;overflow:auto}.devPreviewScreen{min-height:220px}.devTabs{grid-template-columns:repeat(3,1fr)}}
 .devPreviewLayer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.devPreviewSky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.devPreviewHills{height:56%;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.devPreviewGround{height:34%;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}.devPreviewPlatform{position:absolute;z-index:10;height:14px;border-radius:10px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 4px,rgba(210,130,194,.55) 4px 10px,rgba(118,199,216,.55) 10px 14px);border:1px solid rgba(255,255,255,.75)}.devPreviewObj{position:absolute;z-index:20;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.82);border:2px solid var(--pink);font-size:19px;transform:translate(-50%,-50%)}.devPreviewChar{position:absolute;left:23%;bottom:82px;z-index:35;width:120px;height:140px;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.32))}.devPreviewChar img,.devPreviewPet img{max-width:100%;max-height:100%;object-fit:contain}.devPreviewPet{position:absolute;left:14%;bottom:210px;z-index:36;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.devImageDebug{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}.devDebugCard{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;font-size:11px;word-break:break-word}</style>
 </head>
 <body>
@@ -17,7 +17,7 @@
   <div id="levelWorld"></div><div id="objects"></div>
   <div id="characters"><div class="shadow"></div><div class="char" id="playerChar"><div class="charBox"><img id="mainCharacterImg" alt="Player"></div></div><div class="petFollower" id="petFollower" style="width:58px;height:58px;left:calc(24vw - 70px);bottom:220px"><img id="petFollowerImg" alt="Pet follower"></div></div>
   <div class="hud"><div class="title"><strong>🚑 Waaambulance Quest Dash</strong><span id="hudSubtitle">One game: menu, platform, pet care, hook</span></div><div class="stats"><span class="pill pink">Score: <strong id="score">0</strong></span><span class="pill">Lives: <strong id="lives">3</strong></span><span class="pill blue">Distance: <strong id="distance">0m</strong></span><button class="pill gold" onclick="showScreen('menu')">🏠 Menu</button><button class="pill" onclick="toggleDev()">🛠 Dev</button></div></div>
-  <div id="screenMain" class="screen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>One game with separate screens inside this same <b>index.html</b>.</p><div class="menuGrid"><button class="bigCard" onclick="showScreen('platform')">🎮 Platform Game<span>Level 1: Swamp Monster</span></button><button class="bigCard" onclick="showScreen('pet')">🐾 Pet Care<span>Loads pets from the sheet read-only</span></button><button class="bigCard" onclick="showScreen('hook')">🧲 Hook-A-Waaambulance<span>Uses hook images from the sheet when found</span></button><button class="bigCard" onclick="toggleDev()">🛠 Developer<span>Settings and sheet loader status</span></button></div><div class="dataBox"><b>Read-only sheet mode:</b><br>Sheet ID: <code id="sheetIdLabel"></code><br>Status: <span id="sheetStatus">not loaded yet</span><br><br><label>Testing user</label><div class="testUserRow"><select id="testUserSelect" onchange="applyTestingUser(this.value)"><option value="ryan">💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚 / ryansaxolotl</option><option value="ashely">Ashely / alyj420</option><option value="custom">Custom / Discord Activity later</option></select><button class="pill gold" onclick="loadSheetData()">Load</button></div><label>Discord/User ID to load <input id="userIdInput" placeholder="Discord id, username, or pet name" oninput="document.getElementById('testUserSelect').value='custom';saveLocalPrefs()"></label><button class="pill gold" onclick="loadSheetData()">Refresh sheet data</button><p>Testing mode uses Ryan or Ashely automatically. Later Discord Activity mode will fill this from Discord, so users will not type their ID.</p><p>This page only reads the sheet. It does not write, sort, delete, or edit any sheet rows.</p></div></div></div>
+  <div id="screenMain" class="screen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>One game with separate screens inside this same <b>index.html</b>.</p><div class="menuGrid"><button class="bigCard" onclick="showScreen('platform')">🎮 Platform Game<span>Level 1: Swamp Monster</span></button><button class="bigCard" onclick="showScreen('pet')">🐾 Pet Care<span>Loads pets from the sheet read-only</span></button><button class="bigCard" onclick="showScreen('hook')">🧲 Hook-A-Waaambulance<span>Uses hook images from the sheet when found</span></button><button class="bigCard" onclick="toggleDev()">🛠 Developer<span>Settings and sheet loader status</span></button></div><div class="dataBox"><b>Read-only sheet mode:</b><br>Sheet ID: <code id="sheetIdLabel"></code><br>Status: <span id="sheetStatus">not loaded yet</span><br><br><label>Testing user</label><div class="testUserRow"><select id="testUserSelect" onchange="applyTestingUser(this.value)"><option value="ryan">💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚 / ryansaxolotl</option><option value="ashely">Ashely / alyj420</option><option value="custom">Custom / Discord Activity later</option></select><button class="pill gold" onclick="loadSheetData()">Load</button></div><label>Discord/User ID to load <input id="userIdInput" placeholder="Discord id, username, or pet name" oninput="document.getElementById('testUserSelect').value='custom';saveLocalPrefs()"></label><button class="pill gold" onclick="loadSheetData()">Refresh sheet data</button><br><br><label>Player character for platform test</label><select id="menuCharacterSelect" onchange="setPlayerCharacterPreset(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom URL from Developer</option></select><p>Testing mode uses Ryan or Ashely automatically. Later Discord Activity mode will fill this from Discord, so users will not type their ID.</p><p>This page only reads the sheet. It does not write, sort, delete, or edit any sheet rows.</p></div></div></div>
   <div id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:900"><span id="petNameDisplay">PET: Loading...</span><span id="petXpDisplay">LV.1</span></div><div class="petStage"><img id="petBodyGraphic" alt="Pet"><img id="petBubble" class="bubbleImg" alt="bubble"></div><div class="meters"><div>HUNGER<div class="bar"><div id="fillHunger" class="fill"></div></div></div><div>HAPPY<div class="bar"><div id="fillHappy" class="fill"></div></div></div><div>ENERGY<div class="bar"><div id="fillEnergy" class="fill"></div></div></div><div>COINS<span id="labelCoins" style="display:block;margin-top:2px">🪙 0</span></div></div></div><div class="ticker" id="careStatusTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="processCareAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="processCareAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="processCareAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="processCareAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p id="hookHelp">Hook prizes are loaded from the sheet if matching rows/tabs are found.</p><div class="hookPool"><div class="hookLine"></div><div class="hookClaw">🪝</div><div id="hookItems"></div></div><div class="ticker" id="hookTicker">Press the button to hook an item.</div><button class="pill gold" onclick="hookAttempt()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="victory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="restartLevel();showScreen('platform')">Play Again</button></div></div>
@@ -38,6 +38,7 @@
 <div class="note">Image/catalog debug: it shows which rows matched automatically. Use the dropdowns above when the sheet uses a different key.</div>
 <div id="petImageDebug" class="devImageDebug"></div>
 </div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
+<div class="formGroup"><label>Player character preset</label><select id="devCharacterPreset" onchange="setPlayerCharacterPreset(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom URL below</option></select></div>
 <div class="formGroup"><label>Character sprite URL</label><input id="devCharacterUrl" placeholder="Cloudinary URL or public id, e.g. pura_walk_001.png"></div>
 <div class="formGroup"><label>Sprite height px</label><input id="devSpriteHeight" type="number" value="220"></div>
 <div class="formGroup"><label>Sky background URL</label><input id="devSkyUrl" placeholder="day_sky.png or full Cloudinary URL"></div>
@@ -59,6 +60,13 @@
 
 const DEFAULT_SHEET_ID = '1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
 const CLOUDINARY_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const CHARACTER_PRESETS = {
+  pura: { label: 'Pura', url: 'pura_walk_001.png' },
+  ax: { label: 'Axolotl', url: 'ax_walk_001.png' },
+  unicorn: { label: 'Unicorn', url: 'unicorn_walk_001.png' },
+  owl: { label: 'Owl', url: 'owl_walk_001.png' },
+  custom: { label: 'Custom', url: '' }
+};
 
 const CONFIG = {
   sheetId: DEFAULT_SHEET_ID,
@@ -114,7 +122,8 @@ const state = {
   currentPet: null,
   animationId: null,
   keys: {},
-  hookScore: 0
+  hookScore: 0,
+  selectedCharacter: 'pura'
 };
 
 const LEVEL = {
@@ -184,7 +193,10 @@ function saveLocalPrefs() {
     testUser: $('testUserSelect') ? $('testUserSelect').value : 'ryan'
   }));
   $('sheetIdLabel').textContent = CONFIG.sheetId;
+  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter || 'pura';
+  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
 }
+
 
 function applyTestingUser(key) {
   const t = TEST_USERS[key];
@@ -202,13 +214,17 @@ function loadLocalPrefs() {
     if (Array.isArray(p.hookTabs)) CONFIG.hookTabs = p.hookTabs;
     if ($('testUserSelect')) $('testUserSelect').value = p.testUser || 'ryan';
     if (p.userId) $('userIdInput').value = p.userId;
+    if (p.selectedCharacter) state.selectedCharacter = p.selectedCharacter;
   } catch (e) {}
   if (!$('userIdInput').value) { const t = getActiveTestUser(); if (t) $('userIdInput').value = t.discordId; }
   $('devSheetId').value = CONFIG.sheetId;
   $('devPetTabs').value = CONFIG.petTabs.join(', ');
   $('devHookTabs').value = CONFIG.hookTabs.join(', ');
   $('sheetIdLabel').textContent = CONFIG.sheetId;
+  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter || 'pura';
+  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
 }
+
 
 async function fetchSheetTab(sheetName) {
   const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.sheetId)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
@@ -239,19 +255,28 @@ function val(row, names) {
   return '';
 }
 
-function looksImage(s) {
-  const v = String(s || '').trim();
-  if (!v || /^cloudinary\.com$/i.test(v)) return false;
+function looksImage(s, allowPublicId = false) {
+  const v = String(s || '').trim().replace(/^['"]|['"]$/g, '');
+  if (!v || /^(none|n\/a|null|undefined|pet|image|url)$/i.test(v) || /^cloudinary\.com$/i.test(v)) return false;
   if (/^https?:\/\//i.test(v) || /^data:image\//i.test(v)) return true;
   if (/\.(png|jpg|jpeg|webp|gif|svg)(\?|$)/i.test(v)) return true;
   if (/image\/upload\//i.test(v)) return true;
-  return false;
+  if (!allowPublicId) return false;
+  if (/\s/.test(v)) return false;
+  return v.includes('/') || /^v\d+\//i.test(v) || /_(idle|walk|jump|feed|play|rest|sleep|heal|medicine|static|base|image|sprite)\b/i.test(v) || /^ctw[_/-]/i.test(v);
 }
-function resolveImageUrl(value) {
-  let v = String(value || '').trim();
-  if (!looksImage(v)) return '';
+function resolveImageUrl(value, allowPublicId = false) {
+  let v = String(value || '').trim().replace(/^['"]|['"]$/g, '');
+  if (!looksImage(v, allowPublicId)) return '';
   if (/^data:image\//i.test(v)) return v;
-  if (/^https?:\/\//i.test(v)) return v.replace('https://cloudinary.com/', CLOUDINARY_BASE).replace('http://cloudinary.com/', CLOUDINARY_BASE);
+  const driveId = (v.match(/drive\.google\.com\/file\/d\/([^/]+)/i) || v.match(/[?&]id=([^&]+)/i) || [])[1];
+  if (driveId) return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`;
+  if (/^https?:\/\//i.test(v)) {
+    return v
+      .replace('https://cloudinary.com/', CLOUDINARY_BASE)
+      .replace('http://cloudinary.com/', CLOUDINARY_BASE)
+      .replace('https://res.cloudinary.com/dpwlfmhia/', 'https://res.cloudinary.com/dpwlfmhia/');
+  }
   if (/^res\.cloudinary\.com\//i.test(v)) return `https://${v}`;
   if (/^cloudinary\.com\//i.test(v)) return v.replace(/^cloudinary\.com\//i, CLOUDINARY_BASE);
   if (/^image\/upload\//i.test(v)) return `https://res.cloudinary.com/dpwlfmhia/${v}`;
@@ -259,13 +284,23 @@ function resolveImageUrl(value) {
 }
 function firstImage(row) {
   for (const [k, v] of Object.entries(row || {})) {
-    if (/image|img|url|asset|sprite|graphic|cloudinary|picture|icon/i.test(k)) {
-      const u = resolveImageUrl(v);
+    if (/image|img|url|asset|sprite|graphic|cloudinary|picture|icon|public.?id|file|media/i.test(k)) {
+      const u = resolveImageUrl(v, true);
       if (u) return u;
     }
   }
-  for (const v of Object.values(row || {})) { const u = resolveImageUrl(v); if (u) return u; }
+  for (const v of Object.values(row || {})) { const u = resolveImageUrl(v, true); if (u) return u; }
   return '';
+}
+function imageFallbackSvg(label = 'NO IMAGE') {
+  return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" rx="18" fill="#fff7bd"/><rect x="10" y="10" width="220" height="140" rx="12" fill="none" stroke="#21142d" stroke-width="4" stroke-dasharray="7 5"/><text x="120" y="72" text-anchor="middle" font-size="18" font-family="Arial" font-weight="900" fill="#21142d">${String(label).replace(/[<>]/g,'')}</text><text x="120" y="100" text-anchor="middle" font-size="12" font-family="Arial" fill="#21142d">check asset URL / row</text></svg>`);
+}
+function safeSetImg(idOrEl, url, label = 'NO IMAGE') {
+  const el = typeof idOrEl === 'string' ? $(idOrEl) : idOrEl;
+  if (!el) return;
+  const fallback = imageFallbackSvg(label);
+  el.onerror = () => { el.onerror = null; el.src = fallback; };
+  el.src = url || fallback;
 }
 
 function rowIdentity(row) {
@@ -433,44 +468,6 @@ function normalizeHooks(rows) {
   })).filter(h => h.name || h.image || h.icon);
 }
 
-function collectImageAssets(all) {
-  const rows = Object.values(all || {}).flat();
-  const out = [];
-  rows.forEach((row) => {
-    const image = firstImage(row);
-    if (!image) return;
-    const sheet = String(row.__sheet || 'sheet');
-    const label = String(val(row, ['name','pet_name','species','type','action','state','item','label','title','description']) || textOf(row).slice(0, 48) || 'image row').trim();
-    out.push({ image, sheet, label, row });
-  });
-  return out;
-}
-function imageAssetLabel(asset, i) {
-  if (!asset) return 'No image selected';
-  return `${i + 1}. ${asset.sheet} — ${asset.label}`.slice(0, 120);
-}
-function fillImageAssetSelect(selectId, currentUrl) {
-  const sel = $(selectId);
-  if (!sel) return;
-  const opts = ['<option value="">-- choose exact image row --</option>'];
-  state.assetOptions.forEach((asset, i) => {
-    const selected = currentUrl && asset.image === currentUrl ? ' selected' : '';
-    opts.push(`<option value="${i}"${selected}>${escapeHtml(imageAssetLabel(asset, i))}</option>`);
-  });
-  sel.innerHTML = opts.join('');
-}
-function selectPetAsset(kind, index) {
-  const p = state.currentPet;
-  const asset = state.assetOptions[Number(index)];
-  if (!p || !asset) return;
-  p[kind] = asset.image;
-  if (!p.assetRows) p.assetRows = [];
-  if (!p.assetRows.includes(asset.row)) p.assetRows.push(asset.row);
-  renderPet(kind === 'base' ? undefined : kind);
-  updatePreviews();
-  toast(`Set ${kind} image from ${asset.sheet}`);
-}
-
 async function loadSheetData() {
   saveLocalPrefs();
   $('sheetStatus').textContent = 'loading read-only...';
@@ -503,12 +500,6 @@ function renderSelectors() {
   if (petSel) petSel.innerHTML = state.petRows.map((p, i) => `<option value="${i}">${escapeHtml(p.name || 'Pet')} ${escapeHtml(p.species ? `(${p.species})` : '')}</option>`).join('') || '<option>No pets found</option>';
   const hookSel = $('devHookSelect');
   if (hookSel) hookSel.innerHTML = state.hookRows.map((h, i) => `<option value="${i}">${escapeHtml(h.name)}</option>`).join('') || '<option>No hook items found</option>';
-  const p = state.currentPet || {};
-  fillImageAssetSelect('devPetBaseAssetSelect', p.base);
-  fillImageAssetSelect('devPetFeedAssetSelect', p.feed);
-  fillImageAssetSelect('devPetPlayAssetSelect', p.play);
-  fillImageAssetSelect('devPetRestAssetSelect', p.rest);
-  fillImageAssetSelect('devPetMedicineAssetSelect', p.medicine);
   updatePreviews();
 }
 function renderDevGamePreview() {
@@ -562,9 +553,8 @@ function updatePreviews() {
 function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.currentPet = state.petRows[state.selectedPetIndex] || state.currentPet; renderPet(); updatePreviews(); }
 function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
 
-function petFallback(species) {
-  return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" rx="18" fill="#fff7bd"/><rect x="10" y="10" width="220" height="140" rx="12" fill="none" stroke="#21142d" stroke-width="4" stroke-dasharray="7 5"/><text x="120" y="72" text-anchor="middle" font-size="18" font-family="Arial" font-weight="900" fill="#21142d">NO PET IMAGE</text><text x="120" y="100" text-anchor="middle" font-size="12" font-family="Arial" fill="#21142d">choose asset row in Developer → Pet</text></svg>`);
-}
+function petFallback(species) { return imageFallbackSvg(species ? `NO ${species.toUpperCase()} IMAGE` : 'NO PET IMAGE'); }
+
 function renderPet(action) {
   const p = state.currentPet || { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80 };
   const actionSrc = action && p[action] ? p[action] : p.base;
@@ -575,8 +565,8 @@ function renderPet(action) {
   $('fillHunger').style.width = `${Math.max(0, Math.min(100, p.hunger || 70))}%`;
   $('fillHappy').style.width = `${Math.max(0, Math.min(100, p.happy || 60))}%`;
   $('fillEnergy').style.width = `${Math.max(0, Math.min(100, p.energy || 80))}%`;
-  $('petBodyGraphic').src = img;
-  $('petFollowerImg').src = img;
+  safeSetImg('petBodyGraphic', img, 'NO PET IMAGE');
+  safeSetImg('petFollowerImg', img, 'NO PET IMAGE');
   // Do not overwrite the main character here; Developer > Level/Game Images controls that sprite.
   renderShopGrid();
 }
@@ -588,13 +578,13 @@ function renderShopGrid() {
     return;
   }
   shop.innerHTML = state.shopItems.slice(0, 6).map((item, i) => {
-    const icon = item.image ? `<img alt="" src="${escapeHtml(item.image)}" style="width:24px;height:24px;object-fit:contain;vertical-align:middle">` : escapeHtml(item.emoji || '🎁');
+    const icon = item.image ? `<img alt="" src="${escapeHtml(item.image)}" onerror="this.outerHTML=\'🎁\'" style="width:24px;height:24px;object-fit:contain;vertical-align:middle">` : escapeHtml(item.emoji || '🎁');
     const cost = item.cost ? `🪙 ${item.cost}` : 'sheet item';
     const qty = item.qty ? `<br>owned: ${item.qty}` : '';
     return `<button onclick="buyPetItem(${i})">${icon} ${escapeHtml(item.name)}<br>${cost}${qty}</button>`;
   }).join('');
 }
-function showBubble(src) { if (src) { $('petBubble').src = src; $('petBubble').classList.add('show'); setTimeout(() => $('petBubble').classList.remove('show'), 1200); } }
+function showBubble(src) { if (src) { safeSetImg('petBubble', src, ''); $('petBubble').classList.add('show'); setTimeout(() => $('petBubble').classList.remove('show'), 1200); } }
 function processCareAction(action) {
   const p = state.currentPet;
   if (!p) { $('careStatusTicker').textContent = 'No pet loaded from the sheet yet. Try Refresh sheet data.'; return; }
@@ -627,7 +617,7 @@ function renderHookItems() {
     el.style.left = `${15 + (i * 21) % 78}%`;
     el.style.top = `${62 + ((i * 19) % 28)}%`;
     el.dataset.idx = i;
-    if (it.image) { const im = document.createElement('img'); im.src = it.image; im.alt = it.name; el.appendChild(im); }
+    if (it.image) { const im = document.createElement('img'); im.onerror = () => { im.remove(); el.textContent = it.icon || '🚑'; }; im.src = it.image; im.alt = it.name; el.appendChild(im); }
     else { el.textContent = it.icon || '🚑'; }
     wrap.appendChild(el);
   });
@@ -691,13 +681,22 @@ function shortUrl(url) {
   const s = String(url || '');
   return s.length > 70 ? s.slice(0, 34) + '…' + s.slice(-28) : s;
 }
+function setPlayerCharacterPreset(key) {
+  state.selectedCharacter = key || 'pura';
+  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter;
+  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter;
+  const preset = CHARACTER_PRESETS[state.selectedCharacter];
+  if (preset && preset.url && $('devCharacterUrl')) $('devCharacterUrl').value = preset.url;
+  saveLocalPrefs();
+  applyGameImageSettings();
+}
 function applyGameImageSettings() {
-  const charUrl = resolveImageUrl($('devCharacterUrl')?.value || '');
-  const skyUrl = resolveImageUrl($('devSkyUrl')?.value || '');
-  const hillsUrl = resolveImageUrl($('devHillsUrl')?.value || '');
-  const groundUrl = resolveImageUrl($('devGroundUrl')?.value || '');
+  const charUrl = resolveImageUrl($('devCharacterUrl')?.value || '', true);
+  const skyUrl = resolveImageUrl($('devSkyUrl')?.value || '', true);
+  const hillsUrl = resolveImageUrl($('devHillsUrl')?.value || '', true);
+  const groundUrl = resolveImageUrl($('devGroundUrl')?.value || '', true);
   const h = Number($('devSpriteHeight')?.value || 220);
-  if (charUrl) $('mainCharacterImg').src = charUrl;
+  if (charUrl) safeSetImg('mainCharacterImg', charUrl, 'NO CHARACTER IMAGE');
   if (h && h > 40) document.querySelectorAll('.charBox').forEach(el => { el.style.height = h + 'px'; el.style.width = Math.round(h * 0.86) + 'px'; });
   if (skyUrl) document.documentElement.style.setProperty('--sky', `url("${skyUrl}")`);
   if (hillsUrl) document.documentElement.style.setProperty('--hills', `url("${hillsUrl}")`);
@@ -706,7 +705,9 @@ function applyGameImageSettings() {
   updatePreviews();
 }
 function resetGameImageSettings() {
-  if ($('devCharacterUrl')) $('devCharacterUrl').value = 'pura_walk_001.png';
+  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
+  const preset = CHARACTER_PRESETS[state.selectedCharacter || 'pura'] || CHARACTER_PRESETS.pura;
+  if ($('devCharacterUrl')) $('devCharacterUrl').value = preset.url || 'pura_walk_001.png';
   if ($('devSkyUrl')) $('devSkyUrl').value = 'day_sky.png';
   if ($('devHillsUrl')) $('devHillsUrl').value = 'day_hills.png';
   if ($('devGroundUrl')) $('devGroundUrl').value = 'day_ground.png';
@@ -726,7 +727,7 @@ function addDevLevelObject() {
   toast('Level object added');
 }
 
-function init() { loadLocalPrefs(); resetGameImageSettings(); renderPet(); renderHookItems(); renderDevGamePreview(); showScreen('menu'); setTimeout(loadSheetData, 250); }
+function init() { loadLocalPrefs(); document.querySelectorAll('img').forEach(img => { img.onerror = () => { img.onerror = null; img.src = imageFallbackSvg(img.alt || 'NO IMAGE'); }; }); resetGameImageSettings(); renderPet(); renderHookItems(); renderDevGamePreview(); showScreen('menu'); setTimeout(loadSheetData, 250); }
 init();
 </script>
 </body>
