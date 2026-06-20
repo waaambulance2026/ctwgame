@@ -562,20 +562,22 @@ async function boot(){buildChoices();setHud();renderDev();applyLayerStyles();awa
 
 <!-- CTW PLATFORM LEVEL SYSTEM v1 - Mario/Sonic style example level -->
 <style id="ctw-platform-level-system-css">
-  .levelPlatform{position:absolute;z-index:12;height:28px;border-radius:14px;background:linear-gradient(to bottom,#fff 0 5px,var(--pink) 5px 16px,var(--blue) 16px 22px,#21457c 22px);box-shadow:0 8px 16px rgba(0,0,0,.28);border:2px solid rgba(255,255,255,.55);pointer-events:none}
-  .finishGate{position:absolute;z-index:17;width:72px;height:112px;display:grid;place-items:center;font-size:42px;border-radius:18px;background:linear-gradient(#fff7bd,#f5c542);border:4px solid #fff;color:#21142d;box-shadow:0 12px 22px rgba(0,0,0,.25);pointer-events:none}
-  .obj.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.obj.collect{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink)}
+  #objects{z-index:9!important}.levelPlatform{position:absolute;z-index:1;height:22px;border-radius:12px;background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 4px,rgba(210,130,194,.78) 4px 14px,rgba(118,199,216,.72) 14px 19px,rgba(33,69,124,.62) 19px);box-shadow:0 5px 10px rgba(0,0,0,.16);border:2px solid rgba(255,255,255,.35);pointer-events:none;opacity:.78}
+  .finishGate{position:absolute;z-index:6;width:72px;height:112px;display:grid;place-items:center;font-size:42px;border-radius:18px;background:linear-gradient(#fff7bd,#f5c542);border:4px solid #fff;color:#21142d;box-shadow:0 12px 22px rgba(0,0,0,.25);pointer-events:none}
+  .obj{z-index:5;position:absolute}.obj.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.obj.collect{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink)}
 </style>
 <script id="ctw-platform-level-system-js">
 /* ======================================================
 🎮 PLATFORM LEVEL SYSTEM — EXAMPLE LEVEL 1
-This replaces the old random flying icon gameplay.
-World objects are placed in the level. The camera scrolls.
-Only enemies with move:'patrol' move by themselves.
+This is the Mario/Sonic-style gameplay system:
+- the world/camera scrolls
+- platforms, collectibles, enemies, and finish are placed in the level
+- collectibles do not fly at the player
+- only enemies marked move:'patrol' move by themselves
 ====================================================== */
 (function(){
-  if(window.__ctwPlatformLevelSystemV1) return;
-  window.__ctwPlatformLevelSystemV1 = true;
+  if(window.__ctwPlatformLevelSystemV2) return;
+  window.__ctwPlatformLevelSystemV2 = true;
 
   function $(id){return document.getElementById(id)}
   function toast(msg){try{showToast(msg)}catch(e){console.log(msg)}}
@@ -583,14 +585,14 @@ Only enemies with move:'patrol' move by themselves.
 
   /* ======================================================
   🟢 EDIT ZONE 7 — PLATFORM LEVELS
-  First goal: get these 4 characters working and build one playable level.
+  First goal: one real playable level.
 
   x = how far along the level
-  y = how high above the ground/floor
-  w = width
-  h = height
-  move:'still' means the enemy stays put
-  move:'patrol' means the enemy walks left/right
+  y = how high above the floor/ground
+  w = platform width
+  h = platform height
+  move:'still' = enemy stays put
+  move:'patrol' = enemy walks left/right
   ====================================================== */
   const LEVELS = [
     {
@@ -600,14 +602,14 @@ Only enemies with move:'patrol' move by themselves.
       startX:120,
       finish:{x:3000,y:0,icon:'🏁'},
       platforms:[
-        {x:0,y:0,w:760,h:28,label:'start ground'},
-        {x:430,y:120,w:220,h:26,label:'first jump'},
-        {x:820,y:190,w:240,h:26,label:'leaf bridge'},
-        {x:1220,y:120,w:240,h:26,label:'safe landing'},
-        {x:1630,y:210,w:230,h:26,label:'high coins'},
-        {x:2050,y:120,w:260,h:26,label:'enemy jump'},
-        {x:2480,y:170,w:250,h:26,label:'last platform'},
-        {x:2840,y:0,w:470,h:28,label:'finish ground'}
+        {x:0,y:0,w:760,h:24,label:'start ground'},
+        {x:430,y:120,w:220,h:22,label:'first jump'},
+        {x:820,y:190,w:240,h:22,label:'leaf bridge'},
+        {x:1220,y:120,w:240,h:22,label:'safe landing'},
+        {x:1630,y:210,w:230,h:22,label:'high coins'},
+        {x:2050,y:120,w:260,h:22,label:'enemy jump'},
+        {x:2480,y:170,w:250,h:22,label:'last platform'},
+        {x:2840,y:0,w:520,h:24,label:'finish ground'}
       ],
       collectibles:[
         {x:260,y:95,icon:'🪙',points:10},{x:500,y:205,icon:'🍃',points:15},{x:600,y:205,icon:'🪙',points:10},
@@ -625,28 +627,40 @@ Only enemies with move:'patrol' move by themselves.
   ];
   window.CTW_LEVELS = LEVELS;
 
-  let levelState = {cameraX:0, entitiesBuilt:false, platformEls:[], objects:[], finishEl:null, time:0};
+  let levelState = {cameraX:0, entitiesBuilt:false, platformEls:[], objects:[], finishEl:null, time:0, completed:false};
 
   function activeLevel(){return LEVELS[level] || LEVELS[0]}
+
+  function getPlayerHeight(){
+    const active=selected[activeIndex]||'ax';
+    const ent=characterEls[active];
+    try{
+      const eff=(typeof effectiveSpriteConfig==='function') ? effectiveSpriteConfig(active, ent?.action||'idle', ent?.frame||0) : cfg(active);
+      return Number(eff.height||220);
+    }catch(e){return 220}
+  }
+
   function platformSurfaceAt(x,oldY,newY){
     const lvl=activeLevel();
     let best=0;
     for(const p of lvl.platforms||[]){
       const surface=(p.y||0)+(p.h||0);
       const left=p.x, right=p.x+p.w;
-      const inside=x>left-30 && x<right+30;
+      const inside=x>left-34 && x<right+34;
       const crossing=oldY>=surface && newY<=surface;
       if(inside && crossing && surface>best) best=surface;
     }
     return best;
   }
+
   function clearLevelEntities(){
-    for(const el of levelState.platformEls||[]) el.remove();
+    for(const el of levelState.platformEls||[]) el.el ? el.el.remove() : el.remove?.();
     for(const o of levelState.objects||[]) o.el?.remove();
     levelState.finishEl?.remove();
-    levelState={cameraX:0,entitiesBuilt:false,platformEls:[],objects:[],finishEl:null,time:0};
+    levelState={cameraX:0,entitiesBuilt:false,platformEls:[],objects:[],finishEl:null,time:0,completed:false};
     if(objectsEl) objectsEl.innerHTML='';
   }
+
   function buildLevelEntities(){
     clearLevelEntities();
     const lvl=activeLevel();
@@ -678,6 +692,7 @@ Only enemies with move:'patrol' move by themselves.
     levelState.finishEl=fin;
     levelState.entitiesBuilt=true;
   }
+
   function renderLevelEntities(){
     const floor=floorPx();
     const cam=levelState.cameraX||0;
@@ -685,9 +700,9 @@ Only enemies with move:'patrol' move by themselves.
       const sx=p.x-cam;
       p.el.style.left=sx+'px';
       p.el.style.width=p.w+'px';
-      p.el.style.height=p.h+'px';
+      p.el.style.height=(p.h||22)+'px';
       p.el.style.bottom=(floor+p.y)+'px';
-      p.el.style.display=(sx+p.w<-80||sx>innerWidth+80)?'none':'';
+      p.el.style.display=(sx+p.w<-120||sx>innerWidth+120)?'none':'';
     }
     for(const o of levelState.objects||[]){
       if(o.hit){o.el.style.display='none';continue;}
@@ -696,16 +711,17 @@ Only enemies with move:'patrol' move by themselves.
       const sx=ox-cam;
       o.el.style.left=sx+'px';
       o.el.style.top=(innerHeight-floor-(o.y||0))+'px';
-      o.el.style.display=(sx<-100||sx>innerWidth+100)?'none':'';
+      o.el.style.display=(sx<-120||sx>innerWidth+120)?'none':'';
     }
     const f=activeLevel().finish||{x:3000,y:0};
     if(levelState.finishEl){
       levelState.finishEl.style.left=(f.x-cam)+'px';
       levelState.finishEl.style.bottom=(floor+(f.y||0))+'px';
+      levelState.finishEl.style.display=((f.x-cam)<-120 || (f.x-cam)>innerWidth+120)?'none':'';
     }
   }
 
-  // Camera-following world position. The character now runs through a long level.
+  // Character is drawn by world x minus camera x.
   playerBaseX = function(){ return (player.x||0) - (levelState.cameraX||0); };
 
   const oldSetHud = setHud;
@@ -719,13 +735,27 @@ Only enemies with move:'patrol' move by themselves.
   };
 
   function playerRect(){
-    const active=selected[activeIndex]||'ax';
-    const ent=characterEls[active];
-    const eff=(typeof effectiveSpriteConfig==='function') ? effectiveSpriteConfig(active, ent?.action||'idle', ent?.frame||0) : cfg(active);
-    const h=Number(eff.height||220);
-    return {left:(player.x||0)-38,right:(player.x||0)+38,bottom:player.y||0,top:(player.y||0)+h*0.68};
+    const h=getPlayerHeight();
+    return {left:(player.x||0)-36,right:(player.x||0)+36,bottom:player.y||0,top:(player.y||0)+h*0.64};
   }
   function rectsOverlap(a,b){return a.right>b.left && a.left<b.right && a.top>b.bottom && a.bottom<b.top}
+
+  function showLevelComplete(){
+    if(levelState.completed) return;
+    levelState.completed=true;
+    paused=true;
+    running=false;
+    const overlay=$('startScreen');
+    if(overlay){
+      overlay.classList.remove('hidden');
+      overlay.innerHTML=`<div class="modal"><h1>🏁 Level complete!</h1><p>You finished <b>${activeLevel().name}</b>.</p><p>This demo has one level for now. Add Level 2 in <b>EDIT ZONE 7 — PLATFORM LEVELS</b>.</p><button id="playAgainBtn">Play level again</button><button id="chooseCharsBtn">Choose characters</button></div>`;
+      setTimeout(()=>{
+        const again=$('playAgainBtn'); if(again) again.onclick=function(){ overlay.classList.add('hidden'); running=true; paused=false; score=0; lives=3; resetLevel(true); requestAnimationFrame(loop); };
+        const choose=$('chooseCharsBtn'); if(choose) choose.onclick=function(){ backToCharacterSelect(); };
+      },0);
+    }
+    toast('Level complete!');
+  }
 
   updateObjects = function(dt){
     if(!levelState.entitiesBuilt) buildLevelEntities();
@@ -738,25 +768,30 @@ Only enemies with move:'patrol' move by themselves.
       const halfW=(o.w||54)/2, halfH=(o.h||54)/2;
       const or={left:cx-halfW,right:cx+halfW,bottom:(o.y||0)-halfH,top:(o.y||0)+halfH};
       if(rectsOverlap(pr,or)){
-        o.hit=true; o.el.remove();
         if(o.kind==='collect'){
+          o.hit=true; o.el.remove();
           score += Number(o.points||10);
           toast('Collected '+(o.icon||'item'));
         }else{
-          lives -= Number(o.damage||1);
-          toast(pr.bottom>or.top ? 'Jumped over it!' : 'Ouch!');
-          if(lives<=0){ CTW_restartCurrentRun(false); toast('Restarted level'); }
+          // If the player's feet are above the enemy top, count it as a stomp/clear, not damage.
+          if((player.y||0) > or.top-8 && (player.vy||0) <= 0){
+            o.hit=true; o.el.remove();
+            score += 20;
+            player.vy=9;
+            player.grounded=false;
+            toast('Enemy cleared!');
+          }else{
+            lives -= Number(o.damage||1);
+            o.hit=true; o.el.remove();
+            toast('Ouch!');
+            if(lives<=0){ resetLevel(false); toast('Restarted level'); }
+          }
         }
         setHud();
       }
     }
     const finish=activeLevel().finish||{};
-    if((player.x||0) >= (finish.x||activeLevel().length)){
-      toast('Level complete!');
-      level=(level+1)%LEVELS.length;
-      CTW_restartCurrentRun(false);
-      if(level===0) toast('Demo complete — add Level 2 next.');
-    }
+    if((player.x||0) >= (finish.x||activeLevel().length)) showLevelComplete();
   };
 
   updateWorld = function(dt){
@@ -769,10 +804,7 @@ Only enemies with move:'patrol' move by themselves.
     player.y += player.vy*(dt/16.67);
     const surface=platformSurfaceAt(player.x||0, oldY, player.y||0);
     if(player.y<=surface){ player.y=surface; player.vy=0; player.grounded=true; }
-    // Safety ceiling so tall sprites do not disappear off top.
-    const active=selected[activeIndex]||'ax';
-    const h=(typeof effectiveSpriteConfig==='function') ? Number(effectiveSpriteConfig(active, characterEls[active]?.action||'idle', characterEls[active]?.frame||0).height||220) : Number(cfg(active).height||220);
-    const maxY=Math.max(90, innerHeight-floorPx()-h-70);
+    const maxY=Math.max(90, innerHeight-floorPx()-getPlayerHeight()-70);
     if(player.y>maxY){ player.y=maxY; player.vy=Math.min(player.vy,0); }
     levelState.cameraX=clamp((player.x||0)-innerWidth*0.30, 0, Math.max(0,lvl.length-innerWidth+240));
     distance=player.x||0;
@@ -784,18 +816,35 @@ Only enemies with move:'patrol' move by themselves.
 
   function resetLevel(show=true){
     const lvl=activeLevel();
-    paused=false; running=true; score=score||0; lives=3; distance=0; spawn=0; last=0;
+    paused=false; running=true; levelState.completed=false;
+    score=0; lives=3; distance=0; spawn=0; last=0;
     player={x:lvl.startX||120,y:0,vy:0,grounded:true,facing:1};
     keys={left:false,right:false,jump:false};
-    clearLevelEntities();
-    buildLevelEntities();
+    clearLevelEntities(); buildLevelEntities();
     Object.values(characterEls||{}).forEach(ent=>{ent.action='idle';ent.frame=0;ent.acc=0;});
     if($('pauseBtn')) $('pauseBtn').textContent='Pause';
     setHud(); renderLevelEntities(); if(show) toast('Level restarted');
   }
   window.CTW_restartCurrentRun = resetLevel;
 
-  // Patch start so the level map is built, not random icons.
+  function backToCharacterSelect(){
+    running=false; paused=true;
+    try{ if(typeof closeDeveloper==='function') closeDeveloper(); }catch(e){}
+    clearLevelEntities();
+    if(charsEl) charsEl.innerHTML=''; characterEls={};
+    player={x:0,y:0,vy:0,grounded:true,facing:1}; keys={left:false,right:false,jump:false};
+    level=0; score=0; lives=3; distance=0; last=0;
+    if($('startScreen')){
+      $('startScreen').innerHTML=`<div class="modal"><h1>Waaambulance Quest Dash</h1><p>Choose your characters.</p><div class="choiceGrid" id="choiceGrid"></div><button id="startBtn">Start game</button><button id="startDevBtn">Start in developer mode</button></div>`;
+      $('startScreen').classList.remove('hidden');
+    }
+    buildChoices();
+    const st=$('startBtn'); if(st) st.onclick=()=>startGame(false);
+    const sd=$('startDevBtn'); if(sd) sd.onclick=()=>startGame(true);
+    setHud(); toast('Choose characters');
+  }
+  window.CTW_backToMainMenu = backToCharacterSelect;
+
   const oldStartGame=startGame;
   startGame = async function(openDev=false){
     await oldStartGame(openDev);
@@ -803,21 +852,29 @@ Only enemies with move:'patrol' move by themselves.
     resetLevel(false);
   };
 
-  // Patch menu/restart buttons created by the earlier script.
-  function wirePlatformButtons(){
-    const r=$('restartGameBtn'); if(r) r.onclick=()=>resetLevel(true);
-    const m=$('mainMenuGameBtn'); if(m) m.onclick=()=>{
-      running=false; paused=true; closeDeveloper(); clearLevelEntities();
-      if(charsEl) charsEl.innerHTML=''; characterEls={};
-      player={x:0,y:0,vy:0,grounded:true,facing:1}; keys={left:false,right:false,jump:false};
-      level=0; score=0; lives=3; distance=0; last=0;
-      buildChoices(); $('startScreen')?.classList.remove('hidden'); setHud(); toast('Choose characters');
-    };
+  function ensureGameplayButtons(){
+    const stats=document.querySelector('.stats'); if(!stats) return;
+    if(!$('restartGameBtn')){
+      const b=document.createElement('button'); b.id='restartGameBtn'; b.className='pill gold'; b.textContent='Restart';
+      $('pauseBtn')?.insertAdjacentElement('afterend', b);
+    }
+    if(!$('mainMenuGameBtn')){
+      const b=document.createElement('button'); b.id='mainMenuGameBtn'; b.className='pill pink'; b.textContent='Menu';
+      $('restartGameBtn')?.insertAdjacentElement('afterend', b);
+    }
   }
-  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wirePlatformButtons); else setTimeout(wirePlatformButtons,100);
-  document.addEventListener('click',()=>setTimeout(wirePlatformButtons,50));
+  function wireButtons(){
+    ensureGameplayButtons();
+    const r=$('restartGameBtn'); if(r) r.onclick=function(e){e.preventDefault(); resetLevel(true);};
+    const m=$('mainMenuGameBtn'); if(m) m.onclick=function(e){e.preventDefault(); backToCharacterSelect();};
+  }
+  document.addEventListener('click',function(e){
+    if(e.target && e.target.id==='restartGameBtn'){ e.preventDefault(); e.stopPropagation(); resetLevel(true); }
+    if(e.target && e.target.id==='mainMenuGameBtn'){ e.preventDefault(); e.stopPropagation(); backToCharacterSelect(); }
+  },true);
 
-  // Build immediately if the game is already running after a hot reload.
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', wireButtons); else setTimeout(wireButtons,50);
+  setInterval(wireButtons,1000);
   setTimeout(()=>{ if(running){ clearLevelEntities(); buildLevelEntities(); renderLevelEntities(); setHud(); } },250);
 })();
 </script>
