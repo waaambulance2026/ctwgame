@@ -18,7 +18,7 @@
     <div class="topBtns">
       <button class="ghost" onclick="showPanel('menu')">Menu</button>
       <button class="primary" onclick="showPanel('game')">Play</button>
-      <button class="ghost" onclick="showPanel('builder')">Builder</button>
+      <button class="ghost" onclick="openBuilderWithPassword()">Builder</button>
       <button class="ghost" onclick="showPanel('petcare'); loadPetbotPets();">Pet Care</button>
     </div>
   </div>
@@ -26,14 +26,14 @@
   <section id="menu" class="panel active">
     <div class="menuGrid">
       <div class="menuCard"><div><h2>🎮 Platform Quest</h2><p class="muted">Mario/Sonic-style fixed level. Player moves, camera follows, level objects stay placed.</p></div><button class="primary" onclick="showPanel('game')">Start Quest</button></div>
-      <div class="menuCard"><div><h2>🛠 Level Builder</h2><p class="muted">Click, drag, resize, delete, duplicate, save and load level pieces visually.</p></div><button class="warn" onclick="showPanel('builder')">Open Builder</button></div>
+      <div class="menuCard"><div><h2>🛠 Level Builder</h2><p class="muted">Password protected. Click, drag, resize, delete, duplicate, save and load level pieces visually.</p></div><button class="warn" onclick="openBuilderWithPassword()">Open Builder</button></div>
       <div class="menuCard"><div><h2>🐾 Pet Care</h2><p class="muted">Petbot gives owned pets. Sheet 51 gives pet images. Discord image links are ignored.</p></div><button class="good" onclick="showPanel('petcare'); loadPetbotPets();">Open Pet Care</button></div>
     </div>
   </section>
 
   <section id="game" class="panel">
     <div class="gameShell">
-      <div class="gameHud"><div class="row"><span class="pill" id="scorePill">Score: 0</span><span class="pill" id="livesPill">Lives: 3</span><span class="pill" id="distPill">Distance: 0m</span></div><div class="row"><button onclick="resetRun()">Restart</button><button onclick="toggleRun()" id="pauseBtn">Pause</button><button onclick="showPanel('builder')">Edit Level</button></div></div>
+      <div class="gameHud"><div class="row"><span class="pill" id="scorePill">Score: 0</span><span class="pill" id="livesPill">Lives: 3</span><span class="pill" id="distPill">Distance: 0m</span></div><div class="row"><button onclick="resetRun()">Restart</button><button onclick="toggleRun()" id="pauseBtn">Pause</button><button onclick="openBuilderWithPassword()">Edit Level</button></div></div>
       <div class="canvasWrap"><canvas id="gameCanvas" width="1280" height="720"></canvas><div class="touch"><div class="left"><button id="touchLeft">◀</button><button id="touchRight">▶</button></div><div class="right"><button id="touchJump">▲</button></div></div></div>
     </div>
   </section>
@@ -45,6 +45,7 @@
         <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas></div>
       </div>
       <aside class="tools">
+        <div class="statusBox" id="adminStatus">Builder admin unlocked for this session.</div>
         <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
         <div id="tab-objects" class="toolSec active">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
@@ -100,11 +101,17 @@ const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
 const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
 const imgCache=new Map();
 const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
+const ADMIN_PASSWORD='waaadmin';
+const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
+const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
+const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
+function axFrame(action,n){return `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${String(n).padStart(3,'0')}.png`}
+let adminUnlocked=sessionStorage.getItem('ctw_admin_unlocked')==='yes';
 let currentPanel='menu', running=true, last=0, cameraX=0, selected=null, drag=null;
 let keys={}; let touch={left:false,right:false};
 let petList=[], currentPet=null, currentPetImage='';
 const level={
-  backgrounds:{sky:'#84d8ff',hills:'',ground:'#58bd5a'},
+  backgrounds:{sky:DEFAULT_SKY_URL,hills:DEFAULT_HILLS_URL,ground:DEFAULT_GROUND_URL},
   objects:[
     {id:id(),type:'platform',x:0,y:640,w:1200,h:80,label:'ground'},
     {id:id(),type:'platform',x:420,y:500,w:240,h:34,label:'platform'},
@@ -118,7 +125,15 @@ const level={
 const player={x:120,y:540,vx:0,vy:0,w:82,h:96,speed:7.4,jump:-17,gravity:.78,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
 function id(){return 'o'+Math.random().toString(36).slice(2,9)}
 function img(src){ if(!src||src.length<3||!/^https?:\/\//i.test(src)) return null; if(imgCache.has(src)) return imgCache.get(src); const im=new Image(); im.crossOrigin='anonymous'; im.src=src; imgCache.set(src,im); return im; }
-function showPanel(id){ currentPanel=id; document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); if(id==='builder'){running=false; renderEditor();} if(id==='game'){running=true;} }
+function showPanel(id){ currentPanel=id; document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); if(id==='builder'){running=false; renderEditor(); const s=document.getElementById('adminStatus'); if(s)s.textContent='Builder admin unlocked for this session. Password is only a front-end gate until server saving is added.';} if(id==='game'){running=true;} }
+function openBuilderWithPassword(){
+  if(!adminUnlocked){
+    const pass=prompt('Builder admin password');
+    if(pass!==ADMIN_PASSWORD){ alert('Wrong builder password.'); return; }
+    adminUnlocked=true; sessionStorage.setItem('ctw_admin_unlocked','yes');
+  }
+  showPanel('builder');
+}
 function toggleRun(){running=!running; document.getElementById('pauseBtn').textContent=running?'Pause':'Resume'}
 window.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Escape')showPanel('menu')}); window.addEventListener('keyup',e=>keys[e.code]=false);
 function setupTouch(btn,prop){const b=document.getElementById(btn);['pointerdown','touchstart'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();touch[prop]=true}));['pointerup','pointerleave','touchend','touchcancel'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();touch[prop]=false}))}
@@ -129,10 +144,32 @@ function jump(){if(player.onGround&&running&&currentPanel==='game'){player.vy=pl
 function update(){ if(currentPanel!=='game'||!running) return; let move=0;if(keys.ArrowLeft||keys.KeyA||touch.left)move=-1;if(keys.ArrowRight||keys.KeyD||touch.right)move=1;if((keys.Space||keys.ArrowUp||keys.KeyW))jump();player.vx=move*player.speed;player.vy+=player.gravity;player.x+=player.vx;player.y+=player.vy;if(player.x<0)player.x=0;if(player.x+player.w>WORLD_W)player.x=WORLD_W-player.w;player.onGround=false;for(const o of level.objects){if(o.type!=='platform')continue;if(player.x+player.w>o.x&&player.x<o.x+o.w&&player.y+player.h>o.y&&player.y+player.h-player.vy<=o.y+10&&player.vy>=0){player.y=o.y-player.h;player.vy=0;player.onGround=true}}for(const o of level.objects){if(o.type==='coin'&&!o.collected&&hit(player,o)){o.collected=true;player.score+=10} if(o.type==='enemy'&&hit(player,o)){player.lives--;player.x=120;player.y=540;player.vx=0;player.vy=0;if(player.lives<=0)resetRun()} if(o.type==='finish'&&hit(player,o)){player.won=true;running=false}}if(player.y>VH+100){player.lives--;player.x=120;player.y=540;player.vy=0;if(player.lives<=0)resetRun()} const target=player.x+player.w/2-VW/2;cameraX+=(Math.max(0,Math.min(target,WORLD_W-VW))-cameraX)*.13;}
 function hit(a,b){return a.x<a.x+a.w&&a.x+a.w>b.x&&a.x<b.x+b.w&&a.y<b.y+b.h&&a.y+a.h>b.y}
 function draw(c,ct,editor=false){ct.clearRect(0,0,VW,VH);drawBg(ct);ct.save();ct.translate(-Math.round(cameraX),0); if(editor&&document.getElementById('snapCheck')?.checked)drawGrid(ct); for(const o of level.objects)drawObj(ct,o,editor); drawPlayer(ct,editor); ct.restore(); if(player.won&&!editor){ct.fillStyle='rgba(0,0,0,.55)';ct.fillRect(0,0,VW,VH);ct.fillStyle='#fff';ct.font='bold 52px system-ui';ct.textAlign='center';ct.fillText('🏁 Level Complete!',VW/2,VH/2)} }
-function drawBg(ct){const sky=level.backgrounds.sky||'#84d8ff'; if(/^https?:\/\//.test(sky)){const im=img(sky); ct.fillStyle='#84d8ff';ct.fillRect(0,0,VW,VH); if(im&&im.complete)ct.drawImage(im,0,0,VW,VH)}else{ct.fillStyle=sky;ct.fillRect(0,0,VW,VH)} const hills=img(level.backgrounds.hills); if(hills&&hills.complete){const hx=-cameraX*.25%VW; for(let x=hx-VW;x<VW*2;x+=VW)ct.drawImage(hills,x,0,VW,VH)} ct.fillStyle=level.backgrounds.ground||'#58bd5a';ct.fillRect(0,640,VW,80);}
+function drawBg(ct){
+  const sky=level.backgrounds.sky||'#84d8ff';
+  if(/^https?:\/\//.test(sky)){const im=img(sky); ct.fillStyle='#84d8ff';ct.fillRect(0,0,VW,VH); if(im&&im.complete)ct.drawImage(im,0,0,VW,VH)}
+  else{ct.fillStyle=sky;ct.fillRect(0,0,VW,VH)}
+  const hills=img(level.backgrounds.hills);
+  if(hills&&hills.complete){const hx=(-cameraX*.25)%VW; for(let x=hx-VW;x<VW*2;x+=VW)ct.drawImage(hills,x,0,VW,VH)}
+  const ground=level.backgrounds.ground||'#58bd5a';
+  if(/^https?:\/\//.test(ground)){const g=img(ground); ct.fillStyle='#58bd5a';ct.fillRect(0,640,VW,80); if(g&&g.complete){const gx=(-cameraX*.9)%VW; for(let x=gx-VW;x<VW*2;x+=VW)ct.drawImage(g,x,600,VW,120)}}
+  else{ct.fillStyle=ground;ct.fillRect(0,640,VW,80)}
+}
 function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.18)';for(let x=0;x<WORLD_W;x+=25)for(let y=0;y<VH;y+=25)ct.fillRect(x,y,2,2)}
 function drawObj(ct,o,editor){if(o.type==='coin'&&o.collected&&!editor)return;ct.save(); if(o.type==='coin'&&o.collected)ct.globalAlpha=.28; const im=img(o.img); if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else{ if(o.type==='platform'){ct.fillStyle='#ffffff';ct.fillRect(o.x,o.y,o.w,o.h);ct.fillStyle='#fb6fb7';ct.fillRect(o.x,o.y,o.w,Math.min(8,o.h));} else if(o.type==='enemy'){ct.fillStyle='#ef4444';roundRect(ct,o.x,o.y,o.w,o.h,8,true);ct.font=`${Math.min(o.h*.65,38)}px system-ui`;ct.textAlign='center';ct.textBaseline='middle';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)} else if(o.type==='finish'){ct.font=`${o.h*.75}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)} else {ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y)} } if(editor&&selected&&selected.id===o.id){ct.strokeStyle='#38bdf8';ct.lineWidth=4;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6)} ct.restore();}
-function drawPlayer(ct,editor){const src=player.img;const im=img(src); if(im&&im.complete){ct.drawImage(im,player.x,player.y,player.w,player.h)}else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)} if(editor){ct.strokeStyle='rgba(34,197,94,.75)';ct.lineWidth=2;ct.strokeRect(player.x,player.y,player.w,player.h)}}
+function playerFrameUrl(){
+  if(player.kind!=='ax' || (player.img && player.img!==AX_URL)) return player.img;
+  let action='idle';
+  if(!player.onGround) action='jump'; else if(Math.abs(player.vx)>0.1) action='walk';
+  const frame=(Math.floor(performance.now()/95)%10)+1;
+  return axFrame(action,frame);
+}
+function drawPlayer(ct,editor){
+  const src=playerFrameUrl();
+  const im=img(src);
+  if(im&&im.complete){ct.drawImage(im,player.x,player.y,player.w,player.h)}
+  else{const fallback=img(AX_URL); if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h); else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}
+  if(editor){ct.strokeStyle='rgba(34,197,94,.75)';ct.lineWidth=2;ct.strokeRect(player.x,player.y,player.w,player.h)}
+}
 function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill();}
 function loop(t){update();draw(canvas,ctx,false); if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)} requestAnimationFrame(loop);
 // editor
