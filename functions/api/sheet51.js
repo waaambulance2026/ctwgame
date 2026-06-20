@@ -72,41 +72,83 @@ function parseGviz(text) {
   }
   return rows;
 }
-function findPetImage(rows, { userId, petCode, petName, action }) {
+function cloudinaryUrlFromPublicId(publicId) {
+  publicId = clean(publicId);
+  if (!publicId) return '';
+  if (isWebUrl(publicId)) return publicId;
+  return `https://res.cloudinary.com/dpwlfmhia/image/upload/${publicId}`;
+}
+function imageFromRow(row) {
+  const imageUrl = rowVal(row, ['image_url', 'url', 'custom_image_url', 'pet_image_url']);
+  if (isWebUrl(imageUrl)) return imageUrl;
+  const publicId = rowVal(row, ['Cloudinary Public ID', 'cloudinary_public_id', 'public_id', 'asset_public_id']);
+  return cloudinaryUrlFromPublicId(publicId);
+}
+function activeOk(row) {
+  const active = lower(rowVal(row, ['active', 'enabled', 'Looks Right?', 'looks_right']) || 'TRUE');
+  return !(active === 'false' || active === 'no' || active === '0' || active === 'bad');
+}
+function sectionOk(row) {
+  const section = lower(rowVal(row, ['Section', 'section', 'image_type', 'type']));
+  return !section || section === 'pet' || section === 'main' || section === 'normal' || section === 'idle';
+}
+function actionOk(row, action) {
+  const actionKey = normalizeAction(rowVal(row, ['action_key', 'action']));
+  if (!actionKey) return true;
+  if (action === 'main') return actionKey === 'main' || actionKey === 'normal' || actionKey === 'idle';
+  return actionKey === action;
+}
+function genericPetMatch(row, species, petName) {
+  const target = lower(rowVal(row, ['Pet / Target', 'Pet/Target', 'pet_target', 'target', 'pet', 'animal', 'species']));
+  const assetKey = lower(rowVal(row, ['Asset Key', 'asset_key', 'key']));
+  const assetName = lower(rowVal(row, ['Asset Name', 'asset_name', 'name']));
+  const category = lower(rowVal(row, ['Category', 'category']));
+  const values = [target, assetKey, assetName, category].filter(Boolean);
+  return (species && values.includes(species)) || (petName && values.includes(petName));
+}
+function findPetImage(rows, { userId, petCode, petName, pet, action }) {
   userId = clean(userId);
   petName = lower(petName);
+  const species = lower(pet);
   action = normalizeAction(action || 'main');
   const aliases = aliasesForPet(userId, petCode);
-  const wants = action === 'main'
-    ? [{ type: 'main', action: 'main' }, { type: 'main', action: 'normal' }, { type: 'main', action: 'idle' }, { type: '', action: '' }]
-    : [{ type: 'action', action }, { type: '', action }];
 
-  for (const want of wants) {
-    for (let i = rows.length - 1; i >= 0; i--) {
-      const row = rows[i] || {};
-      const rowUser = rowVal(row, ['user_id', 'discord_id', 'user']);
-      if (userId && rowUser && rowUser !== userId) continue;
+  // 1) First try user-specific image rows from user_pet_images.
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i] || {};
+    if (!activeOk(row) || !sectionOk(row) || !actionOk(row, action)) continue;
+    const rowUser = rowVal(row, ['user_id', 'discord_id', 'user']);
+    if (!rowUser || (userId && rowUser !== userId)) continue;
+    const rowPetCode = lower(rowVal(row, ['pet_code', 'pet_id', 'selected_pet_code']));
+    const rowPetName = lower(rowVal(row, ['pet_name', 'name']));
+    const codeMatch = rowPetCode && aliases.includes(rowPetCode);
+    const nameMatch = petName && rowPetName && rowPetName === petName;
+    if (!codeMatch && !nameMatch) continue;
+    const img = imageFromRow(row);
+    if (isWebUrl(img)) return { image_url: img, matched_row_index: i + 2, matched_by: codeMatch ? 'user_id+pet_code' : 'user_id+pet_name', match_type: 'owned_pet_image_row' };
+  }
 
-      const rowPetCode = lower(rowVal(row, ['pet_code', 'pet_id', 'selected_pet_code']));
-      const rowPetName = lower(rowVal(row, ['pet_name', 'name']));
-      const codeMatch = rowPetCode && aliases.includes(rowPetCode);
-      const nameMatch = petName && rowPetName && rowPetName === petName;
-      if (!codeMatch && !nameMatch) continue;
-
-      const active = lower(rowVal(row, ['active', 'enabled']) || 'TRUE');
-      if (active === 'false' || active === 'no' || active === '0') continue;
-
-      const imageType = lower(rowVal(row, ['image_type', 'type']));
-      const actionKey = normalizeAction(rowVal(row, ['action_key', 'action']));
-      if (want.type && imageType !== want.type) continue;
-      if (!want.type && imageType) continue;
-      if (want.action && actionKey !== want.action) continue;
-      if (!want.action && actionKey) continue;
-
-      const imageUrl = rowVal(row, ['image_url', 'url', 'custom_image_url', 'pet_image_url']);
-      if (isWebUrl(imageUrl)) {
-        return { image_url: imageUrl, matched_row_index: i + 2, matched_by: codeMatch ? 'user_id+pet_code' : 'user_id+pet_name', image_type: imageType, action_key: actionKey };
-      }
+  // 2) Then try Sheet 51 asset catalog rows like:
+  // Category | BG No | BG Key | Section | Pet / Target | Asset Key | ... | image_url
+  for (let i = rows.length - 1; i >= 0; i--) {
+    const row = rows[i] || {};
+    if (!activeOk(row) || !sectionOk(row) || !actionOk(row, action)) continue;
+    const rowUser = rowVal(row, ['user_id', 'discord_id', 'user']);
+    if (rowUser && userId && rowUser !== userId) continue;
+    if (!genericPetMatch(row, species, petName)) continue;
+    const img = imageFromRow(row);
+    if (isWebUrl(img)) {
+      return {
+        image_url: img,
+        matched_row_index: i + 2,
+        matched_by: species ? 'sheet51 pet/target species' : 'sheet51 pet/target name',
+        match_type: 'sheet51_asset_catalog_row',
+        width: rowVal(row, ['Width', 'width']),
+        scale: rowVal(row, ['Scale', 'scale']),
+        x: rowVal(row, ['X', 'x']),
+        y: rowVal(row, ['Y', 'y']),
+        z: rowVal(row, ['Z', 'z'])
+      };
     }
   }
   return null;
@@ -133,9 +175,10 @@ export async function onRequest(context) {
   const userId = clean(url.searchParams.get('user_id') || '');
   const petCode = clean(url.searchParams.get('pet_code') || '');
   const petName = clean(url.searchParams.get('pet_name') || '');
+  const pet = clean(url.searchParams.get('pet') || url.searchParams.get('species') || '');
   const action = clean(url.searchParams.get('action') || 'main');
   let match = null;
-  if (userId && (petCode || petName)) match = findPetImage(rows, { userId, petCode, petName, action });
+  if (petCode || petName || pet) match = findPetImage(rows, { userId, petCode, petName, pet, action });
 
   return json({
     success: true,
@@ -145,10 +188,11 @@ export async function onRequest(context) {
     user_id: userId,
     pet_code: petCode,
     pet_name: petName,
+    pet,
     action,
     image_url: match ? match.image_url : '',
     match: match || null,
-    reason: match ? 'matched sheet51 row' : 'no active sheet51 image row matched for this user/pet/action',
+    reason: match ? 'matched sheet51 row' : 'no active Sheet 51 row matched. Checked user_id+pet_code, user_id+pet_name, then generic Section=pet with Pet / Target or Asset Key matching species.',
     rows: url.searchParams.get('include_rows') === '1' ? rows : undefined
   });
 }
