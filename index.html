@@ -101,7 +101,7 @@
     <div id="dev-build" class="devTab active"><div class="devHelp">Build mode edits the actual level. Platforms and objects stay placed in the world. They do not spawn and fly at the player.</div><div class="devGroup"><label>Add type</label><select id="addType"><option value="platform">Platform</option><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finish">Finish flag</option></select></div><div class="devRow"><div class="devGroup"><label>X position</label><input id="addX" type="number" value="900"></div><div class="devGroup"><label>Bottom/Y height</label><input id="addY" type="number" value="180"></div></div><div class="devRow"><div class="devGroup"><label>Width for platform</label><input id="addW" type="number" value="220"></div><div class="devGroup"><label>Icon or image URL</label><input id="addIcon" placeholder="✨, 🚨, 🏁 or image URL"></div></div><button class="devButton" onclick="addLevelThing()">Add To Level</button> <button class="devButton alt" onclick="clearLastThing()">Undo Last</button><div class="devList" id="levelList"></div></div>
     <div id="dev-images" class="devTab"><div class="devHelp">These are game images/backgrounds, separate from Petbot images.</div><div class="devGroup"><label>Sky background URL</label><input id="cfgSky" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png"></div><div class="devGroup"><label>Hills background URL</label><input id="cfgHills" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png"></div><div class="devGroup"><label>Ground background URL</label><input id="cfgGround" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png"></div><button class="devButton" onclick="applyBackgrounds()">Apply Backgrounds</button></div>
     <div id="dev-sprites" class="devTab"><div class="devHelp">Player/party choice lives on the main menu so it is clear before starting the platform game. This tab is only for sprite size and custom sprite testing.</div><button class="devButton alt" onclick="toggleDev(false);showScreen('menu');renderPartyPreview()">Open Platform Quest Setup</button><div class="devGroup"><label>Player character</label><select id="cfgCharacter" onchange="setCharacter(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom static URL</option></select></div><div class="devGroup"><label>Custom static sprite URL</label><input id="cfgCustomSprite" placeholder="Only used for Custom"></div><div class="devRow"><div class="devGroup"><label>Sprite width</label><input id="cfgSpriteW" type="number" value="140"></div><div class="devGroup"><label>Sprite height</label><input id="cfgSpriteH" type="number" value="165"></div></div><button class="devButton" onclick="applySpriteSettings()">Apply Sprite</button></div>
-    <div id="dev-sheet" class="devTab"><div class="devHelp">Read-only sheet loader. This does not write, sort, delete, or edit sheet rows.</div><div class="devGroup"><label>Google Sheet ID</label><input id="cfgSheetId" value="1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA"></div><button class="devButton" onclick="loadAllSheetData()">Reload Sheet</button><h3>Pet image rows found</h3><div class="assetPicker" id="petAssetPicker"></div><h3>Debug</h3><div class="devList" id="sheetDebug">Not loaded yet.</div></div>
+    <div id="dev-sheet" class="devTab"><div class="devHelp">Read-only Petbot bridge. This calls /api/petbot, which only allows safe view modes and does not write to the sheet.</div><div class="devGroup"><label>Petbot source</label><input id="cfgSheetId" value="Uses Cloudflare /api/petbot read-only proxy" readonly></div><button class="devButton" onclick="loadAllSheetData()">Reload Petbot Data</button><h3>Pet image rows found</h3><div class="assetPicker" id="petAssetPicker"></div><h3>Debug</h3><div class="devList" id="sheetDebug">Not loaded yet.</div></div>
     <div id="dev-save" class="devTab"><div class="devHelp">Game progress/settings save to Cloudflare KV only. Google Sheet stays read-only.</div><div class="devGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="devButton" onclick="saveGameConfig()">Save to Cloudflare KV</button><div class="devList" id="saveStatus">Not saved yet.</div></div>
   </div></div>
 </div>
@@ -259,6 +259,133 @@ function toggleDev(on){document.body.classList.toggle('devMode',!!on);renderDevP
 function devTab(name,btn){document.querySelectorAll('.devTabBtn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.devTab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');$('dev-'+name).classList.add('active');}
 async function saveGameConfig(){const key=$('adminKey').value.trim();const payload={level,selectedCharacter:state.player.character,backgrounds:{sky:$('cfgSky').value,hills:$('cfgHills').value,ground:$('cfgGround').value},pet:state.pet};try{const r=await fetch('/api/save-game-config',{method:'POST',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify(payload)});$('saveStatus').textContent=await r.text();}catch(e){$('saveStatus').textContent='Save failed: '+e.message;}}
 function bindControls(){const set=(k,v)=>{state.keys[k]=v};window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',true);if(e.key==='ArrowRight'||e.key==='d')set('right',true);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',true);});window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',false);if(e.key==='ArrowRight'||e.key==='d')set('right',false);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',false);});[['btnLeft','left'],['btnRight','right'],['btnJump','jump']].forEach(([id,k])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();set(k,true)});b.addEventListener('pointerup',()=>set(k,false));b.addEventListener('pointerleave',()=>set(k,false));});}
+
+
+/* ======================================================================
+   SAFE PETBOT READ-ONLY BRIDGE
+   The browser never gets the Apps Script secret key.
+   It asks Cloudflare /api/petbot, and that proxy only allows read modes.
+   ====================================================================== */
+const PETBOT_READONLY_API = '/api/petbot';
+const PETBOT_READ_MODES = new Set([
+  'pet_profile_compact','view_pets','view_inventory','view_shop','view_pet_coins',
+  'care_item_menu','view_hook_prizes','view_hook_collection','get_hook_waaambulance',
+  'quest_stats'
+]);
+async function petbotApi(mode, params={}){
+  if(!PETBOT_READ_MODES.has(mode)) throw new Error('Blocked non-read Petbot mode: '+mode);
+  const qs = new URLSearchParams({mode, ...params});
+  const r = await fetch(PETBOT_READONLY_API + '?' + qs.toString(), {method:'GET'});
+  const data = await r.json().catch(()=>({found:false,response:'Invalid JSON from /api/petbot'}));
+  if(!r.ok) throw new Error(data.response || data.error || ('Petbot API failed '+r.status));
+  return data;
+}
+function parsePetSlots(viewPets){
+  const pets=[];
+  for(let i=1;i<=25;i++){
+    const code=viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'];
+    const missing=viewPets['pet_'+i+'_missing'] || viewPets['menu_pet_'+i+'_missing'];
+    if(!code || String(code).startsWith('no_pet_') || missing===true || missing==='true') continue;
+    const name=viewPets['pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_label'] || code;
+    const type=viewPets['pet_'+i+'_pet'] || viewPets['menu_pet_'+i+'_pet'] || 'pet';
+    const img=viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'] || '';
+    pets.push({
+      key:'pet:'+code, kind:'ownedPet', label:`${name} (${type})`, name, type, petCode:code,
+      baseImg:img, animated:!!animatedKeyForPet({type})
+    });
+  }
+  return pets;
+}
+function firstPetRowForCode(viewPets, code){
+  code=String(code||'').toLowerCase();
+  for(let i=1;i<=25;i++){
+    const rowCode=String(viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'] || '').toLowerCase();
+    if(rowCode && rowCode===code){
+      return {
+        name:viewPets['pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_name'],
+        type:viewPets['pet_'+i+'_pet'] || viewPets['menu_pet_'+i+'_pet'],
+        code:viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'],
+        image:viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'],
+        level:viewPets['pet_'+i+'_level'], xp:viewPets['pet_'+i+'_xp'],
+        health:viewPets['pet_'+i+'_health'], hunger:viewPets['pet_'+i+'_hunger'],
+        happiness:viewPets['pet_'+i+'_happiness'], energy:viewPets['pet_'+i+'_energy']
+      };
+    }
+  }
+  return {};
+}
+function parseItemsFromPetbot(out, max=25){
+  const arr=[];
+  for(let i=1;i<=max;i++){
+    const key=out['item_'+i+'_key'];
+    const name=out['item_'+i+'_name'];
+    const qty=out['item_'+i+'_quantity'] ?? out['item_'+i+'_owned'] ?? '';
+    const img=out['item_'+i+'_image'] || out['item_'+i+'_image_url'] || '';
+    if(!key && !name && !img) continue;
+    arr.push({key,name:name||key||'Item',price:out['item_'+i+'_price']||0,owned:qty||0,quantity:qty||0,image:img,icon:'📦',type:out['item_'+i+'_type']||'',group:out['item_'+i+'_group']||''});
+  }
+  return arr;
+}
+function parseHookRowsFromPetbot(out, max=25){
+  const arr=[];
+  for(let i=1;i<=max;i++){
+    const name=out['item_'+i+'_name'] || out['prize_'+i+'_name'] || out['hook_'+i+'_name'];
+    const img=out['item_'+i+'_image'] || out['prize_'+i+'_image'] || out['hook_'+i+'_image'] || out['item_'+i+'_image_url'];
+    const key=out['item_'+i+'_key'] || out['prize_'+i+'_key'] || out['hook_'+i+'_key'];
+    if(!name && !img && !key) continue;
+    arr.push({name:name||key||'Prize',image:img||'',icon:'🚑'});
+  }
+  return arr;
+}
+function applyPetbotReadonlyData(user, profile, viewPets, inventory, shop, hook){
+  const selectedCode = profile.pet_code || profile.selected_pet_code || profile.code || '';
+  const slot = firstPetRowForCode(viewPets, selectedCode);
+  state.pet.name = profile.pet_name || slot.name || user.username;
+  state.pet.type = profile.pet || slot.type || 'Pet';
+  state.pet.level = Number(profile.pet_level || profile.level || slot.level || 1);
+  state.pet.xp = Number(profile.pet_xp || profile.xp || slot.xp || 0);
+  state.pet.hunger = Number(profile.hunger || slot.hunger || state.pet.hunger || 80);
+  state.pet.happy = Number(profile.happiness || slot.happiness || state.pet.happy || 80);
+  state.pet.energy = Number(profile.energy || slot.energy || state.pet.energy || 80);
+  state.pet.coins = Number(profile.pet_coin_balance || profile.coins || profile.wallet || profile.pet_coins || 0);
+  state.pet.baseImg = safeImageValue(profile.pet_image_url || profile.image_url || slot.image || '');
+  state.pet.petCode = selectedCode || slot.code || '';
+
+  const owned = parsePetSlots(viewPets);
+  if(state.pet.petCode && !owned.some(p=>String(p.petCode)===String(state.pet.petCode))){
+    owned.unshift({key:'pet:'+state.pet.petCode,kind:'ownedPet',label:`${state.pet.name} (${state.pet.type})`,name:state.pet.name,type:state.pet.type,petCode:state.pet.petCode,baseImg:state.pet.baseImg,animated:!!animatedKeyForPet({type:state.pet.type})});
+  }
+  state.ownedPets = owned;
+  state.sheet.shopRows = parseItemsFromPetbot(inventory).concat(parseItemsFromPetbot(shop)).slice(0,12);
+  state.sheet.hookRows = parseHookRowsFromPetbot(hook).slice(0,8);
+  populatePartySelectors();
+  renderPet();
+  renderHook();
+  renderPartyPreview();
+  updateCompanionSprite(true);
+}
+async function loadCurrentTestUser(){
+  const key=$('testUserSelect').value;
+  const user=TEST_USERS[key]||TEST_USERS.ryan;
+  $('loadStatus').textContent=`Loading ${user.username} from read-only Petbot API...`;
+  try{
+    const profile=await petbotApi('pet_profile_compact',{user_id:user.discordId,include_media:'true'});
+    const petCode=profile.pet_code || profile.selected_pet_code || '';
+    const viewPets=await petbotApi('view_pets',{user_id:user.discordId,per_page:'25'});
+    const inventory=await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'});
+    const shop=await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(()=>({}));
+    const hook=await petbotApi('view_hook_prizes',{user_id:user.discordId}).catch(async()=>petbotApi('get_hook_waaambulance',{user_id:user.discordId}).catch(()=>({})));
+    applyPetbotReadonlyData(user,profile,viewPets,inventory,shop,hook);
+    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Pets shown: ${state.ownedPets.length}. Items shown: ${state.sheet.shopRows.length}. Hook prizes: ${state.sheet.hookRows.length}.`;
+  }catch(err){
+    $('loadStatus').textContent='Petbot read-only API not connected yet: '+err.message+'\nSet PETBOT_APPS_SCRIPT_URL and PETBOT_API_KEY in Cloudflare, then redeploy.';
+  }
+}
+async function loadAllSheetData(){
+  // Kept only for the Developer button. It now uses the safe Petbot bridge, not direct sheet scraping.
+  return loadCurrentTestUser();
+}
+
 window.addEventListener('load',()=>{bindControls();applyBackgrounds();renderLevel();populatePartySelectors();setCharacter('pura');applyPlayerSize('pura');renderPartyPreview();loadCurrentTestUser().catch(()=>{});showScreen('menu');});
 </script>
 </body>
