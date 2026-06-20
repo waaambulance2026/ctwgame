@@ -156,5 +156,377 @@ function hold(btn,down,up){btn.addEventListener('pointerdown',e=>{e.preventDefau
 window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=true;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=true;if(e.key===' '||e.key==='ArrowUp'||e.key.toLowerCase()==='w')keys.jump=true;if(e.key==='Tab'||e.key.toLowerCase()==='q'){e.preventDefault();switchChar()}if(e.key.toLowerCase()==='e'){e.preventDefault();document.body.classList.contains('devMode')?closeDeveloper():openDeveloper()}});window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key.toLowerCase()==='a')keys.left=false;if(e.key==='ArrowRight'||e.key.toLowerCase()==='d')keys.right=false;if(e.key===' '||e.key==='ArrowUp'||e.key.toLowerCase()==='w')keys.jump=false});
 async function boot(){buildChoices();setHud();renderDev();applyLayerStyles();await applyBackgrounds();loadLive().catch(()=>{})}boot();
 </script>
+
+
+<!-- CTW GAMEPLAY + SINGLE-FRAME EDITOR FIX v3 -->
+<script id="ctw-gameplay-frame-scope-fix-v3">
+(function(){
+  if(window.__ctwGameplayFrameScopeFixV3) return;
+  window.__ctwGameplayFrameScopeFixV3 = true;
+
+  window.CTW_SELECTED_FRAME_INDEX = window.CTW_SELECTED_FRAME_INDEX || 0;
+
+  function $(id){ return document.getElementById(id); }
+  function toast(msg){ try{ showToast(msg); }catch(e){ console.log(msg); } }
+  function clamp(n,min,max){ return Math.max(min, Math.min(max, n)); }
+  function currentChar(){ return $('devCharacter')?.value || selected?.[activeIndex] || 'ax'; }
+  function currentAction(){ return $('devAction')?.value || 'idle'; }
+  function currentFrameIndex(){
+    const frames = getActions(currentChar())?.[currentAction()] || [];
+    const max = Math.max(0, frames.length - 1);
+    window.CTW_SELECTED_FRAME_INDEX = clamp(Number(window.CTW_SELECTED_FRAME_INDEX)||0, 0, max);
+    return window.CTW_SELECTED_FRAME_INDEX;
+  }
+  function frameKey(i){ return String((Number(i)||0) + 1); }
+  function scopeValue(){ return $('spriteSizeScope')?.value || 'frame'; }
+
+  function ensureSpriteStore(){
+    devConfig.spriteEdits = devConfig.spriteEdits || {};
+    return devConfig.spriteEdits;
+  }
+  function actionStore(char, action, create){
+    const root = create ? ensureSpriteStore() : (devConfig.spriteEdits || {});
+    if(create && !root[char]) root[char] = {actions:{}};
+    if(create && !root[char].actions) root[char].actions = {};
+    const c = root[char] || {actions:{}};
+    if(create && !c.actions[action]) c.actions[action] = {defaults:{}, frames:{}};
+    if(create && !c.actions[action].defaults) c.actions[action].defaults = {};
+    if(create && !c.actions[action].frames) c.actions[action].frames = {};
+    return c.actions[action] || {defaults:{}, frames:{}};
+  }
+  function baseCharacterConfig(char){
+    const raw = CHARACTERS[char] || CHARACTERS.ax || {};
+    const saved = devConfig.characters?.[char] || {};
+    return Object.assign({}, raw, saved);
+  }
+  function effectiveSpriteConfig(char, action, frameIndex){
+    const base = baseCharacterConfig(char);
+    const ae = actionStore(char, action, false);
+    const f = (ae.frames || {})[frameKey(frameIndex)] || {};
+    return Object.assign({}, base, ae.defaults || {}, f || {});
+  }
+  window.CTW_effectiveSpriteConfig = effectiveSpriteConfig;
+
+  function sliderValues(){
+    return {
+      height: readNum('devHeight'),
+      feet: readNum('devFeet'),
+      x: readNum('devX'),
+      fps: readNum('devFps'),
+      walkBob: readNum('devBob'),
+      flip: $('devFlip')?.value === 'true'
+    };
+  }
+  function setSlidersFromConfig(c){
+    if(!c) return;
+    setRangePair('devHeight', Number(c.height ?? 220));
+    setRangePair('devFeet', Number(c.feet ?? 0));
+    setRangePair('devX', Number(c.x ?? 24));
+    setRangePair('devFps', Number(c.fps ?? 10));
+    setRangePair('devBob', Number(c.walkBob ?? 0));
+    if($('devFlip')) $('devFlip').value = String(!!c.flip);
+    try{ syncDevLabels(); }catch(e){}
+  }
+  function writeCurrentSpriteEdit(quiet){
+    const char = currentChar();
+    const action = currentAction();
+    const idx = currentFrameIndex();
+    const vals = sliderValues();
+    const scope = scopeValue();
+
+    if(scope === 'character'){
+      devConfig.characters = devConfig.characters || {};
+      devConfig.characters[char] = Object.assign({}, devConfig.characters[char] || {}, vals);
+      if(!quiet) toast('Saved size to whole character: ' + char);
+    }else if(scope === 'action'){
+      const ae = actionStore(char, action, true);
+      ae.defaults = Object.assign({}, ae.defaults || {}, vals);
+      if(!quiet) toast('Saved size to whole action: ' + action);
+    }else{
+      const ae = actionStore(char, action, true);
+      ae.frames[frameKey(idx)] = Object.assign({}, ae.frames[frameKey(idx)] || {}, vals);
+      if(!quiet) toast('Saved size to frame ' + (idx + 1) + ' only');
+    }
+    devConfig.gameSpeed = readNum('devSpeed');
+    try{ saveDevConfig(); }catch(e){}
+  }
+
+  function installScopeUI(){
+    if($('spriteSizeScope')) return;
+    const actionField = $('devAction')?.closest('.devField');
+    if(!actionField) return;
+    const box = document.createElement('div');
+    box.className = 'devField';
+    box.id = 'spriteScopeField';
+    box.innerHTML = '<label>What should size sliders edit?</label><select id="spriteSizeScope"><option value="frame">This frame only</option><option value="action">This action only</option><option value="character">Whole character</option></select><div class="devNote" style="margin-bottom:0">Use <b>This frame only</b> when one sprite frame looks small/big. Use <b>This action only</b> for all walk/jump/idle frames. Use <b>Whole character</b> only for normal character size.</div>';
+    actionField.insertAdjacentElement('afterend', box);
+    $('spriteSizeScope').value = localStorage.getItem('ctw-sprite-size-scope') || 'frame';
+    $('spriteSizeScope').onchange = function(){
+      localStorage.setItem('ctw-sprite-size-scope', this.value);
+      setSlidersFromConfig(effectiveSpriteConfig(currentChar(), currentAction(), currentFrameIndex()));
+      updateDeveloperPreview();
+    };
+  }
+
+  function updateFrameInfo(){
+    const read = $('devReadout');
+    if(!read || !document.body.classList.contains('devMode')) return;
+    const char=currentChar(), action=currentAction(), idx=currentFrameIndex();
+    const ae=actionStore(char, action, false);
+    const hasAction=!!(ae.defaults && Object.keys(ae.defaults).length);
+    const hasFrame=!!(ae.frames && ae.frames[frameKey(idx)]);
+    const extra = '\nEditing scope: ' + (scopeValue()==='frame'?'this frame only':scopeValue()==='action'?'this action only':'whole character') +
+      ' · frame ' + (idx+1) +
+      (hasFrame?' · frame has saved size':'') +
+      (hasAction?' · action has saved size':'');
+    if(!read.textContent.includes('Editing scope:')) read.textContent += extra;
+    else read.textContent = read.textContent.replace(/\nEditing scope:[\s\S]*$/, extra);
+  }
+
+  const oldApplyDevInputs = applyDevInputs;
+  applyDevInputs = function(){
+    writeCurrentSpriteEdit(true);
+    syncDevLabels();
+    const c = currentChar();
+    if(characterEls[c]) applyCharStyle(c, selected[activeIndex]===c);
+    renderFrames();
+    updateDeveloperPreview();
+  };
+
+  const oldRenderDev = renderDev;
+  renderDev = function(){
+    oldRenderDev.apply(this, arguments);
+    installScopeUI();
+    const eff = effectiveSpriteConfig(currentChar(), currentAction(), currentFrameIndex());
+    setSlidersFromConfig(eff);
+    renderFrames();
+    updateDeveloperPreview();
+  };
+
+  renderFrames = function(){
+    const c=currentChar(), a=currentAction();
+    const strip=$('frameStrip');
+    if(!strip) return;
+    const frames=(getActions(c)[a]||[]);
+    if(window.CTW_SELECTED_FRAME_INDEX >= frames.length) window.CTW_SELECTED_FRAME_INDEX=0;
+    strip.innerHTML='';
+    const ae=actionStore(c,a,false);
+    frames.forEach((src,i)=>{
+      const b=document.createElement('button');
+      const hasFrame=!!(ae.frames && ae.frames[frameKey(i)]);
+      const hasAction=!!(ae.defaults && Object.keys(ae.defaults).length);
+      b.className='frameBtn'+(i===currentFrameIndex()?' active':'');
+      if(hasFrame) b.style.borderColor='#76C7D8';
+      else if(hasAction) b.style.borderColor='#d282c2';
+      b.dataset.n=i+1;
+      b.title='Frame '+(i+1)+(hasFrame?' has its own saved size':hasAction?' uses action saved size':'');
+      const im=document.createElement('img');
+      setImageWithFallback(im,src);
+      b.appendChild(im);
+      b.onclick=()=>{
+        window.CTW_SELECTED_FRAME_INDEX=i;
+        strip.querySelectorAll('.frameBtn').forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const ent=characterEls[c];
+        if(ent){ ent.action=a; ent.frame=i; setImageWithFallback(ent.img,src); applyCharStyle(c, selected[activeIndex]===c); }
+        setSlidersFromConfig(effectiveSpriteConfig(c,a,i));
+        updateDeveloperPreview();
+      };
+      strip.appendChild(b);
+    });
+    updateFrameInfo();
+  };
+
+  applyCharStyle = function(c,active=false){
+    const ent=characterEls[c]; if(!ent) return;
+    const action=ent.action||'idle';
+    const idx=Number(ent.frame)||0;
+    const base=baseCharacterConfig(c);
+    const cc=effectiveSpriteConfig(c, action, idx);
+    const h=Number(cc.height||base.height||200);
+    ent.box.style.height=h+'px';
+    ent.box.style.width=(h*(base.aspect||1))+'px';
+    const x=active ? window.innerWidth*((cc.x||24)/100)+player.x : window.innerWidth*(((cc.x||24)-8-selected.indexOf(c)*5)/100);
+    ent.wrap.style.left=x+'px';
+    const bob=(active&&action==='walk') ? Math.round(Math.sin((idx%10)/10*Math.PI*2)*Number(cc.walkBob||0)) : 0;
+    ent.wrap.style.bottom=(floorPx()+player.y+(cc.feet||0)+bob)+'px';
+    ent.wrap.style.opacity=active?1:.82;
+    ent.wrap.style.zIndex=active?22:20-selected.indexOf(c);
+    const flip=(cc.flip?-1:1)*(player.facing<0?-1:1);
+    ent.wrap.style.transform=`translateX(-50%) scaleX(${flip})`;
+  };
+  playerBaseX = function(){
+    const c=selected[activeIndex]||'ax';
+    const ent=characterEls[c];
+    const eff=effectiveSpriteConfig(c, ent?.action||'idle', ent?.frame||0);
+    return window.innerWidth*((eff.x||24)/100)+player.x;
+  };
+
+  updateCharacterAnimations = function(dt){
+    selected.forEach((c,i)=>{
+      const ent=characterEls[c]; if(!ent)return;
+      const active=i===activeIndex;
+      const moving=active&&(keys.left||keys.right);
+      const jumping=active&&!player.grounded;
+      const action=jumping?'jump':moving?'walk':'idle';
+      if(ent.action!==action){ent.action=action;ent.frame=0;ent.acc=0;}
+      const fr=getActions(c)[action]||[];
+      const idx=(Number(ent.frame)||0)%Math.max(1,fr.length);
+      const eff=effectiveSpriteConfig(c, action, idx);
+      const fps=Number((eff.actionFps&&eff.actionFps[action])||eff.fps||10);
+      ent.acc+=dt;
+      if(ent.acc>1000/fps){ent.acc=0;ent.frame=(ent.frame+1)%Math.max(1,fr.length);}
+      const src=fr[ent.frame]||getActions(c).idle?.[0];
+      if(src) setImageWithFallback(ent.img,src);
+      applyCharStyle(c,active);
+    });
+    try{shadow.style.left=playerBaseX()+'px';shadow.style.bottom=(floorPx()-11)+'px';}catch(e){}
+  };
+
+  updateDeveloperPreview = function(){
+    if(!document.body.classList.contains('devMode')) return;
+    const screen=$('devPreviewScreen'), sw=screen?.clientWidth||800, sh=screen?.clientHeight||450;
+    const scale=Math.min(sw/window.innerWidth, sh/window.innerHeight)||1;
+    function pvLayer(k,el,scroll=0){
+      const c=layerCfg(k); if(!el) return;
+      el.style.display=c.show===false?'none':''; el.style.opacity=c.opacity; el.style.zIndex=c.z;
+      if(k==='sky'){
+        el.style.inset='0'; el.style.backgroundSize=`${c.zoom}% auto`; el.style.backgroundPosition=`calc(50% + ${c.x*scale}px) calc(50% + ${c.y*scale}px)`;
+      }else{
+        el.style.height=(sh*(c.height/100))+'px'; el.style.bottom=(c.bottom*scale)+'px'; el.style.backgroundSize=`auto ${c.zoom}%`; el.style.backgroundPosition=`${(scroll+c.x)*scale}px calc(100% + ${c.y*scale}px)`;
+      }
+    }
+    pvLayer('sky',$('devPreviewSky'));
+    pvLayer('hills',$('devPreviewHills'),-(distance*.22)%900);
+    pvLayer('ground',$('devPreviewGround'),-(distance*.9)%900);
+    const pc=layerCfg('platform');
+    if($('devPreviewPlatform')){ $('devPreviewPlatform').style.display=pc.show===false?'none':''; $('devPreviewPlatform').style.height=(pc.height*scale)+'px'; $('devPreviewPlatform').style.bottom=(pc.bottom*scale)+'px'; }
+    if($('devPreviewBaseline')) $('devPreviewBaseline').style.bottom=(floorPx()*scale)+'px';
+    const c=currentChar(), a=currentAction(), idx=currentFrameIndex();
+    const frames=getActions(c)[a]||getActions(c).idle||[];
+    if(frames[idx]) setImageWithFallback($('devPreviewSpriteImg'),frames[idx]);
+    const base=baseCharacterConfig(c);
+    const eff=effectiveSpriteConfig(c,a,idx);
+    const h=Number(eff.height||base.height||220)*scale;
+    const sprite=$('devPreviewSprite');
+    if(sprite){
+      sprite.style.width=(h*(base.aspect||1))+'px'; sprite.style.height=h+'px';
+      sprite.style.left=(window.innerWidth*((eff.x||24)/100)*scale)+'px';
+      sprite.style.bottom=((floorPx()+(eff.feet||0))*scale)+'px';
+      sprite.style.transform=`translateX(-50%) scaleX(${eff.flip?-1:1})`;
+    }
+    const read=$('devReadout');
+    if(read){
+      read.textContent=`Preview: ${c} / ${a} / frame ${idx+1}\nheight ${Math.round(eff.height||0)}px · feet ${Math.round(eff.feet||0)}px · x ${Math.round(eff.x||24)}vw · fps ${Math.round(eff.fps||10)}`;
+      updateFrameInfo();
+    }
+  };
+
+  /* Ground hazards should be jumpable. Tokens can float. */
+  spawnObj = function(){
+    const q=QUESTS[level];
+    const kind=Math.random()<.72?'token':'hazard';
+    const list=kind==='token'?q.tokens:q.hazards;
+    const el=document.createElement('div');
+    el.className='obj '+kind;
+    el.textContent=list[Math.floor(Math.random()*list.length)];
+    objectsEl.appendChild(el);
+    const y = kind==='hazard' ? (window.innerHeight - floorPx() - 28) : (window.innerHeight - floorPx() - 90 - Math.random()*135);
+    worldObjs.push({el,kind,x:window.innerWidth+80,y,hit:false});
+  };
+
+  updateObjects = function(dt){
+    spawn-=dt; if(spawn<0){spawnObj(); spawn=850+Math.random()*650;}
+    const speed=(devConfig.gameSpeed||3.2)*(dt/16.67);
+    const active=selected[activeIndex]||'ax';
+    const ent=characterEls[active];
+    const eff=effectiveSpriteConfig(active, ent?.action||'idle', ent?.frame||0);
+    const px=playerBaseX();
+    const playerBottom=window.innerHeight - floorPx() - player.y;
+    const playerTop=playerBottom - Number(eff.height||220)*0.72;
+    const playerLeft=px-42, playerRight=px+42;
+    worldObjs.forEach(o=>{
+      if(o.hit)return;
+      o.x-=speed; o.el.style.left=o.x+'px'; o.el.style.top=o.y+'px';
+      const objLeft=o.x-29, objRight=o.x+29, objTop=o.y-29, objBottom=o.y+29;
+      const overlap = playerRight>objLeft && playerLeft<objRight && playerBottom>objTop && playerTop<objBottom;
+      if(overlap){
+        o.hit=true; o.el.remove();
+        if(o.kind==='token'){
+          score+=25; toast('+25 token');
+        }else{
+          lives--; toast(player.y>75?'Nearly cleared it!':'Ouch');
+          if(lives<=0){ resetCurrentRun(false); toast('Restarted'); }
+        }
+        setHud();
+      }
+    });
+    worldObjs=worldObjs.filter(o=>!o.hit&&o.x>-100);
+  };
+
+  updateWorld = function(dt){
+    const move=(keys.right?1:0)-(keys.left?1:0);
+    if(move){player.x+=move*4*(dt/16.67); player.facing=move>0?1:-1;}
+    if(keys.jump&&player.grounded){player.vy=15.5; player.grounded=false;}
+    player.vy-=0.58*(dt/16.67);
+    player.y+=player.vy*(dt/16.67);
+    const active=selected[activeIndex]||'ax';
+    const ent=characterEls[active];
+    const eff=effectiveSpriteConfig(active, ent?.action||'idle', ent?.frame||0);
+    const maxY=Math.max(80, window.innerHeight-floorPx()-Number(eff.height||220)-80);
+    if(player.y>maxY){player.y=maxY; player.vy=Math.min(player.vy,0);}
+    if(player.y<=0){player.y=0; player.vy=0; player.grounded=true;}
+    distance+=Math.max(0,move)*0.18*(dt/16.67)+0.07*(dt/16.67);
+    if(distance>QUESTS[level].goal){level=(level+1)%QUESTS.length; distance=0; toast('Next quest: '+QUESTS[level].name);}
+    hills.style.backgroundPosition=bgPositionFor('hills',-(distance*.22)%900);
+    ground.style.backgroundPosition=bgPositionFor('ground',-(distance*.9)%900);
+    setHud();
+  };
+
+  function resetCurrentRun(show){
+    paused=false; running=true; level=0; score=0; lives=3; distance=0; spawn=0; last=0;
+    player={x:0,y:0,vy:0,grounded:true,facing:1}; keys={left:false,right:false,jump:false};
+    worldObjs=[]; if(objectsEl) objectsEl.innerHTML='';
+    Object.values(characterEls||{}).forEach(ent=>{ent.action='idle'; ent.frame=0; ent.acc=0;});
+    if($('pauseBtn')) $('pauseBtn').textContent='Pause';
+    setHud(); if(show!==false) toast('Quest restarted');
+  }
+  function backToMainMenu(){
+    running=false; paused=true; closeDeveloper();
+    worldObjs=[]; if(objectsEl) objectsEl.innerHTML='';
+    if(charsEl) charsEl.innerHTML=''; characterEls={};
+    player={x:0,y:0,vy:0,grounded:true,facing:1}; keys={left:false,right:false,jump:false};
+    level=0; score=0; lives=3; distance=0; spawn=0; last=0;
+    buildChoices(); $('startScreen')?.classList.remove('hidden'); setHud(); toast('Choose characters');
+  }
+  window.CTW_restartCurrentRun = resetCurrentRun;
+  window.CTW_backToMainMenu = backToMainMenu;
+
+  function addGameplayButtons(){
+    const stats=document.querySelector('.stats'); if(!stats) return;
+    if(!$('restartGameBtn')){
+      const b=document.createElement('button'); b.id='restartGameBtn'; b.className='pill gold'; b.textContent='Restart'; b.onclick=()=>resetCurrentRun(true);
+      $('pauseBtn')?.insertAdjacentElement('afterend', b);
+    }
+    if(!$('mainMenuGameBtn')){
+      const b=document.createElement('button'); b.id='mainMenuGameBtn'; b.className='pill pink'; b.textContent='Menu'; b.onclick=backToMainMenu;
+      $('restartGameBtn')?.insertAdjacentElement('afterend', b);
+    }
+  }
+
+  const oldSaveLive = saveLive;
+  saveLive = async function(){
+    writeCurrentSpriteEdit(true);
+    return oldSaveLive.apply(this, arguments);
+  };
+
+  function bootFix(){ addGameplayButtons(); installScopeUI(); renderDev(); }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', bootFix); else setTimeout(bootFix, 50);
+  document.addEventListener('click', function(e){
+    if(e.target && (e.target.id==='devBtn' || e.target.id==='startDevBtn')) setTimeout(bootFix,80);
+  });
+})();
+</script>
+
 </body>
 </html>
