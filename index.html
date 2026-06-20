@@ -21,7 +21,21 @@
   <div id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:900"><span id="petNameDisplay">PET: Loading...</span><span id="petXpDisplay">LV.1</span></div><div class="petStage"><img id="petBodyGraphic" alt="Pet"><img id="petBubble" class="bubbleImg" alt="bubble"></div><div class="meters"><div>HUNGER<div class="bar"><div id="fillHunger" class="fill"></div></div></div><div>HAPPY<div class="bar"><div id="fillHappy" class="fill"></div></div></div><div>ENERGY<div class="bar"><div id="fillEnergy" class="fill"></div></div></div><div>COINS<span id="labelCoins" style="display:block;margin-top:2px">🪙 0</span></div></div></div><div class="ticker" id="careStatusTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="processCareAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="processCareAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="processCareAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="processCareAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p id="hookHelp">Hook prizes are loaded from the sheet if matching rows/tabs are found.</p><div class="hookPool"><div class="hookLine"></div><div class="hookClaw">🪝</div><div id="hookItems"></div></div><div class="ticker" id="hookTicker">Press the button to hook an item.</div><button class="pill gold" onclick="hookAttempt()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></div>
   <div id="victory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="restartLevel();showScreen('platform')">Play Again</button></div></div>
-  <div id="devPanel" class="devPanel"><div class="devPreview"><div class="devPreviewHead"><span>🛠 Developer Preview</span><button onclick="toggleDev()">Close</button></div><div class="devPreviewScreen"><div class="layer sky"></div><div class="layer hills"></div><div class="layer ground"></div></div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Pets should come from sheet rows such as user_pets, pet_action_images, user_pet_images, effects, inventory, and response tabs. The loader tries common column names automatically.</div><div id="petDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">Level 1 is still local example level data. Later this can read level rows from a sheet too, still read-only.</div><button class="btnPrimary" onclick="restartLevel();showScreen('platform')">Test Platform Level</button></div><div class="devTabContent"><div class="note">Progress saves should go to Cloudflare KV, not to Google Sheets. This keeps the sheet safe.</div><div class="formGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="btnPrimary" onclick="saveToCloudflareOnly()">Save to Cloudflare KV only</button></div></div></div>
+  <div id="devPanel" class="devPanel"><div class="devPreview"><div class="devPreviewHead"><span>🛠 Developer Preview</span><button onclick="toggleDev()">Close</button></div><div class="devPreviewScreen"><div class="layer sky"></div><div class="layer hills"></div><div class="layer ground"></div></div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Pets should come from sheet rows such as user_pets, pet_action_images, user_pet_images, effects, inventory, and response tabs. The loader tries common column names automatically.</div><div id="petDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
+<div class="formGroup"><label>Character sprite URL</label><input id="devCharacterUrl" placeholder="Cloudinary URL or public id, e.g. pura_walk_001.png"></div>
+<div class="formGroup"><label>Sprite height px</label><input id="devSpriteHeight" type="number" value="220"></div>
+<div class="formGroup"><label>Sky background URL</label><input id="devSkyUrl" placeholder="day_sky.png or full Cloudinary URL"></div>
+<div class="formGroup"><label>Hills background URL</label><input id="devHillsUrl" placeholder="day_hills.png or full Cloudinary URL"></div>
+<div class="formGroup"><label>Ground background URL</label><input id="devGroundUrl" placeholder="day_ground.png or full Cloudinary URL"></div>
+<div class="actionRow"><button class="btnPrimary" onclick="applyGameImageSettings()">Apply Game Images</button><button class="btnSecondary" onclick="resetGameImageSettings()">Reset Defaults</button></div>
+<hr>
+<div class="formGroup"><label>New level object type</label><select id="devObjectType"><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finishObj">Finish flag</option><option value="platform">Platform</option></select></div>
+<div class="formGroup"><label>Object icon or image URL</label><input id="devObjectIcon" placeholder="✨, 🚨, 🏁, or image URL"></div>
+<div class="formGroup"><label>X position</label><input id="devObjectX" type="number" value="900"></div>
+<div class="formGroup"><label>Y height / bottom</label><input id="devObjectY" type="number" value="180"></div>
+<div class="formGroup"><label>Width for platform</label><input id="devObjectW" type="number" value="220"></div>
+<div class="actionRow"><button class="btnPrimary" onclick="addDevLevelObject()">Add To Level</button><button class="btnSecondary" onclick="restartLevel();showScreen('platform')">Test Platform Level</button></div>
+</div><div class="devTabContent"><div class="note">Progress saves should go to Cloudflare KV, not to Google Sheets. This keeps the sheet safe.</div><div class="formGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="btnPrimary" onclick="saveToCloudflareOnly()">Save to Cloudflare KV only</button></div></div></div>
   <div id="toast" class="toast">Saved</div>
 </div>
 <script>
@@ -399,7 +413,7 @@ function renderSelectors() {
 }
 function updatePreviews() {
   const p = state.currentPet;
-  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? 'yes' : 'no'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}` : 'No pet loaded from sheet yet.';
+  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If base image says NO IMAGE FOUND, the sheet row loaded but no image URL/public id was detected for that pet.</small>` : 'No pet loaded from sheet yet.';
   const h = state.hookRows[state.selectedHookIndex];
   $('hookDataPreview').innerHTML = h ? `<b>${escapeHtml(h.name)}</b><br>Image found: ${h.image ? 'yes' : 'no'}<br>Points: ${h.points}` : 'No hook images loaded yet.';
 }
@@ -407,8 +421,8 @@ function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.cu
 function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
 
 function petFallback(species) {
-  const emoji = /raven|crow/i.test(species) ? '🐦‍⬛' : /owl/i.test(species) ? '🦉' : /unicorn/i.test(species) ? '🦄' : /dog|pura/i.test(species) ? '🐶' : '🐾';
-  return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'><rect width='120' height='120' rx='25' fill='%23fff7bd'/><text x='60' y='78' font-size='64' text-anchor='middle'>${encodeURIComponent(emoji)}</text></svg>`;
+  const label = encodeURIComponent('NO PET\nIMAGE');
+  return `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 160 160'><rect width='160' height='160' rx='22' fill='%23fff7bd'/><rect x='8' y='8' width='144' height='144' rx='18' fill='none' stroke='%2321142d' stroke-width='4' stroke-dasharray='8 6'/><text x='80' y='72' font-family='Arial' font-size='18' font-weight='900' text-anchor='middle' fill='%2321142d'>NO PET</text><text x='80' y='98' font-family='Arial' font-size='18' font-weight='900' text-anchor='middle' fill='%2321142d'>IMAGE</text></svg>`;
 }
 function renderPet(action) {
   const p = state.currentPet || { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80 };
@@ -422,7 +436,7 @@ function renderPet(action) {
   $('fillEnergy').style.width = `${Math.max(0, Math.min(100, p.energy || 80))}%`;
   $('petBodyGraphic').src = img;
   $('petFollowerImg').src = img;
-  $('mainCharacterImg').src = 'https://res.cloudinary.com/dpwlfmhia/image/upload/pura_walk_001.png';
+  // Do not overwrite the main character here; Developer > Level/Game Images controls that sprite.
   renderShopGrid();
 }
 function renderShopGrid() {
@@ -531,7 +545,45 @@ window.addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'w', 'W'].include
 window.addEventListener('keyup', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) state.keys.jump = false; });
 window.addEventListener('pointerdown', e => { if (state.activeScreen === 'platform') state.keys.jump = true; });
 window.addEventListener('pointerup', () => state.keys.jump = false);
-function init() { loadLocalPrefs(); renderPet(); renderHookItems(); showScreen('menu'); setTimeout(loadSheetData, 250); }
+
+function shortUrl(url) {
+  const s = String(url || '');
+  return s.length > 70 ? s.slice(0, 34) + '…' + s.slice(-28) : s;
+}
+function applyGameImageSettings() {
+  const charUrl = resolveImageUrl($('devCharacterUrl')?.value || '');
+  const skyUrl = resolveImageUrl($('devSkyUrl')?.value || '');
+  const hillsUrl = resolveImageUrl($('devHillsUrl')?.value || '');
+  const groundUrl = resolveImageUrl($('devGroundUrl')?.value || '');
+  const h = Number($('devSpriteHeight')?.value || 220);
+  if (charUrl) $('mainCharacterImg').src = charUrl;
+  if (h && h > 40) document.querySelectorAll('.charBox').forEach(el => { el.style.height = h + 'px'; el.style.width = Math.round(h * 0.86) + 'px'; });
+  if (skyUrl) document.documentElement.style.setProperty('--sky', `url("${skyUrl}")`);
+  if (hillsUrl) document.documentElement.style.setProperty('--hills', `url("${hillsUrl}")`);
+  if (groundUrl) document.documentElement.style.setProperty('--ground', `url("${groundUrl}")`);
+  toast('Game images applied');
+  updatePreviews();
+}
+function resetGameImageSettings() {
+  if ($('devCharacterUrl')) $('devCharacterUrl').value = 'pura_walk_001.png';
+  if ($('devSkyUrl')) $('devSkyUrl').value = 'day_sky.png';
+  if ($('devHillsUrl')) $('devHillsUrl').value = 'day_hills.png';
+  if ($('devGroundUrl')) $('devGroundUrl').value = 'day_ground.png';
+  applyGameImageSettings();
+}
+function addDevLevelObject() {
+  const type = $('devObjectType')?.value || 'token';
+  const iconRaw = $('devObjectIcon')?.value.trim() || (type === 'enemy' ? '🚨' : type === 'finishObj' ? '🏁' : '✨');
+  const x = Number($('devObjectX')?.value || 900);
+  const y = Number($('devObjectY')?.value || 180);
+  const w = Number($('devObjectW')?.value || 220);
+  if (type === 'platform') LOCAL_LEVEL.platforms.push({ x, y, w });
+  else LOCAL_LEVEL.objects.push({ x, y, type, icon: iconRaw });
+  restartLevel();
+  toast('Level object added');
+}
+
+function init() { loadLocalPrefs(); resetGameImageSettings(); renderPet(); renderHookItems(); showScreen('menu'); setTimeout(loadSheetData, 250); }
 init();
 </script>
 </body>
