@@ -3,732 +3,200 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="preconnect" href="https://docs.google.com" crossorigin>
 <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+<link rel="preconnect" href="https://docs.google.com" crossorigin>
 <title>Waaambulance Quest Dash</title>
 <style>
-:root{--pink:#d282c2;--blue:#76C7D8;--yellow:#F5C542;--ink:#130b1d;--panel:#21142d;--floor:82px;--sky:linear-gradient(#72d9ff 0%,#82dcff 58%,#c5f2ff 100%);--hills:url('assets/parallax_far.svg');--ground:url('assets/parallax_mid.svg');--lcd:#a3b899;--lcdInk:#2b3a22}
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select{font-family:inherit}button{cursor:pointer}#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}#levelWorld{position:absolute;inset:0;z-index:20;pointer-events:none}.levelPlatform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 5px,rgba(210,130,194,.45) 5px 18px,rgba(118,199,216,.45) 18px 24px,rgba(33,69,124,.35) 24px);box-shadow:0 7px 13px rgba(0,0,0,.18);border:2px solid rgba(255,255,255,.35)}#objects{position:absolute;inset:0;z-index:45;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:58px;height:58px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86)}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finishObj{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}#characters{position:absolute;inset:0;z-index:55;pointer-events:none}.char{position:absolute;left:24vw;bottom:var(--floor);transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:bottom}.charBox{height:220px;width:190px;display:flex;align-items:flex-end;justify-content:center;overflow:visible}.char img{width:100%;height:100%;object-fit:contain;object-position:center bottom;display:block}.shadow{position:absolute;left:24vw;bottom:calc(var(--floor) - 11px);width:110px;height:22px;border-radius:50%;transform:translateX(-50%);background:rgba(0,0,0,.26);filter:blur(8px);z-index:52}.petFollower{position:absolute;z-index:56;pointer-events:none;display:grid;place-items:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3));animation:petbob 2s ease-in-out infinite}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.86);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:180px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.9);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.48);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(920px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.dataBox code{color:#fff7bd}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:8px 0}.testUserRow select{width:100%;padding:7px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:130px;max-height:130px;object-fit:contain;animation:petbob 1.8s ease-in-out infinite}.noImageTile{display:grid;place-items:center;width:150px;height:105px;border:2px dashed #21142d;border-radius:12px;background:#fff7bd;color:#21142d;font-weight:900;font-size:12px;text-align:center;padding:8px}.bubbleImg{position:absolute;right:68px;top:18px;width:42px;height:42px;object-fit:contain;opacity:0;transition:.2s}.bubbleImg.show{opacity:1}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid,.hookGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel)}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button,.hookGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:120px;background:#21142d;transform:translateX(-50%)}.hookClaw{position:absolute;left:50%;top:112px;transform:translateX(-50%);font-size:34px}.devPanel{display:none}.devMode .screen,.devMode .hud,.devMode .layer,.devMode #levelWorld,.devMode #objects,.devMode #characters{display:none!important}.devMode #game{background:#160f24!important}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(520px,1fr) minmax(360px,460px);gap:12px;padding:12px;background:#fffaff;color:#21142d;overflow:hidden}.devPreview{display:flex;flex-direction:column;gap:8px;min-width:0;min-height:0}.devPreviewHead{display:flex;justify-content:space-between;align-items:center;background:#21142d;color:#fff7bd;border-radius:14px;padding:8px 10px;font-weight:900}.devPreviewHead button{border:0;border-radius:999px;background:var(--yellow);color:#21142d;font-weight:900;padding:8px 12px}.devPreviewScreen{position:relative;flex:1;min-height:360px;border:3px solid var(--blue);border-radius:18px;overflow:hidden;background:#72d9ff}.devControls{min-height:0;overflow:auto;padding-right:4px}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;position:sticky;top:0;z-index:50;background:#fffaff;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid #21142d}.devTabBtn{border:2px solid #21142d;background:#21142d;color:#fff7bd;padding:6px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTabContent{display:none}.devTabContent.active{display:block}.formGroup{margin-bottom:10px}.formGroup label{display:block;font-weight:700;margin-bottom:4px;font-size:12px}.formGroup input,.formGroup select{width:100%;padding:7px;border:1px solid #ccc;border-radius:7px;background:#fff}.actionRow{display:flex;gap:6px;margin-top:10px}.actionRow button{flex:1;padding:9px;border:0;border-radius:7px;font-weight:900}.btnPrimary{background:#21142d;color:#fff}.btnSecondary{background:#ccc;color:#21142d}.note{font-size:12px;line-height:1.35;background:#fff3c7;border:1px solid #21142d;border-radius:10px;padding:8px;margin:8px 0}.toast{position:absolute;z-index:500;left:50%;bottom:24px;transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}@keyframes floaty{0%,100%{margin-top:0}50%{margin-top:-10px}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}@media(max-width:760px){.hud{align-items:flex-start;flex-direction:column}.title{min-width:0}.menuGrid{grid-template-columns:1fr}.careGrid{grid-template-columns:repeat(4,1fr)}.devMode #devPanel{grid-template-columns:1fr;grid-template-rows:45vh 1fr;overflow:auto}.devPreviewScreen{min-height:220px}.devTabs{grid-template-columns:repeat(3,1fr)}}
-.devPreviewLayer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.devPreviewSky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.devPreviewHills{height:56%;bottom:40px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.devPreviewGround{height:34%;bottom:-10px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}.devPreviewPlatform{position:absolute;z-index:10;height:14px;border-radius:10px;background:linear-gradient(to bottom,rgba(255,255,255,.72) 0 4px,rgba(210,130,194,.55) 4px 10px,rgba(118,199,216,.55) 10px 14px);border:1px solid rgba(255,255,255,.75)}.devPreviewObj{position:absolute;z-index:20;display:grid;place-items:center;width:34px;height:34px;border-radius:10px;background:rgba(255,255,255,.82);border:2px solid var(--pink);font-size:19px;transform:translate(-50%,-50%)}.devPreviewChar{position:absolute;left:23%;bottom:82px;z-index:35;width:120px;height:140px;display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 8px 8px rgba(0,0,0,.32))}.devPreviewChar img,.devPreviewPet img{max-width:100%;max-height:100%;object-fit:contain}.devPreviewPet{position:absolute;left:14%;bottom:210px;z-index:36;width:58px;height:58px;display:flex;align-items:center;justify-content:center}.devImageDebug{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;margin-top:8px}.devDebugCard{background:#fff;border:1px solid #ddd;border-radius:8px;padding:6px;font-size:11px;word-break:break-word}</style>
+:root{
+  --pink:#d282c2;--blue:#76C7D8;--yellow:#F5C542;--ink:#130b1d;--panel:#21142d;--floor:92px;
+  --sky:linear-gradient(#72d9ff 0%,#82dcff 58%,#c5f2ff 100%);
+  --hills:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png');
+  --ground:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png');
+  --lcd:#a3b899;--lcdInk:#2b3a22;
+}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select,textarea{font-family:inherit}button{cursor:pointer}
+#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}
+.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:38px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-8px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}
+#worldViewport{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}#world{position:absolute;left:0;top:0;height:100%;width:3200px;transform:translateX(0);will-change:transform;pointer-events:none}.platform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.9) 0 5px,rgba(210,130,194,.72) 5px 18px,rgba(118,199,216,.72) 18px 24px,rgba(33,69,124,.58) 24px);box-shadow:0 8px 14px rgba(0,0,0,.22);border:2px solid rgba(255,255,255,.65)}.worldObj{position:absolute;display:grid;place-items:center;width:60px;height:60px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86);overflow:hidden}.worldObj img{max-width:100%;max-height:100%;object-fit:contain}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finish{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}
+.player{position:absolute;z-index:55;width:190px;height:220px;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:left,bottom}.player img{width:100%;height:100%;object-fit:contain;object-position:center bottom}.shadow{position:absolute;z-index:52;width:112px;height:22px;border-radius:50%;background:rgba(0,0,0,.26);filter:blur(8px);transform:translateX(-50%)}.petFollower{position:absolute;z-index:56;width:70px;height:70px;display:grid;place-items:center;animation:petbob 2s ease-in-out infinite;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.noImg{display:grid;place-items:center;background:#fff7bd;color:#21142d;border:2px dashed #21142d;border-radius:10px;font-size:10px;font-weight:900;text-align:center;padding:4px}
+.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.88);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:210px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.92);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}
+.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.52);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(940px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900;cursor:pointer}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:10px auto;max-width:620px}.testUserRow select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.platformSetup{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:14px;margin:14px 0;text-align:left}.platformSetup h2{margin:0 0 8px;color:var(--yellow);font-size:20px}.setupGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.setupGrid label{font-weight:900;font-size:12px}.setupGrid select{width:100%;margin-top:4px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.25)}.partyNote{font-size:12px;opacity:.9;margin-top:8px;line-height:1.35}.teamCard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.teamCard div{background:rgba(0,0,0,.22);border-radius:12px;padding:8px;font-size:12px}.lockedHint{color:#fff7bd;font-size:12px;margin-top:6px}
+.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:160px;max-height:135px;object-fit:contain}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel);cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900;cursor:pointer;min-height:72px}.shopGrid img{width:28px;height:28px;object-fit:contain;vertical-align:middle}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:40px;background:#21142d;transform:translateX(-50%);transition:height 0.8s ease-in-out}.hookClaw{position:absolute;left:50%;top:100%;transform:translateX(-50%) translateY(-12px);font-size:34px}
+.controls{position:absolute;z-index:90;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 10px);display:flex;justify-content:space-between;pointer-events:none}.controls button{pointer-events:auto;width:64px;height:54px;border:0;border-radius:18px;background:rgba(33,20,45,.86);color:#fff7bd;font-size:22px;font-weight:900}.controlCluster{display:flex;gap:8px}
+#devPanel{display:none}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(0,1fr) 420px;background:rgba(255,250,255,.98);color:#21142d}.devLeft{position:relative;overflow:hidden;background:#72d9ff}.devLeft .layer,.devLeft #devWorld{display:block}.devTop{position:absolute;left:0;right:0;top:0;z-index:30;padding:10px;background:#21142d;color:#fff7bd;display:flex;justify-content:space-between;align-items:center;font-weight:900}.devRight{padding:14px;overflow:auto}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;position:sticky;top:0;background:#fffaff;padding-bottom:10px;z-index:5}.devTabBtn{border:0;background:#21142d;color:#fff7bd;padding:9px 4px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTab{display:none}.devTab.active{display:block}.devGroup{margin:10px 0}.devGroup label{display:block;font-weight:900;font-size:12px;margin-bottom:4px}.devGroup input,.devGroup select,.devGroup textarea{width:100%;border:1px solid #cfc7d6;border-radius:8px;padding:8px;background:#fff}.devRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.devButton{border:0;border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.devButton.alt{background:#ddd;color:#21142d}.devHelp{background:#fff7bd;border:1px solid #8d7622;border-radius:10px;padding:10px;font-size:12px;margin:10px 0}.devList{font-size:12px;background:#f2eef5;border-radius:10px;padding:8px;max-height:150px;overflow:auto;white-space:pre-wrap}.assetPicker{max-height:190px;overflow:auto;border:1px solid #ddd;border-radius:10px;background:#fff}.assetChoice{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;padding:6px;border-bottom:1px solid #eee;cursor:pointer}.assetChoice:hover{background:#fff7bd}.assetChoice img{width:38px;height:38px;object-fit:contain;background:#eee;border-radius:6px}.assetChoice strong{display:block;font-size:12px}.assetChoice span{display:block;font-size:10px;opacity:.75;word-break:break-all}
+@keyframes floaty{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-10px)}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@media(max-width:800px){.menuGrid{grid-template-columns:1fr}.hud{align-items:flex-start}.title{min-width:120px}.devMode #devPanel{grid-template-columns:1fr}.devLeft{display:none}.devRight{min-height:100dvh}.careGrid{grid-template-columns:repeat(4,1fr)}.shopGrid{grid-template-columns:1fr 1fr}.testUserRow{grid-template-columns:1fr}}
+</style>
 </head>
 <body>
 <div id="game">
-  <div class="layer sky"></div><div class="layer hills"></div><div class="layer ground"></div>
-  <div id="levelWorld"></div><div id="objects"></div>
-  <div id="characters"><div class="shadow"></div><div class="char" id="playerChar"><div class="charBox"><img id="mainCharacterImg" alt="Player"></div></div><div class="petFollower" id="petFollower" style="width:58px;height:58px;left:calc(24vw - 70px);bottom:220px"><img id="petFollowerImg" alt="Pet follower"></div></div>
-  <div class="hud"><div class="title"><strong>🚑 Waaambulance Quest Dash</strong><span id="hudSubtitle">One game: menu, platform, pet care, hook</span></div><div class="stats"><span class="pill pink">Score: <strong id="score">0</strong></span><span class="pill">Lives: <strong id="lives">3</strong></span><span class="pill blue">Distance: <strong id="distance">0m</strong></span><button class="pill gold" onclick="showScreen('menu')">🏠 Menu</button><button class="pill" onclick="toggleDev()">🛠 Dev</button></div></div>
-  <div id="screenMain" class="screen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>One game with separate screens inside this same <b>index.html</b>.</p><div class="menuGrid"><button class="bigCard" onclick="showScreen('platform')">🎮 Platform Game<span>Level 1: Swamp Monster</span></button><button class="bigCard" onclick="showScreen('pet')">🐾 Pet Care<span>Loads pets from the sheet read-only</span></button><button class="bigCard" onclick="showScreen('hook')">🧲 Hook-A-Waaambulance<span>Uses hook images from the sheet when found</span></button><button class="bigCard" onclick="toggleDev()">🛠 Developer<span>Settings and sheet loader status</span></button></div><div class="dataBox"><b>Read-only sheet mode:</b><br>Sheet ID: <code id="sheetIdLabel"></code><br>Status: <span id="sheetStatus">not loaded yet</span><br><br><label>Testing user</label><div class="testUserRow"><select id="testUserSelect" onchange="applyTestingUser(this.value)"><option value="ryan">💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚 / ryansaxolotl</option><option value="ashely">Ashely / alyj420</option><option value="custom">Custom / Discord Activity later</option></select><button class="pill gold" onclick="loadSheetData()">Load</button></div><label>Discord/User ID to load <input id="userIdInput" placeholder="Discord id, username, or pet name" oninput="document.getElementById('testUserSelect').value='custom';saveLocalPrefs()"></label><button class="pill gold" onclick="loadSheetData()">Refresh sheet data</button><br><br><label>Player character for platform test</label><select id="menuCharacterSelect" onchange="setPlayerCharacterPreset(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom URL from Developer</option></select><p>Testing mode uses Ryan or Ashely automatically. Later Discord Activity mode will fill this from Discord, so users will not type their ID.</p><p>This page only reads the sheet. It does not write, sort, delete, or edit any sheet rows.</p></div></div></div>
-  <div id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:11px;font-weight:900"><span id="petNameDisplay">PET: Loading...</span><span id="petXpDisplay">LV.1</span></div><div class="petStage"><img id="petBodyGraphic" alt="Pet"><img id="petBubble" class="bubbleImg" alt="bubble"></div><div class="meters"><div>HUNGER<div class="bar"><div id="fillHunger" class="fill"></div></div></div><div>HAPPY<div class="bar"><div id="fillHappy" class="fill"></div></div></div><div>ENERGY<div class="bar"><div id="fillEnergy" class="fill"></div></div></div><div>COINS<span id="labelCoins" style="display:block;margin-top:2px">🪙 0</span></div></div></div><div class="ticker" id="careStatusTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="processCareAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="processCareAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="processCareAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="processCareAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" onclick="showScreen('menu')">Return to Menu</button></div></div>
-  <div id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p id="hookHelp">Hook prizes are loaded from the sheet if matching rows/tabs are found.</p><div class="hookPool"><div class="hookLine"></div><div class="hookClaw">🪝</div><div id="hookItems"></div></div><div class="ticker" id="hookTicker">Press the button to hook an item.</div><button class="pill gold" onclick="hookAttempt()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></div>
-  <div id="victory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="restartLevel();showScreen('platform')">Play Again</button></div></div>
-  <div id="devPanel" class="devPanel"><div class="devPreview"><div class="devPreviewHead"><span>🛠 Developer Preview</span><button onclick="toggleDev()">Close</button></div><div class="devPreviewScreen" id="devPreviewScreen">
-  <div class="devPreviewLayer devPreviewSky"></div>
-  <div class="devPreviewLayer devPreviewHills"></div>
-  <div class="devPreviewLayer devPreviewGround"></div>
-  <div id="devPreviewPlatforms"></div>
-  <div id="devPreviewObjects"></div>
-  <div class="devPreviewChar" id="devPreviewChar"><img id="devPreviewCharImg" alt="character preview"></div>
-  <div class="devPreviewPet" id="devPreviewPet"><img id="devPreviewPetImg" alt="pet preview"></div>
-</div><div class="dataBox" id="devReadout">Ready.</div></div><div class="devControls"><h1>Developer Mode</h1><div class="devTabs"><button class="devTabBtn active" onclick="switchDevTab(0,this)">1 Sheet</button><button class="devTabBtn" onclick="switchDevTab(1,this)">2 Pet</button><button class="devTabBtn" onclick="switchDevTab(2,this)">3 Hook</button><button class="devTabBtn" onclick="switchDevTab(3,this)">4 Level</button><button class="devTabBtn" onclick="switchDevTab(4,this)">5 Save</button></div><div class="devTabContent active"><div class="note">This game reads the Google Sheet only. There are no sheet write calls in this file.</div><div class="formGroup"><label>Google Sheet ID</label><input id="devSheetId"></div><div class="formGroup"><label>Tab names to try for pets</label><input id="devPetTabs"></div><div class="formGroup"><label>Tab names to try for hook images</label><input id="devHookTabs"></div><div class="actionRow"><button class="btnPrimary" onclick="saveLocalPrefs();loadSheetData()">Load Sheet</button><button class="btnSecondary" onclick="showDataDebug()">Show Loaded Data</button></div></div><div class="devTabContent"><div class="formGroup"><label>Loaded Pet Selector</label><select id="devPetSelect" onchange="selectPetByIndex(this.value)"></select></div><div class="note">Owned pets and image catalogs are separate. This tab now lets you choose the exact image row from the sheet instead of guessing and accidentally showing the wrong creature.</div><div id="petDataPreview" class="dataBox"></div>
-<div class="formGroup"><label>Base image row from sheet</label><select id="devPetBaseAssetSelect" onchange="selectPetAsset('base', this.value)"></select></div>
-<div class="formGroup"><label>Feed image row from sheet</label><select id="devPetFeedAssetSelect" onchange="selectPetAsset('feed', this.value)"></select></div>
-<div class="formGroup"><label>Play image row from sheet</label><select id="devPetPlayAssetSelect" onchange="selectPetAsset('play', this.value)"></select></div>
-<div class="formGroup"><label>Rest image row from sheet</label><select id="devPetRestAssetSelect" onchange="selectPetAsset('rest', this.value)"></select></div>
-<div class="formGroup"><label>Medicine/heal image row from sheet</label><select id="devPetMedicineAssetSelect" onchange="selectPetAsset('medicine', this.value)"></select></div>
-<div class="note">Image/catalog debug: it shows which rows matched automatically. Use the dropdowns above when the sheet uses a different key.</div>
-<div id="petImageDebug" class="devImageDebug"></div>
-</div><div class="devTabContent"><div class="formGroup"><label>Loaded Hook Image Selector</label><select id="devHookSelect" onchange="selectHookByIndex(this.value)"></select></div><div class="note">Hook-A-Waaambulance uses images/icons found in hook/minigame/prize/item tabs. If no image is found it uses emojis as a safe fallback.</div><div id="hookDataPreview" class="dataBox"></div></div><div class="devTabContent"><div class="note">This tab edits the actual game view again: character, backgrounds, and level objects. These settings are local/game config only. They do not write to the Google Sheet.</div>
-<div class="formGroup"><label>Player character preset</label><select id="devCharacterPreset" onchange="setPlayerCharacterPreset(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom URL below</option></select></div>
-<div class="formGroup"><label>Character sprite URL</label><input id="devCharacterUrl" placeholder="Cloudinary URL or public id, e.g. pura_walk_001.png"></div>
-<div class="formGroup"><label>Sprite height px</label><input id="devSpriteHeight" type="number" value="220"></div>
-<div class="formGroup"><label>Sky background URL</label><input id="devSkyUrl" placeholder="day_sky.png or full Cloudinary URL"></div>
-<div class="formGroup"><label>Hills background URL</label><input id="devHillsUrl" placeholder="day_hills.png or full Cloudinary URL"></div>
-<div class="formGroup"><label>Ground background URL</label><input id="devGroundUrl" placeholder="day_ground.png or full Cloudinary URL"></div>
-<div class="actionRow"><button class="btnPrimary" onclick="applyGameImageSettings()">Apply Game Images</button><button class="btnSecondary" onclick="resetGameImageSettings()">Reset Defaults</button></div>
-<hr>
-<div class="formGroup"><label>New level object type</label><select id="devObjectType"><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finishObj">Finish flag</option><option value="platform">Platform</option></select></div>
-<div class="formGroup"><label>Object icon or image URL</label><input id="devObjectIcon" placeholder="✨, 🚨, 🏁, or image URL"></div>
-<div class="formGroup"><label>X position</label><input id="devObjectX" type="number" value="900"></div>
-<div class="formGroup"><label>Y height / bottom</label><input id="devObjectY" type="number" value="180"></div>
-<div class="formGroup"><label>Width for platform</label><input id="devObjectW" type="number" value="220"></div>
-<div class="actionRow"><button class="btnPrimary" onclick="addDevLevelObject()">Add To Level</button><button class="btnSecondary" onclick="restartLevel();showScreen('platform')">Test Platform Level</button></div>
-</div><div class="devTabContent"><div class="note">Progress saves should go to Cloudflare KV, not to Google Sheets. This keeps the sheet safe.</div><div class="formGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="btnPrimary" onclick="saveToCloudflareOnly()">Save to Cloudflare KV only</button></div></div></div>
-  <div id="toast" class="toast">Saved</div>
+  <div class="layer sky" id="skyLayer"></div><div class="layer hills" id="hillsLayer"></div><div class="layer ground" id="groundLayer"></div>
+  <div id="worldViewport"><div id="world"></div></div>
+  <div class="shadow" id="shadow"></div>
+  <div class="player" id="player"><img id="playerImg" alt="player"></div>
+  <div class="petFollower" id="petFollower"><div class="noImg" id="petFollowerFallback">PET</div><img id="petFollowerImg" class="hidden" alt="pet"></div>
+  <div class="hud">
+    <div class="title"><strong>🚑 Waaambulance Quest Dash</strong><span>Mario/Sonic style platform game</span></div>
+    <div class="stats"><span class="pill pink">Score: <span id="score">0</span></span><span class="pill">Lives: <span id="lives">3</span></span><span class="pill blue">Distance: <span id="distance">0m</span></span><button class="pill gold" onclick="showScreen('menu')">🏠 Menu</button><button class="pill" onclick="toggleDev(true)">🛠 Dev</button></div>
+  </div>
+  <div class="controls" id="controls"><div class="controlCluster"><button id="btnLeft">◀</button><button id="btnRight">▶</button></div><button id="btnJump">⤴</button></div>
+
+  <section id="screenMenu" class="screen">
+    <div class="modal">
+      <h1>Waaambulance Quest Dash</h1>
+      <p>One game: menu, platform, pet care, hook. The platform mode is now a proper world with a player moving through it.</p>
+      <div class="testUserRow"><label style="text-align:left;font-weight:900">Testing user context<select id="testUserSelect"><option value="ryan">💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚 / ryansaxolotl</option><option value="ashely">Ashely / alyj420</option></select></label><button class="pill gold" onclick="loadCurrentTestUser()">Load</button></div>
+      <div class="platformSetup">
+        <h2>🎮 Platform Quest Setup</h2>
+        <div class="setupGrid">
+          <label>Quest mode
+            <select id="questModeSelect" onchange="refreshPartyUi()">
+              <option value="solo">Solo</option>
+              <option value="team">Team / combo quest</option>
+            </select>
+          </label>
+          <label>Player 1
+            <select id="slot1CharacterSelect" onchange="selectSlotCharacter(1,this.value)"></select>
+          </label>
+          <label>Player 2 / helper
+            <select id="slot2CharacterSelect" onchange="selectSlotCharacter(2,this.value)"></select>
+          </label>
+        </div>
+        <div class="teamCard">
+          <div><strong>Solo:</strong> one character plays the whole level.</div>
+          <div><strong>Team:</strong> two characters can be used for combo parts later, like switches, lifts, double jumps, and special routes.</div>
+        </div>
+        <div class="partyNote" id="partyNote">Load the testing user first. Owned pets from the sheet will appear here. Owl and Unicorn can use animated sprites when available; pets without sprites use their static pet image.</div>
+        <button class="pill gold" style="margin-top:10px" onclick="startPlatform()">Start Platform Quest</button>
+      </div>
+      <div class="menuGrid"><button class="bigCard" onclick="startPlatform()">🎮 Platform Game<span>Move through a level like Mario/Sonic. Objects are placed in the world.</span></button><button class="bigCard" onclick="showScreen('pet')">🐾 Pet Care<span>Loads user pet data read-only from the sheet.</span></button><button class="bigCard" onclick="showScreen('hook')">🧲 Hook-A-Waaambulance<span>Uses hook images/items from the sheet when found.</span></button><button class="bigCard" onclick="toggleDev(true)">🛠 Simple Editor<span>Build the level and change images without confusing preview mode.</span></button></div>
+      <div class="dataBox" id="loadStatus">Status: not loaded yet. Sheet access is read-only.</div>
+    </div>
+  </section>
+
+  <section id="screenPet" class="screen hidden"><div class="modal"><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900"><span id="petNameLabel">PET: Loading...</span><span id="petLevelLabel">LV.1</span></div><div class="petStage"><div id="petBodyFallback" class="noImg">NO PET IMAGE</div><img id="petBodyImg" class="hidden" alt="Pet"><img id="petBubbleImg" class="hidden" alt="bubble" style="position:absolute;right:48px;top:10px;width:42px;height:42px"></div><div class="meters"><div>HUNGER<div class="bar"><div class="fill" id="fillHunger"></div></div></div><div>HAPPY<div class="bar"><div class="fill" id="fillHappy"></div></div></div><div>ENERGY<div class="bar"><div class="fill" id="fillEnergy"></div></div></div><div>COINS<br><span id="petCoins">🪙 0</span></div></div></div><div class="ticker" id="petTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="careAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="careAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="careAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="careAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" style="margin-top:12px" onclick="showScreen('menu')">Return to Menu</button></div></section>
+
+  <section id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p>Hook prizes are loaded from your sheet when matching image rows are found.</p><div class="hookPool" id="hookPool"><div class="hookLine" id="hookLine"><div class="hookClaw">🪝</div></div></div><div class="ticker" id="hookTicker">Press Hook to catch an item.</div><button class="pill gold" onclick="dropHook()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></section>
+
+  <section id="screenVictory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="startPlatform()">Play Again</button></div></section>
+
+  <div id="devPanel"><div class="devLeft"><div class="layer sky"></div><div class="layer hills"></div><div class="layer ground"></div><div id="devWorld"></div><div class="devTop"><span>🛠 Live Game Preview</span><button class="pill gold" onclick="toggleDev(false)">Close</button></div></div><div class="devRight"><h1>Simple Game Editor</h1><div class="devTabs"><button class="devTabBtn active" onclick="devTab('build',this)">1 Build</button><button class="devTabBtn" onclick="devTab('images',this)">2 Images</button><button class="devTabBtn" onclick="devTab('sprites',this)">3 Sprites</button><button class="devTabBtn" onclick="devTab('sheet',this)">4 Sheet</button><button class="devTabBtn" onclick="devTab('save',this)">5 Save</button></div>
+    <div id="dev-build" class="devTab active"><div class="devHelp">Build mode edits the actual level. Platforms and objects stay placed in the world. They do not spawn and fly at the player.</div><div class="devGroup"><label>Add type</label><select id="addType"><option value="platform">Platform</option><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finish">Finish flag</option></select></div><div class="devRow"><div class="devGroup"><label>X position</label><input id="addX" type="number" value="900"></div><div class="devGroup"><label>Bottom/Y height</label><input id="addY" type="number" value="180"></div></div><div class="devRow"><div class="devGroup"><label>Width for platform</label><input id="addW" type="number" value="220"></div><div class="devGroup"><label>Icon or image URL</label><input id="addIcon" placeholder="✨, 🚨, 🏁 or image URL"></div></div><button class="devButton" onclick="addLevelThing()">Add To Level</button> <button class="devButton alt" onclick="clearLastThing()">Undo Last</button><div class="devList" id="levelList"></div></div>
+    <div id="dev-images" class="devTab"><div class="devHelp">These are game images/backgrounds, separate from Petbot images.</div><div class="devGroup"><label>Sky background URL</label><input id="cfgSky" value=""></div><div class="devGroup"><label>Hills background URL</label><input id="cfgHills" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png"></div><div class="devGroup"><label>Ground background URL</label><input id="cfgGround" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png"></div><button class="devButton" onclick="applyBackgrounds()">Apply Backgrounds</button></div>
+    <div id="dev-sprites" class="devTab"><div class="devHelp">Sprites animate by cycling idle/walk/jump frames. Player choice is separate from Pet Care.</div><div class="devGroup"><label>Player character</label><select id="cfgCharacter" onchange="setCharacter(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom static URL</option></select></div><div class="devGroup"><label>Custom static sprite URL</label><input id="cfgCustomSprite" placeholder="Only used for Custom"></div><div class="devRow"><div class="devGroup"><label>Sprite width</label><input id="cfgSpriteW" type="number" value="190"></div><div class="devGroup"><label>Sprite height</label><input id="cfgSpriteH" type="number" value="220"></div></div><button class="devButton" onclick="applySpriteSettings()">Apply Sprite</button></div>
+    <div id="dev-sheet" class="devTab"><div class="devHelp">Read-only sheet loader. This does not write, sort, delete, or edit sheet rows.</div><div class="devGroup"><label>Google Sheet ID</label><input id="cfgSheetId" value="1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA"></div><button class="devButton" onclick="loadAllSheetData()">Reload Sheet</button><h3>Pet image rows found</h3><div class="assetPicker" id="petAssetPicker"></div><h3>Debug</h3><div class="devList" id="sheetDebug">Not loaded yet.</div></div>
+    <div id="dev-save" class="devTab"><div class="devHelp">Game progress/settings save to Cloudflare KV only. Google Sheet stays read-only.</div><div class="devGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="devButton" onclick="saveGameConfig()">Save to Cloudflare KV</button><div class="devList" id="saveStatus">Not saved yet.</div></div>
+  </div></div>
 </div>
 <script>
 'use strict';
-
-const DEFAULT_SHEET_ID = '1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
-const CLOUDINARY_BASE = 'https://res.cloudinary.com/dpwlfmhia/image/upload/';
-const CHARACTER_PRESETS = {
-  pura: { label: 'Pura', url: 'pura_walk_001.png' },
-  ax: { label: 'Axolotl', url: 'ax_walk_001.png' },
-  unicorn: { label: 'Unicorn', url: 'unicorn_walk_001.png' },
-  owl: { label: 'Owl', url: 'owl_walk_001.png' },
-  custom: { label: 'Custom', url: '' }
+const TEST_USERS={ryan:{display:"💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚",username:'ryansaxolotl',discordId:'1214671839205396481'},ashely:{display:'Ashely',username:'alyj420',discordId:'1407957358683885670'}};
+const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const SPRITES={
+  pura:{label:'Pura',prefix:'pura',fallback:'🐶',counts:{idle:10,walk:10,jump:10}},
+  ax:{label:'Axolotl',prefix:'ax',fallback:'🦎',counts:{idle:10,walk:10,jump:10}},
+  unicorn:{label:'Unicorn',prefix:'unicorn',fallback:'🦄',counts:{idle:10,walk:10,jump:10}},
+  owl:{label:'Owl',prefix:'owl',fallback:'🦉',counts:{idle:10,walk:10,jump:10}}
 };
-
-const CONFIG = {
-  sheetId: DEFAULT_SHEET_ID,
-  // These are the real tabs visible in your sheet index. The game reads them only.
-  petTabs: [
-    'user_profile','user_pets','pets','user_pet_images','pet_action_images','user_pet_skill_images',
-    'user_pet_effects','user_pet_coins','user_inventory','item_catalog','pet_layer_catalog',
-    'habitat_catalog','habitat_layout_catalog','habitat_shop_catalog','user_habitat_inventory','user_pet_habitat_loadout',
-    'feed_responses','play_responses','rest_responses','medicine_responses','shop_responses',
-    'inventory_responses','coin_responses','train_responses','user_pet_traits','user_pet_skills',
-    'pet_relationships','user_view_state','pet_menu'
-  ],
-  hookTabs: [
-    'hook_waaambulance','hook_waaambulance_collection','hook_waaambulance_logs','hook_care_prize_logs',
-    'user_habitat_inventory','item_catalog','collectible_catalog','collectible_responses',
-    'mini_quest_actions','mini_quests','user_mini_quest_logs'
-  ]
-};
-
-const TEST_USERS = {
-  ryan: {
-    key: 'ryan',
-    displayName: "💚 𝕽𝖞𝖆𝖓's 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚",
-    username: 'ryansaxolotl',
-    discordId: '1214671839205396481',
-    fallbackPet: { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 70, energy: 80, userId: '1214671839205396481', fromTestFallback: true }
-  },
-  ashely: {
-    key: 'ashely',
-    displayName: 'Ashely',
-    username: 'alyj420',
-    discordId: '1407957358683885670',
-    fallbackPet: { name: 'Ashely Pet', species: 'Pet', level: 1, xp: 0, coins: 0, hunger: 70, happy: 70, energy: 80, userId: '1407957358683885670', fromTestFallback: true }
-  }
-};
-
-const state = {
-  score: 0,
-  lives: 3,
-  worldX: 0,
-  playerY: 82,
-  vy: 0,
-  onGround: true,
-  activeScreen: 'menu',
-  selectedPetIndex: 0,
-  selectedHookIndex: 0,
-  petRows: [],
-  hookRows: [],
-  shopItems: [],
-  inventoryItems: [],
-  assetOptions: [],
-  allSheets: {},
-  currentPet: null,
-  animationId: null,
-  keys: {},
-  hookScore: 0,
-  selectedCharacter: 'pura'
-};
-
-const LEVEL = {
-  length: 3000,
-  platforms: [
-    { x: 0, y: 82, w: 760, h: 26 }, { x: 430, y: 190, w: 220, h: 26 },
-    { x: 820, y: 260, w: 210, h: 26 }, { x: 1200, y: 170, w: 260, h: 26 },
-    { x: 1650, y: 245, w: 260, h: 26 }, { x: 2100, y: 180, w: 230, h: 26 },
-    { x: 2500, y: 110, w: 320, h: 26 }
-  ],
-  collectibles: [
-    { x: 300, y: 150, icon: '🪙', points: 10 }, { x: 510, y: 250, icon: '✨', points: 20 },
-    { x: 890, y: 325, icon: '💎', points: 40 }, { x: 1300, y: 235, icon: '🪙', points: 10 },
-    { x: 1720, y: 315, icon: '✨', points: 20 }, { x: 2320, y: 255, icon: '💎', points: 40 }
-  ],
-  enemies: [
-    { x: 700, y: 118, icon: '🐌', range: 120, dir: 1, baseX: 700 },
-    { x: 1120, y: 118, icon: '🦠', range: 0, dir: 1, baseX: 1120 },
-    { x: 1900, y: 118, icon: '🐸', range: 160, dir: -1, baseX: 1900 }
-  ],
-  finish: { x: 2850, y: 130, icon: '🏁' }
-};
-
-function $(id) { return document.getElementById(id); }
-function toast(txt) { const t = $('toast'); if (!t) return; t.textContent = txt; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 1800); }
-function escapeHtml(s) { return String(s ?? '').replace(/[&<>'"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[c])); }
-function cleanKey(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
-function textOf(row) { return Object.values(row || {}).map(v => String(v || '')).join(' ').toLowerCase(); }
-
-function showScreen(name) {
-  state.activeScreen = name;
-  ['screenMain', 'screenPet', 'screenHook', 'victory'].forEach(id => $(id)?.classList.add('hidden'));
-  if (name === 'menu') {
-    $('screenMain')?.classList.remove('hidden');
-    if (state.animationId) cancelAnimationFrame(state.animationId);
-    state.animationId = null;
-  } else if (name === 'pet') {
-    $('screenPet')?.classList.remove('hidden');
-    renderPet();
-  } else if (name === 'hook') {
-    $('screenHook')?.classList.remove('hidden');
-    renderHookItems();
-  } else if (name === 'platform') {
-    restartLevel();
-    state.animationId = requestAnimationFrame(gameLoop);
-  }
+let state={screen:'menu',score:0,lives:3,cameraX:0,keys:{left:false,right:false,jump:false},running:false,player:{x:170,y:0,vx:0,vy:0,w:92,h:150,onGround:false,facing:1,state:'idle',character:'pura',frame:1,lastFrame:0,customStatic:''},party:{mode:'solo',slot1:'pura',slot2:'none',companionFrame:1,companionLastFrame:0},ownedPets:[],levelWidth:2600,pet:{name:'Odin',type:'Raven',level:1,xp:70,coins:0,hunger:65,happy:45,energy:80,baseImg:'',feedImg:'',playImg:'',restImg:'',medicineImg:'',bubbleImg:''},sheet:{rowsByTab:{},allRows:[],assetRows:[],hookRows:[],shopRows:[]}};
+const level={platforms:[{x:0,y:70,w:520},{x:610,y:150,w:230},{x:930,y:240,w:220},{x:1260,y:150,w:300},{x:1660,y:220,w:240},{x:2050,y:130,w:360}],objects:[{x:240,y:132,type:'token',icon:'✨'},{x:720,y:210,type:'enemy',icon:'🚨'},{x:1040,y:300,type:'token',icon:'💎'},{x:1390,y:210,type:'enemy',icon:'🐌'},{x:1810,y:280,type:'token',icon:'🪙'},{x:2380,y:190,type:'finish',icon:'🏁'}]};
+function $(id){return document.getElementById(id);} function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
+function safeImageValue(v){if(v==null)return'';let s=String(v).trim();if(!s||/^none$/i.test(s)||/^n\/a$/i.test(s))return'';s=s.replace(/^['"]|['"]$/g,'').trim();if(/^https?:\/\//i.test(s)){ if(s.includes('drive.google.com/file/d/')){const m=s.match(/\/d\/([^/]+)/); if(m)return `https://drive.google.com/uc?export=view&id=${m[1]}`;} return s; } if(s.startsWith('//'))return 'https:'+s; if(s.includes('res.cloudinary.com'))return 'https://'+s.replace(/^https?:\/\//,''); if(s.includes('/image/upload/'))return 'https://res.cloudinary.com/'+s.replace(/^\/+/, ''); if(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i.test(s))return CLOUD+'f_auto,q_auto/'+s.replace(/^\/+/, ''); if(/^[\w\-\/]+$/.test(s))return CLOUD+'f_auto,q_auto/'+s; return '';}
+function setImgOrFallback(img,fb,url,label){const resolved=safeImageValue(url); if(!resolved){img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'NO IMAGE';return false;} img.onerror=()=>{img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'BROKEN IMAGE'}; img.onload=()=>{fb.classList.add('hidden');img.classList.remove('hidden')}; img.src=resolved; return true;}
+function showScreen(name){state.screen=name; ['Menu','Pet','Hook','Victory'].forEach(n=>$('screen'+n).classList.add('hidden')); if(name==='menu')$('screenMenu').classList.remove('hidden'); if(name==='pet'){$('screenPet').classList.remove('hidden');renderPet();} if(name==='hook'){$('screenHook').classList.remove('hidden');renderHook();} if(name==='victory')$('screenVictory').classList.remove('hidden'); if(name!=='play')state.running=false;}
+function startPlatform(){
+  readPartyFromMenu();
+  const p1=resolvePlayable(state.party.slot1)||resolvePlayable('pura');
+  applyPlayableToPlayer(p1);
+  showScreen('play');
+  state.running=true;state.player.x=170;state.player.y=120;state.player.vx=0;state.player.vy=0;state.cameraX=0;state.score=0;state.lives=3;
+  renderLevel(); updateCompanionSprite(true); requestAnimationFrame(loop);
 }
+function setCharacter(k){state.player.character=k; const c=$('cfgCharacter'); if(c)c.value=k; updateSprite(true);}
+function readPartyFromMenu(){state.party.mode=($('questModeSelect')&&$('questModeSelect').value)||'solo';state.party.slot1=($('slot1CharacterSelect')&&$('slot1CharacterSelect').value)||'pura';state.party.slot2=($('slot2CharacterSelect')&&$('slot2CharacterSelect').value)||'none';refreshPartyUi();}
+function resolvePlayable(value){
+  if(!value||value==='none')return null;
+  if(SPRITES[value])return {kind:'sprite',key:value,label:SPRITES[value].label,animated:true};
+  if(value.startsWith('pet:'))return state.ownedPets.find(p=>p.key===value)||null;
+  return null;
+}
+function animatedKeyForPet(pet){const t=String((pet&&pet.type)||'').toLowerCase();if(t.includes('owl'))return 'owl';if(t.includes('unicorn'))return 'unicorn';return '';}
+function applyPlayableToPlayer(item){
+  if(!item)return;
+  if(item.kind==='sprite'){state.player.character=item.key;state.player.customStatic='';}
+  else {const anim=animatedKeyForPet(item);if(anim){state.player.character=anim;state.player.customStatic='';}else{state.player.character='ownedStatic';state.player.customStatic=safeImageValue(item.baseImg||'');}}
+  updateSprite(true);
+}
+function currentSpriteUrl(){const p=state.player; if(p.character==='custom')return safeImageValue($('cfgCustomSprite')?$('cfgCustomSprite').value:''); if(p.character==='ownedStatic')return p.customStatic||''; const cfg=SPRITES[p.character]||SPRITES.pura; const act=p.state==='jump'?'jump':(Math.abs(p.vx)>0.6?'walk':'idle'); const count=cfg.counts[act]||10; const frame=String(((p.frame-1)%count)+1).padStart(3,'0'); return `${CLOUD}f_auto,q_auto/${cfg.prefix}_${act}_${frame}.png`;}
+function updateSprite(force=false){const now=performance.now(); const p=state.player; p.state=p.onGround?(Math.abs(p.vx)>0.6?'walk':'idle'):'jump'; if(force||now-p.lastFrame>100){p.lastFrame=now;p.frame++; const img=$('playerImg'); const url=currentSpriteUrl(); img.onerror=()=>{img.removeAttribute('src'); img.alt=(SPRITES[p.character]||{}).fallback||'character image missing';}; if(url)img.src=url;}}
+function renderLevel(){const world=$('world'); world.innerHTML=''; world.style.width=state.levelWidth+'px'; level.platforms.forEach((p,i)=>{const d=document.createElement('div');d.className='platform';d.style.left=p.x+'px';d.style.bottom=p.y+'px';d.style.width=p.w+'px';d.dataset.i=i;world.appendChild(d);}); level.objects.forEach((o,i)=>{const d=document.createElement('div');d.className='worldObj '+(o.type==='finish'?'finish':o.type);d.style.left=o.x+'px';d.style.bottom=o.y+'px';d.dataset.i=i;if(safeImageValue(o.icon)){const im=document.createElement('img');im.src=safeImageValue(o.icon);im.onerror=()=>{d.textContent=o.type==='finish'?'🏁':o.type==='enemy'?'🚨':'✨'};d.appendChild(im);}else d.textContent=o.icon||(o.type==='finish'?'🏁':o.type==='enemy'?'🚨':'✨');world.appendChild(d);}); renderDevPreview(); updateHud();}
+function loop(){if(!state.running)return; const p=state.player; let accel=0;if(state.keys.left)accel-=0.75;if(state.keys.right)accel+=0.75;p.vx+=accel;p.vx*=0.82;p.vx=clamp(p.vx,-7,7);if((state.keys.jump)&&p.onGround){p.vy=15;p.onGround=false;}p.vy-=0.65;p.x+=p.vx;p.y+=p.vy;p.x=clamp(p.x,80,state.levelWidth-80);let landed=false;for(const pl of level.platforms){const top=pl.y+26;if(p.x>pl.x-20&&p.x<pl.x+pl.w+20&&p.vy<=0&&p.y>=top-8&&p.y+p.vy<=top+18){p.y=top;p.vy=0;p.onGround=true;landed=true;}}if(!landed&&p.y<=70){p.y=70;p.vy=0;p.onGround=true;}if(!landed&&p.y>70)p.onGround=false;state.cameraX=clamp(p.x-window.innerWidth*0.32,0,Math.max(0,state.levelWidth-window.innerWidth));$('world').style.transform=`translateX(${-state.cameraX}px)`;const screenX=p.x-state.cameraX;$('player').style.left=screenX+'px';$('player').style.bottom=p.y+'px';$('shadow').style.left=screenX+'px';$('shadow').style.bottom=(p.y-12)+'px';$('petFollower').style.left=(screenX-70)+'px';$('petFollower').style.bottom=(p.y+130+Math.sin(performance.now()/350)*6)+'px';checkCollisions();updateSprite();updateCompanionSprite();updateHud();requestAnimationFrame(loop);}
+function checkCollisions(){const p=state.player; level.objects.forEach((o,i)=>{if(o.done)return; if(Math.abs(p.x-o.x)<55&&Math.abs(p.y-o.y)<80){o.done=true; const el=document.querySelector(`.worldObj[data-i="${i}"]`); if(el)el.classList.add(o.type==='enemy'?'defeated':'collected'); if(o.type==='token'){state.score+=20;} else if(o.type==='enemy'){state.lives--; if(state.lives<=0) startPlatform();} else if(o.type==='finish'){state.score+=100;state.running=false;showScreen('victory');}}});}
+function updateHud(){$('score').textContent=state.score;$('lives').textContent=state.lives;$('distance').textContent=Math.max(0,Math.round(state.player.x-170))+'m';}
 
-function switchDevTab(i, btn) {
-  document.querySelectorAll('.devTabBtn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.devTabContent').forEach(c => c.classList.remove('active'));
-  btn.classList.add('active');
-  const tab = document.querySelectorAll('.devTabContent')[i];
-  if (tab) tab.classList.add('active');
-}
-function toggleDev() { document.body.classList.toggle('devMode'); }
-
-function saveLocalPrefs() {
-  CONFIG.sheetId = $('devSheetId').value.trim() || DEFAULT_SHEET_ID;
-  CONFIG.petTabs = $('devPetTabs').value.split(',').map(s => s.trim()).filter(Boolean);
-  CONFIG.hookTabs = $('devHookTabs').value.split(',').map(s => s.trim()).filter(Boolean);
-  localStorage.setItem('ctw_sheet_prefs', JSON.stringify({
-    sheetId: CONFIG.sheetId,
-    petTabs: CONFIG.petTabs,
-    hookTabs: CONFIG.hookTabs,
-    userId: $('userIdInput').value.trim(),
-    testUser: $('testUserSelect') ? $('testUserSelect').value : 'ryan'
-  }));
-  $('sheetIdLabel').textContent = CONFIG.sheetId;
-  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter || 'pura';
-  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
-}
-
-
-function applyTestingUser(key) {
-  const t = TEST_USERS[key];
-  if (t) { $('userIdInput').value = t.discordId; toast(`Testing as ${t.username}`); }
-  saveLocalPrefs();
-  loadSheetData();
-}
-function getActiveTestUser() { const key = $('testUserSelect') ? $('testUserSelect').value : 'ryan'; return TEST_USERS[key] || null; }
-
-function loadLocalPrefs() {
-  try {
-    const p = JSON.parse(localStorage.getItem('ctw_sheet_prefs') || '{}');
-    if (p.sheetId) CONFIG.sheetId = p.sheetId;
-    if (Array.isArray(p.petTabs)) CONFIG.petTabs = p.petTabs;
-    if (Array.isArray(p.hookTabs)) CONFIG.hookTabs = p.hookTabs;
-    if ($('testUserSelect')) $('testUserSelect').value = p.testUser || 'ryan';
-    if (p.userId) $('userIdInput').value = p.userId;
-    if (p.selectedCharacter) state.selectedCharacter = p.selectedCharacter;
-  } catch (e) {}
-  if (!$('userIdInput').value) { const t = getActiveTestUser(); if (t) $('userIdInput').value = t.discordId; }
-  $('devSheetId').value = CONFIG.sheetId;
-  $('devPetTabs').value = CONFIG.petTabs.join(', ');
-  $('devHookTabs').value = CONFIG.hookTabs.join(', ');
-  $('sheetIdLabel').textContent = CONFIG.sheetId;
-  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter || 'pura';
-  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
-}
-
-
-async function fetchSheetTab(sheetName) {
-  const url = `https://docs.google.com/spreadsheets/d/${encodeURIComponent(CONFIG.sheetId)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}`;
-  const res = await fetch(url, { method: 'GET' });
-  if (!res.ok) throw new Error(`${sheetName}: HTTP ${res.status}`);
-  const txt = await res.text();
-  const json = JSON.parse(txt.substring(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
-  const cols = (json.table.cols || []).map((c, i) => String(c.label || c.id || `col_${i}`).trim() || `col_${i}`);
-  return (json.table.rows || []).map(r => {
-    const obj = {};
-    (r.c || []).forEach((cell, i) => { obj[cols[i]] = cell ? cell.v : ''; });
-    obj.__sheet = sheetName;
-    return obj;
-  }).filter(row => Object.values(row).some(v => String(v).trim() !== ''));
-}
-
-function val(row, names) {
-  if (!row) return '';
-  const keys = Object.keys(row);
-  for (const wanted of names) {
-    const hit = keys.find(k => cleanKey(k) === cleanKey(wanted));
-    if (hit && String(row[hit] ?? '').trim() !== '') return row[hit];
-  }
-  for (const wanted of names) {
-    const hit = keys.find(k => cleanKey(k).includes(cleanKey(wanted)) || cleanKey(wanted).includes(cleanKey(k)));
-    if (hit && String(row[hit] ?? '').trim() !== '') return row[hit];
-  }
-  return '';
-}
-
-function looksImage(s, allowPublicId = false) {
-  const v = String(s || '').trim().replace(/^['"]|['"]$/g, '');
-  if (!v || /^(none|n\/a|null|undefined|pet|image|url)$/i.test(v) || /^cloudinary\.com$/i.test(v)) return false;
-  if (/^https?:\/\//i.test(v) || /^data:image\//i.test(v)) return true;
-  if (/\.(png|jpg|jpeg|webp|gif|svg)(\?|$)/i.test(v)) return true;
-  if (/image\/upload\//i.test(v)) return true;
-  if (!allowPublicId) return false;
-  if (/\s/.test(v)) return false;
-  return v.includes('/') || /^v\d+\//i.test(v) || /_(idle|walk|jump|feed|play|rest|sleep|heal|medicine|static|base|image|sprite)\b/i.test(v) || /^ctw[_/-]/i.test(v);
-}
-function resolveImageUrl(value, allowPublicId = false) {
-  let v = String(value || '').trim().replace(/^['"]|['"]$/g, '');
-  if (!looksImage(v, allowPublicId)) return '';
-  if (/^data:image\//i.test(v)) return v;
-  const driveId = (v.match(/drive\.google\.com\/file\/d\/([^/]+)/i) || v.match(/[?&]id=([^&]+)/i) || [])[1];
-  if (driveId) return `https://drive.google.com/uc?export=view&id=${encodeURIComponent(driveId)}`;
-  if (/^https?:\/\//i.test(v)) {
-    return v
-      .replace('https://cloudinary.com/', CLOUDINARY_BASE)
-      .replace('http://cloudinary.com/', CLOUDINARY_BASE)
-      .replace('https://res.cloudinary.com/dpwlfmhia/', 'https://res.cloudinary.com/dpwlfmhia/');
-  }
-  if (/^res\.cloudinary\.com\//i.test(v)) return `https://${v}`;
-  if (/^cloudinary\.com\//i.test(v)) return v.replace(/^cloudinary\.com\//i, CLOUDINARY_BASE);
-  if (/^image\/upload\//i.test(v)) return `https://res.cloudinary.com/dpwlfmhia/${v}`;
-  return CLOUDINARY_BASE + v.replace(/^\/+/, '');
-}
-function firstImage(row) {
-  for (const [k, v] of Object.entries(row || {})) {
-    if (/image|img|url|asset|sprite|graphic|cloudinary|picture|icon|public.?id|file|media/i.test(k)) {
-      const u = resolveImageUrl(v, true);
-      if (u) return u;
-    }
-  }
-  for (const v of Object.values(row || {})) { const u = resolveImageUrl(v, true); if (u) return u; }
-  return '';
-}
-function imageFallbackSvg(label = 'NO IMAGE') {
-  return "data:image/svg+xml;utf8," + encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 160"><rect width="240" height="160" rx="18" fill="#fff7bd"/><rect x="10" y="10" width="220" height="140" rx="12" fill="none" stroke="#21142d" stroke-width="4" stroke-dasharray="7 5"/><text x="120" y="72" text-anchor="middle" font-size="18" font-family="Arial" font-weight="900" fill="#21142d">${String(label).replace(/[<>]/g,'')}</text><text x="120" y="100" text-anchor="middle" font-size="12" font-family="Arial" fill="#21142d">check asset URL / row</text></svg>`);
-}
-function safeSetImg(idOrEl, url, label = 'NO IMAGE') {
-  const el = typeof idOrEl === 'string' ? $(idOrEl) : idOrEl;
-  if (!el) return;
-  const fallback = imageFallbackSvg(label);
-  el.onerror = () => { el.onerror = null; el.src = fallback; };
-  el.src = url || fallback;
-}
-
-function rowIdentity(row) {
-  return {
-    userId: String(val(row, ['discord_id','discordid','discord_user_id','user_id','owner_id','player_id','member_id','user']) || '').trim(),
-    username: String(val(row, ['username','discord_username','handle','user_name','discord_name']) || '').trim(),
-    displayName: String(val(row, ['display_name','server_name','nickname','member_name','name_display']) || '').trim(),
-    petId: String(val(row, ['pet_id','user_pet_id','active_pet_id','id']) || '').trim(),
-    petName: String(val(row, ['pet_name','custom_name','name','pet','nickname']) || '').trim(),
-    species: String(val(row, ['species','type','pet_type','animal','breed','variant','model']) || '').trim()
-  };
-}
-function rowMatchesUser(row) {
-  const t = getActiveTestUser();
-  const target = String($('userIdInput').value || '').trim().toLowerCase();
-  const aliases = [target];
-  if (t) aliases.push(t.discordId.toLowerCase(), t.username.toLowerCase(), t.displayName.toLowerCase());
-  const ids = rowIdentity(row);
-  const rowBits = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName, ids.species, textOf(row)].map(x => String(x || '').toLowerCase());
-  return aliases.filter(Boolean).some(a => rowBits.some(bit => bit === a || bit.includes(a)));
-}
-
-function setPetField(profile, key, value) {
-  if (value !== '' && value !== null && value !== undefined && (profile[key] === '' || profile[key] === 0 || profile[key] === undefined)) profile[key] = value;
-}
-function mergePetRow(profile, row) {
-  const id = rowIdentity(row);
-  setPetField(profile, 'userId', id.userId);
-  setPetField(profile, 'username', id.username);
-  setPetField(profile, 'displayName', id.displayName);
-  setPetField(profile, 'petId', id.petId);
-  setPetField(profile, 'name', id.petName || id.displayName);
-  setPetField(profile, 'species', id.species);
-  const n = name => Number(val(row, [name]));
-  const lv = n('level') || n('lv'); if (lv) profile.level = lv;
-  const xp = n('xp') || n('experience'); if (xp) profile.xp = xp;
-  const coins = n('coins') || n('coin') || n('balance') || n('tokens'); if (coins) profile.coins = coins;
-  const hunger = n('hunger') || n('hungry'); if (hunger) profile.hunger = hunger;
-  const happy = n('happy') || n('happiness') || n('mood'); if (happy) profile.happy = happy;
-  const energy = n('energy') || n('stamina') || n('battery'); if (energy) profile.energy = energy;
-
-  const img = firstImage(row);
-  const sheet = String(row.__sheet || '').toLowerCase();
-  const action = String(val(row, ['action','state','menu','care_action','type','category','label','name']) || '').toLowerCase();
-  if (img) {
-    if (/pet_action_images/.test(sheet) || /feed|play|rest|sleep|medicine|heal|train/.test(action)) {
-      if (/feed|eat|food|hungry/.test(action)) profile.feed = profile.feed || img;
-      else if (/play|toy|game|happy|train/.test(action)) profile.play = profile.play || img;
-      else if (/rest|sleep|zzz|nap|energy/.test(action)) profile.rest = profile.rest || img;
-      else if (/med|heal|clean|medicine|health/.test(action)) profile.medicine = profile.medicine || img;
-      else profile.base = profile.base || img;
-    } else if (/effect|bubble|status|overlay/.test(sheet) || /bubble|effect|overlay|happy|sleep|zzz/.test(action)) {
-      if (/sleep|zzz|rest/.test(action)) profile.sleepBubble = profile.sleepBubble || img;
-      else profile.happyBubble = profile.happyBubble || img;
-    } else {
-      profile.base = profile.base || img;
-    }
-  }
-  const feedMsg = val(row, ['feed_response','feed_text','response','message','text']);
-  if (/feed_responses/.test(sheet) && feedMsg) profile.feedMessage = profile.feedMessage || String(feedMsg);
-  const playMsg = val(row, ['play_response','play_text','response','message','text']);
-  if (/play_responses/.test(sheet) && playMsg) profile.playMessage = profile.playMessage || String(playMsg);
-  const restMsg = val(row, ['rest_response','rest_text','response','message','text']);
-  if (/rest_responses/.test(sheet) && restMsg) profile.restMessage = profile.restMessage || String(restMsg);
-  const medMsg = val(row, ['medicine_response','medicine_text','response','message','text']);
-  if (/medicine_responses/.test(sheet) && medMsg) profile.medicineMessage = profile.medicineMessage || String(medMsg);
-}
-
-function blankProfile() { return { name: '', species: '', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80, userId: '', username: '', displayName: '', petId: '', base: '', feed: '', play: '', rest: '', medicine: '', happyBubble: '', sleepBubble: '', feedMessage: '', playMessage: '', restMessage: '', medicineMessage: '', rawRows: [], assetRows: [] }; }
-function profileAliases(profile) {
-  const t = getActiveTestUser();
-  const bits = [profile.userId, profile.username, profile.displayName, profile.petId, profile.name, profile.species];
-  if (t) bits.push(t.discordId, t.username, t.displayName, t.fallbackPet && t.fallbackPet.name, t.fallbackPet && t.fallbackPet.species);
-  return bits.map(x => String(x || '').trim()).filter(Boolean);
-}
-function rowMatchesProfileAsset(row, profile) {
-  const sheet = String(row.__sheet || '').toLowerCase();
-  const assetSheet = /user_pet_images|pet_action_images|user_pet_effects|user_pet_skill_images|pet_layer_catalog|habitat_catalog|habitat_layout_catalog|user_pet_habitat_loadout/.test(sheet);
-  if (!assetSheet) return rowMatchesUser(row);
-  const ids = rowIdentity(row);
-  const rowAll = cleanKey(textOf(row));
-  const strongAliases = [profile.userId, profile.username, profile.displayName, profile.petId, profile.name]
-    .map(x => cleanKey(x)).filter(x => x && x.length >= 3);
-  const rowStrong = [ids.userId, ids.username, ids.displayName, ids.petId, ids.petName]
-    .map(x => cleanKey(x)).filter(Boolean);
-  // Strong safe matches only. Do not match by species alone, because that made Odin load the wrong creature image.
-  if (strongAliases.some(a => rowStrong.some(bit => bit === a || bit.includes(a) || a.includes(bit)))) return true;
-  if (strongAliases.some(a => rowAll.includes(a))) return true;
-  return false;
-}
-function mergeAssetRowsIntoProfile(profile, allRows) {
-  const assetRows = allRows.filter(row => rowMatchesProfileAsset(row, profile));
-  for (const row of assetRows) {
-    if (!profile.rawRows.includes(row)) profile.rawRows.push(row);
-    profile.assetRows.push(row);
-    mergePetRow(profile, row);
-  }
-}
-function buildPetProfiles(all) {
-  const allRows = CONFIG.petTabs.flatMap(tab => all[tab] || []);
-  const ownedSheets = /user_profile|user_pets|user_pet_coins|user_inventory|user_view_state|pets|pet_relationships|user_pet_traits|user_pet_skills/i;
-  const ownedMatches = allRows.filter(row => ownedSheets.test(String(row.__sheet || '')) && rowMatchesUser(row));
-  const baseRows = ownedMatches.length ? ownedMatches : allRows.filter(rowMatchesUser);
-  const profilesByKey = new Map();
-  for (const row of baseRows) {
-    const id = rowIdentity(row);
-    const t = getActiveTestUser();
-    const key = cleanKey(id.userId || id.username || id.petId || id.petName || (t && t.discordId) || `row${profilesByKey.size}`);
-    if (!profilesByKey.has(key)) profilesByKey.set(key, blankProfile());
-    const p = profilesByKey.get(key);
-    p.rawRows.push(row);
-    mergePetRow(p, row);
-  }
-  const t = getActiveTestUser();
-  if (!profilesByKey.size && t) {
-    const p = { ...blankProfile(), ...t.fallbackPet, rawRows: [], assetRows: [] };
-    profilesByKey.set(cleanKey(t.discordId), p);
-  }
-  for (const p of profilesByKey.values()) mergeAssetRowsIntoProfile(p, allRows);
-  let pets = Array.from(profilesByKey.values()).filter(p => p.name || p.species || p.base || p.userId || p.username || p.petId);
-  if (t) {
-    const preferred = pets.filter(p => [p.userId, p.username, p.displayName, p.name, p.species].some(v => String(v || '').toLowerCase().includes(t.username.toLowerCase()) || String(v || '').toLowerCase().includes(t.discordId.toLowerCase()) || String(v || '').toLowerCase().includes(String(t.fallbackPet.species || '').toLowerCase())));
-    if (preferred.length) pets = preferred;
-    if (!pets.length) pets = [{ ...t.fallbackPet, rawRows: [], assetRows: [] }];
-  }
-  return pets;
-}
-
-function buildShopItems(all) {
-  const rows = [
-    ...(all.item_catalog || []), ...(all.user_inventory || []), ...(all.habitat_shop_catalog || []),
-    ...(all.shop_responses || []), ...(all.inventory_responses || [])
+function getPlayableRoster(){
+  return [
+    {key:'pura',label:'Pura',kind:'sprite',animated:true},
+    {key:'ax',label:'Ax',kind:'sprite',animated:true},
+    {key:'unicorn',label:'Unicorn',kind:'sprite',animated:true},
+    {key:'owl',label:'Owl',kind:'sprite',animated:true},
+    ...state.ownedPets
   ];
-  const matchingInventory = rows.filter(row => row.__sheet === 'user_inventory' && rowMatchesUser(row));
-  const qtyByName = {};
-  for (const row of matchingInventory) {
-    const name = String(val(row, ['item_name','item','name','label','title']) || '').trim();
-    const qty = Number(val(row, ['quantity','qty','amount','count','owned']) || 1);
-    if (name) qtyByName[cleanKey(name)] = (qtyByName[cleanKey(name)] || 0) + qty;
-  }
-  const catalogRows = rows.filter(row => row.__sheet !== 'user_inventory');
-  const items = catalogRows.map((row, idx) => {
-    const name = String(val(row, ['item_name','item','name','label','title','prize']) || '').trim();
-    const category = String(val(row, ['category','type','use','action','effect','menu']) || '').trim();
-    const cost = Number(val(row, ['cost','price','coins','coin_cost','value']) || 0);
-    const emoji = String(val(row, ['emoji','icon','symbol']) || '').trim();
-    const image = firstImage(row);
-    const key = cleanKey(name || category || `item${idx}`);
-    return { name: name || category || `Item ${idx + 1}`, category, cost, emoji, image, qty: qtyByName[key] || 0, raw: row };
-  }).filter(item => item.name || item.image || item.emoji);
-  const unique = [];
-  const seen = new Set();
-  for (const item of items) { const key = cleanKey(item.name); if (!seen.has(key)) { seen.add(key); unique.push(item); } }
-  return unique;
 }
-
-function normalizeHooks(rows) {
-  return rows.map((r, idx) => ({
-    idx,
-    raw: r,
-    name: val(r, ['name','item','title','label','prize','reward']) || `Prize ${idx + 1}`,
-    points: Number(val(r, ['points','score','value','coins','reward_amount']) || 50),
-    image: firstImage(r),
-    icon: val(r, ['icon','emoji','symbol']) || ''
-  })).filter(h => h.name || h.image || h.icon);
+function populatePartySelectors(){
+  const roster=getPlayableRoster();
+  const s1=$('slot1CharacterSelect'),s2=$('slot2CharacterSelect');
+  if(!s1||!s2)return;
+  const prev1=s1.value||state.party.slot1||'pura'; const prev2=s2.value||state.party.slot2||'none';
+  s1.innerHTML='';s2.innerHTML='<option value="none">No helper / solo</option>';
+  roster.forEach(p=>{const label=p.label+(p.kind==='ownedPet'?(p.animated?' — owned animated':' — owned static'):''); const o1=new Option(label,p.key);const o2=new Option(label,p.key);s1.add(o1);s2.add(o2);});
+  s1.value=roster.some(p=>p.key===prev1)?prev1:'pura'; s2.value=(prev2==='none'||roster.some(p=>p.key===prev2))?prev2:'none';
+  refreshPartyUi();
 }
-
-async function loadSheetData() {
-  saveLocalPrefs();
-  $('sheetStatus').textContent = 'loading read-only...';
-  $('devReadout').textContent = 'Reading real sheet tabs only. No writes.';
-  const unique = [...new Set([...CONFIG.petTabs, ...CONFIG.hookTabs])];
-  const all = {};
-  const errors = [];
-  for (const tab of unique) {
-    try { all[tab] = await fetchSheetTab(tab); }
-    catch (e) { errors.push(e.message); }
-  }
-  state.allSheets = all;
-  state.assetOptions = collectImageAssets(all);
-  state.petRows = buildPetProfiles(all);
-  state.shopItems = buildShopItems(all);
-  state.hookRows = normalizeHooks(CONFIG.hookTabs.flatMap(t => all[t] || []));
-  if (state.petRows.length) { state.currentPet = state.petRows[0]; state.selectedPetIndex = 0; }
-  renderSelectors();
-  renderPet();
-  renderHookItems();
-  const loadedTabs = Object.keys(all).length;
-  $('sheetStatus').textContent = `loaded ${loadedTabs} tabs, pets found: ${state.petRows.length}, shop/items found: ${state.shopItems.length}, hook items found: ${state.hookRows.length}${state.currentPet && state.currentPet.fromTestFallback ? ' (using testing fallback profile)' : ''}`;
-  $('devReadout').textContent = `Loaded read-only.\nTesting user: ${getActiveTestUser() ? getActiveTestUser().username : 'custom'} / ${$('userIdInput').value.trim()}\nPets: ${state.petRows.length}\nShop/items: ${state.shopItems.length}\nHook items: ${state.hookRows.length}
-Image rows: ${state.assetOptions.length}\nMissing tabs/errors: ${errors.slice(0, 12).join(' | ') || 'none shown'}`;
-  toast('Sheet loaded read-only');
+function selectSlotCharacter(slot,value){if(slot===1)state.party.slot1=value;else state.party.slot2=value;refreshPartyUi();}
+function refreshPartyUi(){
+  const mode=($('questModeSelect')&&$('questModeSelect').value)||state.party.mode||'solo';
+  if($('slot2CharacterSelect'))$('slot2CharacterSelect').disabled=(mode==='solo');
+  const p1=resolvePlayable(($('slot1CharacterSelect')&&$('slot1CharacterSelect').value)||state.party.slot1)||resolvePlayable('pura');
+  const p2=mode==='team'?resolvePlayable(($('slot2CharacterSelect')&&$('slot2CharacterSelect').value)||state.party.slot2):null;
+  const note=$('partyNote');
+  if(note){note.textContent=mode==='team' ? `Team quest: Player 1 is ${p1?p1.label:'Pura'} and helper is ${p2?p2.label:'not chosen'}. Combo routes can use both later.` : `Solo quest: you will play as ${p1?p1.label:'Pura'}.`;}
 }
-
-function renderSelectors() {
-  const petSel = $('devPetSelect');
-  if (petSel) petSel.innerHTML = state.petRows.map((p, i) => `<option value="${i}">${escapeHtml(p.name || 'Pet')} ${escapeHtml(p.species ? `(${p.species})` : '')}</option>`).join('') || '<option>No pets found</option>';
-  const hookSel = $('devHookSelect');
-  if (hookSel) hookSel.innerHTML = state.hookRows.map((h, i) => `<option value="${i}">${escapeHtml(h.name)}</option>`).join('') || '<option>No hook items found</option>';
-  updatePreviews();
+function updateCompanionSprite(force=false){
+  const follower=$('petFollower'),img=$('petFollowerImg'),fb=$('petFollowerFallback'); if(!follower||!img||!fb)return;
+  if(state.party.mode!=='team'){follower.classList.add('hidden');return;}
+  const helper=resolvePlayable(state.party.slot2); if(!helper){follower.classList.add('hidden');return;}
+  follower.classList.remove('hidden');
+  let url=''; const now=performance.now();
+  if(helper.kind==='sprite' || animatedKeyForPet(helper)){const key=helper.kind==='sprite'?helper.key:animatedKeyForPet(helper);const cfg=SPRITES[key]||SPRITES.pura;const act=state.player.state==='jump'?'jump':(Math.abs(state.player.vx)>0.6?'walk':'idle');const count=cfg.counts[act]||10;if(force||now-state.party.companionLastFrame>120){state.party.companionLastFrame=now;state.party.companionFrame++;}const frame=String(((state.party.companionFrame-1)%count)+1).padStart(3,'0');url=`${CLOUD}f_auto,q_auto/${cfg.prefix}_${act}_${frame}.png`;}
+  else url=safeImageValue(helper.baseImg||state.pet.baseImg||'');
+  setImgOrFallback(img,fb,url,'HELPER');
 }
-function renderDevGamePreview() {
-  const pvP = $('devPreviewPlatforms');
-  const pvO = $('devPreviewObjects');
-  const pvChar = $('devPreviewCharImg');
-  const pvPet = $('devPreviewPetImg');
-  if (!pvP || !pvO) return;
-  const scale = 0.28;
-  pvP.innerHTML = '';
-  LEVEL.platforms.slice(0, 12).forEach(p => {
-    const d = document.createElement('div');
-    d.className = 'devPreviewPlatform';
-    d.style.left = Math.round(70 + p.x * scale) + 'px';
-    d.style.bottom = Math.round(p.y * 0.65) + 'px';
-    d.style.width = Math.max(30, Math.round(p.w * scale)) + 'px';
-    pvP.appendChild(d);
-  });
-  pvO.innerHTML = '';
-  [...LEVEL.collectibles.slice(0, 8), ...LEVEL.enemies.slice(0, 5), LEVEL.finish].forEach(o => {
-    const d = document.createElement('div');
-    d.className = 'devPreviewObj';
-    d.textContent = o.icon || '✨';
-    d.style.left = Math.round(70 + (o.x || o.baseX || 0) * scale) + 'px';
-    d.style.bottom = Math.round((o.y || 120) * 0.65) + 'px';
-    pvO.appendChild(d);
-  });
-  if (pvChar && $('mainCharacterImg')) pvChar.src = $('mainCharacterImg').src;
-  if (pvPet) pvPet.src = (state.currentPet && state.currentPet.base) ? state.currentPet.base : petFallback('');
-}
-function renderPetImageDebug() {
-  const box = $('petImageDebug');
-  if (!box) return;
-  const p = state.currentPet;
-  if (!p) { box.innerHTML = '<div class="devDebugCard">No pet loaded yet.</div>'; return; }
-  const rows = (p.assetRows || []).filter(r => firstImage(r)).slice(0, 8);
-  if (!rows.length) {
-    box.innerHTML = '<div class="devDebugCard"><b>No image/catalog rows joined.</b><br>That means the owned pet row loaded, but the asset sheet rows did not match the pet id/name/species yet.</div>';
-    return;
-  }
-  box.innerHTML = rows.map((r,i) => `<div class="devDebugCard"><b>${i+1}. ${escapeHtml(r.__sheet || 'sheet')}</b><br>${escapeHtml(shortUrl(firstImage(r)))}<br><small>${escapeHtml(Object.keys(r).filter(k=>!k.startsWith('__')).slice(0,6).join(', '))}</small></div>`).join('');
-}
-function updatePreviews() {
-  const p = state.currentPet;
-  $('petDataPreview').innerHTML = p ? `<b>${escapeHtml(p.name || 'Pet')}</b><br>Species: ${escapeHtml(p.species || '')}<br>User: ${escapeHtml(p.userId || p.username || '')}<br>Base image: ${p.base ? escapeHtml(shortUrl(p.base)) : '<b>NO IMAGE FOUND</b>'}<br>Feed/play/rest/medicine images: ${[p.feed,p.play,p.rest,p.medicine].filter(Boolean).length}<br>Rows merged: ${p.rawRows ? p.rawRows.length : 0}<br>Asset/catalog rows joined automatically: ${p.assetRows ? p.assetRows.length : 0}<br>Total image rows available in sheet: ${state.assetOptions.length}<br>Source: ${p.fromTestFallback ? 'testing fallback' : 'sheet data'}<br><small>If the image is wrong or missing, use the image-row dropdowns in Developer → Pet. Auto-join now only uses strong keys such as Discord ID, username, pet ID, or pet name; it no longer guesses by species alone.</small>` : 'No pet loaded from sheet yet.';
-  const h = state.hookRows[state.selectedHookIndex];
-  $('hookDataPreview').innerHTML = h ? `<b>${escapeHtml(h.name)}</b><br>Image found: ${h.image ? 'yes' : 'no'}<br>Points: ${h.points}` : 'No hook images loaded yet.';
-  renderPetImageDebug();
-  renderDevGamePreview();
-}
-function selectPetByIndex(i) { state.selectedPetIndex = Number(i) || 0; state.currentPet = state.petRows[state.selectedPetIndex] || state.currentPet; renderPet(); updatePreviews(); }
-function selectHookByIndex(i) { state.selectedHookIndex = Number(i) || 0; renderHookItems(); updatePreviews(); }
-
-function petFallback(species) { return imageFallbackSvg(species ? `NO ${species.toUpperCase()} IMAGE` : 'NO PET IMAGE'); }
-
-function renderPet(action) {
-  const p = state.currentPet || { name: 'Odin', species: 'Raven', level: 1, xp: 0, coins: 0, hunger: 70, happy: 60, energy: 80 };
-  const actionSrc = action && p[action] ? p[action] : p.base;
-  const img = actionSrc || petFallback(p.species);
-  $('petNameDisplay').textContent = `PET: ${(p.name || 'Pet').toUpperCase()}${p.species ? ` THE ${String(p.species).toUpperCase()}` : ''}`;
-  $('petXpDisplay').textContent = `LV.${p.level || 1} (${p.xp || 0} XP)`;
-  $('labelCoins').textContent = `🪙 ${p.coins || state.score || 0}`;
-  $('fillHunger').style.width = `${Math.max(0, Math.min(100, p.hunger || 70))}%`;
-  $('fillHappy').style.width = `${Math.max(0, Math.min(100, p.happy || 60))}%`;
-  $('fillEnergy').style.width = `${Math.max(0, Math.min(100, p.energy || 80))}%`;
-  safeSetImg('petBodyGraphic', img, 'NO PET IMAGE');
-  safeSetImg('petFollowerImg', img, 'NO PET IMAGE');
-  // Do not overwrite the main character here; Developer > Level/Game Images controls that sprite.
-  renderShopGrid();
-}
-function renderShopGrid() {
-  const shop = $('shopGrid');
-  if (!shop) return;
-  if (!state.shopItems.length) {
-    shop.innerHTML = '<button disabled>No sheet shop items found</button>';
-    return;
-  }
-  shop.innerHTML = state.shopItems.slice(0, 6).map((item, i) => {
-    const icon = item.image ? `<img alt="" src="${escapeHtml(item.image)}" onerror="this.outerHTML=\'🎁\'" style="width:24px;height:24px;object-fit:contain;vertical-align:middle">` : escapeHtml(item.emoji || '🎁');
-    const cost = item.cost ? `🪙 ${item.cost}` : 'sheet item';
-    const qty = item.qty ? `<br>owned: ${item.qty}` : '';
-    return `<button onclick="buyPetItem(${i})">${icon} ${escapeHtml(item.name)}<br>${cost}${qty}</button>`;
-  }).join('');
-}
-function showBubble(src) { if (src) { safeSetImg('petBubble', src, ''); $('petBubble').classList.add('show'); setTimeout(() => $('petBubble').classList.remove('show'), 1200); } }
-function processCareAction(action) {
-  const p = state.currentPet;
-  if (!p) { $('careStatusTicker').textContent = 'No pet loaded from the sheet yet. Try Refresh sheet data.'; return; }
-  const response = { feed: p.feedMessage, play: p.playMessage, rest: p.restMessage, medicine: p.medicineMessage }[action];
-  const msg = response || ({ feed: 'fed', play: 'played with', rest: 'rested', medicine: 'healed' }[action] || 'cared for');
-  $('careStatusTicker').textContent = response ? response : `You ${msg} ${p.name || 'your pet'}. Local test only; sheet data was not changed.`;
-  renderPet(action);
-  if (action === 'feed' && p.happyBubble) showBubble(p.happyBubble);
-  if (action === 'rest' && p.sleepBubble) showBubble(p.sleepBubble);
-  setTimeout(() => renderPet(), 1200);
-}
-function buyPetItem(index) {
-  const item = state.shopItems[index];
-  if (!item) { $('careStatusTicker').textContent = 'No sheet item selected.'; return; }
-  const cost = Number(item.cost || 0);
-  if (cost && state.score < cost) { $('careStatusTicker').textContent = `Need ${cost} coins for ${item.name}. Play Hook or Platform first.`; return; }
-  if (cost) state.score -= cost;
-  $('score').textContent = state.score;
-  $('careStatusTicker').textContent = `Selected ${item.name}. Local test only; sheet data was not changed.`;
-  renderPet();
-}
-
-function renderHookItems() {
-  const items = state.hookRows.length ? state.hookRows : [{ name: 'Waaambulance', points: 50, icon: '🚑' }, { name: 'Coin', points: 10, icon: '🪙' }, { name: 'Gift', points: 25, icon: '🎁' }];
-  const wrap = $('hookItems');
-  wrap.innerHTML = '';
-  items.slice(0, 8).forEach((it, i) => {
-    const el = document.createElement('div');
-    el.className = 'hookItem';
-    el.style.left = `${15 + (i * 21) % 78}%`;
-    el.style.top = `${62 + ((i * 19) % 28)}%`;
-    el.dataset.idx = i;
-    if (it.image) { const im = document.createElement('img'); im.onerror = () => { im.remove(); el.textContent = it.icon || '🚑'; }; im.src = it.image; im.alt = it.name; el.appendChild(im); }
-    else { el.textContent = it.icon || '🚑'; }
-    wrap.appendChild(el);
-  });
-  $('hookHelp').textContent = state.hookRows.length ? `Loaded ${state.hookRows.length} hook items/images from the sheet.` : 'No hook image rows found yet, using safe fallback prizes.';
-}
-function hookAttempt() {
-  const items = state.hookRows.length ? state.hookRows : [{ name: 'Waaambulance', points: 50, icon: '🚑' }, { name: 'Coin', points: 10, icon: '🪙' }, { name: 'Gift', points: 25, icon: '🎁' }];
-  const item = items[Math.floor(Math.random() * items.length)];
-  state.score += item.points || 50;
-  $('score').textContent = state.score;
-  $('hookTicker').textContent = `Hooked ${item.name}! +${item.points || 50} coins. Sheet was not changed.`;
-}
-
-function restartLevel() { state.worldX = 0; state.playerY = 82; state.vy = 0; state.onGround = true; state.lives = 3; state.score = state.score || 0; LEVEL.collectibles.forEach(c => c.got = false); LEVEL.enemies.forEach(e => { e.dead = false; e.x = e.baseX; }); renderLevel(); }
-function worldToScreenX(x) { return x - state.worldX + window.innerWidth * 0.24; }
-function floorAt(x) { let best = 82; for (const p of LEVEL.platforms) if (x >= p.x && x <= p.x + p.w) best = Math.max(best, p.y + p.h); return best; }
-function renderLevel() {
-  const lw = $('levelWorld'); lw.innerHTML = '';
-  LEVEL.platforms.forEach(p => { const d = document.createElement('div'); d.className = 'levelPlatform'; d.style.left = `${worldToScreenX(p.x)}px`; d.style.bottom = `${p.y}px`; d.style.width = `${p.w}px`; lw.appendChild(d); });
-  const ob = $('objects'); ob.innerHTML = '';
-  LEVEL.collectibles.forEach(c => { if (c.got) return; const d = document.createElement('div'); d.className = 'obj token'; d.textContent = c.icon; d.style.left = `${worldToScreenX(c.x)}px`; d.style.bottom = `${c.y}px`; ob.appendChild(d); });
-  LEVEL.enemies.forEach(e => { if (e.dead) return; const d = document.createElement('div'); d.className = 'obj enemy'; d.textContent = e.icon; d.style.left = `${worldToScreenX(e.x || e.baseX)}px`; d.style.bottom = `${e.y}px`; ob.appendChild(d); });
-  const f = LEVEL.finish; const fd = document.createElement('div'); fd.className = 'obj finishObj'; fd.textContent = f.icon; fd.style.left = `${worldToScreenX(f.x)}px`; fd.style.bottom = `${f.y}px`; ob.appendChild(fd);
-}
-function gameLoop() {
-  if (state.activeScreen !== 'platform') return;
-  const speed = 5;
-  state.worldX += speed;
-  if (state.keys.jump && state.onGround) { state.vy = 17; state.onGround = false; }
-  state.vy -= 0.8; state.playerY += state.vy;
-  const runnerWorldX = state.worldX; const floor = floorAt(runnerWorldX);
-  if (state.playerY <= floor) { state.playerY = floor; state.vy = 0; state.onGround = true; }
-  LEVEL.enemies.forEach(e => { if (e.range && !e.dead) { e.x = (e.x || e.baseX) + e.dir * 1.5; if (Math.abs(e.x - e.baseX) > e.range) e.dir *= -1; } });
-  LEVEL.collectibles.forEach(c => { if (!c.got && Math.abs(c.x - runnerWorldX) < 50 && Math.abs(c.y - state.playerY) < 95) { c.got = true; state.score += c.points; $('score').textContent = state.score; } });
-  LEVEL.enemies.forEach(e => { const ex = e.x || e.baseX; if (!e.dead && Math.abs(ex - runnerWorldX) < 55 && Math.abs(e.y - state.playerY) < 80) { if (state.vy < 0 && state.playerY > e.y + 35) { e.dead = true; state.score += 25; } else { state.lives--; state.worldX = Math.max(0, state.worldX - 120); if (state.lives <= 0) showScreen('menu'); } } });
-  if (runnerWorldX >= LEVEL.finish.x - 40) { $('victory').classList.remove('hidden'); state.activeScreen = 'victory'; return; }
-  $('lives').textContent = state.lives; $('score').textContent = state.score; $('distance').textContent = `${Math.floor(state.worldX)}m`; $('playerChar').style.bottom = `${state.playerY}px`; $('petFollower').style.left = `calc(24vw - 70px)`; $('petFollower').style.bottom = `${state.playerY + 130}px`;
-  renderLevel(); state.animationId = requestAnimationFrame(gameLoop);
-}
-
-async function saveToCloudflareOnly() {
-  const key = $('adminKey').value.trim();
-  if (!key) { toast('Admin key needed'); return; }
-  const payload = { sheetReadOnly: true, score: state.score, selectedPet: state.currentPet ? { name: state.currentPet.name, species: state.currentPet.species, userId: state.currentPet.userId } : null, updatedAt: new Date().toISOString() };
-  try {
-    const res = await fetch('/api/save-game-config', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-admin-key': key }, body: JSON.stringify(payload) });
-    toast(res.ok ? 'Saved to Cloudflare KV' : 'Cloudflare save failed');
-  } catch (e) { toast('Cloudflare save error'); }
-}
-function showDataDebug() {
-  const names = Object.fromEntries(Object.entries(state.allSheets).map(([k, v]) => [k, v.length]));
-  $('devReadout').textContent = JSON.stringify({ tabsLoaded: names, pets: state.petRows.slice(0, 3).map(p => ({name:p.name, species:p.species, base:p.base, feed:p.feed, assetRows:(p.assetRows||[]).length, imageAssetRows:(p.assetRows||[]).filter(r=>firstImage(r)).length})), shopItems: state.shopItems.slice(0, 6), hooks: state.hookRows.slice(0, 3), imageAssets: state.assetOptions.slice(0, 10).map((a,i)=>({i, sheet:a.sheet, label:a.label, image:shortUrl(a.image)})) }, null, 2);
-}
-
-window.addEventListener('keydown', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) { state.keys.jump = true; e.preventDefault(); } });
-window.addEventListener('keyup', e => { if ([' ', 'ArrowUp', 'w', 'W'].includes(e.key)) state.keys.jump = false; });
-window.addEventListener('pointerdown', e => { if (state.activeScreen === 'platform') state.keys.jump = true; });
-window.addEventListener('pointerup', () => state.keys.jump = false);
-
-function shortUrl(url) {
-  const s = String(url || '');
-  return s.length > 70 ? s.slice(0, 34) + '…' + s.slice(-28) : s;
-}
-function setPlayerCharacterPreset(key) {
-  state.selectedCharacter = key || 'pura';
-  if ($('menuCharacterSelect')) $('menuCharacterSelect').value = state.selectedCharacter;
-  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter;
-  const preset = CHARACTER_PRESETS[state.selectedCharacter];
-  if (preset && preset.url && $('devCharacterUrl')) $('devCharacterUrl').value = preset.url;
-  saveLocalPrefs();
-  applyGameImageSettings();
-}
-function applyGameImageSettings() {
-  const charUrl = resolveImageUrl($('devCharacterUrl')?.value || '', true);
-  const skyUrl = resolveImageUrl($('devSkyUrl')?.value || '', true);
-  const hillsUrl = resolveImageUrl($('devHillsUrl')?.value || '', true);
-  const groundUrl = resolveImageUrl($('devGroundUrl')?.value || '', true);
-  const h = Number($('devSpriteHeight')?.value || 220);
-  if (charUrl) safeSetImg('mainCharacterImg', charUrl, 'NO CHARACTER IMAGE');
-  if (h && h > 40) document.querySelectorAll('.charBox').forEach(el => { el.style.height = h + 'px'; el.style.width = Math.round(h * 0.86) + 'px'; });
-  if (skyUrl) document.documentElement.style.setProperty('--sky', `url("${skyUrl}")`);
-  if (hillsUrl) document.documentElement.style.setProperty('--hills', `url("${hillsUrl}")`);
-  if (groundUrl) document.documentElement.style.setProperty('--ground', `url("${groundUrl}")`);
-  toast('Game images applied');
-  updatePreviews();
-}
-function resetGameImageSettings() {
-  if ($('devCharacterPreset')) $('devCharacterPreset').value = state.selectedCharacter || 'pura';
-  const preset = CHARACTER_PRESETS[state.selectedCharacter || 'pura'] || CHARACTER_PRESETS.pura;
-  if ($('devCharacterUrl')) $('devCharacterUrl').value = preset.url || 'pura_walk_001.png';
-  if ($('devSkyUrl')) $('devSkyUrl').value = 'day_sky.png';
-  if ($('devHillsUrl')) $('devHillsUrl').value = 'day_hills.png';
-  if ($('devGroundUrl')) $('devGroundUrl').value = 'day_ground.png';
-  applyGameImageSettings();
-}
-function addDevLevelObject() {
-  const type = $('devObjectType')?.value || 'token';
-  const iconRaw = $('devObjectIcon')?.value.trim() || (type === 'enemy' ? '🚨' : type === 'finishObj' ? '🏁' : '✨');
-  const x = Number($('devObjectX')?.value || 900);
-  const y = Number($('devObjectY')?.value || 180);
-  const w = Number($('devObjectW')?.value || 220);
-  if (type === 'platform') LEVEL.platforms.push({ x, y, w, h: 26 });
-  else if (type === 'enemy') LEVEL.enemies.push({ x, y, icon: iconRaw, range: 0, dir: 1, baseX: x });
-  else if (type === 'finishObj') LEVEL.finish = { x, y, icon: iconRaw };
-  else LEVEL.collectibles.push({ x, y, icon: iconRaw, points: 10 });
-  restartLevel();
-  toast('Level object added');
-}
-
-function init() { loadLocalPrefs(); document.querySelectorAll('img').forEach(img => { img.onerror = () => { img.onerror = null; img.src = imageFallbackSvg(img.alt || 'NO IMAGE'); }; }); resetGameImageSettings(); renderPet(); renderHookItems(); renderDevGamePreview(); showScreen('menu'); setTimeout(loadSheetData, 250); }
-init();
+function renderPet(){const p=state.pet;$('petNameLabel').textContent=`PET: ${p.name} THE ${p.type}`.toUpperCase();$('petLevelLabel').textContent=`LV.${p.level} (${p.xp} XP)`;$('fillHunger').style.width=clamp(p.hunger,0,100)+'%';$('fillHappy').style.width=clamp(p.happy,0,100)+'%';$('fillEnergy').style.width=clamp(p.energy,0,100)+'%';$('petCoins').textContent='🪙 '+(p.coins||state.score);setImgOrFallback($('petBodyImg'),$('petBodyFallback'),p.baseImg,'NO PET IMAGE');if(state.party.mode!=='team')setImgOrFallback($('petFollowerImg'),$('petFollowerFallback'),p.baseImg,'PET');renderShop();}
+function renderShop(){const grid=$('shopGrid');grid.innerHTML='';const items=state.sheet.shopRows.length?state.sheet.shopRows.slice(0,6):[{name:'Food item',price:50,icon:'🍽️',owned:0},{name:'Play item',price:30,icon:'🧸',owned:0},{name:'Medicine',price:45,icon:'💊',owned:0}];items.forEach(it=>{const b=document.createElement('button');const img=safeImageValue(it.image||it.img||it.url||it.icon);if(img){b.innerHTML=`<img src="${img}" onerror="this.replaceWith(document.createTextNode('📦'))"> <b>${it.name||it.item||'Item'}</b><br>🪙 ${it.price||it.cost||0}<br>owned: ${it.owned||it.qty||0}`;}else b.innerHTML=`${it.icon||'📦'} <b>${it.name||it.item||'Item'}</b><br>🪙 ${it.price||it.cost||0}<br>owned: ${it.owned||it.qty||0}`;grid.appendChild(b);});}
+function careAction(a){const p=state.pet;if(a==='feed'){p.hunger=clamp(p.hunger+20,0,100);if(p.feedImg)p.baseImg=p.feedImg;$('petTicker').textContent=`${p.name} has been fed.`;}if(a==='play'){p.happy=clamp(p.happy+20,0,100);if(p.playImg)p.baseImg=p.playImg;$('petTicker').textContent=`${p.name} played happily.`;}if(a==='rest'){p.energy=clamp(p.energy+25,0,100);if(p.restImg)p.baseImg=p.restImg;$('petTicker').textContent=`${p.name} is resting.`;}if(a==='medicine'){p.hunger=clamp(p.hunger+5,0,100);if(p.medicineImg)p.baseImg=p.medicineImg;$('petTicker').textContent=`${p.name} feels better.`;}p.xp+=10;renderPet();}
+function renderHook(){const pool=$('hookPool');pool.querySelectorAll('.hookItem').forEach(n=>n.remove());const rows=state.sheet.hookRows.length?state.sheet.hookRows.slice(0,5):[{icon:'🚑',name:'Waaambulance'},{icon:'🪙',name:'Coin'},{icon:'💎',name:'Gem'}];rows.forEach((r,i)=>{const d=document.createElement('div');d.className='hookItem';d.style.left=(18+i*18)+'%';d.style.top=(62+(i%2)*20)+'%';const img=safeImageValue(r.image||r.img||r.url||r.icon);if(img){const im=document.createElement('img');im.src=img;im.onerror=()=>{d.textContent=r.icon||'🚑'};d.appendChild(im);}else d.textContent=r.icon||'🚑';pool.appendChild(d);});$('hookLine').style.height='40px';}
+function dropHook(){const line=$('hookLine');line.style.height='220px';setTimeout(()=>{state.score+=25;$('hookTicker').textContent='Caught a prize! +25 coins';updateHud();line.style.height='40px';},850);}
+async function loadCurrentTestUser(){await loadAllSheetData();const key=$('testUserSelect').value;const user=TEST_USERS[key]||TEST_USERS.ryan;applyUserPet(user);$('loadStatus').textContent=`Loaded read-only. Testing user: ${user.username} / ${user.discordId}. Pets: ${state.sheet.allRows.length} rows checked. Asset rows: ${state.sheet.assetRows.length}. Hook rows: ${state.sheet.hookRows.length}.`;}
+async function loadAllSheetData(){const id=$('cfgSheetId')?$('cfgSheetId').value:'1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';const tabs=['user_pets','pets','user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog','user_inventory','item_catalog','hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'];const rowsByTab={};for(const tab of tabs){try{rowsByTab[tab]=await fetchTab(id,tab);}catch(e){rowsByTab[tab]=[];}}state.sheet.rowsByTab=rowsByTab;state.sheet.allRows=Object.values(rowsByTab).flat();state.sheet.assetRows=['user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r));state.sheet.hookRows=['hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r)||r.icon||r.emoji);state.sheet.shopRows=['user_inventory','item_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>normaliseItem(r,t))).filter(Boolean).slice(0,12);renderAssetPicker();const dbg=Object.entries(rowsByTab).map(([k,v])=>`${k}: ${v.length}`).join('\n');if($('sheetDebug'))$('sheetDebug').textContent=dbg||'No rows loaded';return rowsByTab;}
+async function fetchTab(id,tab){const url=`https://docs.google.com/spreadsheets/d/${encodeURIComponent(id)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;const text=await fetch(url,{method:'GET'}).then(r=>r.text());const json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1));const cols=json.table.cols.map(c=>(c.label||c.id||'').toString().trim()||'col');return json.table.rows.map(row=>{const obj={_tab:tab};(row.c||[]).forEach((cell,i)=>{obj[cols[i]]=cell?cell.v:''});return obj;});}
+function textOfRow(r){return Object.values(r).join(' ').toLowerCase();}
+function findImageInRow(r){for(const [k,v] of Object.entries(r)){if(/^_/ .test(k))continue;const s=String(v||'');if(safeImageValue(s))return s;}return '';}
+function normaliseItem(r,tab){const txt=textOfRow(r); if(!txt)return null; const img=findImageInRow(r); const keys=Object.keys(r); const name=r.name||r.item||r.item_name||r.Item||r.Name||keys.map(k=>r[k]).find(v=>v&&String(v).length<40)||'Item'; const price=r.price||r.cost||r.Price||r.Cost||0; const owned=r.owned||r.qty||r.quantity||r.amount||0; return {name,price,owned,image:img,icon:r.icon||r.emoji||'',_tab:tab};}
+function applyUserPet(user){const rows=state.sheet.allRows;const owned=rows.find(r=>{const t=textOfRow(r);return t.includes(user.discordId)||t.includes(user.username.toLowerCase())||t.includes(user.display.toLowerCase());})||{};const ownedText=textOfRow(owned);state.pet.name=pick(owned,['pet_name','name','custom_name','Pet Name','Name'])||(/odin/i.test(ownedText)?'Odin':user.username);state.pet.type=pick(owned,['species','type','pet_type','model','Species','Type'])||(/raven/i.test(ownedText)?'Raven':'Pet');state.pet.level=Number(pick(owned,['level','Level'])||state.pet.level||1);state.pet.xp=Number(pick(owned,['xp','XP'])||state.pet.xp||0);state.pet.coins=Number(pick(owned,['coins','Coins','balance'])||state.pet.coins||state.score||0);const exactTerms=[state.pet.name,state.pet.type,user.discordId,user.username].map(x=>String(x||'').toLowerCase()).filter(Boolean);const assets=state.sheet.assetRows.filter(r=>exactTerms.some(term=>textOfRow(r).includes(term)));const base=assets.find(r=>/base|idle|static|home|normal/i.test(textOfRow(r)))||assets[0];const feed=assets.find(r=>/feed|eat|food/i.test(textOfRow(r)));const play=assets.find(r=>/play|toy|happy/i.test(textOfRow(r)));const rest=assets.find(r=>/rest|sleep|nap/i.test(textOfRow(r)));const med=assets.find(r=>/med|heal|medicine|clean/i.test(textOfRow(r)));state.pet.baseImg=findImageInRow(base||{})||'';state.pet.feedImg=findImageInRow(feed||{})||'';state.pet.playImg=findImageInRow(play||{})||'';state.pet.restImg=findImageInRow(rest||{})||'';state.pet.medicineImg=findImageInRow(med||{})||'';state.ownedPets=[{key:'pet:primary',kind:'ownedPet',label:`${state.pet.name} (${state.pet.type})`,name:state.pet.name,type:state.pet.type,baseImg:state.pet.baseImg,animated:!!animatedKeyForPet({type:state.pet.type})}];populatePartySelectors();renderPet();renderAssetPicker();}
+function pick(obj,names){for(const n of names){if(obj&&obj[n]!=null&&String(obj[n]).trim())return obj[n];}return'';}
+function renderAssetPicker(){const box=$('petAssetPicker');if(!box)return;box.innerHTML='';const rows=state.sheet.assetRows.slice(0,80);if(!rows.length){box.textContent='No image rows loaded yet.';return;}rows.forEach((r,i)=>{const url=safeImageValue(findImageInRow(r));const div=document.createElement('div');div.className='assetChoice';div.onclick=()=>{state.pet.baseImg=url;renderPet();};div.innerHTML=`<img src="${url}" onerror="this.style.display='none'"><div><strong>${r.name||r.pet_name||r.type||r.species||r._tab||'asset row'} </strong><span>${r._tab||''} — ${Object.values(r).slice(0,4).join(' | ')}</span></div>`;box.appendChild(div);});}
+function addLevelThing(){const type=$('addType').value;const x=Number($('addX').value)||300;const y=Number($('addY').value)||120;const w=Number($('addW').value)||220;const icon=$('addIcon').value.trim();if(type==='platform')level.platforms.push({x,y,w});else level.objects.push({x,y,type,icon:icon||(type==='finish'?'🏁':type==='enemy'?'🚨':'✨')});renderLevel();}
+function clearLastThing(){if(level.objects.length)level.objects.pop();else if(level.platforms.length>1)level.platforms.pop();renderLevel();}
+function applyBackgrounds(){const sky=$('cfgSky').value.trim(),h=$('cfgHills').value.trim(),g=$('cfgGround').value.trim();if(sky)document.documentElement.style.setProperty('--sky',`url('${safeImageValue(sky)}')`);if(h)document.documentElement.style.setProperty('--hills',`url('${safeImageValue(h)}')`);if(g)document.documentElement.style.setProperty('--ground',`url('${safeImageValue(g)}')`);renderDevPreview();}
+function applySpriteSettings(){const w=Number($('cfgSpriteW').value)||190,h=Number($('cfgSpriteH').value)||220;$('player').style.width=w+'px';$('player').style.height=h+'px';setCharacter($('cfgCharacter').value);}
+function renderDevPreview(){const d=$('devWorld');if(!d)return;d.innerHTML='';level.platforms.forEach(p=>{const el=document.createElement('div');el.className='platform';el.style.left=(p.x/3)+'px';el.style.bottom=p.y+'px';el.style.width=(p.w/3)+'px';d.appendChild(el);});level.objects.forEach(o=>{const el=document.createElement('div');el.className='worldObj '+(o.type==='finish'?'finish':o.type);el.style.left=(o.x/3)+'px';el.style.bottom=o.y+'px';el.style.width='40px';el.style.height='40px';el.style.fontSize='20px';el.textContent=safeImageValue(o.icon)?'🖼️':(o.icon||'✨');d.appendChild(el);});updateLevelList();}
+function updateLevelList(){const l=$('levelList');if(!l)return;l.textContent=`Platforms: ${level.platforms.length}\nObjects: ${level.objects.length}\nLevel width: ${state.levelWidth}px\nPlayer moves through the world. Camera follows player.`;}
+function toggleDev(on){document.body.classList.toggle('devMode',!!on);renderDevPreview();}
+function devTab(name,btn){document.querySelectorAll('.devTabBtn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.devTab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');$('dev-'+name).classList.add('active');}
+async function saveGameConfig(){const key=$('adminKey').value.trim();const payload={level,selectedCharacter:state.player.character,backgrounds:{sky:$('cfgSky').value,hills:$('cfgHills').value,ground:$('cfgGround').value},pet:state.pet};try{const r=await fetch('/api/save-game-config',{method:'POST',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify(payload)});$('saveStatus').textContent=await r.text();}catch(e){$('saveStatus').textContent='Save failed: '+e.message;}}
+function bindControls(){const set=(k,v)=>{state.keys[k]=v};window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',true);if(e.key==='ArrowRight'||e.key==='d')set('right',true);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',true);});window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',false);if(e.key==='ArrowRight'||e.key==='d')set('right',false);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',false);});[['btnLeft','left'],['btnRight','right'],['btnJump','jump']].forEach(([id,k])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();set(k,true)});b.addEventListener('pointerup',()=>set(k,false));b.addEventListener('pointerleave',()=>set(k,false));});}
+window.addEventListener('load',()=>{bindControls();renderLevel();populatePartySelectors();setCharacter('pura');loadCurrentTestUser().catch(()=>{});showScreen('menu');});
 </script>
 </body>
 </html>
