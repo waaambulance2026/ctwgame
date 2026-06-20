@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash</title>
+<title>Waaambulance Quest Dash V25</title>
 <style>
 :root{
   --bg:#111827;--panel:#172033;--panel2:#202c45;--line:#334155;--text:#f8fafc;--muted:#9fb0c7;--blue:#38bdf8;--pink:#ff4fa3;--yellow:#ffe66d;--green:#22c55e;--red:#ef4444;
@@ -45,7 +45,7 @@
         <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas></div>
       </div>
       <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder admin unlocked for this session.</div>
+        <div class="statusBox" id="adminStatus">Builder locked until password is accepted. Password prompt should accept: waaadmin</div>
         <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
         <div id="tab-objects" class="toolSec active">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
@@ -102,11 +102,12 @@ const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getConte
 const imgCache=new Map();
 const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
 const ADMIN_PASSWORD='waaadmin';
+const ADMIN_PASSWORD_HELP='Type waaadmin exactly, all lower-case.';
 const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
 const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
 const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
 function axFrame(action,n){return `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${String(n).padStart(3,'0')}.png`}
-let adminUnlocked=sessionStorage.getItem('ctw_admin_unlocked')==='yes';
+let adminUnlocked=false; // Force password check each page load so normal users cannot enter Builder automatically
 let currentPanel='menu', running=true, last=0, cameraX=0, selected=null, drag=null;
 let keys={}; let touch={left:false,right:false};
 let petList=[], currentPet=null, currentPetImage='';
@@ -125,12 +126,12 @@ const level={
 const player={x:120,y:540,vx:0,vy:0,w:82,h:96,speed:7.4,jump:-17,gravity:.78,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
 function id(){return 'o'+Math.random().toString(36).slice(2,9)}
 function img(src){ if(!src||src.length<3||!/^https?:\/\//i.test(src)) return null; if(imgCache.has(src)) return imgCache.get(src); const im=new Image(); im.crossOrigin='anonymous'; im.src=src; imgCache.set(src,im); return im; }
-function showPanel(id){ currentPanel=id; document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); if(id==='builder'){running=false; renderEditor(); const s=document.getElementById('adminStatus'); if(s)s.textContent='Builder admin unlocked for this session. Password is only a front-end gate until server saving is added.';} if(id==='game'){running=true;} }
+function showPanel(id){ currentPanel=id; document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id)); if(id==='builder'){ if(!adminUnlocked){openBuilderWithPassword(); return;} running=false; renderEditor(); const s=document.getElementById('adminStatus'); if(s)s.textContent='Builder unlocked. Password accepted for this page load. This is a front-end gate until server saving is added.';} if(id==='game'){running=true;} }
 function openBuilderWithPassword(){
   if(!adminUnlocked){
-    const pass=prompt('Builder admin password');
-    if(pass!==ADMIN_PASSWORD){ alert('Wrong builder password.'); return; }
-    adminUnlocked=true; sessionStorage.setItem('ctw_admin_unlocked','yes');
+    const pass=(prompt('Builder admin password\n\n'+ADMIN_PASSWORD_HELP)||'').trim().toLowerCase();
+    if(pass!==ADMIN_PASSWORD){ alert('Wrong builder password. Use: waaadmin'); return; }
+    adminUnlocked=true;
   }
   showPanel('builder');
 }
