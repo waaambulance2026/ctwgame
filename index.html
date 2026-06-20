@@ -53,6 +53,36 @@ const DEV_UNLOCK='ctw-dev-unlocked-this-session';
 const TRANSPARENT_PIXEL='data:image/gif;base64,R0lGODlhAQABAAAAACw=';
 function pad3(n){return String(n).padStart(3,'0')}
 function clone(v){return JSON.parse(JSON.stringify(v||{}))}
+function normalizeDevConfig(input){
+  const out=clone(input||{});
+  // ONE CLEAN SAVE SHAPE ONLY:
+  // devConfig.backgrounds, devConfig.layers, devConfig.characters, devConfig.spriteEdits, devConfig.gameSpeed
+  // Old builds saved duplicates like _layers, _gameSpeed, and top-level ax/pura/unicorn/owl.
+  if(out._layers && !out.layers) out.layers=clone(out._layers);
+  delete out._layers;
+  if(out._gameSpeed!=null && out.gameSpeed==null) out.gameSpeed=Number(out._gameSpeed)||3.2;
+  delete out._gameSpeed;
+  out.backgrounds=Object.assign({}, out.backgrounds||{});
+  out.layers=Object.assign({}, out.layers||{});
+  out.characters=Object.assign({}, out.characters||{});
+  ['ax','pura','unicorn','owl'].forEach(k=>{
+    if(out[k] && !out.characters[k]) out.characters[k]=clone(out[k]);
+    delete out[k];
+  });
+  out.gameSpeed=Number(out.gameSpeed||3.2);
+  ['sky','hills','ground'].forEach(k=>{ if(out.backgrounds[k]!=null) out.backgrounds[k]=String(out.backgrounds[k]); });
+  // Keep platform above the scenery. Old saves sometimes stored platform z:0.
+  out.layers.platform=Object.assign({}, LAYER_DEFAULTS.platform, out.layers.platform||{});
+  if(Number(out.layers.platform.z)<6) out.layers.platform.z=6;
+  ['sky','hills','ground'].forEach(k=>{ if(out.layers[k]) out.layers[k]=Object.assign({}, LAYER_DEFAULTS[k], out.layers[k]); });
+  return out;
+}
+function cleanLiveConfig(){
+  captureCurrentBackgrounds();
+  devConfig=normalizeDevConfig(devConfig);
+  saveDevConfig();
+  return {version:3,savedAt:new Date().toISOString(),devConfig:clone(devConfig)};
+}
 function unique(a){return [...new Set((a||[]).filter(Boolean))]}
 function fileName(char,action,n){return `${char}_${action}_${pad3(n)}.png`}
 function spriteCandidates(char,action,n){
@@ -96,7 +126,7 @@ const QUESTS=[{name:'Swamp Monster',goal:900,tokens:['🍃','🪙','🧭','✨']
 🟨 EDIT ZONE 6 — LAYER DEFAULTS
 ====================================================== */
 const LAYER_DEFAULTS={sky:{show:true,height:100,bottom:0,zoom:100,x:0,y:0,z:0,opacity:1},hills:{show:true,height:56,bottom:40,zoom:100,x:0,y:0,z:1,opacity:1},ground:{show:true,height:35,bottom:-10,zoom:100,x:0,y:0,z:4,opacity:1},platform:{show:true,height:35,bottom:47,zoom:100,x:0,y:0,z:6,opacity:1}};
-let devConfig=loadDevConfig();function loadDevConfig(){try{return JSON.parse(localStorage.getItem(LS_KEY)||'{}')}catch{return {}}}function saveDevConfig(){localStorage.setItem(LS_KEY,JSON.stringify(devConfig))}
+let devConfig=loadDevConfig();function loadDevConfig(){try{return normalizeDevConfig(JSON.parse(localStorage.getItem(LS_KEY)||'{}'))}catch{return normalizeDevConfig({})}}function saveDevConfig(){devConfig=normalizeDevConfig(devConfig);localStorage.setItem(LS_KEY,JSON.stringify(devConfig))}
 function cfg(char){return Object.assign({},CHARACTERS[char]||CHARACTERS.ax,devConfig.characters?.[char]||{})}
 function getActions(char){return CHARACTERS[char]?.actions||{}}
 function actionFrames(char,action){const acts=getActions(char);const f=acts[action]||acts.idle||acts.walk||[];return f.map(x=>Array.isArray(x)?x[0]:x).filter(Boolean)}
@@ -146,7 +176,7 @@ function syncLayerLabels(){const key=devLayer.value,c=layerCfg(key);layerHeightV
 function applyLayerInputs(){const key=devLayer.value;setLayerCfg(key,{show:layerShow.value==='true',height:readNum('layerHeight'),bottom:readNum('layerBottom'),zoom:readNum('layerZoom'),x:readNum('layerX'),y:readNum('layerY'),z:readNum('layerZ'),opacity:readNum('layerOpacity')});syncLayerLabels();applyLayerStyles()}
 function applyBgInputs(){devConfig.backgrounds=devConfig.backgrounds||{};const sky=bgSkyUrl.value.trim(),hills=bgHillsUrl.value.trim(),ground=bgGroundUrl.value.trim();if(sky)devConfig.backgrounds.sky=sky;if(hills)devConfig.backgrounds.hills=hills;if(ground)devConfig.backgrounds.ground=ground;captureCurrentBackgrounds();applyBackgrounds()}
 function updateDeveloperPreview(){if(!document.body.classList.contains('devMode'))return;const screen=devPreviewScreen,sw=screen.clientWidth||800,sh=screen.clientHeight||450,scale=Math.min(sw/innerWidth,sh/innerHeight)||1;function pvLayer(k,el,scroll=0){const c=layerCfg(k);el.style.display=c.show===false?'none':'';el.style.opacity=c.opacity;el.style.zIndex=c.z;if(k==='sky'){el.style.inset='0';el.style.backgroundSize=`${c.zoom}% auto`;el.style.backgroundPosition=`calc(50% + ${c.x*scale}px) calc(50% + ${c.y*scale}px)`}else{el.style.height=(sh*(c.height/100))+'px';el.style.bottom=(c.bottom*scale)+'px';el.style.backgroundSize=`auto ${c.zoom}%`;el.style.backgroundPosition=`${(scroll+c.x)*scale}px calc(100% + ${c.y*scale}px)`}}pvLayer('sky',devPreviewSky);pvLayer('hills',devPreviewHills,-(distance*.22)%900);pvLayer('ground',devPreviewGround,-(distance*.9)%900);const pc=layerCfg('platform');devPreviewPlatform.style.display=pc.show===false?'none':'';devPreviewPlatform.style.height=(pc.height*scale)+'px';devPreviewPlatform.style.bottom=(pc.bottom*scale)+'px';devPreviewBaseline.style.bottom=(floorPx()*scale)+'px';const c=currentDevChar(),a=currentDevAction(),cc=cfg(c);const fr=getActions(c)[a]||getActions(c).idle||[];setImageWithFallback(devPreviewSpriteImg,fr[0]);const h=(readNum('devHeight')||cc.height||220)*scale;devPreviewSprite.style.width=(h*(cc.aspect||1))+'px';devPreviewSprite.style.height=h+'px';devPreviewSprite.style.left=(innerWidth*((readNum('devX')||cc.x||24)/100)*scale)+'px';devPreviewSprite.style.bottom=((floorPx()+readNum('devFeet'))*scale)+'px';devPreviewSprite.style.transform=`translateX(-50%) scaleX(${devFlip.value==='true'?-1:1})`;devReadout.textContent=`Preview: ${c} / ${a}\nheight ${readNum('devHeight')}px · feet ${readNum('devFeet')}px · x ${readNum('devX')}vw · fps ${readNum('devFps')}`}
-function collectLiveConfig(){captureCurrentBackgrounds();return {version:2,savedAt:new Date().toISOString(),devConfig:clone(devConfig)}}function applyLiveConfig(data){if(data?.devConfig){devConfig=Object.assign({},data.devConfig);saveDevConfig();applyBackgrounds();applyLayerStyles();renderDev();showToast('Live config loaded')}}async function loadLive(){try{const res=await fetch('/api/game-config?ctw='+Date.now(),{cache:'no-store'});const data=await res.json().catch(()=>null);if(!res.ok)throw new Error(data?.error||('HTTP '+res.status));if(data?.config)applyLiveConfig(data.config);ctwLiveStatus.textContent=data?.config?'Loaded live config.':'Connected. No live config saved yet.'}catch(e){ctwLiveStatus.textContent='Load failed: '+(e.message||e)}}async function saveLive(){const key=(ctwAdminKey.value||localStorage.getItem(ADMIN_KEY_STORAGE)||'').trim();if(!key){ctwLiveStatus.textContent='Enter your admin key first.';return}localStorage.setItem(ADMIN_KEY_STORAGE,key);applyDevInputs();applyLayerInputs();applyBgInputs();saveDevConfig();try{const res=await fetch('/api/save-game-config',{method:'POST',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify({config:collectLiveConfig()})});const data=await res.json().catch(()=>null);if(!res.ok||!data?.ok)throw new Error(data?.error||('HTTP '+res.status));ctwLiveStatus.textContent='Saved to live game, including current Cloudinary background URLs. Refresh another browser to check.';showToast('Saved to live game')}catch(e){ctwLiveStatus.textContent='Save failed: '+(e.message||e)}}
+function collectLiveConfig(){return cleanLiveConfig()}function applyLiveConfig(data){if(data?.devConfig){devConfig=normalizeDevConfig(data.devConfig);saveDevConfig();applyBackgrounds();applyLayerStyles();renderDev();showToast('Live config loaded')}}async function loadLive(){try{const res=await fetch('/api/game-config?ctw='+Date.now(),{cache:'no-store'});const data=await res.json().catch(()=>null);if(!res.ok)throw new Error(data?.error||('HTTP '+res.status));if(data?.config)applyLiveConfig(data.config);ctwLiveStatus.textContent=data?.config?'Loaded live config.':'Connected. No live config saved yet.'}catch(e){ctwLiveStatus.textContent='Load failed: '+(e.message||e)}}async function saveLive(){const key=(ctwAdminKey.value||localStorage.getItem(ADMIN_KEY_STORAGE)||'').trim();if(!key){ctwLiveStatus.textContent='Enter your admin key first.';return}localStorage.setItem(ADMIN_KEY_STORAGE,key);applyDevInputs();applyLayerInputs();applyBgInputs();saveDevConfig();try{const res=await fetch('/api/save-game-config',{method:'POST',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify({config:collectLiveConfig()})});const data=await res.json().catch(()=>null);if(!res.ok||!data?.ok)throw new Error(data?.error||('HTTP '+res.status));ctwLiveStatus.textContent='Saved to live game. Saved ONE clean config: backgrounds, layers, characters, spriteEdits and gameSpeed.';showToast('Saved to live game')}catch(e){ctwLiveStatus.textContent='Save failed: '+(e.message||e)}}
 /* WIRE BUTTONS */
 document.querySelectorAll('.devTabs button').forEach(b=>b.onclick=()=>{document.querySelectorAll('.devTabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.devSection').forEach(s=>s.classList.remove('active'));b.classList.add('active');document.querySelector(`.devSection[data-section="${b.dataset.tab}"]`).classList.add('active')});
 ['devHeight','devFeet','devX','devFps','devBob','devSpeed'].forEach(id=>{const r=document.getElementById(id),n=document.getElementById(id+'Num');r.oninput=()=>{n.value=r.value;applyDevInputs()};n.oninput=()=>{r.value=n.value;applyDevInputs()}});['devFlip','devCharacter','devAction'].forEach(id=>document.getElementById(id).onchange=()=>{if(id==='devCharacter'||id==='devAction')renderDev();applyDevInputs()});
