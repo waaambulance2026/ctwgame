@@ -3,467 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
-<link rel="preconnect" href="https://docs.google.com" crossorigin>
 <title>Waaambulance Quest Dash</title>
 <style>
 :root{
-  --pink:#d282c2;--blue:#76C7D8;--yellow:#F5C542;--ink:#130b1d;--panel:#21142d;--floor:92px;
+  --ink:#170b24;--panel:#241736;--panel2:#33224a;--gold:#f5c542;--pink:#d282c2;--blue:#76c7d8;--mint:#b9f7d4;
   --sky:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png');
   --hills:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png');
   --ground:url('https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png');
-  --lcd:#a3b899;--lcdInk:#2b3a22;
 }
-*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101024;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select,textarea{font-family:inherit}button{cursor:pointer}
-#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#72d9ff;isolation:isolate;touch-action:none;user-select:none}.hidden{display:none!important}
-.layer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:0;background-image:var(--sky);background-size:cover;background-position:center}.hills{height:56vh;bottom:38px;z-index:1;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom}.ground{height:35vh;bottom:-8px;z-index:4;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom}
-#worldViewport{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none}#world{position:absolute;left:0;top:0;height:100%;width:3200px;transform:translateX(0);will-change:transform;pointer-events:none}.platform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.9) 0 5px,rgba(210,130,194,.72) 5px 18px,rgba(118,199,216,.72) 18px 24px,rgba(33,69,124,.58) 24px);box-shadow:0 8px 14px rgba(0,0,0,.22);border:2px solid rgba(255,255,255,.65)}.worldObj{position:absolute;display:grid;place-items:center;width:60px;height:60px;transform:translate(-50%,-50%);border-radius:16px;font-size:30px;border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25);background:rgba(255,255,255,.86);overflow:hidden}.worldObj img{max-width:100%;max-height:100%;object-fit:contain}.token{background:linear-gradient(#fff7fd,#f0bbe6);border-color:var(--pink);animation:floaty 1.5s ease-in-out infinite}.enemy{background:linear-gradient(#fff0c7,#ff8e8e);border-color:#ff5c5c}.finish{background:linear-gradient(#fff7bd,var(--yellow));border-color:#fff;font-size:34px}.collected,.defeated{display:none!important}
-.player{position:absolute;z-index:55;width:190px;height:220px;transform:translateX(-50%);display:flex;align-items:flex-end;justify-content:center;filter:drop-shadow(0 14px 12px rgba(0,0,0,.35));will-change:left,bottom}.player img{width:100%;height:100%;object-fit:contain;object-position:center bottom}.shadow{position:absolute;z-index:52;width:112px;height:22px;border-radius:50%;background:rgba(0,0,0,.26);filter:blur(8px);transform:translateX(-50%)}.petFollower{position:absolute;z-index:56;width:70px;height:70px;display:grid;place-items:center;animation:petbob 2s ease-in-out infinite;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}.petFollower img{max-width:100%;max-height:100%;object-fit:contain}.noImg{display:grid;place-items:center;background:#fff7bd;color:#21142d;border:2px dashed #21142d;border-radius:10px;font-size:10px;font-weight:900;text-align:center;padding:4px}
-.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 10px;background:rgba(29,20,44,.88);border:1px solid rgba(255,255,255,.16);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.26)}.title{min-width:210px}.title strong{display:block;font-size:clamp(16px,2vw,24px);line-height:1}.title span{font-size:12px;opacity:.9}.stats{display:flex;align-items:center;justify-content:flex-end;flex-wrap:wrap;gap:7px}.pill{border:0;border-radius:999px;padding:8px 12px;font-weight:900;color:#24152e;background:rgba(255,255,255,.92);box-shadow:0 5px 13px rgba(0,0,0,.16);text-decoration:none}.gold{background:linear-gradient(#fff7bd,var(--yellow))}.pink{background:linear-gradient(#fff1fb,var(--pink))}.blue{background:linear-gradient(#e9fbff,var(--blue))}
-.screen{position:absolute;inset:0;z-index:160;display:grid;place-items:center;background:rgba(15,8,25,.52);backdrop-filter:blur(6px);padding:16px;overflow:auto}.modal{width:min(940px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.96);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.menuGrid{display:grid;grid-template-columns:repeat(2,minmax(160px,1fr));gap:12px;margin:18px 0}.bigCard{border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:18px;background:rgba(255,255,255,.10);color:#fff;text-align:left;font-weight:900;cursor:pointer}.bigCard span{display:block;font-size:12px;opacity:.85;margin-top:4px}.testUserRow{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:end;margin:10px auto;max-width:620px}.testUserRow select{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,.25)}.dataBox{text-align:left;background:rgba(0,0,0,.25);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:12px;margin-top:14px;font-size:13px;line-height:1.35}.platformSetup{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:14px;margin:14px 0;text-align:left}.platformSetup h2{margin:0 0 8px;color:var(--yellow);font-size:20px}.setupGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.setupGrid label{font-weight:900;font-size:12px}.setupGrid select{width:100%;margin-top:4px;padding:8px;border-radius:10px;border:1px solid rgba(255,255,255,.25)}.partyNote{font-size:12px;opacity:.9;margin-top:8px;line-height:1.35}.teamCard{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.teamCard div{background:rgba(0,0,0,.22);border-radius:12px;padding:8px;font-size:12px}.lockedHint{color:#fff7bd;font-size:12px;margin-top:6px}
-
-.partyPreviewGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}.partyPreviewCard{background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.18);border-radius:16px;padding:10px;text-align:center}.partyPreviewTitle{font-size:12px;font-weight:900;color:#fff7bd;margin-bottom:6px}.playerMiniStage{height:160px;border-radius:14px;background:linear-gradient(#7edcff,#c8f4ff);position:relative;overflow:hidden;display:grid;place-items:end center;padding:8px}.playerMiniStage:after{content:"";position:absolute;left:0;right:0;bottom:0;height:28px;background:linear-gradient(#74d16f,#2d8b51);}.playerMiniStage img{position:relative;z-index:2;max-width:95%;max-height:145px;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 8px 8px rgba(0,0,0,.28))}.partyPreviewName{display:block;margin-top:6px;font-weight:900}.partyPreviewMeta{display:block;font-size:11px;opacity:.82;min-height:14px}.teamPreviewDisabled{opacity:.45;filter:grayscale(.4)}.comboBadge{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;background:var(--yellow);color:#21142d;font-size:11px;font-weight:900}.devPlayerMarker{position:absolute;z-index:28;left:88px;bottom:78px;width:76px;height:96px;display:grid;place-items:end center}.devPlayerMarker img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.35))}.devHelperMarker{position:absolute;z-index:27;left:152px;bottom:128px;width:56px;height:70px;display:grid;place-items:end center}.devHelperMarker img{max-width:100%;max-height:100%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.25))}
-
-.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;width:min(440px,100%);padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.5);margin:auto}.lcd{background:var(--lcd);border:5px solid #554455;border-radius:12px;height:285px;position:relative;padding:10px;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;box-shadow:inset 0 6px 0 rgba(0,0,0,.15);color:var(--lcdInk)}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petStage{flex:1;display:grid;place-items:center;position:relative}.petStage img{max-width:160px;max-height:135px;object-fit:contain}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:6px;font-size:11px;font-weight:900;border-top:1px dashed var(--lcdInk);padding-top:6px}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:9px;overflow:hidden;margin-top:2px}.fill{height:100%;background:var(--lcdInk);width:50%;transition:.2s}.careGrid,.shopGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}.circleBtn{height:62px;border:3px solid var(--panel);border-radius:50%;background:#fff;font-size:24px;box-shadow:0 4px 0 var(--panel);cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center}.circleBtn span{display:block;font-size:8px;font-weight:900;color:var(--panel)}.shopGrid{grid-template-columns:repeat(3,1fr)}.shopGrid button{border:1px solid rgba(255,255,255,.25);border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900;cursor:pointer;min-height:72px}.shopGrid img{width:28px;height:28px;object-fit:contain;vertical-align:middle}.ticker{background:rgba(0,0,0,.88);color:#00ffcc;border-radius:10px;padding:10px;font-size:12px;margin-top:12px;min-height:45px;display:grid;place-items:center}.hookPool{height:260px;background:linear-gradient(#aeefff,#329bc9);border-radius:18px;position:relative;overflow:hidden;border:5px solid #fff;margin:14px auto;max-width:540px}.hookItem{position:absolute;display:grid;place-items:center;transform:translate(-50%,-50%);font-size:42px;width:70px;height:70px}.hookItem img{max-width:100%;max-height:100%;object-fit:contain}.hookLine{position:absolute;top:0;left:50%;width:4px;height:40px;background:#21142d;transform:translateX(-50%);transition:height 0.8s ease-in-out}.hookClaw{position:absolute;left:50%;top:100%;transform:translateX(-50%) translateY(-12px);font-size:34px}
-.controls{position:absolute;z-index:90;left:10px;right:10px;bottom:calc(env(safe-area-inset-bottom) + 10px);display:flex;justify-content:space-between;pointer-events:none}.controls button{pointer-events:auto;width:64px;height:54px;border:0;border-radius:18px;background:rgba(33,20,45,.86);color:#fff7bd;font-size:22px;font-weight:900}.controlCluster{display:flex;gap:8px}
-#devPanel{display:none}.devMode #devPanel{position:fixed;inset:0;z-index:1000;display:grid!important;grid-template-columns:minmax(0,1fr) 420px;background:rgba(255,250,255,.98);color:#21142d}.devLeft{position:relative;overflow:hidden;background:#72d9ff}.devLeft .layer,.devLeft #devWorld{display:block}#devWorld{position:absolute;inset:0;pointer-events:none}.devTop{position:absolute;left:0;right:0;top:0;z-index:30;padding:10px;background:#21142d;color:#fff7bd;display:flex;justify-content:space-between;align-items:center;font-weight:900}.devRight{padding:14px;overflow:auto}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;position:sticky;top:0;background:#fffaff;padding-bottom:10px;z-index:5}.devTabBtn{border:0;background:#21142d;color:#fff7bd;padding:9px 4px;font-weight:900;border-radius:8px;font-size:11px}.devTabBtn.active{background:var(--yellow);color:#21142d}.devTab{display:none}.devTab.active{display:block}.devGroup{margin:10px 0}.devGroup label{display:block;font-weight:900;font-size:12px;margin-bottom:4px}.devGroup input,.devGroup select,.devGroup textarea{width:100%;border:1px solid #cfc7d6;border-radius:8px;padding:8px;background:#fff}.devRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.devButton{border:0;border-radius:10px;background:#21142d;color:#fff;padding:10px;font-weight:900}.devButton.alt{background:#ddd;color:#21142d}.devHelp{background:#fff7bd;border:1px solid #8d7622;border-radius:10px;padding:10px;font-size:12px;margin:10px 0}.devList{font-size:12px;background:#f2eef5;border-radius:10px;padding:8px;max-height:150px;overflow:auto;white-space:pre-wrap}.assetPicker{max-height:190px;overflow:auto;border:1px solid #ddd;border-radius:10px;background:#fff}.assetChoice{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center;padding:6px;border-bottom:1px solid #eee;cursor:pointer}.assetChoice:hover{background:#fff7bd}.assetChoice img{width:38px;height:38px;object-fit:contain;background:#eee;border-radius:6px}.assetChoice strong{display:block;font-size:12px}.assetChoice span{display:block;font-size:10px;opacity:.75;word-break:break-all}
-@keyframes floaty{0%,100%{transform:translate(-50%,-50%) translateY(0)}50%{transform:translate(-50%,-50%) translateY(-10px)}}@keyframes petbob{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-@media(max-width:800px){.menuGrid{grid-template-columns:1fr}.hud{align-items:flex-start}.title{min-width:120px}.devMode #devPanel{grid-template-columns:1fr}.devLeft{display:none}.devRight{min-height:100dvh}.careGrid{grid-template-columns:repeat(4,1fr)}.shopGrid{grid-template-columns:1fr 1fr}.testUserRow{grid-template-columns:1fr}}
-
-#devWorld{position:absolute;inset:0;z-index:80;pointer-events:auto;touch-action:none}.devMode #devWorld .platform,.devMode #devWorld .worldObj{pointer-events:auto;cursor:grab;touch-action:none}.devMode #devWorld .platform:active,.devMode #devWorld .worldObj:active{cursor:grabbing;outline:3px solid var(--yellow);outline-offset:2px}.devSelected{outline:4px solid var(--yellow)!important;outline-offset:2px!important;box-shadow:0 0 0 3px rgba(33,20,45,.45)!important}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#0f1329;color:#fff;font-family:Arial,Helvetica,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer;border:0}.hidden{display:none!important}
+#app{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;background:#80dfff}.bgLayer{position:absolute;left:0;right:0;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;background-image:var(--sky);background-size:cover;background-position:center;z-index:0}.hills{height:56vh;bottom:44px;background-image:var(--hills);background-size:auto 100%;background-position:0 bottom;z-index:1}.ground{height:32vh;bottom:-8px;background-image:var(--ground);background-size:auto 100%;background-position:0 bottom;z-index:2}.shade{position:absolute;inset:0;background:rgba(10,6,20,.32);backdrop-filter:blur(4px);z-index:4;pointer-events:none}.view{position:absolute;inset:0;z-index:10;display:none;overflow:auto;padding:18px}.view.active{display:block}.panel{background:rgba(36,23,54,.96);border:1px solid rgba(255,255,255,.2);box-shadow:0 20px 45px rgba(0,0,0,.38);border-radius:26px;padding:22px;width:min(980px,calc(100vw - 28px));margin:48px auto;color:#fff}.smallPanel{width:min(680px,calc(100vw - 28px))}.topRow{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}.title h1{margin:0;font-size:clamp(28px,4vw,44px)}.title p{margin:4px 0 0;opacity:.9}.btn{background:linear-gradient(#fff7bd,var(--gold));color:#21142d;font-weight:900;border-radius:999px;padding:10px 15px;box-shadow:0 5px 12px rgba(0,0,0,.18)}.btn.dark{background:#1a1026;color:#fff7bd}.btn.blue{background:linear-gradient(#e9fbff,var(--blue));color:#21142d}.btn.pink{background:linear-gradient(#fff0fb,var(--pink));color:#21142d}.grid2{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:12px}.menuCard{background:rgba(255,255,255,.10);border:2px solid rgba(255,255,255,.18);border-radius:18px;padding:18px;text-align:left;color:#fff;font-weight:900;min-height:96px}.menuCard span{display:block;font-weight:600;font-size:13px;opacity:.86;margin-top:6px;line-height:1.3}.field{margin:10px 0}.field label{display:block;font-weight:900;margin-bottom:5px;font-size:13px}.field input,.field select,.field textarea{width:100%;padding:10px;border-radius:12px;border:1px solid #d8d2df;background:#fff;color:#21142d}.dataLine{background:rgba(0,0,0,.26);border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:10px;margin-top:12px;font-size:13px;line-height:1.35}.setupGrid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}.previewPair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}.charPreview{background:rgba(0,0,0,.24);border:1px solid rgba(255,255,255,.18);border-radius:18px;padding:10px;text-align:center}.miniStage{height:155px;background:linear-gradient(#83e0ff 0 75%,#3aa55f 75%);border-radius:14px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden}.miniStage img{max-height:145px;max-width:90%;object-fit:contain;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}.meta{font-size:12px;opacity:.85}.statusOk{color:#00ffcc}.warn{color:#fff7bd}.error{color:#ff9fb8}.debugBox{white-space:pre-wrap;word-break:break-word;max-height:190px;overflow:auto;background:#0e0716;color:#d8fbe8;border:1px solid rgba(255,255,255,.18);border-radius:12px;padding:10px;font:12px/1.35 monospace}.footerBtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:16px}
+/* Gameplay */
+#playView{padding:0;overflow:hidden}.hud{position:absolute;z-index:50;top:10px;left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));background:rgba(29,20,44,.92);border-radius:18px;padding:8px 10px;display:flex;align-items:center;justify-content:space-between;gap:10px}.hud strong{font-size:22px}.hudStats{display:flex;gap:8px;flex-wrap:wrap}.hudStats span{background:rgba(255,255,255,.92);color:#21142d;border-radius:999px;padding:8px 12px;font-weight:900}.worldViewport{position:absolute;inset:0;overflow:hidden;z-index:30}.world{position:absolute;left:0;top:0;height:100%;width:4200px;will-change:transform}.platform{position:absolute;height:26px;border-radius:13px;background:linear-gradient(to bottom,rgba(255,255,255,.9) 0 5px,rgba(210,130,194,.75) 5px 18px,rgba(118,199,216,.75) 18px 24px,rgba(33,69,124,.7) 24px);border:2px solid rgba(255,255,255,.68);box-shadow:0 8px 14px rgba(0,0,0,.25)}.obj{position:absolute;width:58px;height:58px;border-radius:16px;background:rgba(255,255,255,.9);display:grid;place-items:center;font-size:30px;transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.75);box-shadow:0 12px 18px rgba(0,0,0,.25)}.token{border-color:#d282c2}.enemy{border-color:#ff6666;background:#ffe0e0}.flag{border-color:#fff06f;background:#fff7bd}.player{position:absolute;z-index:45;display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);filter:drop-shadow(0 14px 12px rgba(0,0,0,.35))}.player img{width:100%;height:100%;object-fit:contain;object-position:center bottom}.shadowDot{position:absolute;z-index:42;width:90px;height:18px;background:rgba(0,0,0,.24);border-radius:50%;filter:blur(7px);transform:translateX(-50%)}.controls{position:absolute;z-index:60;left:10px;right:10px;bottom:10px;display:flex;justify-content:space-between;pointer-events:none}.controls button{pointer-events:auto;width:64px;height:54px;border-radius:18px;background:rgba(33,20,45,.88);color:#fff7bd;font-size:22px;font-weight:900}.controlCluster{display:flex;gap:8px}.levelMessage{position:absolute;z-index:70;left:50%;top:50%;transform:translate(-50%,-50%);background:rgba(36,23,54,.98);border:1px solid rgba(255,255,255,.22);border-radius:24px;padding:22px;text-align:center;display:none}.levelMessage.active{display:block}
+/* Pet */
+.petWrap{display:grid;grid-template-columns:minmax(320px,440px) minmax(260px,1fr);gap:18px;align-items:start}.lcdShell{background:linear-gradient(135deg,#e066ff,#8b008b);border:8px solid var(--panel);border-radius:48px;padding:24px;box-shadow:0 20px 45px rgba(0,0,0,.45)}.lcd{height:310px;background:#a3b899;color:#2b3a22;border:5px solid #554455;border-radius:12px;padding:10px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.lcd:after{content:"";position:absolute;inset:0;background:linear-gradient(rgba(0,0,0,.03) 50%,transparent 50%),linear-gradient(90deg,rgba(0,0,0,.03) 50%,transparent 50%);background-size:3px 3px;pointer-events:none}.petHeader{font-weight:900;font-size:13px;display:flex;justify-content:space-between}.petStage{flex:1;display:grid;place-items:center;min-height:170px}.petStage img{max-width:190px;max-height:160px;object-fit:contain}.noImg{background:#fff7bd;border:2px dashed #21142d;color:#21142d;border-radius:10px;padding:8px;font-weight:900;font-size:12px;text-align:center}.meters{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;border-top:1px dashed #2b3a22;padding-top:8px;font-size:11px;font-weight:900}.bar{height:8px;background:rgba(0,0,0,.15);border-radius:10px;overflow:hidden}.fill{height:100%;background:#2b3a22;width:50%}.careBtns{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.careBtns button{height:62px;border:3px solid #21142d;border-radius:50%;background:#fff;box-shadow:0 4px 0 #21142d;font-size:24px}.careBtns span{display:block;font-size:9px;font-weight:900;color:#21142d}.itemGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.itemCard{background:#21142d;border:1px solid rgba(255,255,255,.16);border-radius:12px;padding:10px;text-align:center;font-weight:900;min-height:74px}.itemCard small{display:block;color:#fff7bd;margin-top:3px}.petSide{background:rgba(0,0,0,.22);border-radius:18px;padding:14px}
+/* Hook */
+.hookPool{height:280px;background:linear-gradient(#aeefff,#329bc9);border:5px solid rgba(255,255,255,.8);border-radius:20px;max-width:560px;margin:15px auto;position:relative;overflow:hidden}.hookLine{position:absolute;top:0;left:50%;width:4px;height:65px;background:#21142d;transform:translateX(-50%)}.hookPrize{position:absolute;left:50%;bottom:32px;transform:translateX(-50%);font-size:52px}.hookItems{position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:space-around;font-size:34px;opacity:.75}
+/* Developer */
+#devView{padding:0;background:#fff;color:#21142d}.devShell{height:100dvh;display:grid;grid-template-columns:minmax(520px,1fr) 430px}.devPreview{position:relative;overflow:hidden;background:#84ddff}.devPreview .sky,.devPreview .hills,.devPreview .ground{display:block}.devStage{position:absolute;inset:0;z-index:20}.devTop{position:absolute;left:0;right:0;top:0;z-index:40;display:flex;align-items:center;justify-content:space-between;background:#21142d;color:#fff7bd;padding:10px;font-weight:900}.devSide{padding:14px;overflow:auto;background:#fff;color:#21142d}.devTabs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;position:sticky;top:0;background:#fff;padding-bottom:10px;z-index:5}.devTabs button{background:#21142d;color:#fff7bd;border-radius:8px;padding:9px 4px;font-weight:900;font-size:11px}.devTabs button.active{background:var(--gold);color:#21142d}.devTab{display:none}.devTab.active{display:block}.devHelp{background:#fff7bd;border:1px solid #8d7622;border-radius:10px;padding:10px;font-size:12px;margin:10px 0}.devRow{display:grid;grid-template-columns:1fr 1fr;gap:8px}.devBtnRow{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}.nodeSelected{outline:4px solid var(--gold)!important;outline-offset:2px!important}.devStage .platform,.devStage .obj{cursor:grab;pointer-events:auto}.devStage .platform:active,.devStage .obj:active{cursor:grabbing}.elementList{max-height:180px;overflow:auto;background:#f2eef5;border-radius:10px;padding:8px;font:12px/1.35 monospace;white-space:pre-wrap}.petDataTable{max-height:300px;overflow:auto;border:1px solid #ddd;border-radius:12px}.petDataRow{display:grid;grid-template-columns:54px 1fr;gap:8px;align-items:center;padding:8px;border-bottom:1px solid #eee}.petDataRow img{width:48px;height:48px;object-fit:contain;background:#eee;border-radius:8px}.petDataRow small{display:block;word-break:break-all;color:#555}
+@media(max-width:850px){.grid2,.setupGrid,.previewPair,.petWrap{grid-template-columns:1fr}.devShell{grid-template-columns:1fr}.devPreview{display:none}.hud{align-items:flex-start}.hud strong{font-size:16px}.devSide{height:100dvh}.itemGrid{grid-template-columns:1fr 1fr}.panel{margin:20px auto}}
 </style>
 </head>
 <body>
-<div id="game">
-  <div class="layer sky" id="skyLayer"></div><div class="layer hills" id="hillsLayer"></div><div class="layer ground" id="groundLayer"></div>
-  <div id="worldViewport"><div id="world"></div></div>
-  <div class="shadow" id="shadow"></div>
-  <div class="player" id="player"><img id="playerImg" alt="player"></div>
-  <div class="petFollower" id="petFollower"><div class="noImg" id="petFollowerFallback">PET</div><img id="petFollowerImg" class="hidden" alt="pet"></div>
-  <div class="hud">
-    <div class="title"><strong>🚑 Waaambulance Quest Dash</strong><span>Mario/Sonic style platform game</span></div>
-    <div class="stats"><span class="pill pink">Score: <span id="score">0</span></span><span class="pill">Lives: <span id="lives">3</span></span><span class="pill blue">Distance: <span id="distance">0m</span></span><button class="pill gold" onclick="showScreen('menu')">🏠 Menu</button><button class="pill" onclick="toggleDev(true)">🛠 Dev</button></div>
-  </div>
-  <div class="controls" id="controls"><div class="controlCluster"><button id="btnLeft">◀</button><button id="btnRight">▶</button></div><button id="btnJump">⤴</button></div>
+<div id="app">
+  <div class="bgLayer sky"></div><div class="bgLayer hills"></div><div class="bgLayer ground"></div><div class="shade"></div>
 
-  <section id="screenMenu" class="screen">
-    <div class="modal">
-      <h1>Waaambulance Quest Dash</h1>
-      <p>One game: menu, platform, pet care, hook. The platform mode is now a proper world with a player moving through it.</p>
-      <div class="testUserRow"><label style="text-align:left;font-weight:900">Testing user context<select id="testUserSelect"><option value="ryan">💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚 / ryansaxolotl</option><option value="ashely">Ashely / alyj420</option></select></label><button class="pill gold" onclick="loadCurrentTestUser()">Load</button></div>
-      <div class="platformSetup">
-        <h2>🎮 Platform Quest Setup</h2>
-        <div class="setupGrid">
-          <label>Quest mode
-            <select id="questModeSelect" onchange="refreshPartyUi()">
-              <option value="solo">Solo</option>
-              <option value="team">Team / combo quest</option>
-            </select>
-          </label>
-          <label>Player 1
-            <select id="slot1CharacterSelect" onchange="selectSlotCharacter(1,this.value)"></select>
-          </label>
-          <label>Player 2 / helper
-            <select id="slot2CharacterSelect" onchange="selectSlotCharacter(2,this.value)"></select>
-          </label>
-        </div>
-        <div class="partyPreviewGrid">
-          <div class="partyPreviewCard" id="slot1PreviewCard">
-            <div class="partyPreviewTitle">Player 1</div>
-            <div class="playerMiniStage"><div id="slot1PreviewFallback" class="noImg">P1</div><img id="slot1PreviewImg" class="hidden" alt="Player 1 preview"></div>
-            <span class="partyPreviewName" id="slot1PreviewName">Pura</span>
-            <span class="partyPreviewMeta" id="slot1PreviewMeta">Animated player</span>
-          </div>
-          <div class="partyPreviewCard" id="slot2PreviewCard">
-            <div class="partyPreviewTitle">Player 2 / Helper</div>
-            <div class="playerMiniStage"><div id="slot2PreviewFallback" class="noImg">TEAM</div><img id="slot2PreviewImg" class="hidden" alt="Player 2 preview"></div>
-            <span class="partyPreviewName" id="slot2PreviewName">No helper</span>
-            <span class="partyPreviewMeta" id="slot2PreviewMeta">Solo mode</span>
-          </div>
-        </div>
-        <div class="teamCard">
-          <div><strong>Solo:</strong> one character plays the whole level.</div>
-          <div><strong>Team:</strong> two characters can be used for combo parts later, like switches, lifts, double jumps, and special routes.</div>
-        </div>
-        <div class="partyNote" id="partyNote">Load the testing user first. Owned pets from the sheet will appear here. Owl and Unicorn can use animated sprites when available; pets without sprites use their static pet image.</div>
-        <button class="pill gold" style="margin-top:10px" onclick="startPlatform()">Start Platform Quest</button>
+  <section id="menuView" class="view active">
+    <div class="panel">
+      <div class="topRow"><div class="title"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose where to go. Platform setup is separate so this menu stays clean.</p></div></div>
+      <div class="field"><label>Testing user</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px"><select id="userSelect"><option value="1214671839205396481">💚 Ryan's Axolotl / ryansaxolotl</option><option value="1407957358683885670">Ashely / alyj420</option></select><button class="btn" id="loadBtn">Load</button></div></div>
+      <div id="loadStatus" class="dataLine">Ready. Petbot is read-only.</div>
+      <div class="grid2" style="margin-top:15px">
+        <button class="menuCard" data-go="setup">🎮 Platform Quest<span>Pick solo/team and characters before playing.</span></button>
+        <button class="menuCard" data-go="pet">🐾 Pet Care<span>Shows owned pets and items from Petbot. Read-only.</span></button>
+        <button class="menuCard" data-go="hook">🪝 Hook-A-Waaambulance<span>Read-only prize view while we keep Petbot safe.</span></button>
+        <button class="menuCard" data-go="dev">🛠 Developer Builder<span>Full workspace for backgrounds, level pieces and characters.</span></button>
       </div>
-      <div class="menuGrid"><button class="bigCard" onclick="startPlatform()">🎮 Platform Game<span>Move through a level like Mario/Sonic. Objects are placed in the world.</span></button><button class="bigCard" onclick="showScreen('pet')">🐾 Pet Care<span>Loads user pet data read-only from the sheet.</span></button><button class="bigCard" onclick="showScreen('hook')">🧲 Hook-A-Waaambulance<span>Uses hook images/items from the sheet when found.</span></button><button class="bigCard" onclick="toggleDev(true)">🛠 Simple Editor<span>Build the level and change images without confusing preview mode.</span></button></div>
-      <div class="dataBox" id="loadStatus">Status: not loaded yet. Sheet access is read-only.</div>
     </div>
   </section>
 
-  <section id="screenPet" class="screen hidden"><div class="modal"><div class="dataBox" style="max-width:440px;margin:0 auto 12px;text-align:left"><b>Choose pet</b><br><select id="petCareSelect" style="width:100%;padding:9px;border-radius:10px;margin-top:6px" onchange="selectPetCare(this.value)"></select><div id="petCareDebug" style="font-size:11px;opacity:.85;margin-top:6px">Petbot read-only display.</div></div><div class="lcdShell"><div class="lcd"><div style="display:flex;justify-content:space-between;font-size:12px;font-weight:900"><span id="petNameLabel">PET: Loading...</span><span id="petLevelLabel">LV.1</span></div><div class="petStage"><div id="petBodyFallback" class="noImg">NO PET IMAGE</div><img id="petBodyImg" class="hidden" alt="Pet"><img id="petBubbleImg" class="hidden" alt="bubble" style="position:absolute;right:48px;top:10px;width:42px;height:42px"></div><div class="meters"><div>HUNGER<div class="bar"><div class="fill" id="fillHunger"></div></div></div><div>HAPPY<div class="bar"><div class="fill" id="fillHappy"></div></div></div><div>ENERGY<div class="bar"><div class="fill" id="fillEnergy"></div></div></div><div>COINS<br><span id="petCoins">🪙 0</span></div></div></div><div class="ticker" id="petTicker">Pet care ready.</div><div class="careGrid"><button class="circleBtn" onclick="careAction('feed')">🍔<span>Feed</span></button><button class="circleBtn" onclick="careAction('play')">🧸<span>Play</span></button><button class="circleBtn" onclick="careAction('rest')">💤<span>Rest</span></button><button class="circleBtn" onclick="careAction('medicine')">💊<span>Heal</span></button></div><div class="shopGrid" id="shopGrid"></div></div><button class="pill gold" style="margin-top:12px" onclick="showScreen('menu')">Return to Menu</button></div></section>
+  <section id="setupView" class="view">
+    <div class="panel smallPanel">
+      <div class="topRow"><div class="title"><h1>🎮 Platform Quest Setup</h1><p>Choose your party before the level starts.</p></div><button class="btn dark" data-go="menu">Close</button></div>
+      <div class="setupGrid">
+        <div class="field"><label>Quest mode</label><select id="questMode"><option value="solo">Solo quest</option><option value="team">Team / combo quest</option></select></div>
+        <div class="field"><label>Player 1</label><select id="p1Select"></select></div>
+        <div class="field"><label>Player 2 / helper</label><select id="p2Select"></select></div>
+      </div>
+      <div class="previewPair"><div class="charPreview"><b>Player 1</b><div class="miniStage"><img id="p1Preview" alt="Player 1"></div><span id="p1Name" class="meta"></span></div><div class="charPreview"><b>Player 2 / Helper</b><div class="miniStage"><img id="p2Preview" alt="Player 2"></div><span id="p2Name" class="meta"></span></div></div>
+      <div class="dataLine">Team/combo objects are not fake-enabled yet. This setup is ready for later combo doors, switches, lifts and special routes.</div>
+      <div class="footerBtns"><button class="btn blue" id="startQuestBtn">Start Platform Quest</button><button class="btn dark" data-go="menu">Return to Menu</button></div>
+    </div>
+  </section>
 
-  <section id="screenHook" class="screen hidden"><div class="modal"><h1>🧲 Hook-A-Waaambulance</h1><p>Hook prizes are loaded from your sheet when matching image rows are found.</p><div class="hookPool" id="hookPool"><div class="hookLine" id="hookLine"><div class="hookClaw">🪝</div></div></div><div class="ticker" id="hookTicker">Press Hook to catch an item.</div><button class="pill gold" onclick="dropHook()">HOOK WAAAMBULANCE!</button><button class="pill" onclick="showScreen('menu')">Return to Menu</button></div></section>
+  <section id="playView" class="view">
+    <div class="hud"><div><strong>🚑 Waaambulance Quest Dash</strong><br><small>Mario/Sonic style platform game</small></div><div class="hudStats"><span id="scoreHud">Score: 0</span><span id="livesHud">Lives: 3</span><span id="distHud">Distance: 0m</span><button class="btn" data-go="menu">🏠 Menu</button><button class="btn dark" data-go="dev">🛠 Dev</button></div></div>
+    <div class="worldViewport"><div id="world" class="world"><div id="playerShadow" class="shadowDot"></div><div id="player" class="player"><img id="playerImg" alt="player"></div><div id="helper" class="player hidden"><img id="helperImg" alt="helper"></div></div></div>
+    <div id="levelMessage" class="levelMessage"><h2 id="levelMsgTitle">Level Complete!</h2><p id="levelMsgText"></p><button class="btn" id="continueBtn">Return to Menu</button></div>
+    <div class="controls"><div class="controlCluster"><button data-hold="left">◀</button><button data-hold="right">▶</button></div><button data-hold="jump">⤴</button></div>
+  </section>
 
-  <section id="screenVictory" class="screen hidden"><div class="modal"><h1>🏆 Level Complete!</h1><p>You reached the finish flag.</p><button onclick="showScreen('menu')">Return to Menu</button><button onclick="startPlatform()">Play Again</button></div></section>
+  <section id="petView" class="view">
+    <div class="panel">
+      <div class="topRow"><div class="title"><h1>🐾 Pet Care</h1><p>Reflects Petbot data only. Care buttons are visual until write actions are deliberately enabled.</p></div><button class="btn dark" data-go="menu">Close</button></div>
+      <div class="field"><label>Choose pet</label><select id="petSelect"></select></div>
+      <div id="petStatus" class="dataLine">Pet care ready.</div>
+      <div class="petWrap">
+        <div class="lcdShell"><div class="lcd"><div class="petHeader"><span id="lcdPetName">PET: loading</span><span id="lcdPetLevel">LV. -</span></div><div class="petStage"><img id="petImg" alt="pet image"><div id="petNoImg" class="noImg hidden">NO PET IMAGE</div></div><div class="meters"><div>HUNGER<div class="bar"><div id="hungerFill" class="fill"></div></div></div><div>HAPPY<div class="bar"><div id="happyFill" class="fill"></div></div></div><div>ENERGY<div class="bar"><div id="energyFill" class="fill"></div></div></div><div>COINS<br>🪙 <span id="coinText">0</span></div></div></div><div class="careBtns"><button><span>🍔</span><span>Feed</span></button><button><span>🧸</span><span>Play</span></button><button><span>💤</span><span>Rest</span></button><button><span>💊</span><span>Heal</span></button></div><div id="itemGrid" class="itemGrid"></div></div>
+        <div class="petSide"><h3>Petbot Debug</h3><div id="petDebug" class="debugBox">No data yet.</div></div>
+      </div>
+      <div class="footerBtns"><button class="btn dark" data-go="menu">Return to Menu</button></div>
+    </div>
+  </section>
 
-  <div id="devPanel"><div class="devLeft"><div id="devSky" class="layer sky"></div><div id="devHills" class="layer hills"></div><div id="devGround" class="layer ground"></div><div id="devWorld"></div><div class="devTop"><span>🛠 Live Game Preview</span><button class="pill gold" onclick="toggleDev(false)">Close</button></div></div><div class="devRight"><h1>Game Builder</h1><div class="devTabs"><button class="devTabBtn active" onclick="devTab('build',this)">1 Level</button><button class="devTabBtn" onclick="devTab('images',this)">2 BG</button><button class="devTabBtn" onclick="devTab('sprites',this)">3 Player</button><button class="devTabBtn" onclick="devTab('sheet',this)">4 Petbot</button><button class="devTabBtn" onclick="devTab('save',this)">5 Save</button></div>
-    <div id="dev-build" class="devTab active"><div class="devHelp"><b>Drag directly on the preview:</b> click a platform, collectible, enemy, or finish flag and drag it where you want. Use the form only when you want exact numbers.</div><div class="devGroup"><label>Add type</label><select id="addType"><option value="platform">Platform</option><option value="token">Collectible/token</option><option value="enemy">Enemy</option><option value="finish">Finish flag</option></select></div><div class="devRow"><div class="devGroup"><label>X position</label><input id="addX" type="number" value="900"></div><div class="devGroup"><label>Bottom/Y height</label><input id="addY" type="number" value="180"></div></div><div class="devRow"><div class="devGroup"><label>Width for platform</label><input id="addW" type="number" value="220"></div><div class="devGroup"><label>Icon or image URL</label><input id="addIcon" placeholder="✨, 🚨, 🏁 or image URL"></div></div><button class="devButton" onclick="addLevelThing()">Add To Level</button> <button class="devButton alt" onclick="clearLastThing()">Undo Last</button><div class="devList" id="levelList"></div></div>
-    <div id="dev-images" class="devTab"><div class="devHelp">These are game images/backgrounds, separate from Petbot images.</div><div class="devGroup"><label>Sky background URL</label><input id="cfgSky" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png"></div><div class="devGroup"><label>Hills background URL</label><input id="cfgHills" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png"></div><div class="devGroup"><label>Ground background URL</label><input id="cfgGround" value="https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png"></div><button class="devButton" onclick="applyBackgrounds()">Apply Backgrounds</button></div>
-    <div id="dev-sprites" class="devTab"><div class="devHelp">Player/party choice lives on the main menu so it is clear before starting the platform game. This tab is only for sprite size and custom sprite testing.</div><button class="devButton alt" onclick="toggleDev(false);showScreen('menu');renderPartyPreview()">Open Platform Quest Setup</button><div class="devGroup"><label>Player character</label><select id="cfgCharacter" onchange="setCharacter(this.value)"><option value="pura">Pura</option><option value="ax">Axolotl</option><option value="unicorn">Unicorn</option><option value="owl">Owl</option><option value="custom">Custom static URL</option></select></div><div class="devGroup"><label>Custom static sprite URL</label><input id="cfgCustomSprite" placeholder="Only used for Custom"></div><div class="devRow"><div class="devGroup"><label>Sprite width</label><input id="cfgSpriteW" type="number" value="140"></div><div class="devGroup"><label>Sprite height</label><input id="cfgSpriteH" type="number" value="165"></div></div><button class="devButton" onclick="applySpriteSettings()">Apply Sprite</button></div>
-    <div id="dev-sheet" class="devTab"><div class="devHelp">Read-only Petbot bridge. This calls /api/petbot, which only allows safe view modes and does not write to the sheet.</div><div class="devGroup"><label>Petbot source</label><input id="cfgSheetId" value="Uses Cloudflare /api/petbot read-only proxy" readonly></div><button class="devButton" onclick="loadAllSheetData()">Reload Petbot Data</button><h3>Pet image rows found</h3><div class="assetPicker" id="petAssetPicker"></div><h3>Debug</h3><div class="devList" id="sheetDebug">Not loaded yet.</div></div>
-    <div id="dev-save" class="devTab"><div class="devHelp">Game progress/settings save to Cloudflare KV only. Google Sheet stays read-only.</div><div class="devGroup"><label>Admin key for Cloudflare save</label><input id="adminKey" type="password"></div><button class="devButton" onclick="saveGameConfig()">Save to Cloudflare KV</button><div class="devList" id="saveStatus">Not saved yet.</div></div>
-  </div></div>
+  <section id="hookView" class="view">
+    <div class="panel smallPanel">
+      <div class="topRow"><div class="title"><h1>🪝 Hook-A-Waaambulance</h1><p>Read-only preview while we keep the bot safe.</p></div><button class="btn dark" data-go="menu">Close</button></div>
+      <div class="hookPool"><div class="hookLine"></div><div class="hookPrize">🪝</div><div class="hookItems"><span>🧸</span><span>💎</span><span>🪙</span><span>🎁</span></div></div>
+      <button class="btn blue" id="hookBtn">Load Hook Data</button>
+      <div id="hookResult" class="dataLine">Ready.</div>
+      <div class="footerBtns"><button class="btn dark" data-go="menu">Return to Menu</button></div>
+    </div>
+  </section>
+
+  <section id="devView" class="view">
+    <div class="devShell">
+      <div class="devPreview"><div class="bgLayer sky"></div><div class="bgLayer hills"></div><div class="bgLayer ground"></div><div id="devStage" class="devStage"></div><div class="devTop"><span>🛠 Game Builder Workspace</span><button class="btn" data-go="menu">Close Builder</button></div></div>
+      <div class="devSide"><div class="topRow"><h1>Game Builder</h1><button class="btn dark" data-go="menu">Close</button></div><div class="devTabs"><button data-devtab="level" class="active">Level</button><button data-devtab="bg">BG</button><button data-devtab="objects">Objects</button><button data-devtab="chars">Player</button><button data-devtab="petbot">Petbot</button></div>
+        <div id="devtab-level" class="devTab active"><div class="devHelp">Drag items in the preview. Select one, then tweak exact numbers here.</div><div class="devBtnRow"><button class="devButton btn dark" data-add="platform">Add platform</button><button class="devButton btn dark" data-add="token">Add token</button><button class="devButton btn dark" data-add="enemy">Add enemy</button><button class="devButton btn dark" data-add="flag">Add finish</button></div><div class="devRow"><div class="field"><label>X</label><input id="editX" type="number"></div><div class="field"><label>Y from floor</label><input id="editY" type="number"></div></div><div class="devRow"><div class="field"><label>Width</label><input id="editW" type="number"></div><div class="field"><label>Type</label><input id="editType" readonly></div></div><div class="devBtnRow"><button class="btn blue" id="applyElementBtn">Apply selected</button><button class="btn pink" id="deleteElementBtn">Delete selected</button><button class="btn dark" id="resetLevelBtn">Reset level</button></div><h3>Elements</h3><div id="elementList" class="elementList"></div></div>
+        <div id="devtab-bg" class="devTab"><div class="devHelp">These are game backgrounds only. Petbot images are separate.</div><div class="field"><label>Sky URL</label><input id="skyUrl"></div><div class="field"><label>Hills URL</label><input id="hillsUrl"></div><div class="field"><label>Ground URL</label><input id="groundUrl"></div><button class="btn blue" id="applyBgBtn">Apply backgrounds</button></div>
+        <div id="devtab-objects" class="devTab"><div class="devHelp">Change the emoji/image for world objects. Leaving image blank uses emoji.</div><div class="field"><label>Token image URL</label><input id="tokenImgUrl"></div><div class="field"><label>Enemy image URL</label><input id="enemyImgUrl"></div><div class="field"><label>Finish image URL</label><input id="flagImgUrl"></div><button class="btn blue" id="applyObjBtn">Apply object images</button></div>
+        <div id="devtab-chars" class="devTab"><div class="devHelp">Player setup lives on Platform Quest Setup. This tab changes size/URL testing.</div><div class="field"><label>Character</label><select id="devCharSelect"></select></div><div class="devRow"><div class="field"><label>Width</label><input id="spriteW" type="number" value="140"></div><div class="field"><label>Height</label><input id="spriteH" type="number" value="165"></div></div><button class="btn blue" id="applyCharBtn">Apply to Player 1</button></div>
+        <div id="devtab-petbot" class="devTab"><div class="devHelp">Shows exactly what the read-only Petbot bridge returned. This helps us fix missing images safely.</div><button class="btn blue" id="reloadPetbotBtn">Reload Petbot Data</button><div id="petbotDebug" class="debugBox" style="margin-top:10px">No data yet.</div><div id="petbotRows" class="petDataTable" style="margin-top:10px"></div></div>
+      </div>
+    </div>
+  </section>
 </div>
 <script>
 'use strict';
-const TEST_USERS={ryan:{display:"💚 𝕽𝖞𝖆𝖓'𝖘 𝕬𝖝𝖔𝖑𝖔𝖙𝖑 💚",username:'ryansaxolotl',discordId:'1214671839205396481'},ashely:{display:'Ashely',username:'alyj420',discordId:'1407957358683885670'}};
 const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
-const DEFAULT_BACKGROUNDS={sky:CLOUD+'f_auto,q_auto/day_sky.png',hills:CLOUD+'f_auto,q_auto/day_hills.png',ground:CLOUD+'f_auto,q_auto/day_ground.png'};
-const PLAYER_SIZES={pura:{w:140,h:165},ax:{w:140,h:165},unicorn:{w:150,h:170},owl:{w:125,h:145},ownedStatic:{w:130,h:140},custom:{w:140,h:165}};
-const SPRITES={
-  pura:{label:'Pura',prefix:'pura',fallback:'🐶',counts:{idle:10,walk:10,jump:10}},
-  ax:{label:'Axolotl',prefix:'ax',fallback:'🦎',counts:{idle:10,walk:10,jump:10}},
-  unicorn:{label:'Unicorn',prefix:'unicorn',fallback:'🦄',counts:{idle:10,walk:10,jump:10}},
-  owl:{label:'Owl',prefix:'owl',fallback:'🦉',counts:{idle:10,walk:10,jump:10}}
-};
-let state={screen:'menu',score:0,lives:3,cameraX:0,keys:{left:false,right:false,jump:false},running:false,player:{x:170,y:0,vx:0,vy:0,w:140,h:165,onGround:false,facing:1,state:'idle',character:'pura',frame:1,lastFrame:0,customStatic:''},party:{mode:'solo',slot1:'pura',slot2:'none',companionFrame:1,companionLastFrame:0},ownedPets:[],petRows:[],selectedPetCode:'',levelWidth:2600,pet:{name:'Odin',type:'Raven',level:1,xp:70,coins:0,hunger:65,happy:45,energy:80,baseImg:'',feedImg:'',playImg:'',restImg:'',medicineImg:'',bubbleImg:''},sheet:{rowsByTab:{},allRows:[],assetRows:[],hookRows:[],shopRows:[]}};
-const level={platforms:[{x:0,y:70,w:520},{x:610,y:150,w:230},{x:930,y:240,w:220},{x:1260,y:150,w:300},{x:1660,y:220,w:240},{x:2050,y:130,w:360}],objects:[{x:240,y:132,type:'token',icon:'✨'},{x:720,y:210,type:'enemy',icon:'🚨'},{x:1040,y:300,type:'token',icon:'💎'},{x:1390,y:210,type:'enemy',icon:'🐌'},{x:1810,y:280,type:'token',icon:'🪙'},{x:2380,y:190,type:'finish',icon:'🏁'}]};
-function $(id){return document.getElementById(id);} function clamp(v,min,max){return Math.max(min,Math.min(max,v));}
-function safeImageValue(v){if(v==null)return'';let s=String(v).trim();if(!s||/^none$/i.test(s)||/^n\/a$/i.test(s))return'';s=s.replace(/^['"]|['"]$/g,'').trim();if(/^https?:\/\//i.test(s)){ if(s.includes('drive.google.com/file/d/')){const m=s.match(/\/d\/([^/]+)/); if(m)return `https://drive.google.com/uc?export=view&id=${m[1]}`;} return s; } if(s.startsWith('//'))return 'https:'+s; if(s.includes('res.cloudinary.com'))return 'https://'+s.replace(/^https?:\/\//,''); if(s.includes('/image/upload/'))return 'https://res.cloudinary.com/'+s.replace(/^\/+/, ''); if(/\.(png|jpg|jpeg|gif|webp|svg)(\?.*)?$/i.test(s))return CLOUD+'f_auto,q_auto/'+s.replace(/^\/+/, ''); if(/^[\w\-\/]+$/.test(s))return CLOUD+'f_auto,q_auto/'+s; return '';}
-function setImgOrFallback(img,fb,url,label){const resolved=safeImageValue(url); if(!resolved){img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'NO IMAGE';return false;} img.referrerPolicy='no-referrer'; img.onerror=()=>{img.classList.add('hidden');fb.classList.remove('hidden');fb.textContent=label||'BROKEN IMAGE'}; img.onload=()=>{fb.classList.add('hidden');img.classList.remove('hidden')}; img.src=resolved; return true;}
-function showScreen(name){state.screen=name; ['Menu','Pet','Hook','Victory'].forEach(n=>$('screen'+n).classList.add('hidden')); if(name==='menu')$('screenMenu').classList.remove('hidden'); if(name==='pet'){$('screenPet').classList.remove('hidden');renderPet();} if(name==='hook'){$('screenHook').classList.remove('hidden');renderHook();} if(name==='victory')$('screenVictory').classList.remove('hidden'); if(name!=='play')state.running=false;}
-function startPlatform(){
-  readPartyFromMenu();
-  const p1=resolvePlayable(state.party.slot1)||resolvePlayable('pura');
-  applyPlayableToPlayer(p1);
-  showScreen('play');
-  state.running=true;state.player.x=170;state.player.y=120;state.player.vx=0;state.player.vy=0;state.cameraX=0;state.score=0;state.lives=3;
-  applyPlayerSize(state.player.character);
-  renderLevel(); updateCompanionSprite(true); requestAnimationFrame(loop);
-}
-function getPlayerSizeForCharacter(k){return PLAYER_SIZES[k]||PLAYER_SIZES.pura;}
-function applyPlayerSize(k,overrideW,overrideH){const size=getPlayerSizeForCharacter(k||state.player.character); const w=Number(overrideW)||size.w; const h=Number(overrideH)||size.h; state.player.w=w; state.player.h=h; const el=$('player'); if(el){el.style.width=w+'px';el.style.height=h+'px';} const wInput=$('cfgSpriteW'), hInput=$('cfgSpriteH'); if(wInput)wInput.value=w; if(hInput)hInput.value=h;}
-function setCharacter(k){state.player.character=k; const c=$('cfgCharacter'); if(c)c.value=k; applyPlayerSize(k); updateSprite(true); renderDevPreview();}
-function readPartyFromMenu(){state.party.mode=($('questModeSelect')&&$('questModeSelect').value)||'solo';state.party.slot1=($('slot1CharacterSelect')&&$('slot1CharacterSelect').value)||'pura';state.party.slot2=($('slot2CharacterSelect')&&$('slot2CharacterSelect').value)||'none';refreshPartyUi();}
-function resolvePlayable(value){
-  if(!value||value==='none')return null;
-  if(SPRITES[value])return {kind:'sprite',key:value,label:SPRITES[value].label,animated:true};
-  if(value.startsWith('pet:'))return state.ownedPets.find(p=>p.key===value)||null;
-  return null;
-}
-function animatedKeyForPet(pet){const t=String((pet&&pet.type)||'').toLowerCase();if(t.includes('owl'))return 'owl';if(t.includes('unicorn'))return 'unicorn';return '';}
-function applyPlayableToPlayer(item){
-  if(!item)return;
-  if(item.kind==='sprite'){state.player.character=item.key;state.player.customStatic='';}
-  else {const anim=animatedKeyForPet(item);if(anim){state.player.character=anim;state.player.customStatic='';}else{state.player.character='ownedStatic';state.player.customStatic=safeImageValue(item.baseImg||'');}}
-  applyPlayerSize(state.player.character);
-  updateSprite(true);
-}
-function currentSpriteUrl(){const p=state.player; if(p.character==='custom')return safeImageValue($('cfgCustomSprite')?$('cfgCustomSprite').value:''); if(p.character==='ownedStatic')return p.customStatic||''; const cfg=SPRITES[p.character]||SPRITES.pura; const act=p.state==='jump'?'jump':(Math.abs(p.vx)>0.6?'walk':'idle'); const count=cfg.counts[act]||10; const frame=String(((p.frame-1)%count)+1).padStart(3,'0'); return `${CLOUD}f_auto,q_auto/${cfg.prefix}_${act}_${frame}.png`;}
-function updateSprite(force=false){const now=performance.now(); const p=state.player; p.state=p.onGround?(Math.abs(p.vx)>0.6?'walk':'idle'):'jump'; if(force||now-p.lastFrame>100){p.lastFrame=now;p.frame++; const img=$('playerImg'); const url=currentSpriteUrl(); img.onerror=()=>{img.removeAttribute('src'); img.alt=(SPRITES[p.character]||{}).fallback||'character image missing';}; if(url)img.src=url;}}
-function renderLevel(){const world=$('world'); world.innerHTML=''; world.style.width=state.levelWidth+'px'; level.platforms.forEach((p,i)=>{const d=document.createElement('div');d.className='platform';d.style.left=p.x+'px';d.style.bottom=p.y+'px';d.style.width=p.w+'px';d.dataset.i=i;world.appendChild(d);}); level.objects.forEach((o,i)=>{const d=document.createElement('div');d.className='worldObj '+(o.type==='finish'?'finish':o.type);d.style.left=o.x+'px';d.style.bottom=o.y+'px';d.dataset.i=i;if(safeImageValue(o.icon)){const im=document.createElement('img');im.src=safeImageValue(o.icon);im.onerror=()=>{d.textContent=o.type==='finish'?'🏁':o.type==='enemy'?'🚨':'✨'};d.appendChild(im);}else d.textContent=o.icon||(o.type==='finish'?'🏁':o.type==='enemy'?'🚨':'✨');world.appendChild(d);}); renderDevPreview(); updateHud();}
-function loop(){if(!state.running)return; const p=state.player; let accel=0;if(state.keys.left)accel-=0.75;if(state.keys.right)accel+=0.75;p.vx+=accel;p.vx*=0.82;p.vx=clamp(p.vx,-7,7);if((state.keys.jump)&&p.onGround){p.vy=15;p.onGround=false;}p.vy-=0.65;p.x+=p.vx;p.y+=p.vy;p.x=clamp(p.x,80,state.levelWidth-80);let landed=false;for(const pl of level.platforms){const top=pl.y+26;if(p.x>pl.x-20&&p.x<pl.x+pl.w+20&&p.vy<=0&&p.y>=top-8&&p.y+p.vy<=top+18){p.y=top;p.vy=0;p.onGround=true;landed=true;}}if(!landed&&p.y<=70){p.y=70;p.vy=0;p.onGround=true;}if(!landed&&p.y>70)p.onGround=false;state.cameraX=clamp(p.x-window.innerWidth*0.32,0,Math.max(0,state.levelWidth-window.innerWidth));$('world').style.transform=`translateX(${-state.cameraX}px)`;const screenX=p.x-state.cameraX;$('player').style.left=screenX+'px';$('player').style.bottom=p.y+'px';$('shadow').style.left=screenX+'px';$('shadow').style.bottom=(p.y-12)+'px';$('petFollower').style.left=(screenX-70)+'px';$('petFollower').style.bottom=(p.y+130+Math.sin(performance.now()/350)*6)+'px';checkCollisions();updateSprite();updateCompanionSprite();updateHud();requestAnimationFrame(loop);}
-function checkCollisions(){const p=state.player; level.objects.forEach((o,i)=>{if(o.done)return; if(Math.abs(p.x-o.x)<55&&Math.abs(p.y-o.y)<80){o.done=true; const el=document.querySelector(`.worldObj[data-i="${i}"]`); if(el)el.classList.add(o.type==='enemy'?'defeated':'collected'); if(o.type==='token'){state.score+=20;} else if(o.type==='enemy'){state.lives--; if(state.lives<=0) startPlatform();} else if(o.type==='finish'){state.score+=100;state.running=false;showScreen('victory');}}});}
-function updateHud(){$('score').textContent=state.score;$('lives').textContent=state.lives;$('distance').textContent=Math.max(0,Math.round(state.player.x-170))+'m';}
-
-
-function previewUrlForPlayable(item){
-  if(!item)return '';
-  if(item.kind==='sprite'){
-    const cfg=SPRITES[item.key]||SPRITES.pura;
-    return `${CLOUD}f_auto,q_auto/${cfg.prefix}_idle_001.png`;
-  }
-  const anim=animatedKeyForPet(item);
-  if(anim){
-    const cfg=SPRITES[anim]||SPRITES.pura;
-    return `${CLOUD}f_auto,q_auto/${cfg.prefix}_idle_001.png`;
-  }
-  return safeImageValue(item.baseImg||state.pet.baseImg||'');
-}
-function renderPartyPreview(){
-  const mode=($('questModeSelect')&&$('questModeSelect').value)||state.party.mode||'solo';
-  const p1=resolvePlayable(($('slot1CharacterSelect')&&$('slot1CharacterSelect').value)||state.party.slot1)||resolvePlayable('pura');
-  const p2=mode==='team'?resolvePlayable(($('slot2CharacterSelect')&&$('slot2CharacterSelect').value)||state.party.slot2):null;
-  if($('slot1PreviewName'))$('slot1PreviewName').textContent=p1?p1.label:'Pura';
-  if($('slot1PreviewMeta'))$('slot1PreviewMeta').textContent=p1?(p1.kind==='ownedPet'?(p1.animated?'Owned pet — animated':'Owned pet — static'):'Built-in animated character'):'Built-in animated character';
-  if($('slot1PreviewImg'))setImgOrFallback($('slot1PreviewImg'),$('slot1PreviewFallback'),previewUrlForPlayable(p1),'P1');
-  const c2=$('slot2PreviewCard');
-  if(c2)c2.classList.toggle('teamPreviewDisabled',mode==='solo');
-  if($('slot2PreviewName'))$('slot2PreviewName').textContent=p2?p2.label:'No helper';
-  if($('slot2PreviewMeta'))$('slot2PreviewMeta').textContent=mode==='solo'?'Solo mode':(p2?(p2.kind==='ownedPet'?(p2.animated?'Owned pet helper — animated':'Owned pet helper — static'):'Built-in helper'):'Choose a helper for combo quest');
-  if($('slot2PreviewImg')){
-    if(p2)setImgOrFallback($('slot2PreviewImg'),$('slot2PreviewFallback'),previewUrlForPlayable(p2),'P2');
-    else { $('slot2PreviewImg').classList.add('hidden'); $('slot2PreviewFallback').classList.remove('hidden'); $('slot2PreviewFallback').textContent=mode==='solo'?'SOLO':'P2'; }
-  }
-}
-
-function getPlayableRoster(){
-  return [
-    {key:'pura',label:'Pura',kind:'sprite',animated:true},
-    {key:'ax',label:'Ax',kind:'sprite',animated:true},
-    {key:'unicorn',label:'Unicorn',kind:'sprite',animated:true},
-    {key:'owl',label:'Owl',kind:'sprite',animated:true},
-    ...state.ownedPets
-  ];
-}
-function populatePartySelectors(){
-  const roster=getPlayableRoster();
-  const s1=$('slot1CharacterSelect'),s2=$('slot2CharacterSelect');
-  if(!s1||!s2)return;
-  const prev1=s1.value||state.party.slot1||'pura'; const prev2=s2.value||state.party.slot2||'none';
-  s1.innerHTML='';s2.innerHTML='<option value="none">No helper / solo</option>';
-  roster.forEach(p=>{const label=p.label+(p.kind==='ownedPet'?(p.animated?' — owned animated':' — owned static'):''); const o1=new Option(label,p.key);const o2=new Option(label,p.key);s1.add(o1);s2.add(o2);});
-  s1.value=roster.some(p=>p.key===prev1)?prev1:'pura'; s2.value=(prev2==='none'||roster.some(p=>p.key===prev2))?prev2:'none';
-  refreshPartyUi();
-}
-function selectSlotCharacter(slot,value){if(slot===1)state.party.slot1=value;else state.party.slot2=value;refreshPartyUi();}
-function refreshPartyUi(){
-  const mode=($('questModeSelect')&&$('questModeSelect').value)||state.party.mode||'solo';
-  if($('slot2CharacterSelect'))$('slot2CharacterSelect').disabled=(mode==='solo');
-  const p1=resolvePlayable(($('slot1CharacterSelect')&&$('slot1CharacterSelect').value)||state.party.slot1)||resolvePlayable('pura');
-  const p2=mode==='team'?resolvePlayable(($('slot2CharacterSelect')&&$('slot2CharacterSelect').value)||state.party.slot2):null;
-  const note=$('partyNote');
-  if(note){note.innerHTML=mode==='team' ? `Team quest: Player 1 is <b>${p1?p1.label:'Pura'}</b> and helper is <b>${p2?p2.label:'not chosen'}</b>. <span class="comboBadge">Combo quest ready</span>` : `Solo quest: you will play as <b>${p1?p1.label:'Pura'}</b>.`;}
-  renderPartyPreview();
-}
-function updateCompanionSprite(force=false){
-  const follower=$('petFollower'),img=$('petFollowerImg'),fb=$('petFollowerFallback'); if(!follower||!img||!fb)return;
-  if(state.party.mode!=='team'){follower.classList.add('hidden');return;}
-  const helper=resolvePlayable(state.party.slot2); if(!helper){follower.classList.add('hidden');return;}
-  follower.classList.remove('hidden');
-  let url=''; const now=performance.now();
-  if(helper.kind==='sprite' || animatedKeyForPet(helper)){const key=helper.kind==='sprite'?helper.key:animatedKeyForPet(helper);const cfg=SPRITES[key]||SPRITES.pura;const act=state.player.state==='jump'?'jump':(Math.abs(state.player.vx)>0.6?'walk':'idle');const count=cfg.counts[act]||10;if(force||now-state.party.companionLastFrame>120){state.party.companionLastFrame=now;state.party.companionFrame++;}const frame=String(((state.party.companionFrame-1)%count)+1).padStart(3,'0');url=`${CLOUD}f_auto,q_auto/${cfg.prefix}_${act}_${frame}.png`;}
-  else url=safeImageValue(helper.baseImg||state.pet.baseImg||'');
-  setImgOrFallback(img,fb,url,'HELPER');
-}
-function renderPet(){const p=state.pet;$('petNameLabel').textContent=`PET: ${p.name} THE ${p.type}`.toUpperCase();$('petLevelLabel').textContent=`LV.${p.level} (${p.xp} XP)`;$('fillHunger').style.width=clamp(p.hunger,0,100)+'%';$('fillHappy').style.width=clamp(p.happy,0,100)+'%';$('fillEnergy').style.width=clamp(p.energy,0,100)+'%';$('petCoins').textContent='🪙 '+(p.coins||state.score);setImgOrFallback($('petBodyImg'),$('petBodyFallback'),p.baseImg,'NO PET IMAGE');if(state.party.mode!=='team')setImgOrFallback($('petFollowerImg'),$('petFollowerFallback'),p.baseImg,'PET');renderShop();}
-function renderShop(){const grid=$('shopGrid');grid.innerHTML='';const items=state.sheet.shopRows.length?state.sheet.shopRows.slice(0,6):[{name:'Food item',price:50,icon:'🍽️',owned:0},{name:'Play item',price:30,icon:'🧸',owned:0},{name:'Medicine',price:45,icon:'💊',owned:0}];items.forEach(it=>{const b=document.createElement('button');const img=safeImageValue(it.image||it.img||it.url||it.icon);if(img){b.innerHTML=`<img src="${img}" onerror="this.replaceWith(document.createTextNode('📦'))"> <b>${it.name||it.item||'Item'}</b><br>🪙 ${it.price||it.cost||0}<br>owned: ${it.owned||it.qty||0}`;}else b.innerHTML=`${it.icon||'📦'} <b>${it.name||it.item||'Item'}</b><br>🪙 ${it.price||it.cost||0}<br>owned: ${it.owned||it.qty||0}`;grid.appendChild(b);});}
-function careAction(a){const p=state.pet;if(a==='feed'){p.hunger=clamp(p.hunger+20,0,100);if(p.feedImg)p.baseImg=p.feedImg;$('petTicker').textContent=`${p.name} has been fed.`;}if(a==='play'){p.happy=clamp(p.happy+20,0,100);if(p.playImg)p.baseImg=p.playImg;$('petTicker').textContent=`${p.name} played happily.`;}if(a==='rest'){p.energy=clamp(p.energy+25,0,100);if(p.restImg)p.baseImg=p.restImg;$('petTicker').textContent=`${p.name} is resting.`;}if(a==='medicine'){p.hunger=clamp(p.hunger+5,0,100);if(p.medicineImg)p.baseImg=p.medicineImg;$('petTicker').textContent=`${p.name} feels better.`;}p.xp+=10;renderPet();}
-function renderHook(){const pool=$('hookPool');pool.querySelectorAll('.hookItem').forEach(n=>n.remove());const rows=state.sheet.hookRows.length?state.sheet.hookRows.slice(0,5):[{icon:'🚑',name:'Waaambulance'},{icon:'🪙',name:'Coin'},{icon:'💎',name:'Gem'}];rows.forEach((r,i)=>{const d=document.createElement('div');d.className='hookItem';d.style.left=(18+i*18)+'%';d.style.top=(62+(i%2)*20)+'%';const img=safeImageValue(r.image||r.img||r.url||r.icon);if(img){const im=document.createElement('img');im.src=img;im.onerror=()=>{d.textContent=r.icon||'🚑'};d.appendChild(im);}else d.textContent=r.icon||'🚑';pool.appendChild(d);});$('hookLine').style.height='40px';}
-function dropHook(){const line=$('hookLine');line.style.height='220px';setTimeout(()=>{state.score+=25;$('hookTicker').textContent='Caught a prize! +25 coins';updateHud();line.style.height='40px';},850);}
-async function loadCurrentTestUser(){
-  const key=$('testUserSelect').value;
-  const user=TEST_USERS[key]||TEST_USERS.ryan;
-  $('loadStatus').textContent=`Loading ${user.username} from read-only Petbot API...`;
-  try{
-    // Load owned pets FIRST. This fixes the bug where pet care used Rune/profile instead of the first real pet list.
-    const viewPets=await petbotApi('view_pets',{user_id:user.discordId,per_page:'25'});
-    const pets=parsePetSlots(viewPets);
-    const chosen=pets.find(p=>String(p.petCode)===String(state.selectedPetCode)) || pets[0] || null;
-    const petCode=chosen ? chosen.petCode : '';
-    const profile=petCode ? await petbotApi('pet_profile_compact',{user_id:user.discordId,pet_code:petCode,selected_pet_code:petCode,include_media:'true'}).catch(err=>({response:err.message})) : {};
-    const inventory=petCode ? await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'}).catch(err=>({response:err.message})) : {};
-    const shop=petCode ? await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(err=>({response:err.message})) : {};
-    const hook=await petbotApi('view_hook_prizes',{user_id:user.discordId}).catch(async()=>petbotApi('get_hook_waaambulance',{user_id:user.discordId}).catch(()=>({})));
-    applyPetbotReadonlyData(user,profile,viewPets,inventory,shop,hook);
-    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Pets: ${pets.length}. Selected pet: ${state.pet.name} (${state.pet.petCode||'no code'}). Items shown: ${state.sheet.shopRows.length}.`;
-    if($('sheetDebug'))$('sheetDebug').textContent=`Petbot connected.
-received_user_id: ${viewPets.received_user_id||''}
-total_pets: ${viewPets.total_pets}
-first pet: ${pets[0]?pets[0].name+' / '+pets[0].petCode:'none'}
-selected pet: ${state.pet.name} / ${state.pet.petCode}
-selected image: ${state.pet.baseImg||'none'}
-inventory: ${inventory.response||'ok'}
-shop: ${shop.response||'ok'}`;
-  }catch(err){
-    $('loadStatus').textContent='Petbot read-only API error: '+err.message;
-    if($('sheetDebug'))$('sheetDebug').textContent='Petbot API error: '+err.message+'\nOpen /api/petbot?mode=view_pets&user_id='+user.discordId+'&per_page=25 to test.';
-  }
-}
-async function loadAllSheetData(){const id=$('cfgSheetId')?$('cfgSheetId').value:'1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';const tabs=['user_pets','pets','user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog','user_inventory','item_catalog','hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'];const rowsByTab={};for(const tab of tabs){try{rowsByTab[tab]=await fetchTab(id,tab);}catch(e){rowsByTab[tab]=[];}}state.sheet.rowsByTab=rowsByTab;state.sheet.allRows=Object.values(rowsByTab).flat();state.sheet.assetRows=['user_pet_images','pet_action_images','user_pet_effects','pet_layer_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r));state.sheet.hookRows=['hook_waaambulance','hook_waaambulance_collection','hook_care_prize_logs','collectible_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>({...r,_tab:t}))).filter(r=>findImageInRow(r)||r.icon||r.emoji);state.sheet.shopRows=['user_inventory','item_catalog'].flatMap(t=>(rowsByTab[t]||[]).map(r=>normaliseItem(r,t))).filter(Boolean).slice(0,12);renderAssetPicker();const dbg=Object.entries(rowsByTab).map(([k,v])=>`${k}: ${v.length}`).join('\n');if($('sheetDebug'))$('sheetDebug').textContent=dbg||'No rows loaded';return rowsByTab;}
-async function fetchTab(id,tab){const url=`https://docs.google.com/spreadsheets/d/${encodeURIComponent(id)}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(tab)}`;const text=await fetch(url,{method:'GET'}).then(r=>r.text());const json=JSON.parse(text.substring(text.indexOf('{'),text.lastIndexOf('}')+1));const cols=json.table.cols.map(c=>(c.label||c.id||'').toString().trim()||'col');return json.table.rows.map(row=>{const obj={_tab:tab};(row.c||[]).forEach((cell,i)=>{obj[cols[i]]=cell?cell.v:''});return obj;});}
-function textOfRow(r){return Object.values(r).join(' ').toLowerCase();}
-function findImageInRow(r){for(const [k,v] of Object.entries(r)){if(/^_/ .test(k))continue;const s=String(v||'');if(safeImageValue(s))return s;}return '';}
-function normaliseItem(r,tab){const txt=textOfRow(r); if(!txt)return null; const img=findImageInRow(r); const keys=Object.keys(r); const name=r.name||r.item||r.item_name||r.Item||r.Name||keys.map(k=>r[k]).find(v=>v&&String(v).length<40)||'Item'; const price=r.price||r.cost||r.Price||r.Cost||0; const owned=r.owned||r.qty||r.quantity||r.amount||0; return {name,price,owned,image:img,icon:r.icon||r.emoji||'',_tab:tab};}
-function applyUserPet(user){const rows=state.sheet.allRows;const owned=rows.find(r=>{const t=textOfRow(r);return t.includes(user.discordId)||t.includes(user.username.toLowerCase())||t.includes(user.display.toLowerCase());})||{};const ownedText=textOfRow(owned);state.pet.name=pick(owned,['pet_name','name','custom_name','Pet Name','Name'])||(/odin/i.test(ownedText)?'Odin':user.username);state.pet.type=pick(owned,['species','type','pet_type','model','Species','Type'])||(/raven/i.test(ownedText)?'Raven':'Pet');state.pet.level=Number(pick(owned,['level','Level'])||state.pet.level||1);state.pet.xp=Number(pick(owned,['xp','XP'])||state.pet.xp||0);state.pet.coins=Number(pick(owned,['coins','Coins','balance'])||state.pet.coins||state.score||0);const exactTerms=[state.pet.name,state.pet.type,user.discordId,user.username].map(x=>String(x||'').toLowerCase()).filter(Boolean);const assets=state.sheet.assetRows.filter(r=>exactTerms.some(term=>textOfRow(r).includes(term)));const base=assets.find(r=>/base|idle|static|home|normal/i.test(textOfRow(r)))||assets[0];const feed=assets.find(r=>/feed|eat|food/i.test(textOfRow(r)));const play=assets.find(r=>/play|toy|happy/i.test(textOfRow(r)));const rest=assets.find(r=>/rest|sleep|nap/i.test(textOfRow(r)));const med=assets.find(r=>/med|heal|medicine|clean/i.test(textOfRow(r)));state.pet.baseImg=findImageInRow(base||{})||'';state.pet.feedImg=findImageInRow(feed||{})||'';state.pet.playImg=findImageInRow(play||{})||'';state.pet.restImg=findImageInRow(rest||{})||'';state.pet.medicineImg=findImageInRow(med||{})||'';state.ownedPets=[{key:'pet:primary',kind:'ownedPet',label:`${state.pet.name} (${state.pet.type})`,name:state.pet.name,type:state.pet.type,baseImg:state.pet.baseImg,animated:!!animatedKeyForPet({type:state.pet.type})}];populatePartySelectors();renderPet();renderAssetPicker();}
-function pick(obj,names){for(const n of names){if(obj&&obj[n]!=null&&String(obj[n]).trim())return obj[n];}return'';}
-function renderAssetPicker(){const box=$('petAssetPicker');if(!box)return;box.innerHTML='';const rows=state.sheet.assetRows.slice(0,80);if(!rows.length){box.textContent='No image rows loaded yet.';return;}rows.forEach((r,i)=>{const url=safeImageValue(findImageInRow(r));const div=document.createElement('div');div.className='assetChoice';div.onclick=()=>{state.pet.baseImg=url;renderPet();};div.innerHTML=`<img src="${url}" onerror="this.style.display='none'"><div><strong>${r.name||r.pet_name||r.type||r.species||r._tab||'asset row'} </strong><span>${r._tab||''} — ${Object.values(r).slice(0,4).join(' | ')}</span></div>`;box.appendChild(div);});}
-function addLevelThing(){const type=$('addType').value;const x=Number($('addX').value)||300;const y=Number($('addY').value)||120;const w=Number($('addW').value)||220;const icon=$('addIcon').value.trim();if(type==='platform')level.platforms.push({x,y,w});else level.objects.push({x,y,type,icon:icon||(type==='finish'?'🏁':type==='enemy'?'🚨':'✨')});renderLevel();}
-function clearLastThing(){if(level.objects.length)level.objects.pop();else if(level.platforms.length>1)level.platforms.pop();renderLevel();}
-function applyBackgrounds(){const sky=safeImageValue($('cfgSky').value.trim())||DEFAULT_BACKGROUNDS.sky,h=safeImageValue($('cfgHills').value.trim())||DEFAULT_BACKGROUNDS.hills,g=safeImageValue($('cfgGround').value.trim())||DEFAULT_BACKGROUNDS.ground;document.documentElement.style.setProperty('--sky',`url('${sky}')`);document.documentElement.style.setProperty('--hills',`url('${h}')`);document.documentElement.style.setProperty('--ground',`url('${g}')`);const ds=$('devSky'),dh=$('devHills'),dg=$('devGround'); if(ds)ds.style.backgroundImage=`url('${sky}')`; if(dh)dh.style.backgroundImage=`url('${h}')`; if(dg)dg.style.backgroundImage=`url('${g}')`;renderDevPreview();}
-function applySpriteSettings(){const k=$('cfgCharacter').value; const w=Number($('cfgSpriteW').value)||getPlayerSizeForCharacter(k).w,h=Number($('cfgSpriteH').value)||getPlayerSizeForCharacter(k).h; state.player.character=k; applyPlayerSize(k,w,h); updateSprite(true); renderDevPreview();}
-function renderDevPreview(){const d=$('devWorld');if(!d)return;d.innerHTML='';level.platforms.forEach((p,i)=>{const el=document.createElement('div');el.className='platform';el.dataset.dragType='platform';el.dataset.dragIndex=i;el.title='Drag platform '+(i+1);el.style.left=(p.x/3)+'px';el.style.bottom=p.y+'px';el.style.width=(p.w/3)+'px';d.appendChild(el);});level.objects.forEach((o,i)=>{const el=document.createElement('div');el.className='worldObj '+(o.type==='finish'?'finish':o.type);el.dataset.dragType=o.type||'object';el.dataset.dragIndex=i;el.title='Drag '+(o.type||'object');el.style.left=(o.x/3)+'px';el.style.bottom=o.y+'px';el.style.width='40px';el.style.height='40px';el.style.fontSize='20px';el.textContent=safeImageValue(o.icon)?'🖼️':(o.icon||'✨');d.appendChild(el);});
-  const p1=resolvePlayable(state.party.slot1)||resolvePlayable('pura');
-  const p1m=document.createElement('div');p1m.className='devPlayerMarker'; const p1size=getPlayerSizeForCharacter((p1&&p1.key)||state.player.character); p1m.style.width=Math.round(p1size.w*0.52)+'px'; p1m.style.height=Math.round(p1size.h*0.52)+'px';
-  const p1img=document.createElement('img');p1img.src=previewUrlForPlayable(p1);p1img.onerror=()=>{p1m.textContent='P1'};p1m.appendChild(p1img);d.appendChild(p1m);
-  if(state.party.mode==='team'){
-    const p2=resolvePlayable(state.party.slot2);
-    if(p2){const p2m=document.createElement('div');p2m.className='devHelperMarker'; const p2size=getPlayerSizeForCharacter((p2&&p2.key)||'owl'); p2m.style.width=Math.round(p2size.w*0.42)+'px'; p2m.style.height=Math.round(p2size.h*0.42)+'px'; const p2img=document.createElement('img');p2img.src=previewUrlForPlayable(p2);p2img.onerror=()=>{p2m.textContent='P2'};p2m.appendChild(p2img);d.appendChild(p2m);}
-  }
-  updateLevelList(); installDevDragOnce();}
-function installDevDragOnce(){const d=$('devWorld');if(!d||d.dataset.dragInstalled==='true')return;d.dataset.dragInstalled='true';let drag=null;d.addEventListener('pointerdown',e=>{const t=e.target.closest('[data-drag-type]');if(!t)return;e.preventDefault();drag={type:t.dataset.dragType,index:Number(t.dataset.dragIndex)||0};t.setPointerCapture&&t.setPointerCapture(e.pointerId);document.querySelectorAll('#devWorld .devSelected').forEach(x=>x.classList.remove('devSelected'));t.classList.add('devSelected');});d.addEventListener('pointermove',e=>{if(!drag)return;e.preventDefault();const rect=d.getBoundingClientRect();const x=Math.round((e.clientX-rect.left)*3);const y=Math.round(rect.bottom-e.clientY);if(drag.type==='platform'){const p=level.platforms[drag.index];if(!p)return;p.x=clamp(x,0,state.levelWidth);p.y=clamp(y,0,520);$('addType').value='platform';$('addX').value=p.x;$('addY').value=p.y;$('addW').value=p.w||220;}else{const o=level.objects[drag.index];if(!o)return;o.x=clamp(x,0,state.levelWidth);o.y=clamp(y,0,520);$('addType').value=o.type||'token';$('addX').value=o.x;$('addY').value=o.y;$('addIcon').value=o.icon||'';}renderLevel();});function end(){drag=null}d.addEventListener('pointerup',end);d.addEventListener('pointercancel',end);d.addEventListener('lostpointercapture',end);}
-function updateLevelList(){const l=$('levelList');if(!l)return;l.textContent=`Platforms: ${level.platforms.length}\nObjects: ${level.objects.length}\nLevel width: ${state.levelWidth}px\nPlayer moves through the world. Camera follows player.`;}
-function toggleDev(on){document.body.classList.toggle('devMode',!!on);renderDevPreview();}
-function devTab(name,btn){document.querySelectorAll('.devTabBtn').forEach(b=>b.classList.remove('active'));document.querySelectorAll('.devTab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');$('dev-'+name).classList.add('active');}
-async function saveGameConfig(){const key=$('adminKey').value.trim();const payload={level,selectedCharacter:state.player.character,backgrounds:{sky:$('cfgSky').value,hills:$('cfgHills').value,ground:$('cfgGround').value},pet:state.pet};try{const r=await fetch('/api/save-game-config',{method:'POST',headers:{'content-type':'application/json','x-admin-key':key},body:JSON.stringify(payload)});$('saveStatus').textContent=await r.text();}catch(e){$('saveStatus').textContent='Save failed: '+e.message;}}
-function bindControls(){const set=(k,v)=>{state.keys[k]=v};window.addEventListener('keydown',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',true);if(e.key==='ArrowRight'||e.key==='d')set('right',true);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',true);});window.addEventListener('keyup',e=>{if(e.key==='ArrowLeft'||e.key==='a')set('left',false);if(e.key==='ArrowRight'||e.key==='d')set('right',false);if(e.key===' '||e.key==='ArrowUp'||e.key==='w')set('jump',false);});[['btnLeft','left'],['btnRight','right'],['btnJump','jump']].forEach(([id,k])=>{const b=$(id);b.addEventListener('pointerdown',e=>{e.preventDefault();set(k,true)});b.addEventListener('pointerup',()=>set(k,false));b.addEventListener('pointerleave',()=>set(k,false));});}
-
-
-/* ======================================================================
-   SAFE PETBOT READ-ONLY BRIDGE
-   The browser never gets the Apps Script secret key.
-   It asks Cloudflare /api/petbot, and that proxy only allows read modes.
-   ====================================================================== */
-const PETBOT_READONLY_API = '/api/petbot';
-const PETBOT_READ_MODES = new Set([
-  'pet_profile_compact','view_pets','view_inventory','view_shop','view_pet_coins',
-  'care_item_menu','view_hook_prizes','view_hook_collection','get_hook_waaambulance',
-  'quest_stats'
-]);
-async function petbotApi(mode, params={}){
-  if(!PETBOT_READ_MODES.has(mode)) throw new Error('Blocked non-read Petbot mode: '+mode);
-  const qs = new URLSearchParams({mode, ...params});
-  const r = await fetch(PETBOT_READONLY_API + '?' + qs.toString(), {method:'GET'});
-  const data = await r.json().catch(()=>({found:false,response:'Invalid JSON from /api/petbot'}));
-  if(!r.ok) throw new Error(data.response || data.error || ('Petbot API failed '+r.status));
-  return data;
-}
-function parsePetSlots(viewPets){
-  const pets=[];
-  for(let i=1;i<=25;i++){
-    const code=viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'];
-    const missing=viewPets['pet_'+i+'_missing'] || viewPets['menu_pet_'+i+'_missing'];
-    if(!code || String(code).startsWith('no_pet_') || missing===true || missing==='true') continue;
-    const name=viewPets['pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_label'] || code;
-    const type=viewPets['pet_'+i+'_pet'] || viewPets['menu_pet_'+i+'_pet'] || 'pet';
-    const img=viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'] || '';
-    pets.push({
-      key:'pet:'+code, kind:'ownedPet', label:`${name} (${type})`, name, type, petCode:code,
-      baseImg:img, animated:!!animatedKeyForPet({type}),
-      level:viewPets['pet_'+i+'_level']||1, xp:viewPets['pet_'+i+'_xp']||0,
-      health:viewPets['pet_'+i+'_health']||100, hunger:viewPets['pet_'+i+'_hunger']||80,
-      happiness:viewPets['pet_'+i+'_happiness']||80, energy:viewPets['pet_'+i+'_energy']||80,
-      text:viewPets['pet_'+i+'_text']||'', traits:viewPets['pet_'+i+'_top_traits']||viewPets['pet_'+i+'_traits']||''
-    });
-  }
-  return pets;
-}
-function firstPetRowForCode(viewPets, code){
-  code=String(code||'').toLowerCase();
-  for(let i=1;i<=25;i++){
-    const rowCode=String(viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'] || '').toLowerCase();
-    if(rowCode && rowCode===code){
-      return {
-        name:viewPets['pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_name'],
-        type:viewPets['pet_'+i+'_pet'] || viewPets['menu_pet_'+i+'_pet'],
-        code:viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'],
-        image:viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'],
-        level:viewPets['pet_'+i+'_level'], xp:viewPets['pet_'+i+'_xp'],
-        health:viewPets['pet_'+i+'_health'], hunger:viewPets['pet_'+i+'_hunger'],
-        happiness:viewPets['pet_'+i+'_happiness'], energy:viewPets['pet_'+i+'_energy']
-      };
-    }
-  }
-  return {};
-}
-function parseItemsFromPetbot(out, max=25){
-  const arr=[];
-  for(let i=1;i<=max;i++){
-    const key=out['item_'+i+'_key'];
-    const name=out['item_'+i+'_name'];
-    const qty=out['item_'+i+'_quantity'] ?? out['item_'+i+'_owned'] ?? '';
-    const img=out['item_'+i+'_image'] || out['item_'+i+'_image_url'] || '';
-    if(!key && !name && !img) continue;
-    arr.push({key,name:name||key||'Item',price:out['item_'+i+'_price']||0,owned:qty||0,quantity:qty||0,image:img,icon:'📦',type:out['item_'+i+'_type']||'',group:out['item_'+i+'_group']||''});
-  }
-  return arr;
-}
-function parseHookRowsFromPetbot(out, max=25){
-  const arr=[];
-  for(let i=1;i<=max;i++){
-    const name=out['item_'+i+'_name'] || out['prize_'+i+'_name'] || out['hook_'+i+'_name'];
-    const img=out['item_'+i+'_image'] || out['prize_'+i+'_image'] || out['hook_'+i+'_image'] || out['item_'+i+'_image_url'];
-    const key=out['item_'+i+'_key'] || out['prize_'+i+'_key'] || out['hook_'+i+'_key'];
-    if(!name && !img && !key) continue;
-    arr.push({name:name||key||'Prize',image:img||'',icon:'🚑'});
-  }
-  return arr;
-}
-function firstActualPetFromViewPets(viewPets){
-  for(let i=1;i<=25;i++){
-    const code=viewPets['pet_'+i+'_code'] || viewPets['menu_pet_'+i+'_code'];
-    const missing=viewPets['pet_'+i+'_missing'] || viewPets['menu_pet_'+i+'_missing'];
-    if(code && !String(code).startsWith('no_pet_') && missing!==true && missing!=='true'){
-      return {code, name:viewPets['pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_name'] || viewPets['menu_pet_'+i+'_label'] || code, type:viewPets['pet_'+i+'_pet'] || viewPets['menu_pet_'+i+'_pet'] || 'pet', image:viewPets['pet_'+i+'_image'] || viewPets['menu_pet_'+i+'_image'] || '', level:viewPets['pet_'+i+'_level'], xp:viewPets['pet_'+i+'_xp'], health:viewPets['pet_'+i+'_health'], hunger:viewPets['pet_'+i+'_hunger'], happiness:viewPets['pet_'+i+'_happiness'], energy:viewPets['pet_'+i+'_energy']};
-    }
-  }
-  return {};
-}
-function applyPetToCare(pet){
-  if(!pet)return;
-  state.selectedPetCode=pet.petCode||pet.code||'';
-  state.pet.name=pet.name||state.pet.name||'Pet';
-  state.pet.type=pet.type||state.pet.type||'Pet';
-  state.pet.level=Number(pet.level||1);
-  state.pet.xp=Number(pet.xp||0);
-  state.pet.hunger=Number(pet.hunger||80);
-  state.pet.happy=Number(pet.happiness||pet.happy||80);
-  state.pet.energy=Number(pet.energy||80);
-  state.pet.health=Number(pet.health||100);
-  state.pet.baseImg=safeImageValue(pet.baseImg||pet.image||'');
-  state.pet.petCode=state.selectedPetCode;
-  const dbg=$('petCareDebug'); if(dbg)dbg.textContent=`${state.pet.name} / ${state.pet.type} / ${state.pet.petCode || 'no code'}${state.pet.baseImg?'':' — no image returned'}`;
-}
-function renderPetCareSelector(){
-  const sel=$('petCareSelect'); if(!sel)return;
-  const prev=state.selectedPetCode||sel.value;
-  sel.innerHTML='';
-  if(!state.petRows.length){sel.add(new Option('No pets loaded',''));return;}
-  state.petRows.forEach(p=>sel.add(new Option(`${p.name} — ${p.type} L${p.level}`,p.petCode)));
-  sel.value=state.petRows.some(p=>String(p.petCode)===String(prev))?prev:state.petRows[0].petCode;
-}
-function selectPetCare(code){
-  const pet=state.petRows.find(p=>String(p.petCode)===String(code))||state.petRows[0];
-  applyPetToCare(pet); renderPet(); renderPartyPreview();
-}
-function applyPetbotReadonlyData(user, profile, viewPets, inventory, shop, hook){
-  const owned = parsePetSlots(viewPets);
-  state.petRows = owned.slice();
-  state.ownedPets = owned.slice();
-
-  // Use view_pets as truth. The uploaded raw output proves view_pets has Odin/Ax/etc and direct pet_#_image fields.
-  // pet_profile_compact can point at a different selected pet, so it must not override the main owned-pet list.
-  const chosen = state.selectedPetCode
-    ? (owned.find(p=>String(p.petCode)===String(state.selectedPetCode)) || owned[0])
-    : owned[0];
-  applyPetToCare(chosen);
-  renderPetCareSelector();
-
-  state.sheet.shopRows = parseItemsFromPetbot(inventory).concat(parseItemsFromPetbot(shop)).slice(0,12);
-  state.sheet.hookRows = parseHookRowsFromPetbot(hook).slice(0,8);
-  populatePartySelectors();
-  renderPet();
-  renderHook();
-  renderPartyPreview();
-  updateCompanionSprite(true);
-}
-async function loadCurrentTestUser(){
-  const key=$('testUserSelect').value;
-  const user=TEST_USERS[key]||TEST_USERS.ryan;
-  $('loadStatus').textContent=`Loading ${user.username} from read-only Petbot API...`;
-  try{
-    const viewPets=await petbotApi('view_pets',{user_id:user.discordId,per_page:'25'});
-    const pets=parsePetSlots(viewPets);
-    const chosen=pets.find(p=>String(p.petCode)===String(state.selectedPetCode)) || pets[0] || null;
-    const petCode=chosen ? chosen.petCode : '';
-    const profile=petCode ? await petbotApi('pet_profile_compact',{user_id:user.discordId,pet_code:petCode,selected_pet_code:petCode,include_media:'true'}).catch(err=>({response:err.message})) : {};
-    const inventory=petCode ? await petbotApi('view_inventory',{user_id:user.discordId,pet_code:petCode,scope:'all',category:'all',per_page:'25'}).catch(err=>({response:err.message})) : {};
-    const shop=petCode ? await petbotApi('view_shop',{user_id:user.discordId,pet_code:petCode,include_images:'true',per_page:'10'}).catch(err=>({response:err.message})) : {};
-    const hook=await petbotApi('view_hook_prizes',{user_id:user.discordId}).catch(async()=>petbotApi('get_hook_waaambulance',{user_id:user.discordId}).catch(()=>({})));
-    applyPetbotReadonlyData(user,profile,viewPets,inventory,shop,hook);
-    $('loadStatus').textContent=`Loaded read-only through Petbot API. User: ${user.username}. Pets: ${pets.length}. Selected pet: ${state.pet.name} (${state.pet.petCode||'no code'}). Items shown: ${state.sheet.shopRows.length}.`;
-    if($('sheetDebug'))$('sheetDebug').textContent=`Petbot connected.
-received_user_id: ${viewPets.received_user_id||''}
-total_pets: ${viewPets.total_pets}
-first pet: ${pets[0]?pets[0].name+' / '+pets[0].petCode:'none'}
-selected pet: ${state.pet.name} / ${state.pet.petCode}
-selected image: ${state.pet.baseImg||'none'}
-inventory: ${inventory.response||'ok'}
-shop: ${shop.response||'ok'}`;
-  }catch(err){
-    $('loadStatus').textContent='Petbot read-only API error: '+err.message;
-    if($('sheetDebug'))$('sheetDebug').textContent='Petbot API error: '+err.message+'\nOpen /api/petbot?mode=view_pets&user_id='+user.discordId+'&per_page=25 to test.';
-  }
-}
-async function loadAllSheetData(){
-  // Kept only for the Developer button. It now uses the safe Petbot bridge, not direct sheet scraping.
-  return loadCurrentTestUser();
-}
-
-window.addEventListener('load',()=>{bindControls();applyBackgrounds();renderLevel();populatePartySelectors();setCharacter('pura');applyPlayerSize('pura');renderPartyPreview();loadCurrentTestUser().catch(()=>{});showScreen('menu');});
+const DEFAULT_BG={sky:CLOUD+'f_auto,q_auto/day_sky.png',hills:CLOUD+'f_auto,q_auto/day_hills.png',ground:CLOUD+'f_auto,q_auto/day_ground.png'};
+const FALLBACK_SVG_PREFIX='data:image/svg+xml;charset=UTF-8,';
+function fallbackSvg(label){return FALLBACK_SVG_PREFIX+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" width="240" height="220"><rect width="100%" height="100%" rx="24" fill="#fff7bd"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-size="24" font-family="Arial" font-weight="900" fill="#21142d">${String(label||'Image').replace(/[<>]/g,'')}</text></svg>`)}
+function $(id){return document.getElementById(id)}
+function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+function clean(v){return (v==null?'':String(v)).trim()}
+const BUILTIN=[
+  {key:'pura',name:'Pura',type:'built-in',static:'',frames:['pura_idle_001.png','pura_idle_002.png','pura_idle_003.png'],w:130,h:155},
+  {key:'ax',name:'Axolotl',type:'built-in',static:CLOUD+'v1781797065/ax_idle_001.png',frames:['ax_idle_001.png','ax_idle_002.png','ax_idle_003.png','ax_walk_001.png','ax_walk_002.png','ax_walk_003.png'],w:140,h:165},
+  {key:'owl',name:'Owl',type:'built-in',static:'',frames:['owl_idle_001.png','owl_idle_002.png','owl_walk_001.png','owl_walk_002.png'],w:120,h:145},
+  {key:'unicorn',name:'Unicorn',type:'built-in',static:'',frames:['unicorn_idle_001.png','unicorn_idle_002.png','unicorn_walk_001.png','unicorn_walk_002.png'],w:150,h:170}
+];
+const state={userId:'1214671839205396481',pets:[],selectedPetCode:'',rawPets:null,rawInventory:null,score:0,lives:3,distance:0,cameraX:0,keys:{},running:false,party:{mode:'solo',p1:'ax',p2:'pura'},player:{x:120,y:0,vx:0,vy:0,w:140,h:165,onGround:false,facing:1,frame:0,lastFrame:0},helper:{active:false,x:60,y:0,w:130,h:155},selectedElement:null,drag:null,objectImages:{token:'',enemy:'',flag:''}};
+let level={width:4200,elements:[
+  {id:'ground1',type:'platform',x:0,y:78,w:1050},{id:'p1',type:'platform',x:600,y:170,w:290},{id:'p2',type:'platform',x:1180,y:255,w:260},{id:'p3',type:'platform',x:1820,y:180,w:310},{id:'p4',type:'platform',x:2480,y:270,w:270},{id:'p5',type:'platform',x:3200,y:180,w:320},
+  {id:'t1',type:'token',x:380,y:152,w:58},{id:'t2',type:'token',x:770,y:245,w:58},{id:'t3',type:'token',x:1300,y:330,w:58},{id:'e1',type:'enemy',x:1500,y:132,w:58},{id:'e2',type:'enemy',x:2750,y:132,w:58},{id:'f1',type:'flag',x:3850,y:142,w:58}
+]};
+function showView(name){state.running=false;document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));$(name+'View').classList.add('active');if(name==='dev')renderDev();}
+document.addEventListener('click',e=>{const go=e.target.closest('[data-go]');if(go){showView(go.dataset.go); if(go.dataset.go==='pet')renderPet(); if(go.dataset.go==='setup')renderPartySelectors();}});
+document.addEventListener('keydown',e=>{state.keys[e.code]=true;if(e.code==='Escape')showView('menu');if(e.code==='Space'||e.code==='ArrowUp')e.preventDefault();});document.addEventListener('keyup',e=>state.keys[e.code]=false);
+function safeUrl(v){v=clean(v);if(!v)return '';if(v.startsWith('http')||v.startsWith('data:image'))return v;if(v.includes('/')||/\.(png|jpg|jpeg|webp|gif)$/i.test(v))return CLOUD+v;return ''}
+async function petbot(mode,params={}){const qs=new URLSearchParams({mode,user_id:state.userId,per_page:'25',...params});const r=await fetch('/api/petbot?'+qs);const data=await r.json();if(!r.ok)throw new Error(data.response||r.statusText);return data;}
+function petFromResult(data,i){return {name:data[`pet_${i}_name`]||'',code:data[`pet_${i}_code`]||'',pet:data[`pet_${i}_pet`]||'',category:data[`pet_${i}_category`]||'',level:data[`pet_${i}_level`]||'',xp:data[`pet_${i}_xp`]||'',health:Number(data[`pet_${i}_health`]||0),hunger:Number(data[`pet_${i}_hunger`]||0),happiness:Number(data[`pet_${i}_happiness`]||0),energy:Number(data[`pet_${i}_energy`]||0),image:data[`pet_${i}_image`]||'',text:data[`pet_${i}_text`]||''};}
+async function loadPetbotData(){state.userId=$('userSelect').value;$('loadStatus').textContent='Loading Petbot read-only data...';try{const data=await petbot('view_pets',{per_page:'25'});state.rawPets=data;state.pets=[];for(let i=1;i<=25;i++){const p=petFromResult(data,i);if(p.name&&p.code)state.pets.push(p)}state.selectedPetCode=state.pets[0]?.code||'';$('loadStatus').innerHTML=`<span class="statusOk">Loaded ${state.pets.length} pets.</span> Selected: ${state.pets[0]?.name||'none'}`;renderPartySelectors();renderPetSelect();renderPetbotDebug();if(state.selectedPetCode)await loadInventoryForSelectedPet();}catch(err){$('loadStatus').innerHTML=`<span class="error">Petbot load failed:</span> ${err.message}`;}}
+async function loadInventoryForSelectedPet(){try{state.rawInventory=await petbot('view_inventory',{pet_code:state.selectedPetCode,per_page:'12'});}catch(err){state.rawInventory={found:false,response:err.message}}renderPet();renderPetbotDebug();}
+function buildPlayableOptions(includeNone=false){const opts=[];if(includeNone)opts.push({key:'none',name:'None',type:'none'});opts.push(...BUILTIN);for(const p of state.pets){opts.push({key:'pet:'+p.code,name:`${p.name} (${p.pet})`,type:'pet',pet:p,static:p.image,w:130,h:145})}return opts;}
+function resolvePlayable(key){if(key==='none')return {key:'none',name:'None',type:'none'};const b=BUILTIN.find(x=>x.key===key);if(b)return b;if(key&&key.startsWith('pet:')){const code=key.slice(4);const p=state.pets.find(x=>x.code===code);if(p)return {key,name:`${p.name} (${p.pet})`,type:'pet',pet:p,static:p.image,w:130,h:145};}return BUILTIN[1];}
+function setOptions(sel,opts,value){sel.innerHTML='';for(const o of opts){const op=document.createElement('option');op.value=o.key;op.textContent=o.name;sel.appendChild(op)}sel.value=value||opts[0]?.key||'';}
+function renderPartySelectors(){setOptions($('p1Select'),buildPlayableOptions(false),state.party.p1);setOptions($('p2Select'),buildPlayableOptions(true),state.party.p2);setOptions($('devCharSelect'),buildPlayableOptions(false),state.party.p1);renderPartyPreview();}
+function previewUrl(playable){if(!playable||playable.type==='none')return fallbackSvg('None');if(playable.static)return safeUrl(playable.static);if(playable.frames&&playable.frames[0])return safeUrl(playable.frames[0]);return fallbackSvg(playable.name||'Pet')}
+function renderPartyPreview(){state.party.mode=$('questMode').value;state.party.p1=$('p1Select').value;state.party.p2=$('p2Select').value;const p1=resolvePlayable(state.party.p1),p2=resolvePlayable(state.party.p2);$('p1Preview').src=previewUrl(p1);$('p1Preview').onerror=()=>{$('p1Preview').src=fallbackSvg(p1.name)};$('p1Name').textContent=p1.name;if(state.party.mode==='solo'||p2.key==='none'){$('p2Preview').src=fallbackSvg('None');$('p2Name').textContent='No helper in solo mode';}else{$('p2Preview').src=previewUrl(p2);$('p2Preview').onerror=()=>{$('p2Preview').src=fallbackSvg(p2.name)};$('p2Name').textContent=p2.name;}}
+['questMode','p1Select','p2Select'].forEach(id=>document.addEventListener('change',e=>{if(e.target.id===id)renderPartyPreview()}));
+function renderPetSelect(){const sel=$('petSelect');sel.innerHTML='';for(const p of state.pets){const op=document.createElement('option');op.value=p.code;op.textContent=`${p.name} (${p.pet})`;sel.appendChild(op)}sel.value=state.selectedPetCode;}
+function selectedPet(){return state.pets.find(p=>p.code===state.selectedPetCode)||state.pets[0]||null}
+function setFill(id,val){$(id).style.width=clamp(Number(val)||0,0,100)+'%'}
+function renderPet(){const p=selectedPet();if(!p){$('petStatus').textContent='No pet loaded. Return to menu and press Load.';return}$('lcdPetName').textContent=`PET: ${p.name} THE ${String(p.pet).toUpperCase()}`;$('lcdPetLevel').textContent=`LV.${p.level||'-'} (${p.xp||0} XP)`;setFill('hungerFill',p.hunger);setFill('happyFill',p.happiness);setFill('energyFill',p.energy);$('coinText').textContent=state.rawInventory?.coins||state.rawInventory?.pet_coin_balance||0;const img=$('petImg'),no=$('petNoImg');img.classList.remove('hidden');no.classList.add('hidden');img.src=p.image||'';img.onerror=()=>{img.classList.add('hidden');no.classList.remove('hidden');no.textContent='NO PET IMAGE\n'+(p.image?'URL failed':'No URL returned')};if(!p.image){img.onerror()}$('petDebug').textContent=`Selected pet: ${p.name} / ${p.code} / ${p.pet}\nImage URL:\n${p.image||'NO IMAGE URL'}\n\n${p.text||''}`;const grid=$('itemGrid');grid.innerHTML='';const inv=state.rawInventory||{};let count=0;for(let i=1;i<=12;i++){const name=inv[`item_${i}_name`];if(!name)continue;count++;const card=document.createElement('div');card.className='itemCard';card.innerHTML=`📦 ${name}<small>owned: ${inv[`item_${i}_quantity`]||0}</small>`;grid.appendChild(card)}if(!count){['Food item','Play item','Medicine'].forEach((name,idx)=>{const card=document.createElement('div');card.className='itemCard';card.innerHTML=`${idx===0?'🍔':idx===1?'🧸':'💊'} ${name}<small>owned: 0</small>`;grid.appendChild(card)})}}
+$('petSelect').addEventListener('change',async()=>{state.selectedPetCode=$('petSelect').value;await loadInventoryForSelectedPet();});
+function renderPetbotDebug(){const txt={userId:state.userId,totalPets:state.pets.length,selectedPetCode:state.selectedPetCode,firstPet:state.pets[0]||null,inventoryResponse:state.rawInventory?.response||''};$('petbotDebug').textContent=JSON.stringify(txt,null,2);const rows=$('petbotRows');rows.innerHTML='';for(const p of state.pets){const row=document.createElement('div');row.className='petDataRow';row.innerHTML=`<img src="${p.image||fallbackSvg('No Img')}" onerror="this.src='${fallbackSvg('Failed')}'"><div><b>${p.name}</b> <small>${p.code} / ${p.pet}</small><small>${p.image||'NO IMAGE URL'}</small></div>`;rows.appendChild(row)}}
+// Gameplay
+function renderWorld(){const world=$('world');world.querySelectorAll('.platform,.obj').forEach(n=>n.remove());for(const el of level.elements){if(el.type==='platform'){const n=document.createElement('div');n.className='platform';n.dataset.id=el.id;n.style.left=el.x+'px';n.style.bottom=el.y+'px';n.style.width=el.w+'px';world.appendChild(n)}else{const n=document.createElement('div');n.className='obj '+(el.type==='token'?'token':el.type==='enemy'?'enemy':'flag');n.dataset.id=el.id;n.style.left=el.x+'px';n.style.bottom=el.y+'px';const src=state.objectImages[el.type];if(src)n.innerHTML=`<img src="${src}" onerror="this.remove();this.parentNode.textContent='${el.type==='token'?'💎':el.type==='enemy'?'🚧':'🏁'}'">`;else n.textContent=el.type==='token'?'💎':el.type==='enemy'?'🚧':'🏁';world.appendChild(n)}}}
+function spriteUrlFor(playable,walk=false){if(!playable||playable.type==='none')return fallbackSvg('None');if(playable.type==='pet')return playable.static||fallbackSvg(playable.name);if(playable.static&&playable.key==='ax'){const frame=(state.player.frame%3)+1;return CLOUD+`v1781797065/ax_${walk?'walk':'idle'}_${String(frame).padStart(3,'0')}.png`}return previewUrl(playable)}
+function startGame(){renderPartyPreview();const p1=resolvePlayable(state.party.p1),p2=resolvePlayable(state.party.p2);state.player.w=Number($('spriteW').value)||p1.w||140;state.player.h=Number($('spriteH').value)||p1.h||165;state.player.x=130;state.player.y=78;state.player.vx=0;state.player.vy=0;state.score=0;state.lives=3;state.distance=0;state.running=true;state.helper.active=(state.party.mode==='team'&&p2.key!=='none');state.helper.x=70;state.helper.y=78;state.helper.w=p2.w||120;state.helper.h=p2.h||145;const player=$('player');player.style.width=state.player.w+'px';player.style.height=state.player.h+'px';$('playerImg').src=spriteUrlFor(p1,false);$('playerImg').onerror=()=>{$('playerImg').src=fallbackSvg(p1.name)};const helper=$('helper');if(state.helper.active){helper.classList.remove('hidden');helper.style.width=state.helper.w+'px';helper.style.height=state.helper.h+'px';$('helperImg').src=previewUrl(p2);$('helperImg').onerror=()=>{$('helperImg').src=fallbackSvg(p2.name)}}else helper.classList.add('hidden');renderWorld();showView('play');requestAnimationFrame(loop)}
+$('startQuestBtn').onclick=startGame;
+function loop(ts){if(!state.running)return;const p=state.player;const left=state.keys.ArrowLeft||state.keys.KeyA;const right=state.keys.ArrowRight||state.keys.KeyD;const jump=state.keys.Space||state.keys.ArrowUp||state.keys.KeyW;if(left){p.vx=-5;p.facing=-1}else if(right){p.vx=5;p.facing=1}else p.vx*=0.82;if(jump&&p.onGround){p.vy=15;p.onGround=false}p.vy-=0.75;p.x+=p.vx;p.y+=p.vy;p.x=clamp(p.x,40,level.width-80);p.onGround=false;for(const el of level.elements){if(el.type!=='platform')continue;const prevY=p.y-p.vy;if(p.x+p.w*.24>el.x&&p.x-p.w*.24<el.x+el.w&&prevY>=el.y+24&&p.y<=el.y+24&&p.vy<=0){p.y=el.y+24;p.vy=0;p.onGround=true}}if(p.y<78){p.y=78;p.vy=0;p.onGround=true}for(const el of level.elements){if(el.type==='platform')continue;if(el.done)continue;const dx=Math.abs(p.x-el.x),dy=Math.abs(p.y+70-el.y);if(dx<55&&dy<70){if(el.type==='token'){el.done=true;state.score+=10;const n=document.querySelector(`[data-id="${el.id}"]`);if(n)n.style.display='none'}else if(el.type==='enemy'){state.lives--;p.x=130;p.y=180;p.vx=0;p.vy=0;if(state.lives<=0){endLevel('Game Over','You ran out of lives.');return}}else if(el.type==='flag'){endLevel('Level Complete','You reached the finish flag.');return}}}
+state.cameraX=clamp(p.x-window.innerWidth*.38,0,level.width-window.innerWidth);$('world').style.transform=`translateX(${-state.cameraX}px)`;state.distance=Math.max(state.distance,Math.floor(p.x/10));$('scoreHud').textContent='Score: '+state.score;$('livesHud').textContent='Lives: '+state.lives;$('distHud').textContent='Distance: '+state.distance+'m';const player=$('player');player.style.left=p.x+'px';player.style.bottom=p.y+'px';player.style.transform=`translateX(-50%) scaleX(${p.facing})`;$('playerShadow').style.left=p.x+'px';$('playerShadow').style.bottom=(p.y-8)+'px';if(ts-(p.lastFrame||0)>160){p.frame++;p.lastFrame=ts;const play=resolvePlayable(state.party.p1);$('playerImg').src=spriteUrlFor(play,Math.abs(p.vx)>1&&p.onGround)}if(state.helper.active){const h=$('helper');state.helper.x=p.x-70;state.helper.y=p.y+6;h.style.left=state.helper.x+'px';h.style.bottom=state.helper.y+'px'}requestAnimationFrame(loop)}
+function endLevel(title,text){state.running=false;$('levelMsgTitle').textContent=title;$('levelMsgText').textContent=text;$('levelMessage').classList.add('active')}
+$('continueBtn').onclick=()=>{$('levelMessage').classList.remove('active');showView('menu')};
+// Hold buttons
+for(const b of document.querySelectorAll('[data-hold]')){const k=b.dataset.hold;const set=v=>{if(k==='left')state.keys.ArrowLeft=v;if(k==='right')state.keys.ArrowRight=v;if(k==='jump')state.keys.Space=v};b.addEventListener('pointerdown',e=>{e.preventDefault();set(true)});b.addEventListener('pointerup',()=>set(false));b.addEventListener('pointercancel',()=>set(false));b.addEventListener('pointerleave',()=>set(false));}
+// Hook
+$('hookBtn').onclick=async()=>{const r=$('hookResult');r.textContent='Loading hook data...';try{const data=await petbot('get_hook_waaambulance',{pet_code:state.selectedPetCode});r.textContent=JSON.stringify(data,null,2).slice(0,1200)}catch(err){r.textContent='Hook read failed: '+err.message}};
+// Developer editor
+function renderDev(){renderDevStage();renderElementList();renderPetbotDebug();}
+function renderDevStage(){const st=$('devStage');st.querySelectorAll('.platform,.obj').forEach(n=>n.remove());for(const el of level.elements){let n;if(el.type==='platform'){n=document.createElement('div');n.className='platform';n.style.left=(el.x/level.width*100)+'%';n.style.bottom=el.y+'px';n.style.width=Math.max(40,el.w/level.width*st.clientWidth)+'px'}else{n=document.createElement('div');n.className='obj '+(el.type==='token'?'token':el.type==='enemy'?'enemy':'flag');n.style.left=(el.x/level.width*100)+'%';n.style.bottom=el.y+'px';n.textContent=el.type==='token'?'💎':el.type==='enemy'?'🚧':'🏁'}n.dataset.id=el.id;if(el.id===state.selectedElement)n.classList.add('nodeSelected');n.addEventListener('pointerdown',devDragStart);st.appendChild(n)}}
+function devElementById(id){return level.elements.find(e=>e.id===id)}
+function selectElement(id){state.selectedElement=id;const el=devElementById(id);if(el){$('editX').value=Math.round(el.x);$('editY').value=Math.round(el.y);$('editW').value=el.w||58;$('editType').value=el.type}renderDevStage();renderElementList()}
+function devDragStart(e){e.preventDefault();const id=e.currentTarget.dataset.id;selectElement(id);const el=devElementById(id);const rect=$('devStage').getBoundingClientRect();state.drag={id,startX:e.clientX,startY:e.clientY,elX:el.x,elY:el.y,rect};e.currentTarget.setPointerCapture(e.pointerId)}
+document.addEventListener('pointermove',e=>{if(!state.drag)return;const el=devElementById(state.drag.id);if(!el)return;const dx=(e.clientX-state.drag.startX)/state.drag.rect.width*level.width;const dy=-(e.clientY-state.drag.startY);el.x=clamp(state.drag.elX+dx,0,level.width);el.y=clamp(state.drag.elY+dy,30,500);$('editX').value=Math.round(el.x);$('editY').value=Math.round(el.y);renderDevStage();});document.addEventListener('pointerup',()=>{state.drag=null});
+document.addEventListener('click',e=>{const add=e.target.closest('[data-add]');if(add){const type=add.dataset.add;const id=type+'_'+Date.now();level.elements.push({id,type,x:900+Math.random()*300,y:type==='platform'?190:250,w:type==='platform'?240:58});selectElement(id)}});
+$('applyElementBtn').onclick=()=>{const el=devElementById(state.selectedElement);if(!el)return;el.x=Number($('editX').value)||0;el.y=Number($('editY').value)||0;if(el.type==='platform')el.w=Number($('editW').value)||220;renderDev()};$('deleteElementBtn').onclick=()=>{level.elements=level.elements.filter(e=>e.id!==state.selectedElement);state.selectedElement=null;renderDev()};$('resetLevelBtn').onclick=()=>{location.reload()};
+function renderElementList(){const lines=level.elements.map(e=>`${e.id}${e.id===state.selectedElement?'  < selected':''}\n  ${e.type} x:${Math.round(e.x)} y:${Math.round(e.y)} w:${e.w||58}`).join('\n');$('elementList').textContent=lines||'No elements'}
+for(const b of document.querySelectorAll('[data-devtab]'))b.onclick=()=>{document.querySelectorAll('[data-devtab]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.devTab').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('devtab-'+b.dataset.devtab).classList.add('active')};
+$('skyUrl').value=DEFAULT_BG.sky;$('hillsUrl').value=DEFAULT_BG.hills;$('groundUrl').value=DEFAULT_BG.ground;$('applyBgBtn').onclick=()=>{document.documentElement.style.setProperty('--sky',`url('${safeUrl($('skyUrl').value)||DEFAULT_BG.sky}')`);document.documentElement.style.setProperty('--hills',`url('${safeUrl($('hillsUrl').value)||DEFAULT_BG.hills}')`);document.documentElement.style.setProperty('--ground',`url('${safeUrl($('groundUrl').value)||DEFAULT_BG.ground}')`)};
+$('applyObjBtn').onclick=()=>{state.objectImages.token=safeUrl($('tokenImgUrl').value);state.objectImages.enemy=safeUrl($('enemyImgUrl').value);state.objectImages.flag=safeUrl($('flagImgUrl').value);renderWorld();renderDevStage()};$('applyCharBtn').onclick=()=>{state.party.p1=$('devCharSelect').value;$('p1Select').value=state.party.p1;$('spriteW').value=Number($('spriteW').value)||140;$('spriteH').value=Number($('spriteH').value)||165;renderPartyPreview()};$('reloadPetbotBtn').onclick=loadPetbotData;
+$('loadBtn').onclick=loadPetbotData;
+window.addEventListener('load',()=>{renderPartySelectors();loadPetbotData().catch(()=>{});renderWorld();});
 </script>
 </body>
 </html>
