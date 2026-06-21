@@ -1,535 +1,80 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<!-- CTW V46: rollback to old working game look + PetBot-safe upload -->
-<meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0" />
-<meta http-equiv="Pragma" content="no-cache" />
-<meta http-equiv="Expires" content="0" />
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V46 Stable Rollback</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ax + Pura Waaambulance Quests V47</title>
 <style>
-:root{--bg:#07101f;--panel:#101b2f;--panel2:#17243b;--line:#31415d;--text:#f8fafc;--muted:#a9b8cf;--blue:#0ea5e9;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--pink:#ff4fa3;}
-*{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#22314d,#07101f 58%,#030712);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:900;cursor:pointer;background:#29384f;color:white;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:var(--blue)} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#172033;border:1px solid #43546e} input,select,textarea{background:#071326;color:white;border:1px solid #43546e;border-radius:10px;padding:8px 10px;min-width:0} label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:900;color:#dbeafe}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(12,20,36,.9);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(180deg,#1c2944,#111b31);border:1px solid #334155;border-radius:22px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.muted{color:var(--muted)}.gameShell{background:#091225;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,.35)}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#0e1830;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#f8fafc;color:#071326;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:950}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#80d8ff;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.7);border:2px solid rgba(255,255,255,.35);font-size:22px}.petGrid{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#111b31;border:1px solid #334155;border-radius:22px;padding:16px}.petImage{height:320px;background:#0b1324;border:1px solid #334155;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:18px;background:#0b1324;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}.statusBox{background:#071326;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-size:12px}.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fieldGrid.one{grid-template-columns:1fr}.wide{width:100%} textarea{width:100%;height:86px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.hint{font-size:12px;color:#9fb0c7}.miniTitle{font-size:13px;font-weight:950;color:#e2e8f0;margin:8px 0}.divider{height:1px;background:#334155;margin:12px 0}
-body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:6px} body.builderFull .top{display:none} body.builderFull #builder{height:100%} .builderGrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:8px;height:100%}.builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:14px}.builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0}.tools{background:rgba(8,17,32,.97);border:1px solid #334155;border-radius:14px;padding:12px;overflow:auto;box-shadow:-12px 0 30px rgba(0,0,0,.25)}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{background:var(--blue)}.toolSec{display:none}.toolSec.active{display:block}.builderNote{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.35);border-radius:12px;padding:8px 10px;font-size:12px;color:#dbeafe;margin:8px 0}.editorHint{position:absolute;left:12px;bottom:12px;background:rgba(15,23,42,.72);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 10px;font-size:12px;color:#fff;pointer-events:none;z-index:3;max-width:590px}.layerButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.layerButtons button{padding:8px 6px;font-size:12px}.layerButtons button.active{background:#0ea5e9}.small{font-size:12px;padding:7px 10px;border-radius:10px}@media(max-width:900px){.petGrid{grid-template-columns:1fr}.touch{display:block}.fieldGrid{grid-template-columns:1fr}body.builderFull .builderGrid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 45vh}.tools{min-height:0}.brand h1{font-size:16px}}
-
-/* V33 simple builder reset: big canvas first, simple controls underneath */
-body.builderFull{background:#050b16;overflow:hidden}
-body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:4px}
-body.builderFull .top{display:none}
-body.builderFull #builder{height:100%}
-body.builderFull .builderGrid{display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(190px,30vh);gap:6px;height:100%}
-body.builderFull .builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:12px;overflow:hidden}
-body.builderFull .builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0;background:#81d4ff}
-body.builderFull .tools{border-radius:12px;box-shadow:none;padding:10px;overflow:auto;background:#0b1324;border:1px solid #24334d}
-body.builderFull .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}
-body.builderFull .tabs button{padding:10px 8px;border-radius:10px;font-size:13px}
-body.builderFull .toolSec.active{display:block}
-body.builderFull .fieldGrid{grid-template-columns:repeat(6,minmax(80px,1fr));gap:8px}
-body.builderFull .fieldGrid.one{grid-template-columns:1fr}
-body.builderFull .builderNote{display:none}
-body.builderFull .editorHint{left:12px;bottom:12px;max-width:430px;font-size:12px;background:rgba(8,13,25,.65)}
-body.builderFull .statusBox{padding:8px;min-height:0}
-body.builderFull .layerButtons{grid-template-columns:repeat(3,minmax(0,1fr));max-width:480px}
-body.builderFull #tab-layers .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
-body.builderFull #tab-objects .fieldGrid{grid-template-columns:repeat(6,minmax(90px,1fr))}
-body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
-body.builderFull input, body.builderFull select{padding:7px 8px;font-size:12px}
-body.builderFull label{font-size:11px}
-body.builderFull textarea{height:60px}
-@media(max-width:900px){body.builderFull .builderGrid{grid-template-rows:minmax(0,1fr) 42vh}body.builderFull .tabs{grid-template-columns:repeat(3,1fr)}body.builderFull .fieldGrid,body.builderFull #tab-layers .fieldGrid,body.builderFull #tab-objects .fieldGrid,body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-
-/* V34: clearer edit/add workflow */
-.modeBanner{position:absolute;left:12px;top:58px;z-index:4;background:rgba(2,6,23,.82);border:1px solid rgba(148,163,184,.45);border-radius:12px;padding:9px 12px;font-size:13px;font-weight:900;color:#fff;pointer-events:none;max-width:680px;box-shadow:0 8px 20px rgba(0,0,0,.22)}
-.modeBanner.adding{border-color:#facc15;color:#fef3c7}.modeBanner.editing{border-color:#38bdf8;color:#dbeafe}.modeBanner.player{border-color:#22c55e;color:#dcfce7}
-.addModeActive{background:#facc15!important;color:#111827!important}.toolHelp{background:#09162b;border:1px solid #2b4264;border-radius:10px;padding:8px 10px;font-size:12px;color:#cfe5ff;margin:8px 0}.quickTools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.quickTools button{padding:8px 10px;font-size:12px}
-
-
-/* V35: plain editing controls so Ryan/Aly can move/resize without guessing */
-.editPad{position:absolute;right:14px;bottom:14px;z-index:6;background:rgba(5,12,24,.88);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,42px);gap:6px;pointer-events:auto;box-shadow:0 12px 26px rgba(0,0,0,.35)}
-.editPad button{padding:8px 0;border-radius:10px;font-size:13px;min-width:0}
-.editPad .wide{grid-column:1/-1;width:100%;font-size:12px;padding:8px}
-.selectedReadout{position:absolute;left:12px;top:104px;z-index:5;background:rgba(5,12,24,.82);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:9px 12px;color:#fff;font-size:13px;font-weight:900;pointer-events:none;max-width:680px}
-.modeChoiceBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0;padding:10px;border:1px solid #29405e;border-radius:12px;background:#071326}
-.modeChoiceBar button.active{background:#0ea5e9;color:white}
-
-
-/* V36: cleaner play screen, better animation frame picker, nicer Pet Care */
-.app{width:min(100%,1420px)}
-#game .gameShell{width:min(100%,1280px);margin:0 auto;border-radius:18px}
-#game .canvasWrap{aspect-ratio:16/9;background:#79c8ff}
-#game .hud{padding:9px 12px;background:linear-gradient(90deg,#0e1830,#13213d)}
-#game canvas{image-rendering:auto}
-.animWorkbench{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;align-items:start;margin-top:10px;background:#071326;border:1px solid #28405f;border-radius:14px;padding:12px}
-.animPreviewBox{height:180px;background:linear-gradient(180deg,#10213d,#071326);border:1px solid #385475;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.animPreviewBox img{max-width:100%;max-height:100%;object-fit:contain}.animPreviewBox .fallback{font-size:64px}.frameStrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:8px;max-height:132px;overflow:auto}.frameStrip button{padding:6px 4px;border-radius:8px;font-size:11px;background:#17243b;border:1px solid #334155}.frameStrip button.active{background:#0ea5e9}.frameTools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.frameUrlBox{font-size:11px;color:#bfe3ff;background:#030712;border:1px solid #24334d;border-radius:10px;padding:8px;margin-top:8px;word-break:break-all}
-.petCard{background:linear-gradient(180deg,#14213b,#0b1324);box-shadow:0 16px 30px rgba(0,0,0,.18)}.petImage{background:radial-gradient(circle at center,#233a61,#071326 72%)}.petHeroName{font-size:28px;margin:0 0 6px}.petBadges{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.petBadge{background:#0ea5e9;color:white;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900}.petBadge.green{background:#16a34a}.petBadge.purple{background:#7c3aed}.careButtons button{min-width:130px}.loadingPulse{animation:pulseText 1.1s ease-in-out infinite}@keyframes pulseText{0%,100%{opacity:.55}50%{opacity:1}}
-
+:root{
+  --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
+  --floorPx:116px; --platformH:48px;
+  --playerX:22vw; --playerW:260px; --playerDrop:26px;
+  --buddyX:14vw; --buddyW:118px; --buddyDrop:16px;
+  --skyY:center; --hillsH:285px; --hillsBottom:128px; --groundH:158px; --groundBottom:-22px;
+  --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
+  --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:24; --zPlayer:30;
+}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
+#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;background:#79d9ff}
+.layer{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:var(--zSky);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_sky_full.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');background-size:cover,cover;background-position:center var(--skyY),center center;background-repeat:no-repeat}.hills{z-index:var(--zHills);height:var(--hillsH);bottom:var(--hillsBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.groundDecor{z-index:var(--zGround);height:var(--groundH);bottom:var(--groundBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.underFloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--floorPx) - var(--platformH));z-index:2;background:#204884;pointer-events:none}.platform{position:absolute;left:0;right:0;bottom:calc(var(--floorPx) - var(--platformH));height:var(--platformH);z-index:var(--zPlatform);pointer-events:none;background:linear-gradient(to bottom,rgba(255,255,255,.92) 0 6px,rgba(210,130,194,1) 6px 22px,rgba(118,199,216,1) 22px 28px,rgba(32,72,132,1) 28px 100%);box-shadow:0 -6px 0 rgba(255,255,255,.16) inset,0 -18px 45px rgba(0,0,0,.14) inset}
+body.night #game{background:#12113b} body.night .sky{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_sky.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png')} body.night .hills{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png');filter:brightness(.9) saturate(1.1)} body.night .groundDecor{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png');filter:brightness(.9) saturate(1.1)} body.night .platform{background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 6px,rgba(168,88,190,1) 6px 22px,rgba(92,95,189,1) 22px 28px,rgba(22,42,95,1) 28px 100%)} body.night .underFloor{background:#14275d}
+.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
+.character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),270px);height:clamp(150px,calc(var(--buddyW) * 1.62),450px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
+#worldObjects{position:absolute;inset:0;z-index:50;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}
+.toast{position:absolute;z-index:95;left:50%;bottom:calc(var(--floorPx) + 22px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
+.builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
+.overlay{position:absolute;inset:0;z-index:120;display:grid;place-items:center;background:rgba(12,7,20,.38);backdrop-filter:blur(5px)}.overlay.hidden{display:none}.modal{width:min(680px,calc(100vw - 26px));padding:24px;text-align:center;background:rgba(36,24,55,.9);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.modal p{margin:0 0 16px;line-height:1.45}.modal button{border:0;border-radius:999px;padding:12px 22px;margin:4px;background:var(--yellow);color:#21142d;font-size:18px;font-weight:900}.choiceRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+.touch{position:absolute;z-index:90;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:60px 60px 60px;gap:8px}.touch button{height:56px;border:0;border-radius:16px;font-size:24px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}.touch .wide{grid-column:span 3;background:linear-gradient(180deg,#fff7bd,var(--yellow))}.helpBtn{position:absolute;z-index:90;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}.hitFlash{animation:shake .2s linear}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+@media(max-width:820px){:root{--floorPx:92px;--platformH:42px;--playerX:30vw;--playerW:190px;--playerDrop:22px;--buddyX:14vw;--buddyW:88px;--buddyDrop:12px;--hillsH:205px;--hillsBottom:108px;--groundH:128px;--groundBottom:-20px;--tokenLift:106px;--hazardLift:50px}.hud{top:calc(env(safe-area-inset-top) + 6px);width:calc(100vw - 10px);min-height:auto;padding:6px 7px;border-radius:14px}.title{min-width:0}.title strong{font-size:15px}.title span{display:none}.stats{gap:4px}.pill{padding:6px 7px;font-size:11px}.instructions{display:none}.touch{display:grid}.helpBtn{bottom:calc(env(safe-area-inset-bottom) + 86px)}.builder,.petPanel{left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 62px);max-height:66vh}}
+@media(min-width:821px){.touch{display:none}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="top">
-    <div class="brand"><h1>🚑 Waaambulance Quest Dash</h1><small>Playable game + clear admin editor + PetBot bridge</small></div>
-    <div class="nav"><button class="ghost" onclick="showPanel('menu')">Menu</button><button class="primary" onclick="showPanel('game')">Play</button><button onclick="openBuilderWithPassword()">Builder</button><button onclick="showPanel('petcare')">Pet Care</button></div>
-  </div>
-
-  <section id="menu" class="panel active">
-    <div class="menuGrid">
-      <div class="card"><div><h2>🎮 Platform Quest</h2><p class="muted">Playable fixed-level platform game. Character moves, camera follows, level pieces stay placed.</p></div><button class="primary" onclick="showPanel('game')">Start Quest</button></div>
-      <div class="card"><div><h2>🛠 Full Editor</h2><p class="muted">Edit sky, hills, ground, platforms, objects, character size/position, and animation frames visually.</p></div><button class="warn" onclick="openBuilderWithPassword()">Open Builder</button></div>
-      <div class="card"><div><h2>🐾 Pet Care</h2><p class="muted">Owned pets come from Petbot. Pet images come from Sheet 51.</p></div><button class="good" onclick="showPanel('petcare')">Open Pet Care</button></div>
-    </div>
-  </section>
-
-  <section id="game" class="panel">
-    <div class="gameShell">
-      <div class="hud"><div class="row"><span class="pill" id="scorePill">Score: 0</span><span class="pill" id="livesPill">Lives: 3</span><span class="pill" id="distPill">Distance: 0m</span></div><div class="row"><button onclick="resetRun()">Restart</button><button onclick="toggleRun()" id="pauseBtn">Pause</button><button onclick="openBuilderWithPassword()">Edit Level</button></div></div>
-      <div class="canvasWrap"><canvas id="gameCanvas" width="1280" height="720"></canvas><div class="touch"><div class="left"><button id="touchLeft">◀</button><button id="touchRight">▶</button></div><div class="right"><button id="touchJump">▲</button></div></div></div>
-    </div>
-  </section>
-
-  <section id="builder" class="panel">
-    <div class="builderGrid">
-      <div class="gameShell">
-        <div class="hud"><div class="row"><span class="pill">Full Screen Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span><span class="pill" id="builderModePill">EDIT OBJECTS</span></div><div class="row"><button onclick="setBuilderMode('layers')">Edit Layers</button><button onclick="setBuilderMode('objects')">Edit Platforms / Objects</button><button onclick="setBuilderMode('player')">Edit Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="testFromBuilder()">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="modeBanner editing" id="modeBanner">EDIT OBJECTS: click or drag a platform, coin, enemy, or finish flag. Use Add buttons below to place new things.</div><div class="selectedReadout" id="selectedReadout">Nothing selected yet</div><div class="editorHint">Pick a mode below. Click something, then drag it or use the move/resize buttons.</div><div class="editPad" id="editPad"><button onclick="nudgeSelected(0,-10)">↑</button><button onclick="resizeSelected(0,-10)">H-</button><button onclick="nudgeSelected(0,10)">↓</button><button onclick="nudgeSelected(-10,0)">←</button><button onclick="resizeSelected(10,10)">Size+</button><button onclick="nudgeSelected(10,0)">→</button><button class="wide" onclick="resizeSelected(-10,-10)">Size -</button><button class="wide" onclick="fitSelectedLayer()">Fit layer/object</button></div></div>
-      </div>
-      <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div><div class="modeChoiceBar"><b>1. Choose edit mode:</b><button id="modeBtnLayers" onclick="setBuilderMode('layers')">Layers</button><button id="modeBtnObjects" onclick="setBuilderMode('objects')">Platforms / Objects</button><button id="modeBtnPlayer" onclick="setBuilderMode('player')">Character</button><button onclick="cancelAddMode()">Move / Edit</button></div><div class="statusBox" style="margin:8px 0;background:#0e1a2e">2. Click what you want. 3. Drag it, use the arrow buttons on the screen, or change the numbers. 4. Save / Load.</div>
-        <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="save">Save / Load</button></div>
-
-        <div id="tab-layers" class="toolSec active">
-          <div class="builderNote">Simple layer editor: pick Sky, Hills, or Ground, change the image/size/position, then Apply Layer. Layer boxes stay hidden unless you turn them on.</div>
-          <div class="miniTitle">Select a background/game layer</div>
-          <div class="layerButtons"><button id="btnLayerSky" onclick="selectLayer('sky')">Sky</button><button id="btnLayerHills" onclick="selectLayer('hills')">Hills</button><button id="btnLayerGround" onclick="selectLayer('ground')">Ground</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
-          <div class="fieldGrid">
-            <label>Layer<select id="lKind"><option value="sky">sky</option><option value="hills">hills</option><option value="ground">ground</option></select></label>
-            <label>Visible<select id="lVisible"><option value="true">visible</option><option value="false">hidden</option></select></label>
-            <label>X<input id="lX" type="number"></label><label>Y<input id="lY" type="number"></label>
-            <label>Width<input id="lW" type="number"></label><label>Height<input id="lH" type="number"></label>
-            <label>Opacity<input id="lOpacity" type="number" step="0.05" min="0" max="1"></label><label>Parallax<input id="lParallax" type="number" step="0.05" min="0" max="1"></label>
-            <label style="grid-column:1/-1">Colour or image URL<input id="lValue" placeholder="#84d8ff or https://..."></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyLayerForm()">Apply Layer</button><button onclick="resetLayerDefaults()">Clean Default Layers</button><button onclick="fitSelectedLayer()">Fit Selected To Screen</button></div>
-        </div>
-
-        <div id="tab-objects" class="toolSec">
-          <div class="toolHelp"><b>Current:</b> <span id="objectModeText">EDITING existing objects</span>. Click an item on the canvas to move/resize it, or choose an Add button then click the canvas to place it.</div>
-          <div class="quickTools"><button id="btnAddPlatform" class="primary" onclick="startAddMode('platform')">Add Platform</button><button id="btnAddCoin" class="primary" onclick="startAddMode('coin')">Add Coin</button><button id="btnAddEnemy" class="primary" onclick="startAddMode('enemy')">Add Enemy</button><button id="btnAddFinish" class="primary" onclick="startAddMode('finish')">Add Finish</button><button onclick="cancelAddMode()">Move/Edit Mode</button><button onclick="selectNextPlatform()">Select Next Platform</button></div>
-          <div class="row"><button class="primary" onclick="addObj('platform')">Add Platform Now</button><button class="primary" onclick="addObj('coin')">Add Coin Now</button><button class="primary" onclick="addObj('enemy')">Add Enemy Now</button><button class="primary" onclick="addObj('finish')">Add Finish Now</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
-          <div class="builderNote">Platforms are invisible collision pieces in play. In Builder, press <b>Select Next Platform</b> or turn on guides to edit them.</div>
-          <div class="fieldGrid">
-            <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option><option value="player">character</option><option value="layer">layer</option></select></label>
-            <label>Label / emoji<input id="fLabel" placeholder="💎 or label"></label>
-            <label>X<input id="fX" type="number"></label><label>Y<input id="fY" type="number"></label>
-            <label>Width<input id="fW" type="number"></label><label>Height<input id="fH" type="number"></label>
-            <label style="grid-column:1/-1">Image URL optional<input id="fImg" placeholder="https://..."></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyFormToSelected()">Apply Selected</button><button onclick="bringForward()">Bring Forward</button></div>
-          <div class="statusBox" id="selectedInfo">Click a layer, object or character to edit it.</div>
-        </div>
-
-        <div id="tab-player" class="toolSec">
-          <div class="fieldGrid">
-            <label>Character<select id="playerKind"><option value="ax">Ax</option><option value="pura">Pura</option><option value="pet">Selected Pet</option><option value="custom">Custom</option></select></label>
-            <label>Width<input id="pW" type="number" value="82"></label><label>Height<input id="pH" type="number" value="96"></label>
-            <label>X<input id="pX" type="number"></label><label>Y<input id="pY" type="number"></label>
-            <label style="grid-column:1/-1">Image URL / emoji<input id="pImg" placeholder="emoji or image URL"></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyPlayerSettings()">Apply Player</button><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="savePlayerSettings()">Save Player Settings</button></div>
-        </div>
-
-        <div id="tab-animation" class="toolSec">
-          <div class="miniTitle">Animation frame editor</div>
-          <p class="hint">Use {n} where the frame number goes. Pick Idle / Walk / Jump, click frame numbers, and check the preview before saving.</p>
-          <div class="fieldGrid one"><label>Idle frame URL pattern<input id="animIdle"></label><label>Walk frame URL pattern<input id="animWalk"></label><label>Jump frame URL pattern<input id="animJump"></label></div>
-          <div class="fieldGrid"><label>Frame count<input id="animCount" type="number" value="10"></label><label>Frame speed ms<input id="animSpeed" type="number" value="95"></label><label>Preview action<select id="animState"><option value="idle">Idle</option><option value="walk">Walk</option><option value="jump">Jump</option></select></label><label>Frame number<input id="animFrame" type="number" min="1" value="1"></label></div>
-          <div class="animWorkbench">
-            <div>
-              <div class="animPreviewBox" id="animPreviewBox"><img id="animPreviewImg" alt="Animation frame preview" style="display:none"><div class="fallback" id="animPreviewFallback">🦎</div></div>
-              <div class="frameTools"><button onclick="stepAnimFrame(-1)">◀ Prev</button><button onclick="stepAnimFrame(1)">Next ▶</button><button class="primary" onclick="usePreviewFrameOnPlayer()">Use this frame</button></div>
-            </div>
-            <div>
-              <div class="miniTitle">Frame strip</div>
-              <div id="animFrameStrip" class="frameStrip"></div>
-              <div id="animResolvedUrl" class="frameUrlBox">Frame URL will appear here.</div>
-            </div>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyAnimationSettings()">Apply Animation</button><button onclick="saveAnimationSettings()">Save Animation</button><button onclick="resetAnimationSettings()">Reset Ax Defaults</button></div>
-        </div>
-
-        <div id="tab-save" class="toolSec">
-          <div class="fieldGrid one"><label>Level name<input id="levelName" value="level_v46_main"></label></div>
-          <div class="row" style="margin:10px 0"><button class="good" onclick="saveLevelLocal()">Save Local</button><button onclick="loadLevelLocal()">Load Local</button><button class="good" onclick="saveLevelCloud()">Save Shared</button><button onclick="loadLevelCloud()">Load Shared</button><button onclick="exportLevel()">Export JSON</button><button onclick="importLevel()">Import JSON</button></div>
-          <textarea id="levelJson" placeholder="Exported level JSON appears here. Paste JSON then Import."></textarea>
-          <p class="hint">Local saves in this browser. Shared saves to Cloudflare KV so you/admins can edit and Discord users can use the saved level.</p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="petcare" class="panel">
-    <div class="petGrid">
-      <div class="petCard">
-        <div class="row" style="justify-content:space-between"><h2>🐾 Pet Care</h2><button onclick="loadPetbotPets(true)">Reload live</button></div>
-        <label>User<select id="userSelect"><option value="1214671839205396481">Ryan</option><option value="1407957358683885670">Ashely</option></select></label>
-        <label style="margin-top:8px">Owned pet<select id="petSelect" onchange="selectPetFromDropdown()"></select></label>
-        <div class="petImage" style="margin-top:12px"><img id="petImg" alt="Pet image from Sheet 51" style="display:none"><div id="petNoImg" class="muted">No pet loaded yet</div></div>
-      </div>
-      <div class="petCard">
-        <h2 id="petTitle" class="petHeroName">No pet selected</h2><p id="petSub" class="muted"></p>
-        <div class="petBadges"><span class="petBadge" id="petCodeBadge">code —</span><span class="petBadge green" id="petLevelBadge">level —</span><span class="petBadge purple" id="petImageBadge">Sheet 51 image</span></div>
-        <label>Hunger<div class="bar"><span id="hungerBar"></span></div></label><label>Happy<div class="bar"><span id="happyBar"></span></div></label><label>Energy<div class="bar"><span id="energyBar"></span></div></label>
-        <div class="row careButtons" style="margin-top:14px"><button>🍔 Feed visual</button><button>🧸 Play visual</button><button>💤 Rest visual</button><button>💊 Heal visual</button><button class="good" onclick="usePetAsPlayer()">Use Pet in Platform</button></div>
-        <div class="statusBox" id="petDebug">Petbot data is read-only. Pet image must come from Sheet 51.</div>
-      </div>
-    </div>
-  </section>
+<div id="game">
+  <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
+  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Start screen: nobody is walking yet.</span></div><div class="stats"><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Pet Care</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
+  <aside class="instructions" id="instructions"><h2>Quest test</h2><p>Choose Ax, Pura, or Owl. Solo Quest starts with one character. Team Quest adds a sidekick.</p></aside>
+  <aside class="builder hidden" id="builder"><h2>Build/Edit mode</h2><p>This is the older game layout again. Pick a layer, drag it on the game screen, or use the clear sliders.</p><div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save</button></div>
+    <div id="tab-layout" class="tabBody active"><label>Selected layer</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="hills">Hills layer</option><option value="ground">Ground layer</option><option value="platform">Real platform</option><option value="sky">Sky layer</option></select><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Platform height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Main X <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Main size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Main feet drop <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label><label class="calRow">Side X <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Side size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Side feet drop <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="150" max="600" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="40" max="390" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="80" max="370" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-120" max="120" value="-22"><span id="calGroundBVal">-22px</span></label><label class="calRow">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label><label class="calRow">Token height <input type="range" id="calTokenLift" min="70" max="260" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="25" max="150" value="58"><span id="calHazardLiftVal">58px</span></label></div>
+    <div id="tab-chars" class="tabBody"><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><label>Side character</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Solo Quest</button><button class="warn" id="teamBtn">Team Quest</button></div></div>
+    <div id="tab-sprites" class="tabBody"><p>Use this when you need to point a character at a new sprite folder. Use {n} for frame number.</p><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button></div></div>
+    <div id="tab-save" class="tabBody"><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_v47_main"><div class="calButtons"><button id="saveLocalBtn" class="good">Save in browser</button><button id="loadLocalBtn">Load browser save</button><button id="saveCloudBtn" class="good">Save shared cloud</button><button id="loadCloudBtn">Load shared cloud</button><button id="resetSettingsBtn" class="bad">Reset correct layout</button><button id="closeBuilderBtn">Close</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready.</div></div>
+  </aside>
+  <aside class="petPanel hidden" id="petPanel"><h2>🐾 Pet Care</h2><p>Owned pets come from PetBot. Images come from Sheet 51.</p><label>User</label><select id="userSelect"><option value="Ryan">Ryan</option><option value="Aly">Aly</option><option value="Faith">Faith</option></select><label>Owned pet</label><select id="petSelect"></select><div class="petPreview empty" id="petPreview">No pet loaded yet</div><div class="calButtons"><button class="warn" id="closePetBtn">Close</button><button id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button></div><div class="statusBox" id="petStatus">PetBot ready.</div></aside>
+  <div id="buddyShadow"></div><div id="shadow"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
+  <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
+  <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>Older correct game look restored. Pick Solo or Team, then choose the lead character.</p><div class="choiceRow"><button id="startAxBtn">Start as Ax</button><button id="startPuraBtn">Start as Pura</button><button id="startOwlBtn">Start as Owl</button><button id="startTeamBtn">Team Quest</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Build/Edit is for admins.</p></div></div>
+  <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
 <script>
-const VW=1280,VH=720,WORLD_W=3600;
-const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
-const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
-editCanvas.style.touchAction='none';
-const imgCache=new Map();
-const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
-const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
-const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
-const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
-function id(){return Math.random().toString(36).slice(2,9)}
-function layerDefaults(){return[
-  {id:'layer_sky',kind:'sky',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_SKY_URL,parallax:0,opacity:1,visible:true,z:0},
-  {id:'layer_hills',kind:'hills',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_HILLS_URL,parallax:.18,opacity:1,visible:true,z:1},
-  {id:'layer_ground',kind:'ground',type:'layer',x:0,y:640,w:VW,h:80,value:DEFAULT_GROUND_URL,parallax:1,opacity:1,visible:true,z:2}
-]}
-let level={layers:layerDefaults(),objects:[
-  {id:id(),type:'platform',x:0,y:640,w:WORLD_W,h:80,label:'ground'},
-  {id:id(),type:'platform',x:420,y:500,w:240,h:34,label:'platform'},
-  {id:id(),type:'platform',x:820,y:385,w:260,h:34,label:'platform'},
-  {id:id(),type:'coin',x:500,y:440,w:48,h:48,label:'💎',collected:false},
-  {id:id(),type:'coin',x:940,y:325,w:48,h:48,label:'💎',collected:false},
-  {id:id(),type:'enemy',x:1350,y:580,w:64,h:58,label:'⚠️'},
-  {id:id(),type:'finish',x:2300,y:540,w:72,h:100,label:'🏁'}
-]};
-let player={x:120,y:540,w:82,h:96,vx:0,vy:0,speed:7.5,jump:-16,gravity:.65,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
-let cameraX=0,running=true,currentPanel='menu',selected=null,drag=null,adminOk=false,currentPet=null,currentPetImage='';
-let builderMode='objects';
-let pendingAdd=null;
-let touch={left:false,right:false};
-let keys={};
-let anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};
-function img(src){if(!src||!/^https?:\/\//.test(src))return null;if(imgCache.has(src))return imgCache.get(src);const im=new Image();im.crossOrigin='anonymous';im.src=src;imgCache.set(src,im);return im}
-function showPanel(name){document.body.classList.toggle('builderFull',name==='builder');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(name).classList.add('active');currentPanel=name;if(name==='game')running=true;if(name==='petcare' && !(window.loadedPets||[]).length) loadPetbotPets(false);if(name==='builder'){running=false;setBuilderMode(builderMode||'objects');renderEditor()} }
-async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter CTW_GAME_ADMIN_KEY');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin_key:pass,key:pass})});const d=await r.json();if(d.ok){adminOk=true;adminKey=pass;document.getElementById('adminStatus').textContent='Unlocked with CTW_GAME_ADMIN_KEY. Builder is now in simple edit mode.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
-function setToolTab(tab){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.toolSec').forEach(s=>s.classList.toggle('active',s.id==='tab-'+tab));}
-document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setToolTab(b.dataset.tab)));
-function canvasPoint(cv,e,world=true){const r=cv.getBoundingClientRect();const p={x:(e.clientX-r.left)*VW/r.width,y:(e.clientY-r.top)*VH/r.height};if(world)p.x+=cameraX;return p}
-function hit(a,b){return a.x<a.x+a.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y&&a.x<b.x+b.w}
-window.addEventListener('keydown',e=>{keys[e.code]=true;if(currentPanel==='builder'&&e.code==='Delete')deleteSelected();if(currentPanel==='builder'&&e.ctrlKey&&e.code==='KeyD'){e.preventDefault();duplicateSelected()}});window.addEventListener('keyup',e=>keys[e.code]=false);
-function bindTouch(id,down,up){const el=document.getElementById(id);['pointerdown','touchstart'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();down()}));['pointerup','pointercancel','touchend','mouseleave'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();up()}))}
-bindTouch('touchLeft',()=>touch.left=true,()=>touch.left=false);bindTouch('touchRight',()=>touch.right=true,()=>touch.right=false);bindTouch('touchJump',()=>jump(),()=>{});
-function jump(){if(player.onGround&&!player.won){player.vy=player.jump;player.onGround=false}}
-function resetRun(){player.x=120;player.y=540;player.vx=0;player.vy=0;player.lives=3;player.score=0;player.won=false;for(const o of level.objects)if(o.type==='coin')o.collected=false;cameraX=0;running=true}
-function toggleRun(){running=!running;document.getElementById('pauseBtn').textContent=running?'Pause':'Resume'}
-function update(){if(currentPanel!=='game'||!running)return;let move=0;if(keys.ArrowLeft||keys.KeyA||touch.left)move=-1;if(keys.ArrowRight||keys.KeyD||touch.right)move=1;if(keys.Space||keys.ArrowUp||keys.KeyW)jump();player.vx=move*player.speed;player.vy+=player.gravity;player.x+=player.vx;player.y+=player.vy;if(player.x<0)player.x=0;if(player.x+player.w>WORLD_W)player.x=WORLD_W-player.w;player.onGround=false;for(const o of level.objects){if(o.type!=='platform')continue;if(player.x+player.w>o.x&&player.x<o.x+o.w&&player.y+player.h>o.y&&player.y+player.h-player.vy<=o.y+10&&player.vy>=0){player.y=o.y-player.h;player.vy=0;player.onGround=true}}for(const o of level.objects){if(o.type==='coin'&&!o.collected&&rects(player,o)){o.collected=true;player.score+=10} if(o.type==='enemy'&&rects(player,o)){player.lives--;player.x=120;player.y=540;player.vx=0;player.vy=0;if(player.lives<=0)resetRun()} if(o.type==='finish'&&rects(player,o)){player.won=true;running=false}}if(player.y>VH+100){player.lives--;player.x=120;player.y=540;player.vy=0;if(player.lives<=0)resetRun()}const target=player.x+player.w/2-VW/2;cameraX+=(Math.max(0,Math.min(target,WORLD_W-VW))-cameraX)*.13}
-function rects(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
-function draw(cv,ct,editor=false){ct.clearRect(0,0,VW,VH);drawLayers(ct,editor);ct.save();ct.translate(-Math.round(cameraX),0);if(editor&&document.getElementById('snapCheck')?.checked)drawGrid(ct);for(const o of level.objects)drawObj(ct,o,editor);drawPlayer(ct,editor);ct.restore();if(player.won&&!editor){ct.fillStyle='rgba(0,0,0,.55)';ct.fillRect(0,0,VW,VH);ct.fillStyle='#fff';ct.font='bold 52px system-ui';ct.textAlign='center';ct.fillText('🏁 Level Complete!',VW/2,VH/2)}}
-function fillOrImage(ct,value,x,y,w,h){if(/^https?:\/\//.test(value||'')){const im=img(value);if(im&&im.complete)ct.drawImage(im,x,y,w,h);else{ct.fillStyle='#84d8ff';ct.fillRect(x,y,w,h)}}else{ct.fillStyle=value||'#84d8ff';ct.fillRect(x,y,w,h)}}
-function drawLayers(ct,editor=false){
-  // Clean background stack: sky first, then hills, then ground.
-  // The ground no longer paints a huge green block over the level.
-  ct.fillStyle='#79c8ff';
-  ct.fillRect(0,0,VW,VH);
-  for(const l of [...level.layers].sort((a,b)=>a.z-b.z)){
-    if(!l.visible)continue;
-    ct.save();
-    ct.globalAlpha=Number(l.opacity??1);
-    let x=l.x,y=l.y,w=l.w,h=l.h;
-    if(l.kind!=='sky')x=l.x-(cameraX*(l.parallax??0)%VW);
-    const val=l.value||'';
-    if(l.kind==='ground'){
-      const im=/^https?:\/\//.test(val)?img(val):null;
-      if(im&&im.complete){
-        for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
-      }else{
-        // Small fallback strip only; not a giant block.
-        ct.fillStyle=/^#|rgb|hsl/.test(val)?val:'#5ac66a';
-        ct.fillRect(0,y,VW,h);
-      }
-    }else if(/^https?:\/\//.test(val)){
-      const im=img(val);
-      if(im&&im.complete){
-        if(l.kind==='hills'){
-          for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
-        }else{
-          ct.drawImage(im,x,y,w,h);
-        }
-      }else{
-        ct.fillStyle=l.kind==='sky'?'#79c8ff':'transparent';
-        if(l.kind==='sky')ct.fillRect(0,0,VW,VH);
-      }
-    }else{
-      fillOrImage(ct,val,x,y,w,h);
-    }
-    ct.restore();
-  }
-  if(editor){
-    ct.save();
-    ct.translate(-Math.round(cameraX),0);
-    for(const l of level.layers){
-      const showAll=document.getElementById('showLayerBoxes')?.checked;
-      const isSel=selected===l;
-      if(!showAll)continue;
-      ct.strokeStyle=isSel?'rgba(253,224,71,.95)':'rgba(56,189,248,.35)';
-      ct.lineWidth=isSel?3:1;
-      ct.setLineDash([10,6]);
-      ct.strokeRect(l.x,l.y,l.w,l.h);
-      ct.setLineDash([]);
-      if(isSel){
-        ct.fillStyle='rgba(15,23,42,.78)';
-        ct.font='bold 16px system-ui';
-        ct.fillText('LAYER: '+l.kind.toUpperCase(),l.x+8,l.y+22);
-        drawSelection(ct,l);
-      }
-    }
-    ct.restore();
-  }
-}
-function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.15)';for(let x=0;x<WORLD_W;x+=25)for(let y=0;y<VH;y+=25)ct.fillRect(x,y,2,2)}
-function drawHandle(ct,x,y){ct.fillStyle='#38bdf8';ct.strokeStyle='#071326';ct.lineWidth=2;ct.fillRect(x-6,y-6,12,12);ct.strokeRect(x-6,y-6,12,12)}
-function drawSelection(ct,o){ct.save();ct.setLineDash([8,5]);ct.strokeStyle='#38bdf8';ct.lineWidth=3;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6);ct.setLineDash([]);drawHandle(ct,o.x,o.y);drawHandle(ct,o.x+o.w,o.y);drawHandle(ct,o.x,o.y+o.h);drawHandle(ct,o.x+o.w,o.y+o.h);ct.restore()}
-function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill()}
-function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){
-  if(editor&&document.getElementById('showPlatformGuides')?.checked){
-    // Platforms are collision guides, not artwork. Keep them subtle so the game scene stays clean.
-    ct.save();
-    ct.fillStyle=selectedThis?'rgba(56,189,248,.12)':'rgba(56,189,248,.055)';
-    ct.fillRect(o.x,o.y,o.w,o.h);
-    ct.strokeStyle=selectedThis?'rgba(253,224,71,.95)':'rgba(56,189,248,.45)';
-    ct.lineWidth=selectedThis?3:1.5;
-    ct.setLineDash(selectedThis?[]:[10,8]);
-    ct.strokeRect(o.x,o.y,o.w,o.h);
-    ct.setLineDash([]);
-    if(selectedThis){ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 14px system-ui';ct.fillText(o.label==='ground'?'GROUND COLLISION':'PLATFORM',o.x+8,o.y-8)}
-    ct.restore();
-  } else if(editor&&selectedThis){
-    // Selected platform still shows even if guides are off.
-    ct.save();ct.strokeStyle='rgba(253,224,71,.95)';ct.lineWidth=3;ct.strokeRect(o.x,o.y,o.w,o.h);ct.restore();
-  }
-}
-  else if(o.type==='coin'){if(o.collected&&!editor)return;ct.save();if(o.collected)ct.globalAlpha=.25;ct.font=`${o.h}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y);ct.restore()}else if(o.type==='enemy'){ct.fillStyle='#fb7185';roundRect(ct,o.x,o.y,o.w,o.h,12,true);ct.font=`${Math.min(o.h,38)}px system-ui`;ct.textBaseline='middle';ct.textAlign='center';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)}else if(o.type==='finish'){ct.font=`${Math.min(o.h,70)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)}else{ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'✨',o.x,o.y)}if(editor&&selectedThis)drawSelection(ct,o)}
-function frameUrl(pattern,n){return pattern.replace('{n}',String(n).padStart(3,'0')).replace('{i}',String(n))}
-function currentPlayerImg(){if(player.kind==='ax'&&anim){let state=player.onGround?(Math.abs(player.vx)>0.4?'walk':'idle'):'jump';let n=1+Math.floor(Date.now()/anim.speed)%anim.count;return frameUrl(anim[state]||anim.idle,n)}return player.img}
-function drawPlayer(ct,editor){let src=currentPlayerImg();const im=img(src||'');if(im&&im.complete)ct.drawImage(im,player.x,player.y,player.w,player.h);else{const fallback=img(AX_URL);if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h);else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}if(editor){ct.strokeStyle=selected===player?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=selected===player?4:2;ct.strokeRect(player.x,player.y,player.w,player.h);if(selected===player){drawHandle(ct,player.x,player.y);drawHandle(ct,player.x+player.w,player.y);drawHandle(ct,player.x,player.y+player.h);drawHandle(ct,player.x+player.w,player.y+player.h);ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10))}}}
-function loop(){update();draw(canvas,ctx,false);if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)}requestAnimationFrame(loop);
-function renderEditor(){draw(editCanvas,ectx,true);updateLayerButtons();updateSelectedReadout();}
-function resizeHandleHit(o,p){if(!o)return null;const hs=14;const handles=[['nw',o.x,o.y],['ne',o.x+o.w,o.y],['sw',o.x,o.y+o.h],['se',o.x+o.w,o.y+o.h]];for(const [name,x,y] of handles)if(Math.abs(p.x-x)<=hs&&Math.abs(p.y-y)<=hs)return name;return null}
-function applyResize(o,handle,p){const minW=o===player?28:o.type==='layer'?80:16,minH=o===player?28:o.type==='layer'?40:12;if(handle.includes('e'))o.w=Math.max(minW,p.x-o.x);if(handle.includes('s'))o.h=Math.max(minH,p.y-o.y);if(handle.includes('w')){const r=o.x+o.w;o.x=Math.min(p.x,r-minW);o.w=r-o.x}if(handle.includes('n')){const b=o.y+o.h;o.y=Math.min(p.y,b-minH);o.h=b-o.y}o.x=Math.round(o.x);o.y=Math.round(o.y);o.w=Math.round(o.w);o.h=Math.round(o.h)}
-editCanvas.addEventListener('pointerdown',e=>{e.preventDefault();const p=canvasPoint(editCanvas,e,true);
-  if(pendingAdd){selected=createObjAt(pendingAdd,p.x,p.y);pendingAdd=null;updateBuilderModeUI();fillForm();renderEditor();editCanvas.setPointerCapture?.(e.pointerId);return;}
-  if(builderMode==='player'){selected=player;}
-  if(selected){const h=resizeHandleHit(selected,p);if(h){drag={mode:'resize',handle:h};editCanvas.setPointerCapture?.(e.pointerId);return}}
-  const hitPlayer=p.x>=player.x&&p.x<=player.x+player.w&&p.y>=player.y&&p.y<=player.y+player.h;
-  let layerHit=null;
-  if(builderMode==='layers'){
-    // In layer mode, selecting the active layer should not require turning boxes on.
-    layerHit=(selected&&selected.type==='layer')?selected:null;
-    if(!layerHit){layerHit=[...level.layers].reverse().find(l=>p.x>=l.x&&p.x<=l.x+l.w&&p.y>=l.y&&p.y<=l.y+l.h)}
-  } else if(document.getElementById('showLayerBoxes')?.checked){layerHit=[...level.layers].reverse().find(l=>p.x>=l.x&&p.x<=l.x+l.w&&p.y>=l.y&&p.y<=l.y+l.h)}
-  let objectHit=[...level.objects].reverse().find(o=>p.x>=o.x&&p.x<=o.x+o.w&&p.y>=o.y&&p.y<=o.y+o.h);
-  if(builderMode==='player') selected=player;
-  else if(builderMode==='layers') selected=layerHit||selected;
-  else selected=hitPlayer?player:(objectHit||layerHit||null);
-  if(selected){drag={mode:'move',dx:p.x-selected.x,dy:p.y-selected.y};editCanvas.setPointerCapture?.(e.pointerId);fillForm()}else fillForm();renderEditor()});
-editCanvas.addEventListener('pointermove',e=>{if(!drag||!selected)return;e.preventDefault();const p=canvasPoint(editCanvas,e,true);if(drag.mode==='resize')applyResize(selected,drag.handle,p);else{let nx=p.x-drag.dx,ny=p.y-drag.dy;if(document.getElementById('snapCheck')?.checked&&selected!==player){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}else{nx=Math.round(nx);ny=Math.round(ny)}selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny))}if(selected===player){syncPlayerFields()}if(selected?.type==='layer')syncLayerFields(false);fillForm(false);renderEditor()});
-window.addEventListener('pointerup',()=>drag=null);
-
-function setBuilderMode(mode){
-  builderMode=mode;
-  pendingAdd=null;
-  if(mode==='layers'){
-    setToolTab('layers');
-    // Select sky by default only if no layer is selected.
-    if(!selected || selected.type!=='layer') selectLayer('sky');
-    document.getElementById('showLayerBoxes').checked=true;
-  }
-  if(mode==='objects'){
-    setToolTab('objects');
-    document.getElementById('showPlatformGuides').checked=true;
-    if(selected&&selected.type==='layer') selected=null;
-  }
-  if(mode==='player'){
-    setToolTab('player');
-    selected=player;
-    syncPlayerFields();
-  }
-  updateBuilderModeUI();
-  fillForm(false);
-  renderEditor();
-}
-function updateBuilderModeUI(){
-  const pill=document.getElementById('builderModePill');
-  const banner=document.getElementById('modeBanner');
-  const txt=document.getElementById('objectModeText');
-  if(!pill||!banner)return;
-  document.querySelectorAll('.quickTools button').forEach(b=>b.classList.remove('addModeActive'));
-  if(pendingAdd){
-    pill.textContent='ADDING '+pendingAdd.toUpperCase();
-    banner.className='modeBanner adding';
-    banner.textContent='ADD '+pendingAdd.toUpperCase()+': click anywhere on the game screen to place it. Press Move/Edit Mode to cancel.';
-    if(txt)txt.textContent='ADDING '+pendingAdd.toUpperCase()+' — click canvas to place';
-    const id='btnAdd'+pendingAdd[0].toUpperCase()+pendingAdd.slice(1);
-    const btn=document.getElementById(id); if(btn)btn.classList.add('addModeActive');
-  }else if(builderMode==='layers'){
-    pill.textContent='EDIT LAYERS';
-    banner.className='modeBanner editing';
-    banner.textContent='EDIT LAYERS: choose Sky, Hills, or Ground below. Drag the layer on the screen or change its numbers.';
-  }else if(builderMode==='player'){
-    pill.textContent='EDIT CHARACTER';
-    banner.className='modeBanner player';
-    banner.textContent='EDIT CHARACTER: drag the character or edit its X/Y/Width/Height below.';
-  }else{
-    pill.textContent='EDIT OBJECTS';
-    banner.className='modeBanner editing';
-    banner.textContent='EDIT OBJECTS: click or drag platforms, coins, enemies, and finish flag. Use Add buttons below to add new things.';
-    if(txt)txt.textContent='EDITING existing objects';
-  }
-}
-function startAddMode(type){builderMode='objects';setToolTab('objects');pendingAdd=type;document.getElementById('showPlatformGuides').checked=true;updateBuilderModeUI();renderEditor();}
-function cancelAddMode(){pendingAdd=null;builderMode='objects';setToolTab('objects');updateBuilderModeUI();renderEditor();}
-function createObjAt(type,x,y){
-  const obj={id:id(),type,x:Math.round(x),y:Math.round(y),w:80,h:60,label:''};
-  if(type==='platform'){obj.w=220;obj.h=34;obj.label='platform';obj.y=Math.round(y-17)}
-  if(type==='coin'){obj.w=48;obj.h=48;obj.label='💎';obj.y=Math.round(y-24)}
-  if(type==='enemy'){obj.w=60;obj.h=55;obj.label='⚠️';obj.y=Math.round(y-28)}
-  if(type==='finish'){obj.w=70;obj.h=105;obj.label='🏁';obj.y=Math.round(y-52)}
-  if(document.getElementById('snapCheck')?.checked){obj.x=Math.round(obj.x/25)*25;obj.y=Math.round(obj.y/25)*25}
-  obj.x=Math.max(0,Math.min(WORLD_W-obj.w,obj.x));
-  obj.y=Math.max(0,Math.min(VH-obj.h,obj.y));
-  level.objects.push(obj);
-  selected=obj;
-  return obj;
-}
-
-function addObj(type){const base={id:id(),type,x:Math.round(cameraX+220),y:520,w:120,h:50,label:''};if(type==='platform'){base.w=220;base.h=34;base.label='platform'}if(type==='coin'){base.w=48;base.h=48;base.label='💎';base.y=450}if(type==='enemy'){base.w=60;base.h=55;base.label='⚠️'}if(type==='finish'){base.w=70;base.h=105;base.label='🏁';base.y=535}level.objects.push(base);selected=base;fillForm();setToolTab('objects');renderEditor()}
-function fillForm(update=true){document.getElementById('builderSelectionPill').textContent=selected?(selected===player?'Character':selected.type==='layer'?'Layer: '+selected.kind:selected.type):'Nothing selected';document.getElementById('selectedInfo').textContent=selected?(selected===player?'Selected CHARACTER':selected.type==='layer'?'Selected layer: '+selected.kind:`Selected ${selected.type} (${selected.id})`):'No object selected';if(!selected){['fX','fY','fW','fH','fLabel','fImg'].forEach(k=>document.getElementById(k).value='');return}if(selected.type==='layer'){syncLayerFields(false);setToolTab('layers')}else{document.getElementById('fType').value=selected===player?'player':selected.type;document.getElementById('fX').value=Math.round(selected.x);document.getElementById('fY').value=Math.round(selected.y);document.getElementById('fW').value=Math.round(selected.w);document.getElementById('fH').value=Math.round(selected.h);document.getElementById('fLabel').value=selected===player?(selected.emoji||selected.kind||'character'):(selected.label||'');document.getElementById('fImg').value=selected.img||''}}
-function applyFormToSelected(){if(!selected)return;if(selected.type==='layer'){applyLayerForm();return}selected.x=+document.getElementById('fX').value||0;selected.y=+document.getElementById('fY').value||0;selected.w=+document.getElementById('fW').value||20;selected.h=+document.getElementById('fH').value||20;if(selected===player){const val=document.getElementById('fImg').value.trim();player.img=val;if(!/^https?:\/\//.test(val)){player.emoji=document.getElementById('fLabel').value||val||player.emoji;if(val)player.img=''}syncPlayerFields()}else{selected.type=document.getElementById('fType').value;selected.label=document.getElementById('fLabel').value;selected.img=document.getElementById('fImg').value}renderEditor()}
-['fType','fX','fY','fW','fH','fLabel','fImg'].forEach(id=>document.getElementById(id).addEventListener('input',applyFormToSelected));
-function deleteSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('This cannot be deleted. Hide or edit it in the Layers/Player tab.');return}level.objects=level.objects.filter(o=>o.id!==selected.id);selected=null;fillForm();renderEditor()}
-function duplicateSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('Duplicate only works on level objects.');return}const n={...selected,id:id(),x:selected.x+40,y:selected.y+40};if(n.type==='coin')n.collected=false;level.objects.push(n);selected=n;fillForm();renderEditor()}
-function bringForward(){if(!selected||selected===player||selected.type==='layer')return;level.objects=level.objects.filter(o=>o.id!==selected.id);level.objects.push(selected);renderEditor()}
-
-function selectNextPlatform(){
-  const plats=level.objects.filter(o=>o.type==='platform');
-  if(!plats.length)return;
-  let i=plats.indexOf(selected);
-  selected=plats[(i+1)%plats.length];
-  document.getElementById('showPlatformGuides').checked=true;
-  fillForm();centerCameraOnSelection();renderEditor();
-}
-function centerCameraOnSelection(){if(!selected)return;cameraX=Math.max(0,Math.min(selected.x-VW/2,WORLD_W-VW));renderEditor()}
-function selectPlayerForEdit(){selected=player;fillForm();syncPlayerFields();centerCameraOnSelection();setToolTab('player');renderEditor()}
-function syncPlayerFields(){document.getElementById('pX').value=Math.round(player.x);document.getElementById('pY').value=Math.round(player.y);document.getElementById('pW').value=Math.round(player.w);document.getElementById('pH').value=Math.round(player.h);document.getElementById('pImg').value=player.img||player.emoji||'';document.getElementById('playerKind').value=player.kind||'ax'}
-function applyPlayerSettings(){player.kind=document.getElementById('playerKind').value;player.x=+document.getElementById('pX').value||player.x;player.y=+document.getElementById('pY').value||player.y;player.w=+document.getElementById('pW').value||82;player.h=+document.getElementById('pH').value||96;const val=document.getElementById('pImg').value.trim();if(val){if(/^https?:\/\//.test(val))player.img=val;else{player.emoji=val;player.img=''}}else if(player.kind==='ax')player.img=AX_URL;else if(player.kind==='pet'&&currentPetImage)player.img=currentPetImage;else{player.img='';player.emoji=player.kind==='pura'?'🐶':'🦎'}renderEditor()}
-function savePlayerSettings(){applyPlayerSettings();localStorage.setItem('ctw_v46_player',JSON.stringify({x:player.x,y:player.y,w:player.w,h:player.h,img:player.img,emoji:player.emoji,kind:player.kind}));alert('Player settings saved in this browser')}
-function selectLayer(kind){builderMode='layers';selected=level.layers.find(l=>l.kind===kind);syncLayerFields();setToolTab('layers');updateBuilderModeUI();renderEditor()}
-function updateLayerButtons(){for(const k of ['sky','hills','ground']){const b=document.getElementById('btnLayer'+k[0].toUpperCase()+k.slice(1));if(b)b.classList.toggle('active',selected?.type==='layer'&&selected.kind===k)}}
-function syncLayerFields(changeSelect=true){if(!selected||selected.type!=='layer')return;if(changeSelect)document.getElementById('lKind').value=selected.kind;document.getElementById('lVisible').value=String(selected.visible!==false);document.getElementById('lX').value=Math.round(selected.x);document.getElementById('lY').value=Math.round(selected.y);document.getElementById('lW').value=Math.round(selected.w);document.getElementById('lH').value=Math.round(selected.h);document.getElementById('lOpacity').value=selected.opacity??1;document.getElementById('lParallax').value=selected.parallax??0;document.getElementById('lValue').value=selected.value||''}
-function applyLayerForm(){let l=selected?.type==='layer'?selected:level.layers.find(x=>x.kind===document.getElementById('lKind').value);if(!l)return;l.kind=document.getElementById('lKind').value;l.visible=document.getElementById('lVisible').value==='true';l.x=+document.getElementById('lX').value||0;l.y=+document.getElementById('lY').value||0;l.w=+document.getElementById('lW').value||VW;l.h=+document.getElementById('lH').value||VH;l.opacity=Math.max(0,Math.min(1,+document.getElementById('lOpacity').value||1));l.parallax=Math.max(0,Math.min(1,+document.getElementById('lParallax').value||0));l.value=document.getElementById('lValue').value.trim();selected=l;renderEditor()}
-['lKind','lVisible','lX','lY','lW','lH','lOpacity','lParallax','lValue'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(selected?.type==='layer')applyLayerForm()}));
-function resetLayerDefaults(){level.layers=layerDefaults();selected=level.layers[0];syncLayerFields();renderEditor()}
-function fitSelectedLayer(){if(!selected)return alert('Click a layer/object/character first.');if(selected.type==='layer'){selected.x=0;selected.y=selected.kind==='ground'?640:0;selected.w=VW;selected.h=selected.kind==='ground'?80:VH;syncLayerFields(false);}else if(selected===player){player.x=120;player.y=540;syncPlayerFields();}else{selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));fillForm(false);}renderEditor()}
-
-function selectedLabel(){
-  if(!selected) return 'Nothing selected yet';
-  if(selected===player) return `Selected: CHARACTER  x:${Math.round(player.x)} y:${Math.round(player.y)} w:${Math.round(player.w)} h:${Math.round(player.h)}`;
-  if(selected.type==='layer') return `Selected: LAYER ${selected.kind.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
-  return `Selected: ${selected.type.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
-}
-function updateSelectedReadout(){
-  const r=document.getElementById('selectedReadout'); if(r) r.textContent=selectedLabel();
-  for(const m of ['layers','objects','player']){const b=document.getElementById('modeBtn'+m[0].toUpperCase()+m.slice(1)); if(b)b.classList.toggle('active',builderMode===m)}
-}
-function syncAllForms(){
-  if(selected===player) syncPlayerFields();
-  if(selected?.type==='layer') syncLayerFields(false);
-  fillForm(false);
-}
-function nudgeSelected(dx,dy){
-  if(!selected) return alert('Click a layer, platform/object, or character first.');
-  selected.x=Math.round((selected.x||0)+dx);
-  selected.y=Math.round((selected.y||0)+dy);
-  if(selected!==player && selected.type!=='layer'){
-    selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));
-    selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));
-  }
-  syncAllForms(); renderEditor();
-}
-function resizeSelected(dw,dh){
-  if(!selected) return alert('Click a layer, platform/object, or character first.');
-  selected.w=Math.max(selected===player?28:selected.type==='layer'?40:12,Math.round((selected.w||80)+dw));
-  selected.h=Math.max(selected===player?28:selected.type==='layer'?30:12,Math.round((selected.h||60)+dh));
-  syncAllForms(); renderEditor();
-}
-
-function getAnimState(){return document.getElementById('animState')?.value||'idle'}
-function getAnimFrame(){return Math.max(1,Math.min(+document.getElementById('animCount').value||10,+document.getElementById('animFrame').value||1))}
-function currentPreviewFrameUrl(){applyAnimationSettings(false);return frameUrl(anim[getAnimState()]||anim.idle,getAnimFrame())}
-function buildFrameStrip(){const strip=document.getElementById('animFrameStrip');if(!strip)return;const count=Math.max(1,+document.getElementById('animCount').value||10);const cur=getAnimFrame();strip.innerHTML='';for(let i=1;i<=count;i++){const b=document.createElement('button');b.textContent='Frame '+i;b.className=i===cur?'active':'';b.onclick=()=>{document.getElementById('animFrame').value=i;updateAnimPreview()};strip.appendChild(b)}}
-function updateAnimPreview(){const url=currentPreviewFrameUrl();const out=document.getElementById('animResolvedUrl');if(out)out.textContent=url;const imEl=document.getElementById('animPreviewImg'),fb=document.getElementById('animPreviewFallback');if(imEl&&fb){imEl.onload=()=>{imEl.style.display='block';fb.style.display='none'};imEl.onerror=()=>{imEl.style.display='none';fb.style.display='block';fb.textContent='Missing frame'};imEl.src=url}buildFrameStrip();renderEditor()}
-function stepAnimFrame(delta){const count=Math.max(1,+document.getElementById('animCount').value||10);let n=getAnimFrame()+delta;if(n<1)n=count;if(n>count)n=1;document.getElementById('animFrame').value=n;updateAnimPreview()}
-function usePreviewFrameOnPlayer(){const url=currentPreviewFrameUrl();document.getElementById('playerKind').value='custom';document.getElementById('pImg').value=url;player.kind='custom';player.img=url;renderEditor();alert('This exact frame is now the character image. Save Player Settings if you want to keep it in this browser.')}
-function applyAnimationSettings(refresh=true){anim.idle=document.getElementById('animIdle').value.trim()||anim.idle;anim.walk=document.getElementById('animWalk').value.trim()||anim.walk;anim.jump=document.getElementById('animJump').value.trim()||anim.jump;anim.count=+document.getElementById('animCount').value||10;anim.speed=+document.getElementById('animSpeed').value||95;player.kind='ax';if(refresh){updateAnimPreview();renderEditor()}}
-function saveAnimationSettings(){applyAnimationSettings(false);localStorage.setItem('ctw_v46_anim',JSON.stringify(anim));updateAnimPreview();alert('Animation settings saved in this browser')}
-function resetAnimationSettings(){anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};syncAnimFields();saveAnimationSettings()}
-function syncAnimFields(){document.getElementById('animIdle').value=anim.idle;document.getElementById('animWalk').value=anim.walk;document.getElementById('animJump').value=anim.jump;document.getElementById('animCount').value=anim.count;document.getElementById('animSpeed').value=anim.speed;document.getElementById('animFrame').value=Math.min(+document.getElementById('animFrame').value||1,anim.count);updateAnimPreview()}
-function saveLevelLocal(){localStorage.setItem('ctw_v46_level_'+document.getElementById('levelName').value,JSON.stringify(level));alert('Level saved locally')}
-function loadLevelLocal(){const raw=localStorage.getItem('ctw_v46_level_'+document.getElementById('levelName').value);if(!raw)return alert('No local level found');const data=JSON.parse(raw);level.layers=data.layers||layerDefaults();level.objects=data.objects||level.objects;selected=null;renderEditor();alert('Level loaded')}
-function exportLevel(){document.getElementById('levelJson').value=JSON.stringify(level,null,2)}function importLevel(){try{const data=JSON.parse(document.getElementById('levelJson').value);level.layers=data.layers||layerDefaults();level.objects=data.objects||level.objects;selected=null;renderEditor()}catch(e){alert('Bad JSON')}}
-async function saveLevelCloud(){
-  const name=(document.getElementById('levelName').value||'level_v46_main').trim();
-  if(!adminKey){adminKey=prompt('Enter CTW_GAME_ADMIN_KEY to save shared level')||''; if(!adminKey)return;}
-  try{
-    const r=await fetch('/api/levels',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({name,admin_key:adminKey,version:'V46_STABLE_ROLLBACK',level})});
-    const d=await r.json();
-    if(!d.ok) throw new Error(d.error||'Cloud save failed');
-    alert('Shared level saved: '+name);
-  }catch(e){alert('Shared save failed: '+e.message)}
-}
-async function loadLevelCloud(){
-  const name=(document.getElementById('levelName').value||'level_v46_main').trim();
-  try{
-    const r=await fetch('/api/levels?name='+encodeURIComponent(name),{cache:'no-store'});
-    const d=await r.json();
-    if(!d.ok) throw new Error(d.error||'Cloud load failed');
-    const data=(d.pack&&d.pack.level)||d.level||d;
-    level.layers=data.layers||layerDefaults();
-    level.objects=data.objects||level.objects;
-    selected=null;renderEditor();
-    alert('Shared level loaded: '+name);
-  }catch(e){alert('Shared load failed: '+e.message)}
-}
-
-function testFromBuilder(){running=true;showPanel('game')}
-function petCacheKey(userId){return 'ctw_petbot_cache_'+userId}
-function sheetCacheKey(userId,p){return 'ctw_sheet51_cache_'+userId+'_'+(p.code||'')+'_'+(p.pet||'')+'_'+(p.name||'')}
-function getFreshCache(key,ttlMs){try{const raw=sessionStorage.getItem(key);if(!raw)return null;const obj=JSON.parse(raw);if(Date.now()-obj.t>ttlMs)return null;return obj.v}catch(e){return null}}
-function setFreshCache(key,v){try{sessionStorage.setItem(key,JSON.stringify({t:Date.now(),v}))}catch(e){}}
-async function loadPetbotPets(force=false){const userId=document.getElementById('userSelect').value;const dbg=document.getElementById('petDebug');dbg.classList.add('loadingPulse');dbg.textContent='Loading owned pets for user '+userId+' ...';try{let pets=getFreshCache(petCacheKey(userId),60000);if(!pets||force){const r=await fetch('/api/petbot?mode=view_pets&user_id='+encodeURIComponent(userId)+'&per_page=25');const d=await r.json();pets=[];for(let i=1;i<=50;i++){const name=d['pet_'+i+'_name'];if(!name)continue;pets.push({name,code:d['pet_'+i+'_code']||'',pet:d['pet_'+i+'_pet']||'',level:d['pet_'+i+'_level']||'',xp:d['pet_'+i+'_xp']||'',hunger:d['pet_'+i+'_hunger']||0,happy:d['pet_'+i+'_happiness']||d['pet_'+i+'_happy']||0,energy:d['pet_'+i+'_energy']||0})}setFreshCache(petCacheKey(userId),pets)}window.loadedPets=pets;const sel=document.getElementById('petSelect');sel.innerHTML=pets.map((p,i)=>`<option value="${i}">${p.name} (${p.pet})</option>`).join('');dbg.textContent=(force?'Reloaded live. ':'Loaded quickly. ')+pets.length+' owned pets. Resolving image from Sheet 51.';await selectPetFromDropdown();dbg.classList.remove('loadingPulse')}catch(e){dbg.classList.remove('loadingPulse');dbg.textContent='Petbot load failed: '+e.message}}
-async function selectPetFromDropdown(){const pets=window.loadedPets||[];const p=pets[+document.getElementById('petSelect').value||0];if(!p)return;currentPet=p;document.getElementById('petTitle').textContent=p.name;document.getElementById('petSub').textContent=(p.pet||'pet')+' • code '+p.code+' • level '+p.level;document.getElementById('petCodeBadge').textContent='code '+(p.code||'—');document.getElementById('petLevelBadge').textContent='level '+(p.level||'—');document.getElementById('hungerBar').style.width=(+p.hunger||0)+'%';document.getElementById('happyBar').style.width=(+p.happy||0)+'%';document.getElementById('energyBar').style.width=(+p.energy||0)+'%';const userId=document.getElementById('userSelect').value;const dbg=document.getElementById('petDebug');try{let d=getFreshCache(sheetCacheKey(userId,p),10*60*1000);if(!d){const q=new URLSearchParams({user_id:userId,pet_code:p.code,pet_name:p.name,pet:p.pet||'',action:'main'});const r=await fetch('/api/sheet51?'+q);d=await r.json();setFreshCache(sheetCacheKey(userId,p),d)}currentPetImage=d.image_url||'';const imgEl=document.getElementById('petImg'),no=document.getElementById('petNoImg'),badge=document.getElementById('petImageBadge');if(currentPetImage){imgEl.src=currentPetImage;imgEl.style.display='block';no.style.display='none';badge.textContent='Sheet 51 image ✓';badge.className='petBadge green'}else{imgEl.style.display='none';no.style.display='block';badge.textContent='No Sheet 51 image';badge.className='petBadge'}dbg.classList.remove('loadingPulse');dbg.textContent='Sheet 51 image URL: '+(currentPetImage||'none')+'\nMatch: '+JSON.stringify(d.match||d.reason||'',null,2)}catch(e){dbg.classList.remove('loadingPulse');dbg.textContent='Sheet 51 lookup failed: '+e.message}}
-function usePetAsPlayer(){if(!currentPet||!currentPetImage)return alert('No Sheet 51 pet image loaded yet');document.getElementById('playerKind').value='pet';document.getElementById('pImg').value=currentPetImage;document.getElementById('pW').value=90;document.getElementById('pH').value=100;applyPlayerSettings();alert(currentPet.name+' is now the platform character')}
-window.addEventListener('load',()=>{try{['ctwgame-v43-layout','ctwgame-v44-layout','ctwgame-v45-layout','ctw_level_level_1'].forEach(k=>localStorage.removeItem(k));localStorage.setItem('ctwgame-active-version','V46_STABLE_ROLLBACK')}catch(e){}syncPlayerFields();selectLayer('sky');try{const saved=localStorage.getItem('ctw_v46_anim');if(saved){anim=JSON.parse(saved)}}catch(e){}syncAnimFields();['animState','animFrame','animCount','animIdle','animWalk','animJump'].forEach(x=>{const el=document.getElementById(x);if(el)el.addEventListener('input',updateAnimPreview)});document.getElementById('userSelect')?.addEventListener('change',()=>loadPetbotPets(false));});
-
-
-// V33: simple builder helpers
-function enterSimpleObjects(){setBuilderMode('objects');}
-function enterSimpleLayers(){setBuilderMode('layers');}
-function simpleSelectGround(){selectLayer('ground');document.getElementById('showLayerBoxes').checked=true;renderEditor();}
-
+const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
+const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
+const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:260,playerDrop:26,buddyX:14,buddyW:118,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:24,zPlayer:30};
+const VERSION='v47_correct_visual_base';
+const oldKeys=['ctw_game_v43','ctw_game_v44','ctw_game_v45','ctw_game_v46','ctw_game_layout_v45','ctw_game_layout_v46'];oldKeys.forEach(k=>localStorage.removeItem(k));
+const imgCache=new Map();function preload(url){if(!url)return; if(imgCache.has(url))return imgCache.get(url); const im=new Image(); im.onerror=()=>im.dataset.failed='1'; im.src=url; imgCache.set(url,im); return im;}
+function candidates(name,action,n){const c=name.charAt(0).toUpperCase()+name.slice(1),nn=pad2(n),nnn=pad3(n);let arr=[`${CLOUD}/characters/${c}/${action}/${name}_${action}_${nn}.png`,`${CLOUD}/characters/${c}/${action}/${name}_${action}_${nnn}.png`,`${CLOUD}/characters/${name}/${action}/${name}_${action}_${nn}.png`,`${CLOUD}/characters/${name}/${action}/${name}_${action}_${nnn}.png`,`${CLOUD}/${name}_${action}_${nn}.png`,`${CLOUD}/${name}_${action}_${nnn}.png`]; if(name==='ax')arr.unshift(`${CLOUD}/v1781797065/${name}_${action}_${nnn}.png`,`${CLOUD}/v1781797065/${name}_${action}_${nn}.png`,`${CLOUD}/f_auto,q_auto/v1781797065/${name}_${action}_${nnn}.png`);return arr}
+function best(list){if(!Array.isArray(list))return list||'';for(const u of list){const im=preload(u);if(im.complete&&im.naturalWidth>0)return u}for(const u of list){const im=preload(u);if(im.dataset.failed!=='1')return u}return ''}
+function frames(name,action,count=10){return Array.from({length:count},(_,i)=>candidates(name,action,i+1))}
+const SETS={ax:{name:'Ax',frames:{idle:frames('ax','idle'),walk:frames('ax','walk'),jump:frames('ax','jump')},frameMs:105,scale:1},pura:{name:'Pura',frames:{idle:frames('pura','idle'),walk:frames('pura','walk'),jump:frames('pura','jump')},frameMs:115,scale:1.05},owl:{name:'Owl',frames:{idle:frames('owl','idle'),walk:frames('owl','walk'),jump:frames('owl','jump')},frameMs:175,scale:.46},pet:{name:'Pet',frames:{idle:[],walk:[],jump:[]},frameMs:140,scale:1}};
+let main='ax', buddy='none', team=false, mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='';const keys={left:false,right:false,jump:false};
+const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:900,tokens:[['🍃','Damp leaf',50],['🪙','Frog swamp coin',90],['🧭','Muddy compass',110],['✨','Swamp sparkle',120]],hazards:[['🟫','Mud splat'],['🐌','Suspicious snail'],['🧦','Wet sock'],['🦴','Bog bone']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:1100,tokens:[['🌙','Moon crumb',70],['⭐','Wrong star',100],['🔮','Moon wobble',120],['🧿','Sky evidence',140]],hazards:[['🌚','Wrong moon glare'],['📢','Dramatic prophecy'],['🕳️','Tiny doom hole'],['🗯️','Moon argument']]}];
+function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
+function frameUrl(char,action,idx){if(char==='pet'&&currentPetImage)return currentPetImage;const set=SETS[char]||SETS.ax;const f=set.frames[action]||set.frames.walk||[];return best(f[idx%Math.max(f.length,1)]||f[0]||'')}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;const u=frameUrl(main,'idle',0);if(u)$('sprite').src=u;const bu=frameUrl(buddy,'idle',0);if(team&&bu)$('buddySprite').src=bu;showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
+function startGame(c,b){setPair(c,b);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function makeObject(kind,x){const level=levels[levelIndex];const isFinish=kind==='finish';const data=isFinish?['🏁','Finish flag',0]:(kind==='hazard'?level.hazards[Math.floor(Math.random()*level.hazards.length)]:level.tokens[Math.floor(Math.random()*level.tokens.length)]);const el=document.createElement('div');el.className='obj '+(isFinish?'finish':kind);el.textContent=data[0];$('worldObjects').appendChild(el);const y=innerHeight-floorPx()-(isFinish?130:(kind==='hazard'?cssNumber('--hazardLift',58):(cssNumber('--tokenLift',126)+Math.random()*55)));objects.push({el,x,y,kind,label:data[1],points:data[2]||0,hit:false})}function spawn(){if(finishMade||objects.length>5)return;makeObject(Math.random()<.30?'hazard':'token',innerWidth+260+Math.random()*260)}function makeFinish(){finishMade=true;makeObject('finish',innerWidth+520)}function collide(o){if(o.hit)return;if(o.kind==='hazard'&&player.jump>78)return;o.hit=true;if(o.kind==='token'){score+=o.points;showToast(`+${o.points} ${o.label}.`)}else if(o.kind==='hazard'){lives--;document.body.classList.add('hitFlash');setTimeout(()=>document.body.classList.remove('hitFlash'),230);showToast(`${o.label}. Drama damage.`);if(lives<=0)end(false)}else{score+=500;levelComplete()}updateHud()}function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
+function updatePlayer(dt){if(keys.left)player.x-=dt*.18;if(keys.right)player.x+=dt*.18;player.x=Math.max(-60,Math.min(120,player.x));if(!player.grounded){player.jump+=player.vy*dt*.08;player.vy-=dt*.055;if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}}$('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;$('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${player.grounded?1:.72})`;$('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`}
+function animateSprites(now){const act=player.grounded?(keys.left||keys.right?'walk':'idle'):'jump';const set=SETS[main]||SETS.ax;if(now-lastFrame>(set.frameMs||120)){mainFrame++;lastFrame=now;const u=frameUrl(main,act,mainFrame);if(u)$('sprite').src=u}if(team){const bs=SETS[buddy]||SETS.pura;if(now-lastBuddyFrame>(bs.frameMs||145)){buddyFrame++;lastBuddyFrame=now;const u=frameUrl(buddy,'walk',buddyFrame);if(u)$('buddySprite').src=u}}}
+function loop(now=0){const dt=Math.min(34,now-last||16);last=now;if(playing&&!paused&&!document.body.classList.contains('editMode')){distance+=dt*cssNumber('--gameSpeed',2.2)*.055;spawnTimer+=dt;if(spawnTimer>cssNumber('--spawnGap',1450)){spawnTimer=0;spawn()}if(distance>levels[levelIndex].goal&&!finishMade)makeFinish();groundX-=dt*.11;hillX-=dt*.025;$('groundLayer').style.backgroundPosition=`${groundX}px bottom, ${groundX}px bottom`;$('hillLayer').style.backgroundPosition=`${hillX}px bottom, ${hillX}px bottom`;updatePlayer(dt);objects.forEach(o=>{o.x-=dt*.22;o.el.style.left=o.x+'px';o.el.style.top=o.y+'px';if(!o.hit&&Math.abs(o.x-(innerWidth*cssNumber('--playerX',22)/100+player.x))<62&&Math.abs(o.y-(innerHeight-floorPx()-player.jump-70))<90)collide(o)});objects=objects.filter(o=>{if(o.x<-120){o.el.remove();return false}return true});updateHud()}animateSprites(now);requestAnimationFrame(loop)}
+const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px']};function readSettings(){const o={};Object.entries(settingMap).forEach(([id,[key]])=>o[key]=+$(''+id).value);o.main=main;o.buddy=buddy;o.team=team;return o}function applySettings(o={}){Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});if(o.main||o.buddy!==undefined)setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'));exportSettings()}function exportSettings(){$('settingsBox').value=JSON.stringify(readSettings(),null,2)}function saveLocal(){localStorage.setItem(VERSION,JSON.stringify(readSettings()));$('adminStatus').textContent='Saved in this browser.'}function loadLocal(){const d=localStorage.getItem(VERSION);if(!d){$('adminStatus').textContent='No V47 browser save yet.';return}applySettings(JSON.parse(d));$('adminStatus').textContent='Loaded V47 browser save.'}function resetCorrect(){Object.keys(localStorage).filter(k=>k.startsWith('ctw_game')||k.includes('v43')||k.includes('v44')||k.includes('v45')||k.includes('v46')).forEach(k=>localStorage.removeItem(k));Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});saveLocal();$('adminStatus').textContent='Reset to correct older visual layout.'}
+async function saveCloud(){const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_v47_main';if(!key){$('adminStatus').textContent='Enter admin key first.';return}const r=await fetch('/api/levels',{method:'POST',headers:{'Content-Type':'application/json','x-admin-key':key},body:JSON.stringify({name,data:readSettings()})});$('adminStatus').textContent=await r.text()}async function loadCloud(){const name=$('levelName').value.trim()||'level_v47_main';const r=await fetch('/api/levels?name='+encodeURIComponent(name));const d=await r.json();if(d&&d.data){applySettings(d.data);$('adminStatus').textContent='Loaded shared cloud level.'}else $('adminStatus').textContent='No cloud level found.'}
+function syncCharacterFields(){$('mainSelect').value=main;$('buddySelect').value=buddy||'none'}
+function openBuilder(){document.body.classList.add('editMode');$('builder').classList.remove('hidden');paused=true;$('pauseBtn').textContent='Resume';exportSettings()}function closeBuilder(){document.body.classList.remove('editMode');$('builder').classList.add('hidden')}document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabBody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('tab-'+b.dataset.tab).classList.add('active')});Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>applySettings({})));$('saveLocalBtn').onclick=saveLocal;$('loadLocalBtn').onclick=loadLocal;$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=saveCloud;$('loadCloudBtn').onclick=loadCloud;$('closeBuilderBtn').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('petBtn').onclick=()=>{$('petPanel').classList.remove('hidden');loadPetbotPets(false)};$('closePetBtn').onclick=()=>$('petPanel').classList.add('hidden');$('applyCharsBtn').onclick=()=>setPair($('mainSelect').value,$('buddySelect').value);$('soloBtn').onclick=()=>setPair(main,'none');$('teamBtn').onclick=()=>setPair(main,buddy==='none'?'pura':buddy);
+$('axIdleUrl').value=`${CLOUD}/v1781797065/ax_idle_{n}.png`;$('axWalkUrl').value=`${CLOUD}/v1781797065/ax_walk_{n}.png`;$('puraWalkUrl').value=`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`;$('applySpriteUrlsBtn').onclick=()=>{function patternToFrames(pattern){return Array.from({length:10},(_,i)=>pattern.replace('{n}',pad3(i+1)).replace('{nn}',pad2(i+1)))}SETS.ax.frames.idle=patternToFrames($('axIdleUrl').value);SETS.ax.frames.walk=patternToFrames($('axWalkUrl').value);SETS.pura.frames.walk=patternToFrames($('puraWalkUrl').value);showToast('Sprite URL patterns applied')};
+async function loadPetbotPets(force=false){const userId=$('userSelect').value;const st=$('petStatus');st.textContent='Loading owned pets for '+userId+' ...';try{const r=await fetch('/api/petbot?mode=view_pets&user_id='+encodeURIComponent(userId)+'&per_page=25');const d=await r.json();const pets=[];for(let i=1;i<=50;i++){const name=d['pet_'+i+'_name'];if(!name)continue;pets.push({name,code:d['pet_'+i+'_code']||'',pet:d['pet_'+i+'_pet']||'',hunger:d['pet_'+i+'_hunger']||0,happy:d['pet_'+i+'_happiness']||0,energy:d['pet_'+i+'_energy']||0})}window.loadedPets=pets;$('petSelect').innerHTML=pets.map((p,i)=>`<option value="${i}">${p.name} (${p.pet})</option>`).join('');st.textContent='Loaded '+pets.length+' pets. Looking for Sheet 51 image.';await selectPet()}catch(e){st.textContent='PetBot load failed: '+e.message}}async function selectPet(){const i=+$('petSelect').value||0,p=(window.loadedPets||[])[i];if(!p){$('petPreview').textContent='No pet loaded yet';return}currentPetImage='';try{const r=await fetch('/api/sheet51?pet_code='+encodeURIComponent(p.code)+'&pet_name='+encodeURIComponent(p.name));const d=await r.json();currentPetImage=d.image_url||d.url||d.cloudinary_image_url||''}catch(e){}if(currentPetImage){$('petPreview').classList.remove('empty');$('petPreview').innerHTML='<img src="'+currentPetImage+'" alt="pet">'}else{$('petPreview').classList.add('empty');$('petPreview').textContent='No Sheet 51 image found for '+p.name}$('petStatus').textContent=p.name+' loaded.'}function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}SETS.pet.frames.idle=[currentPetImage];SETS.pet.frames.walk=[currentPetImage];SETS.pet.frames.jump=[currentPetImage];setPair('pet','none');$('petPanel').classList.add('hidden')} $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('usePetBtn').onclick=usePet;
+$('startAxBtn').onclick=()=>startGame('ax','none');$('startPuraBtn').onclick=()=>startGame('pura','none');$('startOwlBtn').onclick=()=>startGame('owl','none');$('startTeamBtn').onclick=()=>startGame('ax','pura');$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause'};$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
+addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
+let drag=null;document.querySelectorAll('.editableTarget').forEach(el=>el.addEventListener('pointerdown',e=>{if(!document.body.classList.contains('editMode'))return;drag={layer:el.dataset.layer,sx:e.clientX,sy:e.clientY,start:readSettings()};el.setPointerCapture(e.pointerId);e.preventDefault()}));addEventListener('pointermove',e=>{if(!drag)return;const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy;const s=drag.start;if(drag.layer==='player'){$('calPlayerX').value=Math.max(8,Math.min(55,s.playerX+dx/innerWidth*100));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(2,Math.min(55,s.buddyX+dx/innerWidth*100));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}if(drag.layer==='hills'){$('calHillB').value=Math.max(40,Math.min(390,s.hillsBottom-dy))}if(drag.layer==='ground'){$('calGroundB').value=Math.max(-120,Math.min(120,s.groundBottom-dy))}applySettings({});$('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px'});addEventListener('pointerup',()=>drag=null);
+['ax','pura','owl'].forEach(c=>['idle','walk','jump'].forEach(a=>frames(c,a).flat().slice(0,8).forEach(preload)));applySettings(JSON.parse(localStorage.getItem(VERSION)||'{}'));if(!localStorage.getItem(VERSION))resetCorrect();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
