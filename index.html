@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash</title>
+<title>Waaambulance Quest Dash V30</title>
 <style>
 :root{--bg:#07101f;--panel:#101b2f;--panel2:#17243b;--line:#31415d;--text:#f8fafc;--muted:#a9b8cf;--blue:#0ea5e9;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--pink:#ff4fa3;}
 *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#22314d,#07101f 58%,#030712);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:900;cursor:pointer;background:#29384f;color:white;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:var(--blue)} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#172033;border:1px solid #43546e} input,select,textarea{background:#071326;color:white;border:1px solid #43546e;border-radius:10px;padding:8px 10px;min-width:0} label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:900;color:#dbeafe}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(12,20,36,.9);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(180deg,#1c2944,#111b31);border:1px solid #334155;border-radius:22px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.muted{color:var(--muted)}.gameShell{background:#091225;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,.35)}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#0e1830;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#f8fafc;color:#071326;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:950}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#80d8ff;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.7);border:2px solid rgba(255,255,255,.35);font-size:22px}.petGrid{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#111b31;border:1px solid #334155;border-radius:22px;padding:16px}.petImage{height:320px;background:#0b1324;border:1px solid #334155;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:18px;background:#0b1324;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}.statusBox{background:#071326;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-size:12px}.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fieldGrid.one{grid-template-columns:1fr}.wide{width:100%} textarea{width:100%;height:86px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.hint{font-size:12px;color:#9fb0c7}.miniTitle{font-size:13px;font-weight:950;color:#e2e8f0;margin:8px 0}.divider{height:1px;background:#334155;margin:12px 0}
@@ -39,14 +39,14 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
         <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHint">Click sky / hills / ground / platforms / objects / character to select. Drag to move. Drag blue corners to resize. Use the right panel to choose which layer is visible/editable.</div></div>
       </div>
       <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked. Enter CTW_GAME_ADMIN_KEY.</div>
+        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div>
         <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="save">Save / Load</button></div>
 
         <div id="tab-layers" class="toolSec active">
           <div class="builderNote">This is the layer editor. Sky, hills, ground and platforms can all be selected, moved, resized and saved. The preview shows editable outlines only when Builder is open.</div>
           <div class="miniTitle">Select a background/game layer</div>
           <div class="layerButtons"><button id="btnLayerSky" onclick="selectLayer('sky')">Sky</button><button id="btnLayerHills" onclick="selectLayer('hills')">Hills</button><button id="btnLayerGround" onclick="selectLayer('ground')">Ground</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" checked style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" checked style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
+          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" checked style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
           <div class="fieldGrid">
             <label>Layer<select id="lKind"><option value="sky">sky</option><option value="hills">hills</option><option value="ground">ground</option></select></label>
             <label>Visible<select id="lVisible"><option value="true">visible</option><option value="false">hidden</option></select></label>
@@ -55,7 +55,7 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
             <label>Opacity<input id="lOpacity" type="number" step="0.05" min="0" max="1"></label><label>Parallax<input id="lParallax" type="number" step="0.05" min="0" max="1"></label>
             <label style="grid-column:1/-1">Colour or image URL<input id="lValue" placeholder="#84d8ff or https://..."></label>
           </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyLayerForm()">Apply Layer</button><button onclick="resetLayerDefaults()">Reset Layers</button></div>
+          <div class="row" style="margin-top:10px"><button class="good" onclick="applyLayerForm()">Apply Layer</button><button onclick="resetLayerDefaults()">Clean Default Layers</button><button onclick="fitSelectedLayer()">Fit Selected To Screen</button></div>
         </div>
 
         <div id="tab-objects" class="toolSec">
@@ -110,14 +110,14 @@ const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
 const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
 const imgCache=new Map();
 const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
-const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
+const DEFAULT_SKY_URL='#79c8ff';
 const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
 const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
 function id(){return Math.random().toString(36).slice(2,9)}
 function layerDefaults(){return[
   {id:'layer_sky',kind:'sky',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_SKY_URL,parallax:0,opacity:1,visible:true,z:0},
   {id:'layer_hills',kind:'hills',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_HILLS_URL,parallax:.25,opacity:1,visible:true,z:1},
-  {id:'layer_ground',kind:'ground',type:'layer',x:0,y:600,w:VW,h:120,value:DEFAULT_GROUND_URL,parallax:.9,opacity:1,visible:true,z:2}
+  {id:'layer_ground',kind:'ground',type:'layer',x:0,y:640,w:VW,h:80,value:DEFAULT_GROUND_URL,parallax:1,opacity:1,visible:true,z:2}
 ]}
 let level={layers:layerDefaults(),objects:[
   {id:id(),type:'platform',x:0,y:640,w:1200,h:80,label:'ground'},
@@ -135,7 +135,7 @@ let keys={};
 let anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};
 function img(src){if(!src||!/^https?:\/\//.test(src))return null;if(imgCache.has(src))return imgCache.get(src);const im=new Image();im.crossOrigin='anonymous';im.src=src;imgCache.set(src,im);return im}
 function showPanel(name){document.body.classList.toggle('builderFull',name==='builder');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(name).classList.add('active');currentPanel=name;if(name==='game')running=true;if(name==='builder'){running=false;renderEditor()} }
-async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter Builder password from CTW_GAME_ADMIN_KEY');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:pass})});const d=await r.json();if(d.ok){adminOk=true;document.getElementById('adminStatus').textContent='Builder unlocked with CTW_GAME_ADMIN_KEY for this page load.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
+async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter your CTW_GAME_ADMIN_KEY value');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({key:pass})});const d=await r.json();if(d.ok){adminOk=true;document.getElementById('adminStatus').textContent='Builder unlocked with CTW_GAME_ADMIN_KEY for this page load.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
 function setToolTab(tab){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.toolSec').forEach(s=>s.classList.toggle('active',s.id==='tab-'+tab));}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setToolTab(b.dataset.tab)));
 function canvasPoint(cv,e,world=true){const r=cv.getBoundingClientRect();const p={x:(e.clientX-r.left)*VW/r.width,y:(e.clientY-r.top)*VH/r.height};if(world)p.x+=cameraX;return p}
@@ -150,13 +150,71 @@ function update(){if(currentPanel!=='game'||!running)return;let move=0;if(keys.A
 function rects(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
 function draw(cv,ct,editor=false){ct.clearRect(0,0,VW,VH);drawLayers(ct,editor);ct.save();ct.translate(-Math.round(cameraX),0);if(editor&&document.getElementById('snapCheck')?.checked)drawGrid(ct);for(const o of level.objects)drawObj(ct,o,editor);drawPlayer(ct,editor);ct.restore();if(player.won&&!editor){ct.fillStyle='rgba(0,0,0,.55)';ct.fillRect(0,0,VW,VH);ct.fillStyle='#fff';ct.font='bold 52px system-ui';ct.textAlign='center';ct.fillText('🏁 Level Complete!',VW/2,VH/2)}}
 function fillOrImage(ct,value,x,y,w,h){if(/^https?:\/\//.test(value||'')){const im=img(value);if(im&&im.complete)ct.drawImage(im,x,y,w,h);else{ct.fillStyle='#84d8ff';ct.fillRect(x,y,w,h)}}else{ct.fillStyle=value||'#84d8ff';ct.fillRect(x,y,w,h)}}
-function drawLayers(ct,editor=false){ct.fillStyle='#84d8ff';ct.fillRect(0,0,VW,VH);for(const l of [...level.layers].sort((a,b)=>a.z-b.z)){if(!l.visible)continue;ct.save();ct.globalAlpha=Number(l.opacity??1);let x=l.x,y=l.y,w=l.w,h=l.h;if(l.kind!=='sky')x=l.x-(cameraX*(l.parallax??0)%VW);if(l.kind==='ground'&&/^https?:\/\//.test(l.value||'')){const im=img(l.value);ct.fillStyle='#58bd5a';ct.fillRect(0,l.y,VW,l.h);if(im&&im.complete){for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h)}}else if(l.kind==='hills'&&/^https?:\/\//.test(l.value||'')){const im=img(l.value);if(im&&im.complete){for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h)}}else fillOrImage(ct,l.value,x,y,w,h);ct.restore()}
-  if(editor&&document.getElementById('showLayerBoxes')?.checked){ct.save();ct.translate(-Math.round(cameraX),0);for(const l of level.layers){ct.strokeStyle=selected===l?'#fde047':'rgba(56,189,248,.75)';ct.lineWidth=selected===l?4:2;ct.setLineDash([10,6]);ct.strokeRect(l.x,l.y,l.w,l.h);ct.setLineDash([]);ct.fillStyle='rgba(15,23,42,.72)';ct.font='bold 16px system-ui';ct.fillText('LAYER: '+l.kind.toUpperCase(),l.x+8,l.y+22);if(selected===l)drawSelection(ct,l)}ct.restore()}}
+function drawLayers(ct,editor=false){
+  // Clean background stack: sky first, then hills, then ground.
+  // The ground no longer paints a huge green block over the level.
+  ct.fillStyle='#79c8ff';
+  ct.fillRect(0,0,VW,VH);
+  for(const l of [...level.layers].sort((a,b)=>a.z-b.z)){
+    if(!l.visible)continue;
+    ct.save();
+    ct.globalAlpha=Number(l.opacity??1);
+    let x=l.x,y=l.y,w=l.w,h=l.h;
+    if(l.kind!=='sky')x=l.x-(cameraX*(l.parallax??0)%VW);
+    const val=l.value||'';
+    if(l.kind==='ground'){
+      const im=/^https?:\/\//.test(val)?img(val):null;
+      if(im&&im.complete){
+        for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
+      }else{
+        // Small fallback strip only; not a giant block.
+        ct.fillStyle=/^#|rgb|hsl/.test(val)?val:'#5ac66a';
+        ct.fillRect(0,y,VW,h);
+      }
+    }else if(/^https?:\/\//.test(val)){
+      const im=img(val);
+      if(im&&im.complete){
+        if(l.kind==='hills'){
+          for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
+        }else{
+          ct.drawImage(im,x,y,w,h);
+        }
+      }else{
+        ct.fillStyle=l.kind==='sky'?'#79c8ff':'transparent';
+        if(l.kind==='sky')ct.fillRect(0,0,VW,VH);
+      }
+    }else{
+      fillOrImage(ct,val,x,y,w,h);
+    }
+    ct.restore();
+  }
+  if(editor){
+    ct.save();
+    ct.translate(-Math.round(cameraX),0);
+    for(const l of level.layers){
+      const showAll=document.getElementById('showLayerBoxes')?.checked;
+      const isSel=selected===l;
+      if(!showAll&&!isSel)continue;
+      ct.strokeStyle=isSel?'#fde047':'rgba(56,189,248,.45)';
+      ct.lineWidth=isSel?4:1.5;
+      ct.setLineDash([10,6]);
+      ct.strokeRect(l.x,l.y,l.w,l.h);
+      ct.setLineDash([]);
+      if(isSel){
+        ct.fillStyle='rgba(15,23,42,.78)';
+        ct.font='bold 16px system-ui';
+        ct.fillText('LAYER: '+l.kind.toUpperCase(),l.x+8,l.y+22);
+        drawSelection(ct,l);
+      }
+    }
+    ct.restore();
+  }
+}
 function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.15)';for(let x=0;x<WORLD_W;x+=25)for(let y=0;y<VH;y+=25)ct.fillRect(x,y,2,2)}
 function drawHandle(ct,x,y){ct.fillStyle='#38bdf8';ct.strokeStyle='#071326';ct.lineWidth=2;ct.fillRect(x-6,y-6,12,12);ct.strokeRect(x-6,y-6,12,12)}
 function drawSelection(ct,o){ct.save();ct.setLineDash([8,5]);ct.strokeStyle='#38bdf8';ct.lineWidth=3;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6);ct.setLineDash([]);drawHandle(ct,o.x,o.y);drawHandle(ct,o.x+o.w,o.y);drawHandle(ct,o.x,o.y+o.h);drawHandle(ct,o.x+o.w,o.y+o.h);ct.restore()}
 function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill()}
-function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){if(editor&&document.getElementById('showPlatformGuides')?.checked){ct.fillStyle=selectedThis?'rgba(255,79,163,.38)':'rgba(255,79,163,.15)';ct.fillRect(o.x,o.y,o.w,o.h);ct.fillStyle='rgba(255,79,163,.88)';ct.fillRect(o.x,o.y,Math.max(4,o.w),5);ct.strokeStyle='rgba(255,255,255,.42)';ct.lineWidth=1;ct.strokeRect(o.x,o.y,o.w,o.h)}else if(o.label==='ground'){/* collision ground hidden in play */}}
+function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){if(editor&&document.getElementById('showPlatformGuides')?.checked){ct.fillStyle=selectedThis?'rgba(56,189,248,.20)':'rgba(255,255,255,.06)';ct.fillRect(o.x,o.y,o.w,o.h);ct.fillStyle=selectedThis?'rgba(253,224,71,.88)':'rgba(255,79,163,.70)';ct.fillRect(o.x,o.y,Math.max(4,o.w),4);ct.strokeStyle=selectedThis?'rgba(253,224,71,.95)':'rgba(255,255,255,.24)';ct.lineWidth=1;ct.strokeRect(o.x,o.y,o.w,o.h)}else if(o.label==='ground'){/* collision ground hidden in play */}}
   else if(o.type==='coin'){if(o.collected&&!editor)return;ct.save();if(o.collected)ct.globalAlpha=.25;ct.font=`${o.h}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y);ct.restore()}else if(o.type==='enemy'){ct.fillStyle='#fb7185';roundRect(ct,o.x,o.y,o.w,o.h,12,true);ct.font=`${Math.min(o.h,38)}px system-ui`;ct.textBaseline='middle';ct.textAlign='center';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)}else if(o.type==='finish'){ct.font=`${Math.min(o.h,70)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)}else{ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'✨',o.x,o.y)}if(editor&&selectedThis)drawSelection(ct,o)}
 function frameUrl(pattern,n){return pattern.replace('{n}',String(n).padStart(3,'0')).replace('{i}',String(n))}
 function currentPlayerImg(){if(player.kind==='ax'&&anim){let state=player.onGround?(Math.abs(player.vx)>0.4?'walk':'idle'):'jump';let n=1+Math.floor(Date.now()/anim.speed)%anim.count;return frameUrl(anim[state]||anim.idle,n)}return player.img}
@@ -186,6 +244,7 @@ function syncLayerFields(changeSelect=true){if(!selected||selected.type!=='layer
 function applyLayerForm(){let l=selected?.type==='layer'?selected:level.layers.find(x=>x.kind===document.getElementById('lKind').value);if(!l)return;l.kind=document.getElementById('lKind').value;l.visible=document.getElementById('lVisible').value==='true';l.x=+document.getElementById('lX').value||0;l.y=+document.getElementById('lY').value||0;l.w=+document.getElementById('lW').value||VW;l.h=+document.getElementById('lH').value||VH;l.opacity=Math.max(0,Math.min(1,+document.getElementById('lOpacity').value||1));l.parallax=Math.max(0,Math.min(1,+document.getElementById('lParallax').value||0));l.value=document.getElementById('lValue').value.trim();selected=l;renderEditor()}
 ['lKind','lVisible','lX','lY','lW','lH','lOpacity','lParallax','lValue'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(selected?.type==='layer')applyLayerForm()}));
 function resetLayerDefaults(){level.layers=layerDefaults();selected=level.layers[0];syncLayerFields();renderEditor()}
+function fitSelectedLayer(){if(!selected||selected.type!=='layer')return alert('Select sky, hills, or ground first.');selected.x=0;selected.y=selected.kind==='ground'?640:0;selected.w=VW;selected.h=selected.kind==='ground'?80:VH;syncLayerFields();renderEditor()}
 function applyAnimationSettings(){anim.idle=document.getElementById('animIdle').value.trim()||anim.idle;anim.walk=document.getElementById('animWalk').value.trim()||anim.walk;anim.jump=document.getElementById('animJump').value.trim()||anim.jump;anim.count=+document.getElementById('animCount').value||10;anim.speed=+document.getElementById('animSpeed').value||95;player.kind='ax';renderEditor()}
 function saveAnimationSettings(){applyAnimationSettings();localStorage.setItem('ctw_anim',JSON.stringify(anim));alert('Animation settings saved in this browser')}
 function resetAnimationSettings(){anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};syncAnimFields();saveAnimationSettings()}
