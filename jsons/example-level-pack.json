@@ -1,10 +1,13 @@
 {
-  "version": "example",
+  "version": "V40_SAFE_RESTORE_PETBOT_BASE",
   "name": "level_1",
+  "note": "Example only. Use Admin Builder > Save/Load to export a real level.",
   "level": {
     "layers": [],
     "objects": []
   },
   "player": null,
-  "anim": null
+  "anim": {
+    "count": 10
+  }
 }
