@@ -3,12 +3,24 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V25</title>
+<title>Waaambulance Quest Dash V27 Full Builder</title>
 <style>
 :root{
   --bg:#111827;--panel:#172033;--panel2:#202c45;--line:#334155;--text:#f8fafc;--muted:#9fb0c7;--blue:#38bdf8;--pink:#ff4fa3;--yellow:#ffe66d;--green:#22c55e;--red:#ef4444;
 }
 *{box-sizing:border-box} body{margin:0;background:radial-gradient(circle at top,#26334f 0,#0b1020 55%,#050812 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;min-height:100vh;overflow-x:hidden} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:800;cursor:pointer;background:#334155;color:#fff;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:#0ea5e9} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#1f2937;border:1px solid #475569} input,select,textarea{background:#0f172a;color:#f8fafc;border:1px solid #475569;border-radius:10px;padding:9px 10px;min-width:0} label{font-size:12px;font-weight:800;color:#cbd5e1;display:flex;flex-direction:column;gap:5px}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(15,23,42,.92);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px;position:sticky;top:8px;z-index:20;backdrop-filter:blur(8px)}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.topBtns{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}.menuCard{background:linear-gradient(180deg,#24314e,#172033);border:1px solid #334155;border-radius:22px;padding:20px;min-height:140px;display:flex;flex-direction:column;justify-content:space-between}.menuCard h2{margin:0 0 8px}.muted{color:var(--muted)}.gameShell{background:#0f172a;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 18px 40px rgba(0,0,0,.35)}.gameHud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#10192b;flex-wrap:wrap}.pill{background:#f8fafc;color:#0f172a;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:900}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.72);border:2px solid rgba(255,255,255,.35);font-size:20px}.builderGrid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);gap:12px}.tools{background:#10192b;border:1px solid #334155;border-radius:20px;padding:12px;max-height:calc(100vh - 120px);overflow:auto}.toolTabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.toolTabs button.active{background:#0ea5e9}.toolSec{display:none}.toolSec.active{display:block}.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.fields.one{grid-template-columns:1fr}.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.statusBox{background:#0b1220;border:1px solid #334155;border-radius:12px;padding:10px;margin-top:10px;white-space:pre-wrap;word-break:break-word;color:#cbd5e1;font-size:12px}.petLayout{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#10192b;border:1px solid #334155;border-radius:22px;padding:16px}.petImageBox{height:320px;background:linear-gradient(#21304d,#111827);border:1px solid #334155;border-radius:20px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImageBox img{max-width:100%;max-height:100%;object-fit:contain}.bars{display:grid;gap:8px;margin-top:10px}.bar{height:18px;background:#0f172a;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#a3e635);width:0%}.hint{font-size:12px;color:#94a3b8}.wide{width:100%}textarea{width:100%;height:82px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}@media(max-width:900px){.builderGrid,.petLayout{grid-template-columns:1fr}.top{position:relative;top:0}.tools{max-height:none}.touch{display:block}.fields{grid-template-columns:1fr}.brand h1{font-size:16px}}
+
+/* V27 full-screen builder workspace */
+body.builderFull{overflow:hidden}
+body.builderFull .app{width:100vw;max-width:none;padding:6px}
+body.builderFull .top{display:none}
+body.builderFull #builder{height:calc(100vh - 12px)}
+body.builderFull .builderGrid{height:100%;grid-template-columns:minmax(0,1fr) 370px;gap:8px}
+body.builderFull #builder .gameShell{height:100%;display:flex;flex-direction:column;border-radius:14px}
+body.builderFull #builder .canvasWrap{flex:1;aspect-ratio:auto;min-height:0}
+body.builderFull #builder .tools{height:100%;max-height:none;border-radius:14px;overflow:auto}
+.smallBtn{padding:7px 10px;border-radius:10px;font-size:12px}.toolDivider{height:1px;background:#334155;margin:12px 0}.miniTitle{font-size:13px;font-weight:900;color:#e2e8f0;margin:8px 0}.toggleLine{display:flex!important;flex-direction:row!important;align-items:center;gap:8px}
+
 </style>
 </head>
 <body>
@@ -41,24 +53,24 @@
   <section id="builder" class="panel">
     <div class="builderGrid">
       <div class="gameShell">
-        <div class="gameHud"><span class="pill">Builder Preview</span><div class="row"><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="showPanel('game')">Test Level</button></div></div>
+        <div class="gameHud"><span class="pill">Full Screen Builder</span><div class="row"><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="showPanel('game')">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
         <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas></div>
       </div>
       <aside class="tools">
         <div class="statusBox" id="adminStatus">Builder locked. Enter the value from Cloudflare env var CTW_GAME_ADMIN_KEY.</div>
-        <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
+        <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
         <div id="tab-objects" class="toolSec active">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
           <div class="row" style="margin:10px 0"><label style="display:flex;flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" checked style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
           <div class="fields">
-            <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option></select></label>
+            <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option><option value="player">character</option></select></label>
             <label>Label / emoji<input id="fLabel" placeholder="🧱 or image label"></label>
             <label>X<input id="fX" type="number"></label><label>Y<input id="fY" type="number"></label>
             <label>Width<input id="fW" type="number"></label><label>Height<input id="fH" type="number"></label>
             <label style="grid-column:1/-1">Image URL optional<input id="fImg" placeholder="https://..."></label>
           </div>
           <div class="row" style="margin-top:10px"><button class="good" onclick="applyFormToSelected()">Apply Selected</button><button onclick="bringForward()">Bring Forward</button></div>
-          <div class="statusBox" id="selectedInfo">Click an object in the preview to edit it. Drag it directly on the canvas.</div>
+          <div class="statusBox" id="selectedInfo">Click an object OR the character in the preview to edit position and size. Drag directly on the canvas.</div>
         </div>
         <div id="tab-player" class="toolSec">
           <div class="fields">
@@ -69,6 +81,21 @@
           <div class="row" style="margin-top:10px"><button class="good" onclick="applyPlayerSettings()">Apply Player</button><button onclick="savePlayerSettings()">Save Player Settings</button></div>
           <p class="hint">Player size is now actual canvas size. The character feet are placed on platforms, not stretched by the browser.</p>
         </div>
+        <div id="tab-animation" class="toolSec">
+          <div class="miniTitle">Ax animation frames</div>
+          <p class="hint">Edit the frame URL pattern used for the character animation. Use {n} where the frame number goes, for example ax_idle_{n}.png.</p>
+          <div class="fields one">
+            <label>Idle frame URL pattern<input id="animIdle" placeholder="https://.../ax_idle_{n}.png"></label>
+            <label>Walk frame URL pattern<input id="animWalk" placeholder="https://.../ax_walk_{n}.png"></label>
+            <label>Jump frame URL pattern<input id="animJump" placeholder="https://.../ax_jump_{n}.png"></label>
+          </div>
+          <div class="fields">
+            <label>Frame count<input id="animCount" type="number" value="10"></label>
+            <label>Frame speed ms<input id="animSpeed" type="number" value="95"></label>
+          </div>
+          <div class="row" style="margin-top:10px"><button class="good" onclick="applyAnimationSettings()">Apply Animation</button><button onclick="saveAnimationSettings()">Save Animation</button><button onclick="resetAnimationSettings()">Reset Ax Defaults</button></div>
+          <div class="statusBox">These settings let you fix idle/walk/jump frames without editing scripts.</div>
+        </div>
         <div id="tab-backgrounds" class="toolSec">
           <div class="fields one"><label>Sky colour or image<input id="bgSky" value="#84d8ff"></label><label>Hills image URL<input id="bgHills"></label><label>Ground colour or image<input id="bgGround" value="#5ac66a"></label></div>
           <div class="row" style="margin-top:10px"><button class="good" onclick="applyBackgrounds()">Apply Backgrounds</button><button onclick="saveLevelLocal()">Save With Level</button></div>
@@ -77,7 +104,7 @@
           <div class="fields one"><label>Level name<input id="levelName" value="level_1"></label></div>
           <div class="row" style="margin:10px 0"><button class="good" onclick="saveLevelLocal()">Save Local</button><button onclick="loadLevelLocal()">Load Local</button><button onclick="exportLevel()">Export JSON</button><button onclick="importLevel()">Import JSON</button></div>
           <textarea id="levelJson" placeholder="Exported level JSON appears here. Paste JSON then Import."></textarea>
-          <p class="hint">This saves in the browser for building with your friend. It does not write to Petbot or Sheet 51.</p>
+          <p class="hint">This saves in the browser and export/import lets you and Aly share levels without editing scripts. It does not write to Petbot or Sheet 51.</p>
         </div>
       </aside>
     </div>
@@ -106,8 +133,11 @@ const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,
 const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
 const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
 function axFrame(action,n){return `https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_${action}_${String(n).padStart(3,'0')}.png`}
+function frameFromPattern(pattern,n){return String(pattern||'').replace('{n}',String(n).padStart(3,'0')).replace('{i}',String(n)).replace('{nn}',String(n).padStart(2,'0'))}
 let adminUnlocked=false; // Force password check each page load so normal users cannot enter Builder automatically
 let currentPanel='menu', running=true, last=0, cameraX=0, selected=null, drag=null;
+let editorShowPlatforms=true;
+const animSettings={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};
 let keys={}; let touch={left:false,right:false};
 let petList=[], currentPet=null, currentPetImage='';
 const level={
@@ -122,18 +152,19 @@ const level={
     {id:id(),type:'finish',x:2050,y:540,w:64,h:100,label:'🏁'}
   ]
 };
-const player={x:120,y:540,vx:0,vy:0,w:82,h:96,speed:7.4,jump:-17,gravity:.78,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
+const player={id:'PLAYER',type:'player',x:120,y:540,vx:0,vy:0,w:82,h:96,speed:7.4,jump:-17,gravity:.78,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
 function id(){return 'o'+Math.random().toString(36).slice(2,9)}
 function img(src){ if(!src||src.length<3||!/^https?:\/\//i.test(src)) return null; if(imgCache.has(src)) return imgCache.get(src); const im=new Image(); im.crossOrigin='anonymous'; im.src=src; imgCache.set(src,im); return im; }
 function showPanel(id){
   if(id==='builder' && !adminUnlocked){ openBuilderWithPassword(); return; }
   currentPanel=id;
+  document.body.classList.toggle('builderFull', id==='builder');
   document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active',p.id===id));
   if(id==='builder'){
     running=false;
     renderEditor();
     const s=document.getElementById('adminStatus');
-    if(s)s.textContent='Builder unlocked using CTW_GAME_ADMIN_KEY for this page load.';
+    if(s)s.textContent='Builder unlocked using CTW_GAME_ADMIN_KEY. Full-screen editor active. Click platforms, items, or the character to edit them.';
   }
   if(id==='game'){running=true;}
 }
@@ -165,7 +196,7 @@ async function openBuilderWithPassword(){
   }
 }
 function toggleRun(){running=!running; document.getElementById('pauseBtn').textContent=running?'Pause':'Resume'}
-window.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Escape')showPanel('menu')}); window.addEventListener('keyup',e=>keys[e.code]=false);
+window.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Escape')showPanel(currentPanel==='builder'?'menu':'menu');if(currentPanel==='builder'&&selected){if(e.code==='Delete'||e.code==='Backspace'){e.preventDefault();deleteSelected()} if((e.ctrlKey||e.metaKey)&&e.code==='KeyD'){e.preventDefault();duplicateSelected()}}}); window.addEventListener('keyup',e=>keys[e.code]=false);
 function setupTouch(btn,prop){const b=document.getElementById(btn);['pointerdown','touchstart'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();touch[prop]=true}));['pointerup','pointerleave','touchend','touchcancel'].forEach(ev=>b.addEventListener(ev,e=>{e.preventDefault();touch[prop]=false}))}
 setupTouch('touchLeft','left');setupTouch('touchRight','right');document.getElementById('touchJump').addEventListener('pointerdown',()=>jump());
 function canvasPoint(c,e,includeCamera=true){const r=c.getBoundingClientRect();return{x:(e.clientX-r.left)*(VW/r.width)+(includeCamera?cameraX:0),y:(e.clientY-r.top)*(VH/r.height)}}
@@ -190,28 +221,63 @@ function playerFrameUrl(){
   if(player.kind!=='ax' || (player.img && player.img!==AX_URL)) return player.img;
   let action='idle';
   if(!player.onGround) action='jump'; else if(Math.abs(player.vx)>0.1) action='walk';
-  const frame=(Math.floor(performance.now()/95)%10)+1;
-  return axFrame(action,frame);
+  const count=Math.max(1,Number(animSettings.count)||10);
+  const speed=Math.max(40,Number(animSettings.speed)||95);
+  const frame=(Math.floor(performance.now()/speed)%count)+1;
+  return frameFromPattern(animSettings[action]||animSettings.idle,frame);
 }
 function drawPlayer(ct,editor){
   const src=playerFrameUrl();
   const im=img(src);
   if(im&&im.complete){ct.drawImage(im,player.x,player.y,player.w,player.h)}
   else{const fallback=img(AX_URL); if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h); else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}
-  if(editor){ct.strokeStyle='rgba(34,197,94,.75)';ct.lineWidth=2;ct.strokeRect(player.x,player.y,player.w,player.h)}
+  if(editor){ct.strokeStyle=(selected===player)?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=(selected===player)?4:2;ct.strokeRect(player.x,player.y,player.w,player.h); if(selected===player){ct.fillStyle='rgba(253,224,71,.9)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10));}}
 }
 function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill();}
 function loop(t){update();draw(canvas,ctx,false); if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)} requestAnimationFrame(loop);
 // editor
-editCanvas.addEventListener('pointerdown',e=>{const p=canvasPoint(editCanvas,e,true);selected=[...level.objects].reverse().find(o=>p.x>=o.x&&p.x<=o.x+o.w&&p.y>=o.y&&p.y<=o.y+o.h)||null;if(selected){drag={dx:p.x-selected.x,dy:p.y-selected.y};fillForm()}else fillForm();renderEditor()});
-editCanvas.addEventListener('pointermove',e=>{if(!drag||!selected)return;const p=canvasPoint(editCanvas,e,true);let nx=p.x-drag.dx,ny=p.y-drag.dy;if(document.getElementById('snapCheck').checked){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny));fillForm(false);renderEditor()});
+editCanvas.addEventListener('pointerdown',e=>{
+  const p=canvasPoint(editCanvas,e,true);
+  const hitPlayer=p.x>=player.x&&p.x<=player.x+player.w&&p.y>=player.y&&p.y<=player.y+player.h;
+  selected=hitPlayer?player:([...level.objects].reverse().find(o=>p.x>=o.x&&p.x<=o.x+o.w&&p.y>=o.y&&p.y<=o.y+o.h)||null);
+  if(selected){drag={dx:p.x-selected.x,dy:p.y-selected.y};fillForm()}else fillForm();renderEditor()
+});
+editCanvas.addEventListener('pointermove',e=>{
+  if(!drag||!selected)return;
+  const p=canvasPoint(editCanvas,e,true);let nx=p.x-drag.dx,ny=p.y-drag.dy;
+  if(document.getElementById('snapCheck').checked && selected!==player){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}else{nx=Math.round(nx);ny=Math.round(ny)}
+  selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny));
+  if(selected===player){document.getElementById('pW').value=player.w;document.getElementById('pH').value=player.h;document.getElementById('pImg').value=player.img||player.emoji||'';}
+  fillForm(false);renderEditor()
+});
 window.addEventListener('pointerup',()=>drag=null);
 function renderEditor(){draw(editCanvas,ectx,true)}
 function addObj(type){const base={id:id(),type,x:Math.round(cameraX+220),y:520,w:120,h:50,label:''}; if(type==='platform'){base.w=220;base.h=34;base.label='platform'} if(type==='coin'){base.w=48;base.h=48;base.label='💎';base.y=450} if(type==='enemy'){base.w=60;base.h=55;base.label='⚠️'} if(type==='finish'){base.w=70;base.h=105;base.label='🏁';base.y=535} level.objects.push(base); selected=base; fillForm(); renderEditor()}
-function fillForm(){document.getElementById('selectedInfo').textContent=selected?`Selected ${selected.type} (${selected.id})`:'No object selected'; if(!selected){['fX','fY','fW','fH','fLabel','fImg'].forEach(k=>document.getElementById(k).value='');return} document.getElementById('fType').value=selected.type;document.getElementById('fX').value=Math.round(selected.x);document.getElementById('fY').value=Math.round(selected.y);document.getElementById('fW').value=Math.round(selected.w);document.getElementById('fH').value=Math.round(selected.h);document.getElementById('fLabel').value=selected.label||'';document.getElementById('fImg').value=selected.img||'';}
-function applyFormToSelected(){if(!selected)return;selected.type=document.getElementById('fType').value;selected.x=+document.getElementById('fX').value||0;selected.y=+document.getElementById('fY').value||0;selected.w=+document.getElementById('fW').value||20;selected.h=+document.getElementById('fH').value||20;selected.label=document.getElementById('fLabel').value;selected.img=document.getElementById('fImg').value;renderEditor()}
+function fillForm(){
+  document.getElementById('selectedInfo').textContent=selected?(selected===player?'Selected CHARACTER - edit size, position, image or animation in Player/Animation tabs':`Selected ${selected.type} (${selected.id})`):'No object selected';
+  if(!selected){['fX','fY','fW','fH','fLabel','fImg'].forEach(k=>document.getElementById(k).value='');return}
+  document.getElementById('fType').value=selected===player?'player':selected.type;
+  document.getElementById('fX').value=Math.round(selected.x);document.getElementById('fY').value=Math.round(selected.y);document.getElementById('fW').value=Math.round(selected.w);document.getElementById('fH').value=Math.round(selected.h);
+  document.getElementById('fLabel').value=selected===player?(selected.emoji||selected.kind||'character'):(selected.label||'');
+  document.getElementById('fImg').value=selected.img||'';
+}
+function applyFormToSelected(){
+  if(!selected)return;
+  selected.x=+document.getElementById('fX').value||0;selected.y=+document.getElementById('fY').value||0;selected.w=+document.getElementById('fW').value||20;selected.h=+document.getElementById('fH').value||20;
+  if(selected===player){
+    const val=document.getElementById('fImg').value.trim();player.img=val;if(!/^https?:\/\//.test(val)){player.emoji=document.getElementById('fLabel').value||val||player.emoji; if(val)player.img=''}
+    document.getElementById('pW').value=player.w;document.getElementById('pH').value=player.h;document.getElementById('pImg').value=player.img||player.emoji||'';
+  }else{
+    selected.type=document.getElementById('fType').value;selected.label=document.getElementById('fLabel').value;selected.img=document.getElementById('fImg').value;
+  }
+  renderEditor()
+}
 ['fType','fX','fY','fW','fH','fLabel','fImg'].forEach(id=>document.getElementById(id).addEventListener('input',applyFormToSelected));
-function deleteSelected(){if(!selected)return;level.objects=level.objects.filter(o=>o.id!==selected.id);selected=null;fillForm();renderEditor()} function duplicateSelected(){if(!selected)return;const n={...selected,id:id(),x:selected.x+40,y:selected.y+40};level.objects.push(n);selected=n;fillForm();renderEditor()} function bringForward(){if(!selected)return;level.objects=level.objects.filter(o=>o.id!==selected.id);level.objects.push(selected);renderEditor()} function centerCameraOnSelection(){if(!selected)return;cameraX=Math.max(0,Math.min(selected.x-VW/2,WORLD_W-VW));renderEditor()}
+function deleteSelected(){if(!selected)return;if(selected===player){alert('The character cannot be deleted. Use Player tab to change it.');return}level.objects=level.objects.filter(o=>o.id!==selected.id);selected=null;fillForm();renderEditor()}
+function duplicateSelected(){if(!selected)return;if(selected===player){alert('Character duplicate is not needed yet. Use Player tab for player size/image.');return}const n={...selected,id:id(),x:selected.x+40,y:selected.y+40};level.objects.push(n);selected=n;fillForm();renderEditor()}
+function bringForward(){if(!selected||selected===player)return;level.objects=level.objects.filter(o=>o.id!==selected.id);level.objects.push(selected);renderEditor()}
+function centerCameraOnSelection(){if(!selected)return;cameraX=Math.max(0,Math.min(selected.x-VW/2,WORLD_W-VW));renderEditor()}
+function selectPlayerForEdit(){selected=player;fillForm();centerCameraOnSelection();renderEditor();document.querySelector('[data-tab="player"]').click()}
 function applyPlayerSettings(){player.kind=document.getElementById('playerKind').value;player.w=+document.getElementById('pW').value||82;player.h=+document.getElementById('pH').value||96;const val=document.getElementById('pImg').value.trim();if(val){if(/^https?:\/\//.test(val))player.img=val;else{player.emoji=val;player.img=''}}else if(player.kind==='ax')player.img=AX_URL;else if(player.kind==='pet'&&currentPetImage)player.img=currentPetImage;else{player.img='';player.emoji=player.kind==='pura'?'🐶':'🦎'} player.y=Math.min(player.y,640-player.h);renderEditor()}
 function savePlayerSettings(){applyPlayerSettings();localStorage.setItem('ctw_player',JSON.stringify({w:player.w,h:player.h,img:player.img,emoji:player.emoji,kind:player.kind}));alert('Player settings saved in this browser')}
 function applyBackgrounds(){level.backgrounds.sky=document.getElementById('bgSky').value;level.backgrounds.hills=document.getElementById('bgHills').value;level.backgrounds.ground=document.getElementById('bgGround').value;renderEditor()}
@@ -220,6 +286,29 @@ function loadLevelLocal(){const raw=localStorage.getItem('ctw_level_'+document.g
 function exportLevel(){document.getElementById('levelJson').value=JSON.stringify(level,null,2)} function importLevel(){try{const data=JSON.parse(document.getElementById('levelJson').value);level.backgrounds=data.backgrounds||level.backgrounds;level.objects=data.objects||level.objects;selected=null;syncBgFields();renderEditor()}catch(e){alert('Bad JSON')}}
 function syncBgFields(){document.getElementById('bgSky').value=level.backgrounds.sky||'';document.getElementById('bgHills').value=level.backgrounds.hills||'';document.getElementById('bgGround').value=level.backgrounds.ground||''}
 document.querySelectorAll('.toolTabs button').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('.toolTabs button').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.toolSec').forEach(x=>x.classList.remove('active'));b.classList.add('active');document.getElementById('tab-'+b.dataset.tab).classList.add('active')}));
+
+function applyAnimationSettings(){
+  animSettings.idle=document.getElementById('animIdle').value.trim()||animSettings.idle;
+  animSettings.walk=document.getElementById('animWalk').value.trim()||animSettings.walk;
+  animSettings.jump=document.getElementById('animJump').value.trim()||animSettings.jump;
+  animSettings.count=+document.getElementById('animCount').value||10;
+  animSettings.speed=+document.getElementById('animSpeed').value||95;
+  player.kind='ax'; player.img=AX_URL; renderEditor();
+}
+function saveAnimationSettings(){applyAnimationSettings();localStorage.setItem('ctw_anim',JSON.stringify(animSettings));alert('Animation frame settings saved in this browser')}
+function resetAnimationSettings(){
+  animSettings.idle='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png';
+  animSettings.walk='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png';
+  animSettings.jump='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png';
+  animSettings.count=10; animSettings.speed=95; syncAnimFields(); saveAnimationSettings();
+}
+function syncAnimFields(){
+  document.getElementById('animIdle').value=animSettings.idle;
+  document.getElementById('animWalk').value=animSettings.walk;
+  document.getElementById('animJump').value=animSettings.jump;
+  document.getElementById('animCount').value=animSettings.count;
+  document.getElementById('animSpeed').value=animSettings.speed;
+}
 // Petbot + Sheet 51
 function n(v){return String(v??'').trim()} function pct(v){v=Number(v)||0;return Math.max(0,Math.min(100,v))+'%'}
 async function apiJson(url){const r=await fetch(url);return await r.json()}
@@ -228,7 +317,7 @@ async function loadPetbotPets(){const user=document.getElementById('userSelect')
 async function selectPetFromDropdown(){currentPet=petList[+document.getElementById('petSelect').value];if(!currentPet)return;document.getElementById('petTitle').textContent=currentPet.name;document.getElementById('petSub').textContent=`${currentPet.pet||'pet'} • code ${currentPet.code||'none'} • level ${currentPet.level||'?'}`;document.getElementById('hungerBar').style.width=pct(currentPet.hunger);document.getElementById('happyBar').style.width=pct(currentPet.happy);document.getElementById('energyBar').style.width=pct(currentPet.energy);await loadSheetImageForPet(currentPet)}
 async function loadSheetImageForPet(p){const user=document.getElementById('userSelect').value;const imgEl=document.getElementById('petImg'), no=document.getElementById('petNoImg'), debug=document.getElementById('petDebug');imgEl.style.display='none';no.style.display='block';no.textContent='Loading Sheet 51 image...';currentPetImage='';const q=new URLSearchParams({user_id:user,pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',action:'main'});try{const data=await apiJson('/api/sheet51?'+q.toString());if(data.image_url){currentPetImage=data.image_url;imgEl.src=data.image_url;imgEl.style.display='block';no.style.display='none';debug.textContent='Sheet 51 image used:\n'+data.image_url+'\n\nMatched by: '+(data.match?.matched_by||'unknown')+'\nDiscord URL ignored: '+(p.discordImage||'none')}else{debug.textContent='NO SHEET 51 PET IMAGE. Discord URL ignored.\nRequest: /api/sheet51?'+q.toString()+'\nResponse: '+JSON.stringify(data,null,2)}}catch(e){debug.textContent='Sheet 51 lookup failed: '+e.message}}
 function usePetAsPlayer(){if(!currentPet||!currentPetImage)return alert('No Sheet 51 pet image loaded yet');document.getElementById('playerKind').value='pet';document.getElementById('pImg').value=currentPetImage;document.getElementById('pW').value=90;document.getElementById('pH').value=100;applyPlayerSettings();alert(currentPet.name+' is now the platform character')}
-(function init(){syncBgFields();const sp=localStorage.getItem('ctw_player');if(sp){try{const s=JSON.parse(sp);player.w=s.w||player.w;player.h=s.h||player.h;player.img=s.img||player.img;player.emoji=s.emoji||player.emoji;player.kind=s.kind||player.kind;document.getElementById('pW').value=player.w;document.getElementById('pH').value=player.h;document.getElementById('pImg').value=player.img||player.emoji;document.getElementById('playerKind').value=player.kind}catch(e){}}renderEditor();})();
+(function init(){syncBgFields();const sa=localStorage.getItem('ctw_anim');if(sa){try{Object.assign(animSettings,JSON.parse(sa))}catch(e){}}syncAnimFields();const sp=localStorage.getItem('ctw_player');if(sp){try{const s=JSON.parse(sp);player.w=s.w||player.w;player.h=s.h||player.h;player.img=s.img||player.img;player.emoji=s.emoji||player.emoji;player.kind=s.kind||player.kind;document.getElementById('pW').value=player.w;document.getElementById('pH').value=player.h;document.getElementById('pImg').value=player.img||player.emoji;document.getElementById('playerKind').value=player.kind}catch(e){}}renderEditor();})();
 </script>
 </body>
 </html>
