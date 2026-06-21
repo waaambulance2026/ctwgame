@@ -41,6 +41,21 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .touch{position:absolute;z-index:90;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:60px 60px 60px;gap:8px}.touch button{height:56px;border:0;border-radius:16px;font-size:24px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}.touch .wide{grid-column:span 3;background:linear-gradient(180deg,#fff7bd,var(--yellow))}.helpBtn{position:absolute;z-index:90;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}.hitFlash{animation:shake .2s linear}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
 @media(max-width:820px){:root{--floorPx:92px;--platformH:42px;--playerX:30vw;--playerW:190px;--playerDrop:22px;--buddyX:14vw;--buddyW:88px;--buddyDrop:12px;--hillsH:205px;--hillsBottom:108px;--groundH:128px;--groundBottom:-20px;--tokenLift:106px;--hazardLift:50px}.hud{top:calc(env(safe-area-inset-top) + 6px);width:calc(100vw - 10px);min-height:auto;padding:6px 7px;border-radius:14px}.title{min-width:0}.title strong{font-size:15px}.title span{display:none}.stats{gap:4px}.pill{padding:6px 7px;font-size:11px}.instructions{display:none}.touch{display:grid}.helpBtn{bottom:calc(env(safe-area-inset-bottom) + 86px)}.builder,.petPanel{left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 62px);max-height:66vh}}
 @media(min-width:821px){.touch{display:none}}
+
+/* Clean selected-only editor + Tamagotchi restore + direction fixes */
+.builder .editSection{display:none!important}
+.builder .calRow{display:none}
+.builder.show-player .section-player,
+.builder.show-buddy .section-buddy,
+.builder.show-world .section-layers,
+.builder.show-objects .section-objects{display:block!important}
+.petPanel{background:transparent!important;border:0!important;box-shadow:none!important;padding:10px!important}
+.tamaShell{border:5px solid #d282c2!important;border-radius:38px!important;background:radial-gradient(circle at 50% 0%,#fff3fb 0 18%,#ffc7ea 19% 45%,#d282c2 46% 100%)!important;box-shadow:inset 0 -16px 0 rgba(92,39,93,.18),0 20px 45px rgba(0,0,0,.32)!important}
+.tamaScreen{border:5px solid #76C7D8!important;border-radius:24px!important;background:linear-gradient(180deg,#eaffff,#ffffff)!important;min-height:230px!important}
+.petPreview{background:#fff!important;border:3px dashed #d282c2!important}
+.petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
+.character img{transition:transform .08s linear}
+
 </style>
 </head>
 <body>
@@ -54,7 +69,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
     <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
-      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Floor/platform</button><button class="targetPick" data-select-target="sky">Sky</button></div>
+      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Floor/platform</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Floor/platform</option><option value="sky">Sky layer</option></select>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
@@ -73,7 +88,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
         <div class="petPreview empty" id="petPreview">No pet loaded yet</div>
         <div class="petInfo"><h3 id="petTitle">No pet selected</h3><p id="petSub">Press Reload live.</p><div class="petBadges"><span class="petBadge" id="petCodeBadge">code —</span><span class="petBadge green" id="petLevelBadge">level —</span><span class="petBadge blue" id="petImageBadge">Sheet 51 image</span></div><div class="petStats"><label>Hunger</label><div class="bar"><span id="hungerBar"></span></div><label>Happiness</label><div class="bar"><span id="happyBar"></span></div><label>Energy</label><div class="bar"><span id="energyBar"></span></div></div></div>
       </div>
-      <div class="tamaControls"><button class="warn" id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button><button id="feedVisualBtn">🍔 Feed visual</button><button id="playVisualBtn">🧸 Play visual</button><button id="restVisualBtn">💤 Rest visual</button><button id="healVisualBtn">💊 Heal visual</button></div>
+      <div class="petSizeControls"><label>Pet game size<input id="petSizeRange" type="range" min="50" max="320" value="130"><span id="petSizeVal">130px</span></label><label>Pet facing<select id="petFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select></label></div><div class="tamaControls"><button class="warn" id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button><button id="feedVisualBtn">🍔 Feed visual</button><button id="playVisualBtn">🧸 Play visual</button><button id="restVisualBtn">💤 Rest visual</button><button id="healVisualBtn">💊 Heal visual</button></div>
       <div class="statusBox petStatusLine" id="petStatus">PetBot ready.</div>
     </div>
   </aside>
@@ -124,14 +139,14 @@ const ALT_PATTERNS={
     jump:[`${CLOUD}/characters/Ax/jump/ax_jump_{n}.png`]
   },
   pura:{
-    idle:[`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`],
-    walk:[`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`],
-    jump:[`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`]
+    idle:[`${CLOUD}/pura_idle_{n}.png`,`${CLOUD}/v1781797065/pura_idle_{n}.png`,`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`,`${CLOUD}/Pura/Idle/pura_idle_{n}.png`],
+    walk:[`${CLOUD}/pura_walk_{n}.png`,`${CLOUD}/v1781797065/pura_walk_{n}.png`,`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`,`${CLOUD}/Pura/Walk/pura_walk_{n}.png`],
+    jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`],
-    walk:[`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`],
-    jump:[`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`]
+    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`],
+    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`],
+    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
@@ -213,13 +228,21 @@ const SETS={
   owl:{name:'Owl',frameMs:175,scale:.46},
   pet:{name:'Pet',frameMs:140,scale:1}
 };
-let main='ax', buddy='none', team=false, mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='';const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=130, petFlip=-1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
+function updateSpriteFacing(input=0){
+  if(input<0)facing=-1;
+  if(input>0)facing=1;
+  const mainFlip=(main==='pet'?petFlip:1)*facing;
+  const buddyFlip=(buddy==='pet'?petFlip:1)*facing;
+  if($('sprite'))$('sprite').style.transform='scaleX('+mainFlip+')';
+  if($('buddySprite'))$('buddySprite').style.transform='scaleX('+buddyFlip+')';
+}
 const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:900,tokens:[['🍃','Damp leaf',50],['🪙','Frog swamp coin',90],['🧭','Muddy compass',110],['✨','Swamp sparkle',120]],hazards:[['🟫','Mud splat'],['🐌','Suspicious snail'],['🧦','Wet sock'],['🦴','Bog bone']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:1100,tokens:[['🌙','Moon crumb',70],['⭐','Wrong star',100],['🔮','Moon wobble',120],['🧿','Sky evidence',140]],hazards:[['🌚','Wrong moon glare'],['📢','Dramatic prophecy'],['🕳️','Tiny doom hole'],['🗯️','Moon argument']]}];
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
-function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else setSpriteMissing('buddySprite',false);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
+function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else setSpriteMissing('buddySprite',false);updateSpriteFacing(0);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
 function startGame(c,b){closeBuilder();closePetPanel();setPair(c,b);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function makeObject(kind,x){const level=levels[levelIndex];const isFinish=kind==='finish';const data=isFinish?['🏁','Finish flag',0]:(kind==='hazard'?level.hazards[Math.floor(Math.random()*level.hazards.length)]:level.tokens[Math.floor(Math.random()*level.tokens.length)]);const el=document.createElement('div');el.className='obj '+(isFinish?'finish':kind);el.textContent=data[0];$('worldObjects').appendChild(el);const y=innerHeight-floorPx()-(isFinish?130:(kind==='hazard'?cssNumber('--hazardLift',58):(cssNumber('--tokenLift',126)+Math.random()*55)));objects.push({el,x,y,kind,label:data[1],points:data[2]||0,hit:false})}function spawn(){if(finishMade||objects.length>5)return;makeObject(Math.random()<.30?'hazard':'token',innerWidth+260+Math.random()*260)}function makeFinish(){finishMade=true;makeObject('finish',innerWidth+520)}function collide(o){if(o.hit)return;if(o.kind==='hazard'&&player.jump>78)return;o.hit=true;if(o.kind==='token'){score+=o.points;showToast(`+${o.points} ${o.label}.`)}else if(o.kind==='hazard'){lives--;document.body.classList.add('hitFlash');setTimeout(()=>document.body.classList.remove('hitFlash'),230);showToast(`${o.label}. Drama damage.`);if(lives<=0)end(false)}else{score+=500;levelComplete()}updateHud()}function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){if(keys.left)player.x-=dt*.18;if(keys.right)player.x+=dt*.18;player.x=Math.max(-60,Math.min(120,player.x));if(!player.grounded){player.jump+=player.vy*dt*.08;player.vy-=dt*.055;if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}}$('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;$('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${player.grounded?1:.72})`;$('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`}
 function animateOne(elId,char,action,now,state){
@@ -277,6 +300,7 @@ function loop(now=0){
   const dt=Math.min(34,now-last||16);last=now;
   if(playing&&!paused&&!document.body.classList.contains('editMode')){
     const input=movementInput();
+    updateSpriteFacing(input);
     const worldMove=input*dt*cssNumber('--gameSpeed',2.2);
     const moving=input!==0;
     if(input>0){
@@ -316,11 +340,13 @@ function readSettings(){
   if($('axIdleUrl'))readSpriteUrlInputs();
   const o={};
   Object.entries(settingMap).forEach(([id,[key]])=>o[key]=+$(''+id).value);
-  o.main=main;o.buddy=buddy;o.team=team;o.spritePatterns=clonePatterns();
+  o.main=main;o.buddy=buddy;o.team=team;o.spritePatterns=clonePatterns();o.petPlayerW=petPlayerW;o.petFlip=petFlip;
   return o;
 }
 function applySettings(o={}){
   if(o.spritePatterns)mergeSpritePatterns(o.spritePatterns);
+  if(o.petPlayerW!==undefined){petPlayerW=Number(o.petPlayerW)||petPlayerW;if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}}
+  if(o.petFlip!==undefined){petFlip=Number(o.petFlip)||petFlip;if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);}
   Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});
   if(o.main||o.buddy!==undefined)setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'));
   exportSettings();
@@ -354,14 +380,38 @@ async function loadCloud(){
   }catch(e){$('adminStatus').textContent='Load failed: '+e.message}
 }
 function syncCharacterFields(){$('mainSelect').value=main;$('buddySelect').value=buddy||'none'}
+function editorRowsFor(layer){return {
+  player:['calPlayerX','calPlayerW','calDrop','calZPlayer'],
+  buddy:['calBuddyX','calBuddyW','calBuddyDrop','calZBuddy'],
+  ground:['calGroundH','calGroundB','calZGround'],
+  hills:['calHillH','calHillB','calZHills'],
+  platform:['calFloor','calPlatform','calZPlatform'],
+  sky:['calZSky'],
+  objects:['calTokenLift','calHazardLift','calZObjects']
+}[layer]||['calPlayerX','calPlayerW','calDrop','calZPlayer'];}
+function syncEditorVisibility(layer){
+  const b=$('builder'); if(!b)return;
+  b.classList.remove('show-player','show-buddy','show-world','show-objects');
+  const show=new Set(editorRowsFor(layer));
+  document.querySelectorAll('.builder .editSection').forEach(sec=>sec.style.setProperty('display','none','important'));
+  Object.keys(settingMap).forEach(id=>{const row=$(id)?.closest('.calRow'); if(row)row.style.display=show.has(id)?'grid':'none';});
+  const showSection=sel=>{const el=document.querySelector(sel); if(el)el.style.setProperty('display','block','important');};
+  if(layer==='player'){b.classList.add('show-player');showSection('.section-player');showSection('.section-layers');}
+  else if(layer==='buddy'){b.classList.add('show-buddy');showSection('.section-buddy');showSection('.section-layers');}
+  else if(layer==='objects'){b.classList.add('show-objects');showSection('.section-objects');showSection('.section-layers');}
+  else {b.classList.add('show-world');showSection('.section-layers');}
+  const layerTitle=document.querySelector('.section-layers h3');
+  if(layerTitle){const names={ground:'Ground settings',hills:'Hills settings',platform:'Floor/platform settings',sky:'Sky layer level',player:'Main character layer level',buddy:'Side character layer level',objects:'Items layer level'};layerTitle.textContent=names[layer]||'Selected settings';}
+}
 function focusEditTarget(layer){
   document.body.dataset.editTarget=layer; if($('builder')) $('builder').dataset.target=layer;
+  syncEditorVisibility(layer);
   document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'));
   document.querySelectorAll('.targetPick').forEach(x=>x.classList.toggle('active',x.dataset.selectTarget===layer));
   const el=document.querySelector('[data-layer="'+layer+'"]'); if(el)el.classList.add('selectedEditTarget');
   if($('editTarget')) $('editTarget').value=layer;
-  const names={player:'main character',buddy:'side character',ground:'ground artwork',hills:'hills layer',platform:'floor/platform',sky:'sky'};
-  $('adminStatus') && ($('adminStatus').textContent='Editing '+(names[layer]||layer)+'. Drag it on the game or use the sliders.');
+  const names={player:'main character',buddy:'side character',ground:'ground artwork',hills:'hills layer',platform:'floor/platform',sky:'sky',objects:'items'};
+  $('adminStatus') && ($('adminStatus').textContent='Editing '+(names[layer]||layer)+'. Only these settings are shown. Drag on the game or use the sliders.');
 }
 function openBuilder(){document.body.classList.add('editMode');$('builder').classList.remove('hidden');$('petPanel').classList.add('hidden');paused=true;$('pauseBtn').textContent='Resume';exportSettings();focusEditTarget(($('editTarget')&&$('editTarget').value)||'player')}
 function closeBuilder(){document.body.classList.remove('editMode');$('builder').classList.add('hidden');document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'))}
@@ -495,6 +545,15 @@ async function selectPet(){
       try{
         await testImageUrl(candidate,9000);
         currentPetImage=candidate;
+        currentPetMeta=d||{};
+        const suggestedW=Number(d.player_width||d.width||d.overlay_width||d.scale_width||0);
+        const scale=Number(d.scale||0);
+        petPlayerW=Math.max(50,Math.min(320,suggestedW || (scale>0&&scale<3?Math.round(150*scale):130)));
+        if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}
+        const face=String(d.facing||d.direction||d.flip||'').toLowerCase();
+        if(face.includes('flip')||face.includes('left')||face==='-1')petFlip=-1;
+        if(face.includes('right')||face==='1')petFlip=1;
+        if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);
         $('petPreview').classList.remove('empty');$('petPreview').innerHTML='<img src="'+candidate+'" alt="pet">';
         $('petImageBadge').textContent='Sheet 51 image ✓';$('petImageBadge').className='petBadge green';
         setPetLoading(false,p.name+' loaded with Sheet 51 image.');
@@ -515,9 +574,9 @@ async function selectPet(){
     setPetLoading(false,'Sheet 51 lookup failed: '+(e.name==='AbortError'?'request timed out':e.message));
   }
 }
-function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
+function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();petPlayerW=Number($('petSizeRange')?.value)||petPlayerW;petFlip=Number($('petFlipSelect')?.value)||petFlip;if($('calPlayerW'))$('calPlayerW').value=petPlayerW;setVar('playerW',petPlayerW,'px');applySettings({playerW:petPlayerW,main:'pet',buddy:'none',team:false,petPlayerW,petFlip});setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
-$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
+$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Number($('petSizeRange').value)||130;$('petSizeVal').textContent=petPlayerW+'px';persistLocalQuiet();};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);persistLocalQuiet();};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startAxBtn').onclick=()=>startGame('ax','none');$('startPuraBtn').onclick=()=>startGame('pura','none');$('startOwlBtn').onclick=()=>startGame('owl','none');$('startTeamBtn').onclick=()=>startGame('ax','pura');$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
 let drag=null;
