@@ -13,7 +13,7 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
 <body>
 <div class="app">
   <div class="top">
-    <div class="brand"><h1>🚑 Waaambulance Quest Dash</h1><small>Playable game + full visual editor for Ryan and Aly</small></div>
+    <div class="brand"><h1>🚑 Waaambulance Quest Dash</h1><small>Playable game + simple full-screen editor for Ryan and Aly</small></div>
     <div class="nav"><button class="ghost" onclick="showPanel('menu')">Menu</button><button class="primary" onclick="showPanel('game')">Play</button><button onclick="openBuilderWithPassword()">Builder</button><button onclick="showPanel('petcare')">Pet Care</button></div>
   </div>
 
@@ -36,17 +36,17 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
     <div class="builderGrid">
       <div class="gameShell">
         <div class="hud"><div class="row"><span class="pill">Full Screen Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span></div><div class="row"><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="testFromBuilder()">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHint">Click sky / hills / ground / platforms / objects / character to select. Drag to move. Drag blue corners to resize. Use the right panel to choose which layer is visible/editable.</div></div>
+        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHint">Builder mode: use the right panel first. Select Character, Layers, or Objects. Turn on guides only while editing platforms.</div></div>
       </div>
       <aside class="tools">
         <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div>
         <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="save">Save / Load</button></div>
 
         <div id="tab-layers" class="toolSec active">
-          <div class="builderNote">This is the layer editor. Sky, hills, ground and platforms can all be selected, moved, resized and saved. The preview shows editable outlines only when Builder is open.</div>
+          <div class="builderNote">Simple layer editor: pick Sky, Hills, or Ground, change the image/size/position, then Apply Layer. Layer boxes stay hidden unless you turn them on.</div>
           <div class="miniTitle">Select a background/game layer</div>
           <div class="layerButtons"><button id="btnLayerSky" onclick="selectLayer('sky')">Sky</button><button id="btnLayerHills" onclick="selectLayer('hills')">Hills</button><button id="btnLayerGround" onclick="selectLayer('ground')">Ground</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" checked style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
+          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
           <div class="fieldGrid">
             <label>Layer<select id="lKind"><option value="sky">sky</option><option value="hills">hills</option><option value="ground">ground</option></select></label>
             <label>Visible<select id="lVisible"><option value="true">visible</option><option value="false">hidden</option></select></label>
@@ -59,7 +59,7 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
         </div>
 
         <div id="tab-objects" class="toolSec">
-          <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
+          <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button><button onclick="selectNextPlatform()">Select Next Platform</button></div>
           <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" checked style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
           <div class="builderNote">Platforms are real collision pieces. In play mode they can be hidden or lightly visible. In Builder they are editable guides.</div>
           <div class="fieldGrid">
@@ -110,17 +110,17 @@ const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
 const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
 const imgCache=new Map();
 const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
-const DEFAULT_SKY_URL='#79c8ff';
+const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
 const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
 const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
 function id(){return Math.random().toString(36).slice(2,9)}
 function layerDefaults(){return[
   {id:'layer_sky',kind:'sky',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_SKY_URL,parallax:0,opacity:1,visible:true,z:0},
-  {id:'layer_hills',kind:'hills',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_HILLS_URL,parallax:.25,opacity:1,visible:true,z:1},
+  {id:'layer_hills',kind:'hills',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_HILLS_URL,parallax:.18,opacity:1,visible:true,z:1},
   {id:'layer_ground',kind:'ground',type:'layer',x:0,y:640,w:VW,h:80,value:DEFAULT_GROUND_URL,parallax:1,opacity:1,visible:true,z:2}
 ]}
 let level={layers:layerDefaults(),objects:[
-  {id:id(),type:'platform',x:0,y:640,w:1200,h:80,label:'ground'},
+  {id:id(),type:'platform',x:0,y:640,w:WORLD_W,h:80,label:'ground'},
   {id:id(),type:'platform',x:420,y:500,w:240,h:34,label:'platform'},
   {id:id(),type:'platform',x:820,y:385,w:260,h:34,label:'platform'},
   {id:id(),type:'coin',x:500,y:440,w:48,h:48,label:'💎',collected:false},
@@ -194,9 +194,9 @@ function drawLayers(ct,editor=false){
     for(const l of level.layers){
       const showAll=document.getElementById('showLayerBoxes')?.checked;
       const isSel=selected===l;
-      if(!showAll&&!isSel)continue;
-      ct.strokeStyle=isSel?'#fde047':'rgba(56,189,248,.45)';
-      ct.lineWidth=isSel?4:1.5;
+      if(!showAll)continue;
+      ct.strokeStyle=isSel?'rgba(253,224,71,.95)':'rgba(56,189,248,.35)';
+      ct.lineWidth=isSel?3:1;
       ct.setLineDash([10,6]);
       ct.strokeRect(l.x,l.y,l.w,l.h);
       ct.setLineDash([]);
@@ -214,7 +214,24 @@ function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.15)';for(let x=0;x<WORLD_W
 function drawHandle(ct,x,y){ct.fillStyle='#38bdf8';ct.strokeStyle='#071326';ct.lineWidth=2;ct.fillRect(x-6,y-6,12,12);ct.strokeRect(x-6,y-6,12,12)}
 function drawSelection(ct,o){ct.save();ct.setLineDash([8,5]);ct.strokeStyle='#38bdf8';ct.lineWidth=3;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6);ct.setLineDash([]);drawHandle(ct,o.x,o.y);drawHandle(ct,o.x+o.w,o.y);drawHandle(ct,o.x,o.y+o.h);drawHandle(ct,o.x+o.w,o.y+o.h);ct.restore()}
 function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill()}
-function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){if(editor&&document.getElementById('showPlatformGuides')?.checked){ct.fillStyle=selectedThis?'rgba(56,189,248,.20)':'rgba(255,255,255,.06)';ct.fillRect(o.x,o.y,o.w,o.h);ct.fillStyle=selectedThis?'rgba(253,224,71,.88)':'rgba(255,79,163,.70)';ct.fillRect(o.x,o.y,Math.max(4,o.w),4);ct.strokeStyle=selectedThis?'rgba(253,224,71,.95)':'rgba(255,255,255,.24)';ct.lineWidth=1;ct.strokeRect(o.x,o.y,o.w,o.h)}else if(o.label==='ground'){/* collision ground hidden in play */}}
+function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){
+  if(editor&&document.getElementById('showPlatformGuides')?.checked){
+    // Platforms are collision guides, not artwork. Keep them subtle so the game scene stays clean.
+    ct.save();
+    ct.fillStyle=selectedThis?'rgba(56,189,248,.12)':'rgba(56,189,248,.055)';
+    ct.fillRect(o.x,o.y,o.w,o.h);
+    ct.strokeStyle=selectedThis?'rgba(253,224,71,.95)':'rgba(56,189,248,.45)';
+    ct.lineWidth=selectedThis?3:1.5;
+    ct.setLineDash(selectedThis?[]:[10,8]);
+    ct.strokeRect(o.x,o.y,o.w,o.h);
+    ct.setLineDash([]);
+    if(selectedThis){ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 14px system-ui';ct.fillText(o.label==='ground'?'GROUND COLLISION':'PLATFORM',o.x+8,o.y-8)}
+    ct.restore();
+  } else if(editor&&selectedThis){
+    // Selected platform still shows even if guides are off.
+    ct.save();ct.strokeStyle='rgba(253,224,71,.95)';ct.lineWidth=3;ct.strokeRect(o.x,o.y,o.w,o.h);ct.restore();
+  }
+}
   else if(o.type==='coin'){if(o.collected&&!editor)return;ct.save();if(o.collected)ct.globalAlpha=.25;ct.font=`${o.h}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y);ct.restore()}else if(o.type==='enemy'){ct.fillStyle='#fb7185';roundRect(ct,o.x,o.y,o.w,o.h,12,true);ct.font=`${Math.min(o.h,38)}px system-ui`;ct.textBaseline='middle';ct.textAlign='center';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)}else if(o.type==='finish'){ct.font=`${Math.min(o.h,70)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)}else{ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'✨',o.x,o.y)}if(editor&&selectedThis)drawSelection(ct,o)}
 function frameUrl(pattern,n){return pattern.replace('{n}',String(n).padStart(3,'0')).replace('{i}',String(n))}
 function currentPlayerImg(){if(player.kind==='ax'&&anim){let state=player.onGround?(Math.abs(player.vx)>0.4?'walk':'idle'):'jump';let n=1+Math.floor(Date.now()/anim.speed)%anim.count;return frameUrl(anim[state]||anim.idle,n)}return player.img}
@@ -233,6 +250,15 @@ function applyFormToSelected(){if(!selected)return;if(selected.type==='layer'){a
 function deleteSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('This cannot be deleted. Hide or edit it in the Layers/Player tab.');return}level.objects=level.objects.filter(o=>o.id!==selected.id);selected=null;fillForm();renderEditor()}
 function duplicateSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('Duplicate only works on level objects.');return}const n={...selected,id:id(),x:selected.x+40,y:selected.y+40};if(n.type==='coin')n.collected=false;level.objects.push(n);selected=n;fillForm();renderEditor()}
 function bringForward(){if(!selected||selected===player||selected.type==='layer')return;level.objects=level.objects.filter(o=>o.id!==selected.id);level.objects.push(selected);renderEditor()}
+
+function selectNextPlatform(){
+  const plats=level.objects.filter(o=>o.type==='platform');
+  if(!plats.length)return;
+  let i=plats.indexOf(selected);
+  selected=plats[(i+1)%plats.length];
+  document.getElementById('showPlatformGuides').checked=true;
+  fillForm();centerCameraOnSelection();renderEditor();
+}
 function centerCameraOnSelection(){if(!selected)return;cameraX=Math.max(0,Math.min(selected.x-VW/2,WORLD_W-VW));renderEditor()}
 function selectPlayerForEdit(){selected=player;fillForm();syncPlayerFields();centerCameraOnSelection();setToolTab('player');renderEditor()}
 function syncPlayerFields(){document.getElementById('pX').value=Math.round(player.x);document.getElementById('pY').value=Math.round(player.y);document.getElementById('pW').value=Math.round(player.w);document.getElementById('pH').value=Math.round(player.h);document.getElementById('pImg').value=player.img||player.emoji||'';document.getElementById('playerKind').value=player.kind||'ax'}
