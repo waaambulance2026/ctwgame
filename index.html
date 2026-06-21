@@ -1,540 +1,116 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V40 Safe PetBot Base</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Waaambulance Quest Dash V42</title>
 <style>
-:root{--bg:#07101f;--panel:#101b2f;--panel2:#17243b;--line:#31415d;--text:#f8fafc;--muted:#a9b8cf;--blue:#0ea5e9;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--pink:#ff4fa3;}
-*{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#22314d,#07101f 58%,#030712);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:900;cursor:pointer;background:#29384f;color:white;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:var(--blue)} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#172033;border:1px solid #43546e} input,select,textarea{background:#071326;color:white;border:1px solid #43546e;border-radius:10px;padding:8px 10px;min-width:0} label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:900;color:#dbeafe}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(12,20,36,.9);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(180deg,#1c2944,#111b31);border:1px solid #334155;border-radius:22px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.muted{color:var(--muted)}.gameShell{background:#091225;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,.35)}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#0e1830;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#f8fafc;color:#071326;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:950}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#80d8ff;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.7);border:2px solid rgba(255,255,255,.35);font-size:22px}.petGrid{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#111b31;border:1px solid #334155;border-radius:22px;padding:16px}.petImage{height:320px;background:#0b1324;border:1px solid #334155;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:18px;background:#0b1324;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}.statusBox{background:#071326;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-size:12px}.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fieldGrid.one{grid-template-columns:1fr}.wide{width:100%} textarea{width:100%;height:86px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.hint{font-size:12px;color:#9fb0c7}.miniTitle{font-size:13px;font-weight:950;color:#e2e8f0;margin:8px 0}.divider{height:1px;background:#334155;margin:12px 0}
-body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:6px} body.builderFull .top{display:none} body.builderFull #builder{height:100%} .builderGrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:8px;height:100%}.builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:14px}.builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0}.tools{background:rgba(8,17,32,.97);border:1px solid #334155;border-radius:14px;padding:12px;overflow:auto;box-shadow:-12px 0 30px rgba(0,0,0,.25)}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{background:var(--blue)}.toolSec{display:none}.toolSec.active{display:block}.builderNote{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.35);border-radius:12px;padding:8px 10px;font-size:12px;color:#dbeafe;margin:8px 0}.editorHint{position:absolute;left:12px;bottom:12px;background:rgba(15,23,42,.72);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 10px;font-size:12px;color:#fff;pointer-events:none;z-index:3;max-width:590px}.layerButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.layerButtons button{padding:8px 6px;font-size:12px}.layerButtons button.active{background:#0ea5e9}.small{font-size:12px;padding:7px 10px;border-radius:10px}@media(max-width:900px){.petGrid{grid-template-columns:1fr}.touch{display:block}.fieldGrid{grid-template-columns:1fr}body.builderFull .builderGrid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 45vh}.tools{min-height:0}.brand h1{font-size:16px}}
-
-/* V33 simple builder reset: big canvas first, simple controls underneath */
-body.builderFull{background:#050b16;overflow:hidden}
-body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:4px}
-body.builderFull .top{display:none}
-body.builderFull #builder{height:100%}
-body.builderFull .builderGrid{display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(190px,30vh);gap:6px;height:100%}
-body.builderFull .builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:12px;overflow:hidden}
-body.builderFull .builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0;background:#81d4ff}
-body.builderFull .tools{border-radius:12px;box-shadow:none;padding:10px;overflow:auto;background:#0b1324;border:1px solid #24334d}
-body.builderFull .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}
-body.builderFull .tabs button{padding:10px 8px;border-radius:10px;font-size:13px}
-body.builderFull .toolSec.active{display:block}
-body.builderFull .fieldGrid{grid-template-columns:repeat(6,minmax(80px,1fr));gap:8px}
-body.builderFull .fieldGrid.one{grid-template-columns:1fr}
-body.builderFull .builderNote{display:none}
-body.builderFull .editorHint{left:12px;bottom:12px;max-width:430px;font-size:12px;background:rgba(8,13,25,.65)}
-body.builderFull .statusBox{padding:8px;min-height:0}
-body.builderFull .layerButtons{grid-template-columns:repeat(3,minmax(0,1fr));max-width:480px}
-body.builderFull #tab-layers .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
-body.builderFull #tab-objects .fieldGrid{grid-template-columns:repeat(6,minmax(90px,1fr))}
-body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
-body.builderFull input, body.builderFull select{padding:7px 8px;font-size:12px}
-body.builderFull label{font-size:11px}
-body.builderFull textarea{height:60px}
-@media(max-width:900px){body.builderFull .builderGrid{grid-template-rows:minmax(0,1fr) 42vh}body.builderFull .tabs{grid-template-columns:repeat(3,1fr)}body.builderFull .fieldGrid,body.builderFull #tab-layers .fieldGrid,body.builderFull #tab-objects .fieldGrid,body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-
-
-/* V34: clearer edit/add workflow */
-.modeBanner{position:absolute;left:12px;top:58px;z-index:4;background:rgba(2,6,23,.82);border:1px solid rgba(148,163,184,.45);border-radius:12px;padding:9px 12px;font-size:13px;font-weight:900;color:#fff;pointer-events:none;max-width:680px;box-shadow:0 8px 20px rgba(0,0,0,.22)}
-.modeBanner.adding{border-color:#facc15;color:#fef3c7}.modeBanner.editing{border-color:#38bdf8;color:#dbeafe}.modeBanner.player{border-color:#22c55e;color:#dcfce7}
-.addModeActive{background:#facc15!important;color:#111827!important}.toolHelp{background:#09162b;border:1px solid #2b4264;border-radius:10px;padding:8px 10px;font-size:12px;color:#cfe5ff;margin:8px 0}.quickTools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.quickTools button{padding:8px 10px;font-size:12px}
-
-
-/* V35: plain editing controls so Ryan/Aly can move/resize without guessing */
-.editPad{position:absolute;right:14px;bottom:14px;z-index:6;background:rgba(5,12,24,.88);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,42px);gap:6px;pointer-events:auto;box-shadow:0 12px 26px rgba(0,0,0,.35)}
-.editPad button{padding:8px 0;border-radius:10px;font-size:13px;min-width:0}
-.editPad .wide{grid-column:1/-1;width:100%;font-size:12px;padding:8px}
-.selectedReadout{position:absolute;left:12px;top:104px;z-index:5;background:rgba(5,12,24,.82);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:9px 12px;color:#fff;font-size:13px;font-weight:900;pointer-events:none;max-width:680px}
-.modeChoiceBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0;padding:10px;border:1px solid #29405e;border-radius:12px;background:#071326}
-.modeChoiceBar button.active{background:#0ea5e9;color:white}
-
-
-/* V36: cleaner play screen, better animation frame picker, nicer Pet Care */
-.app{width:min(100%,1420px)}
-#game .gameShell{width:min(100%,1280px);margin:0 auto;border-radius:18px}
-#game .canvasWrap{aspect-ratio:16/9;background:#79c8ff}
-#game .hud{padding:9px 12px;background:linear-gradient(90deg,#0e1830,#13213d)}
-#game canvas{image-rendering:auto}
-.animWorkbench{display:grid;grid-template-columns:220px minmax(0,1fr);gap:12px;align-items:start;margin-top:10px;background:#071326;border:1px solid #28405f;border-radius:14px;padding:12px}
-.animPreviewBox{height:180px;background:linear-gradient(180deg,#10213d,#071326);border:1px solid #385475;border-radius:14px;display:flex;align-items:center;justify-content:center;overflow:hidden}
-.animPreviewBox img{max-width:100%;max-height:100%;object-fit:contain}.animPreviewBox .fallback{font-size:64px}.frameStrip{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-top:8px;max-height:132px;overflow:auto}.frameStrip button{padding:6px 4px;border-radius:8px;font-size:11px;background:#17243b;border:1px solid #334155}.frameStrip button.active{background:#0ea5e9}.frameTools{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.frameUrlBox{font-size:11px;color:#bfe3ff;background:#030712;border:1px solid #24334d;border-radius:10px;padding:8px;margin-top:8px;word-break:break-all}
-.petCard{background:linear-gradient(180deg,#14213b,#0b1324);box-shadow:0 16px 30px rgba(0,0,0,.18)}.petImage{background:radial-gradient(circle at center,#233a61,#071326 72%)}.petHeroName{font-size:28px;margin:0 0 6px}.petBadges{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0 14px}.petBadge{background:#0ea5e9;color:white;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:900}.petBadge.green{background:#16a34a}.petBadge.purple{background:#7c3aed}.careButtons button{min-width:130px}.loadingPulse{animation:pulseText 1.1s ease-in-out infinite}@keyframes pulseText{0%,100%{opacity:.55}50%{opacity:1}}
-
-
-/* V40 SAFE RESTORE: cleaner builder without removing PetBot bridge */
-body.builderFull .builderGrid{display:grid;grid-template-columns:minmax(0,1fr) 420px;grid-template-rows:1fr;gap:10px;height:100%}
-body.builderFull .tools{max-height:100%;overflow:auto;padding:12px;background:#081326;border:1px solid #28405f}
-body.builderFull .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px;position:sticky;top:0;background:#081326;padding-bottom:8px;z-index:10}
-body.builderFull .tabs button{font-size:12px;padding:9px 6px;border-radius:10px}
-body.builderFull .tabs button.active{background:#0ea5e9;color:white}
-body.builderFull .fieldGrid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important}
-body.builderFull .fieldGrid.one{grid-template-columns:1fr!important}
-body.builderFull .builderHud button{padding:8px 10px;font-size:12px}
-body.builderFull .editPad{right:12px;bottom:12px}
-.builderWorkflow{background:#0e1a2e;border:1px solid #28405f;border-radius:12px;padding:9px 10px;margin:8px 0 10px;font-size:12px;color:#dbeafe}
-.builderWorkflow b{color:#fff}.toolSec{padding-bottom:16px}.toolSec .miniTitle{margin-top:4px}
-.saveStatus{margin-top:8px;background:#071326;border:1px solid #28405f;border-radius:10px;padding:8px 10px;font-size:12px;color:#cfe5ff;white-space:pre-wrap;word-break:break-word}
-.saveButtons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.saveButtons button{font-size:12px;padding:8px 10px}
-.v40Badge{display:inline-flex;align-items:center;gap:6px;background:#14532d;color:#dcfce7;border-radius:999px;padding:5px 10px;font-weight:900;font-size:12px}
-@media(max-width:900px){body.builderFull .builderGrid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 46vh}body.builderFull .tools{min-height:0}body.builderFull .tabs{grid-template-columns:repeat(3,1fr)}}
-
+:root{
+  --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
+  --floorPx:70px; --platformH:48px; --playerX:22vw; --playerW:260px; --playerDrop:26px;
+  --buddyX:14vw; --buddyW:118px; --buddyDrop:16px; --hillsH:600px; --hillsBottom:40px;
+  --groundH:370px; --groundBottom:-13px; --tokenLift:126px; --hazardLift:58px;
+  --zSky:0; --zHills:1; --zGround:20; --zPlatform:12; --zPlayer:30; --zBuddy:24;
+  --characterH:clamp(112px,17vh,158px); --followerScale:.94; --gameSpeed:2.05; --spawnGap:1450;
+  --skyZoom:100%; --skyX:0px; --skyY:0px; --objectSize:60px;
+  --scaleAx:1; --scalePura:1; --scaleOwl:.95; --scaleUnicorn:1.18;
+  --aspectAx:.78; --aspectPura:.58; --aspectOwl:.72; --aspectUnicorn:1.18;
+  --msAxIdle:180; --msAxWalk:180; --msAxJump:125;
+  --msPuraIdle:180; --msPuraWalk:180; --msPuraJump:125;
+  --msOwlIdle:180; --msOwlWalk:180; --msOwlJump:150;
+  --msUnicornIdle:170; --msUnicornWalk:165; --msUnicornJump:115;
+  --bgDaySky:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');
+  --bgDayHills:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');
+  --bgDayGround:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');
+  --bgNightSky:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png');
+  --bgNightHills:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png');
+  --bgNightGround:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png');
+}
+*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
+#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;background:#79d9ff}
+.layer{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:var(--zSky);background-image:var(--bgDaySky);background-size:var(--skyZoom) auto;background-position:calc(50% + var(--skyX)) calc(50% + var(--skyY));background-repeat:no-repeat}.hills{z-index:var(--zHills);height:var(--hillsH);bottom:var(--hillsBottom);background-image:var(--bgDayHills);background-size:auto 100%;background-position:0 bottom}.groundDecor{z-index:var(--zGround);height:var(--groundH);bottom:var(--groundBottom);background-image:var(--bgDayGround);background-size:auto 100%;background-position:0 bottom}.underFloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--floorPx) - var(--platformH));z-index:2;background:#204884;pointer-events:none}.platform{position:absolute;left:0;right:0;bottom:calc(var(--floorPx) - var(--platformH));height:var(--platformH);z-index:var(--zPlatform);pointer-events:none;background:linear-gradient(to bottom,rgba(255,255,255,.92) 0 6px,rgba(210,130,194,1) 6px 22px,rgba(118,199,216,1) 22px 28px,rgba(32,72,132,1) 28px 100%);box-shadow:0 -6px 0 rgba(255,255,255,.16) inset,0 -18px 45px rgba(0,0,0,.14) inset}body.night #game{background:#12113b}body.night .sky{background-image:var(--bgNightSky)}body.night .hills{background-image:var(--bgNightHills);filter:brightness(.9) saturate(1.1)}body.night .groundDecor{background-image:var(--bgNightGround);filter:brightness(.9) saturate(1.1)}body.night .underFloor{background:#14275d}
+.hud{position:absolute;z-index:90;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1220px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:260px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.85}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.dark{background:rgba(29,20,44,.85);color:white;border:1px solid rgba(255,255,255,.2)}.danger{background:#ef4444;color:white}.good{background:#22c55e;color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
+#characters{position:absolute;inset:0;z-index:var(--zPlayer);pointer-events:none}.character{position:absolute;bottom:var(--floorPx);left:var(--playerX);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);filter:drop-shadow(0 18px 15px rgba(0,0,0,.34));will-change:transform,bottom}.character canvas{display:block;image-rendering:auto}.character.follower{z-index:var(--zBuddy);opacity:.96}.character.activeChar{z-index:var(--zPlayer)}.shadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:20px;border-radius:50%;background:rgba(0,0,0,.30);filter:blur(8px);transform:translateX(-50%);pointer-events:none}
+#worldObjects{position:absolute;inset:0;z-index:55;pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:var(--objectSize);height:var(--objectSize);border-radius:20px;font-size:calc(var(--objectSize) * .48);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.teamItem{background:linear-gradient(180deg,#e9fbff,#fff7bd);border-color:var(--yellow);animation:pulse 1s infinite alternate}@keyframes pulse{from{scale:1}to{scale:1.08}}
+.instructions,.teamBox{position:absolute;z-index:79;right:14px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px);max-width:360px}.instructions{top:calc(env(safe-area-inset-top) + 82px)}.teamBox{top:calc(env(safe-area-inset-top) + 218px)}.instructions h2,.teamBox h2{font-size:17px;margin:0 0 5px}.instructions p,.teamBox p{font-size:13px;line-height:1.32;margin:0;opacity:.92}.hidden{display:none!important}.toast{position:absolute;z-index:96;left:50%;bottom:calc(var(--floorPx) + 24px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,760px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.overlay{position:absolute;inset:0;z-index:120;display:grid;place-items:center;background:rgba(12,7,20,.42);backdrop-filter:blur(5px)}.modal{width:min(780px,calc(100vw - 26px));max-height:calc(100dvh - 24px);overflow:auto;padding:24px;text-align:center;background:rgba(36,24,55,.92);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.modal p{margin:0 0 14px;line-height:1.42}.modal button{border:0;border-radius:999px;padding:12px 18px;margin:4px;background:var(--yellow);color:#21142d;font-size:17px;font-weight:900}.modeRow,.choiceRow{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}.modeRow button.off{background:rgba(255,255,255,.22);color:white}.selectGrid{display:grid;grid-template-columns:repeat(2,minmax(130px,1fr));gap:10px;margin:14px 0}.charChoice{border:2px solid rgba(255,255,255,.20)!important;border-radius:18px!important;padding:12px!important;margin:0!important;background:rgba(255,255,255,.12)!important;color:white!important;text-align:left}.charChoice strong{display:block;font-size:20px;margin-bottom:4px}.charChoice span{display:block;font-size:12px;line-height:1.25;opacity:.86}.charChoice.selected{background:linear-gradient(180deg,#fff7bd,var(--yellow))!important;color:#21142d!important;border-color:white!important}.pickStatus{font-weight:900;color:#fff7bd;margin-top:6px!important}
+.touch{position:absolute;z-index:92;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:58px 58px 58px 70px 82px;gap:8px}.touch button{height:54px;border:0;border-radius:16px;font-size:20px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}.touch .wide{background:linear-gradient(180deg,#fff7bd,var(--yellow));font-size:13px}.helpBtn{position:absolute;z-index:92;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}.hitFlash{animation:shake .2s linear}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.sidePanel{position:absolute;z-index:150;top:calc(env(safe-area-inset-top) + 10px);right:12px;bottom:calc(env(safe-area-inset-bottom) + 12px);width:min(460px,42vw);min-width:360px;overflow:auto;padding:16px;background:linear-gradient(180deg,#fffaff,#fff7fb);color:#21142d;border:4px solid var(--pink);border-radius:24px;box-shadow:0 22px 58px rgba(0,0,0,.46)}.sidePanel h1{font-size:28px;margin:0 0 8px}.sidePanel h2{font-size:19px;margin:14px 0 8px}.sidePanel p{line-height:1.35}.settingGrid{display:grid;gap:10px}.settingItem{background:#fff;border:2px solid rgba(210,130,194,.45);border-radius:15px;padding:10px;box-shadow:0 8px 18px rgba(36,21,46,.08)}.settingItem label{display:flex;justify-content:space-between;gap:8px;font-weight:900;align-items:center}.settingControl{display:grid;grid-template-columns:1fr 82px;gap:8px;align-items:center;margin-top:8px}.settingControl input[type=range]{width:100%}.settingControl input[type=number],.sidePanel input,.sidePanel select,.sidePanel textarea{width:100%;border:2px solid rgba(118,199,216,.65);border-radius:12px;padding:8px;color:#21142d;background:white}.sidePanel textarea{min-height:70px;font-family:Consolas,monospace}.buttonRow{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.buttonRow button{border:0;border-radius:999px;padding:10px 12px;font-weight:900;background:#f5ddf0;color:#21142d}.buttonRow .primary{background:var(--yellow)}.buttonRow .blueBtn{background:var(--blue)}.buttonRow .greenBtn{background:#22c55e;color:white}.buttonRow .redBtn{background:#ef4444;color:white}.petGrid{display:grid;grid-template-columns:minmax(160px,260px) 1fr;gap:12px;text-align:left}.petImage{height:220px;background:#f4eef7;border:2px dashed #d282c2;border-radius:16px;display:grid;place-items:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:15px;background:#ead7e9;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0;background:linear-gradient(90deg,#22c55e,#a3e635)}.miniStatus{background:#fff;border:2px solid rgba(118,199,216,.55);border-radius:14px;padding:9px;white-space:pre-wrap;word-break:break-word;font-size:12px;color:#21142d}.editDot{position:absolute;border:2px dashed rgba(255,255,255,.75);background:rgba(245,197,66,.25);z-index:145;display:none;pointer-events:none}.editorOn .editDot{display:block}
+@media(max-width:820px){.hud{align-items:flex-start}.title{min-width:0}.stats{justify-content:flex-start}.instructions{display:none}.touch{display:grid}.selectGrid{grid-template-columns:1fr}.sidePanel{left:8px;right:8px;top:8px;bottom:8px;width:auto;min-width:0}.petGrid{grid-template-columns:1fr}.modal{padding:16px}.platform{height:42px}.hud .pill{font-size:12px;padding:7px 9px}}
 </style>
 </head>
 <body>
-<div class="app">
-  <div class="top">
-    <div class="brand"><h1>🚑 Waaambulance Quest Dash</h1><small>Playable Discord game + protected PetBot bridge + admin builder</small></div>
-    <div class="nav"><button class="ghost" onclick="showPanel('menu')">Menu</button><button class="primary" onclick="showPanel('game')">Play</button><button onclick="openBuilderWithPassword()">Builder</button><button onclick="showPanel('petcare')">Pet Care</button></div>
-  </div>
+<div id="game">
+  <div class="layer sky" data-edit="sky"></div><div class="layer hills" id="hillLayer" data-edit="hills"></div><div class="underFloor"></div><div class="layer groundDecor" id="groundLayer" data-edit="ground"></div><div class="platform" data-edit="platform"></div>
+  <header class="hud"><div class="title"><strong>🚑 Waaambulance Quest Dash</strong><span id="questName">Pick Solo Quest or Team Quest.</span></div><div class="stats"><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Switch</button><button class="pill blue" id="abilityBtn">Ability</button><button class="pill gold" id="teamCmdBtn">Team task</button><button class="pill" id="pauseBtn">Pause</button><button class="pill" id="modeBtn">Night 🌙</button><button class="pill dark" id="petBtn">Pet Care</button><button class="pill dark" id="adminBtn">Admin</button></div></header>
+  <aside class="instructions" id="instructions"><h2>Quest test</h2><p><b>Solo Quest:</b> choose one character. <b>Team Quest:</b> choose two or more. Team Quest gives character jobs, like Ax telling Pura to collect the dice item.</p></aside>
+  <aside class="teamBox hidden" id="teamBox"><h2>Team task</h2><p id="teamTaskText">No team task yet.</p></aside>
+  <div id="characters"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div>
+  <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchSwitch">Switch</button><button id="touchTeam" class="wide">Team</button><button id="touchAbility" class="wide">Ability</button></div><button class="pill helpBtn" id="helpBtn">?</button>
+  <div class="editDot" id="editDot"></div>
 
-  <section id="menu" class="panel active">
-    <div class="menuGrid">
-      <div class="card"><div><h2>🎮 Platform Quest</h2><p class="muted">Discord users play this screen. The admin builder is locked separately.</p></div><button class="primary" onclick="showPanel('game')">Start Quest</button></div>
-      <div class="card"><div><h2>🛠 Full Editor</h2><p class="muted">Admin-only editing. PetBot bridge stays protected; this only edits the game level.</p></div><button class="warn" onclick="openBuilderWithPassword()">Open Builder</button></div>
-      <div class="card"><div><h2>🐾 Pet Care</h2><p class="muted">Owned pets come from Petbot. Pet images come from Sheet 51.</p></div><button class="good" onclick="showPanel('petcare')">Open Pet Care</button></div>
-    </div>
-  </section>
+  <div class="overlay" id="startScreen"><div class="modal"><h1>Waaambulance Quest Dash</h1><p>This is the full-screen game layout again. Discord users can play. Admins can edit the layout separately.</p><div class="modeRow"><button id="soloModeBtn">Solo Quest</button><button id="teamModeBtn" class="off">Team Quest</button><button id="petCareStartBtn" class="off">Pet Care</button><button id="adminStartBtn" class="off">Admin Builder</button></div><div class="selectGrid" id="characterChoices"><button class="charChoice selected" data-char="ax"><strong>Ax</strong><span>Waaambulance boost: clears nearby drama.</span></button><button class="charChoice" data-char="pura"><strong>Pura</strong><span>Dice helper: collects dice items and rolls bonuses.</span></button><button class="charChoice" data-char="owl"><strong>Owl</strong><span>Scout: spots and gathers shiny evidence.</span></button><button class="charChoice" data-char="unicorn"><strong>Unicorn</strong><span>Sparkle shield: blocks hazards.</span></button></div><p class="pickStatus" id="pickStatus">Solo Quest: chosen Ax</p><div class="choiceRow"><button id="startQuestBtn">Start Solo Quest</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space, Q or Tab to switch, E for ability. On phones/tablets use the buttons.</p></div></div>
+  <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div>
+  <div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 
-  <section id="game" class="panel">
-    <div class="gameShell">
-      <div class="hud"><div class="row"><span class="pill" id="scorePill">Score: 0</span><span class="pill" id="livesPill">Lives: 3</span><span class="pill" id="distPill">Distance: 0m</span></div><div class="row"><button onclick="resetRun()">Restart</button><button onclick="toggleRun()" id="pauseBtn">Pause</button><button onclick="openBuilderWithPassword()">Edit Level</button></div></div>
-      <div class="canvasWrap"><canvas id="gameCanvas" width="1280" height="720"></canvas><div class="touch"><div class="left"><button id="touchLeft">◀</button><button id="touchRight">▶</button></div><div class="right"><button id="touchJump">▲</button></div></div></div>
-    </div>
-  </section>
+  <section class="sidePanel hidden" id="adminPanel"><h1>🛠 Admin Builder</h1><p>Edit the actual full-screen game look. No random emoji player. PetBot files stay separate.</p><div class="buttonRow"><button class="primary" id="closeAdminBtn">Close</button><button class="blueBtn" id="loadCloudBtn">Load shared</button><button class="greenBtn" id="saveCloudBtn">Save shared</button><button id="resetLayoutBtn">Reset layout</button></div><label>Admin key<input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"></label><label>Level name<input id="levelName" value="level_v42_main"></label><h2>Simple tabs</h2><div class="buttonRow"><button data-admin-tab="layout" class="primary">Layout</button><button data-admin-tab="characters">Characters</button><button data-admin-tab="petbot">PetBot</button><button data-admin-tab="export">Export</button></div><div id="adminLayout" class="settingGrid"></div><div id="adminCharacters" class="hidden"><h2>Character choice</h2><label>Main character<select id="mainCharSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option></select></label><label>Follower character<select id="buddyCharSelect"><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option></select></label><div class="buttonRow"><button class="blueBtn" id="applyCharsBtn">Apply characters</button><button id="clearBadBrowserDataBtn">Clear old browser game data</button></div></div><div id="adminPetbot" class="hidden"><h2>PetBot bridge check</h2><p>This version keeps the original API bridge files and the Pet Care screen uses them.</p><div class="miniStatus">functions/api/petbot.js preserved\nfunctions/api/sheet51.js preserved\nfunctions/api/sheets.js preserved\nfunctions/api/admin.js preserved</div></div><div id="adminExport" class="hidden"><h2>Export layout</h2><textarea id="exportBox" readonly></textarea><div class="buttonRow"><button id="copyExportBtn">Copy JSON</button></div></div><div class="miniStatus" id="adminStatus">Ready.</div></section>
 
-  <section id="builder" class="panel">
-    <div class="builderGrid">
-      <div class="gameShell">
-        <div class="hud builderHud"><div class="row"><span class="pill">Admin Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span><span class="pill" id="builderModePill">EDIT OBJECTS</span></div><div class="row"><button onclick="centerCameraOnSelection()">Center Selected</button><button class="primary" onclick="testFromBuilder()">Test Play</button><button class="bad" onclick="showPanel('menu')">Exit</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="modeBanner editing" id="modeBanner">EDIT OBJECTS: click or drag a platform, coin, enemy, or finish flag. Use Add buttons below to place new things.</div><div class="selectedReadout" id="selectedReadout">Nothing selected yet</div><div class="editorHint">Pick a mode below. Click something, then drag it or use the move/resize buttons.</div><div class="editPad" id="editPad"><button onclick="nudgeSelected(0,-10)">↑</button><button onclick="resizeSelected(0,-10)">H-</button><button onclick="nudgeSelected(0,10)">↓</button><button onclick="nudgeSelected(-10,0)">←</button><button onclick="resizeSelected(10,10)">Size+</button><button onclick="nudgeSelected(10,0)">→</button><button class="wide" onclick="resizeSelected(-10,-10)">Size -</button><button class="wide" onclick="fitSelectedLayer()">Fit layer/object</button></div></div>
-      </div>
-      <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div>
-        <div class="builderWorkflow"><span class="v40Badge">V40 PetBot base preserved</span><br><b>Use one tab at a time:</b> Layers, Objects, Character, Sprites, Save/Load. Click the thing on the preview, drag/resize it, then save.</div>
-        <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Character</button><button data-tab="animation">Sprites</button><button data-tab="save">Save/Load</button></div>
-
-        <div id="tab-layers" class="toolSec active">
-          
-          <div class="miniTitle">Select a background/game layer</div>
-          <div class="layerButtons"><button id="btnLayerSky" onclick="selectLayer('sky')">Sky</button><button id="btnLayerHills" onclick="selectLayer('hills')">Hills</button><button id="btnLayerGround" onclick="selectLayer('ground')">Ground</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="showLayerBoxes" type="checkbox" style="width:auto" onchange="renderEditor()"> Show layer boxes</label><label style="flex-direction:row;align-items:center;gap:8px"><input id="showPlatformGuides" type="checkbox" style="width:auto" onchange="renderEditor()"> Show platform guides</label></div>
-          <div class="fieldGrid">
-            <label>Layer<select id="lKind"><option value="sky">sky</option><option value="hills">hills</option><option value="ground">ground</option></select></label>
-            <label>Visible<select id="lVisible"><option value="true">visible</option><option value="false">hidden</option></select></label>
-            <label>X<input id="lX" type="number"></label><label>Y<input id="lY" type="number"></label>
-            <label>Width<input id="lW" type="number"></label><label>Height<input id="lH" type="number"></label>
-            <label>Opacity<input id="lOpacity" type="number" step="0.05" min="0" max="1"></label><label>Parallax<input id="lParallax" type="number" step="0.05" min="0" max="1"></label>
-            <label style="grid-column:1/-1">Colour or image URL<input id="lValue" placeholder="#84d8ff or https://..."></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyLayerForm()">Apply Layer</button><button onclick="resetLayerDefaults()">Clean Default Layers</button><button onclick="fitSelectedLayer()">Fit Selected To Screen</button></div>
-        </div>
-
-        <div id="tab-objects" class="toolSec">
-          <div class="toolHelp"><b>Objects:</b> click an existing item, or press Add then click the preview to place it.</div>
-          <div class="quickTools"><button id="btnAddPlatform" class="primary" onclick="startAddMode('platform')">Add Platform</button><button id="btnAddCoin" class="primary" onclick="startAddMode('coin')">Add Coin</button><button id="btnAddEnemy" class="primary" onclick="startAddMode('enemy')">Add Enemy</button><button id="btnAddFinish" class="primary" onclick="startAddMode('finish')">Add Finish</button><button onclick="cancelAddMode()">Move/Edit Mode</button><button onclick="selectNextPlatform()">Select Next Platform</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
-          
-          <div class="fieldGrid">
-            <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option><option value="player">character</option><option value="layer">layer</option></select></label>
-            <label>Label / emoji<input id="fLabel" placeholder="💎 or label"></label>
-            <label>X<input id="fX" type="number"></label><label>Y<input id="fY" type="number"></label>
-            <label>Width<input id="fW" type="number"></label><label>Height<input id="fH" type="number"></label>
-            <label style="grid-column:1/-1">Image URL optional<input id="fImg" placeholder="https://..."></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyFormToSelected()">Apply Selected</button><button onclick="bringForward()">Bring Forward</button></div>
-          <div class="statusBox" id="selectedInfo">Click a layer, object or character to edit it.</div>
-        </div>
-
-        <div id="tab-player" class="toolSec">
-          <div class="miniTitle">Character size and position</div>
-          <p class="hint">This controls the playable character only. Pet images can be loaded from Pet Care without removing PetBot.</p>
-          <div class="fieldGrid">
-            <label>Character<select id="playerKind"><option value="ax">Ax</option><option value="pura">Pura</option><option value="pet">Selected Pet</option><option value="custom">Custom</option></select></label>
-            <label>Width<input id="pW" type="number" value="82"></label><label>Height<input id="pH" type="number" value="96"></label>
-            <label>X<input id="pX" type="number"></label><label>Y<input id="pY" type="number"></label>
-            <label style="grid-column:1/-1">Image URL / emoji<input id="pImg" placeholder="emoji or image URL"></label>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyPlayerSettings()">Apply Player</button><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="savePlayerSettings()">Save Player Settings</button></div>
-        </div>
-
-        <div id="tab-animation" class="toolSec">
-          <div class="miniTitle">Animation frame editor</div>
-          <p class="hint">Use {n} where the frame number goes. V40 locks actions to 10 frames so old 20-frame sprite settings do not come back.</p>
-          <div class="fieldGrid one"><label>Idle frame URL pattern<input id="animIdle"></label><label>Walk frame URL pattern<input id="animWalk"></label><label>Jump frame URL pattern<input id="animJump"></label></div>
-          <div class="fieldGrid"><label>Frame count<input id="animCount" type="number" min="1" max="10" value="10"></label><label>Frame speed ms<input id="animSpeed" type="number" value="95"></label><label>Preview action<select id="animState"><option value="idle">Idle</option><option value="walk">Walk</option><option value="jump">Jump</option></select></label><label>Frame number<input id="animFrame" type="number" min="1" value="1"></label></div>
-          <div class="animWorkbench">
-            <div>
-              <div class="animPreviewBox" id="animPreviewBox"><img id="animPreviewImg" alt="Animation frame preview" style="display:none"><div class="fallback" id="animPreviewFallback">🦎</div></div>
-              <div class="frameTools"><button onclick="stepAnimFrame(-1)">◀ Prev</button><button onclick="stepAnimFrame(1)">Next ▶</button><button class="primary" onclick="usePreviewFrameOnPlayer()">Use this frame</button></div>
-            </div>
-            <div>
-              <div class="miniTitle">Frame strip</div>
-              <div id="animFrameStrip" class="frameStrip"></div>
-              <div id="animResolvedUrl" class="frameUrlBox">Frame URL will appear here.</div>
-            </div>
-          </div>
-          <div class="row" style="margin-top:10px"><button class="good" onclick="applyAnimationSettings()">Apply Animation</button><button onclick="saveAnimationSettings()">Save Animation</button><button onclick="resetAnimationSettings()">Reset Ax Defaults</button></div>
-        </div>
-
-        <div id="tab-save" class="toolSec">
-          <div class="fieldGrid one"><label>Level name<input id="levelName" value="level_1"></label></div>
-          <div class="saveButtons"><button class="good" onclick="saveLevelCloud()">☁️ Save shared level</button><button class="primary" onclick="loadLevelCloud()">☁️ Load shared level</button><button onclick="saveLevelLocal()">Local backup</button><button onclick="loadLevelLocal()">Load local</button><button onclick="exportLevel()">Export JSON</button><button onclick="importLevel()">Import JSON</button></div>
-          <textarea id="levelJson" placeholder="Exported level JSON appears here. Paste JSON then Import."></textarea>
-          <div id="cloudSaveStatus" class="saveStatus">Cloud Save uses the Cloudflare KV binding CTW_GAME_LEVELS and the admin key CTW_GAME_ADMIN_KEY. Local backup only saves on this browser.</div>
-          <p class="hint">Admins save the shared level here. Discord users pressing Play load level_1 when Cloud Save is configured.</p>
-        </div>
-      </aside>
-    </div>
-  </section>
-
-  <section id="petcare" class="panel">
-    <div class="petGrid">
-      <div class="petCard">
-        <div class="row" style="justify-content:space-between"><h2>🐾 Pet Care</h2><button onclick="loadPetbotPets(true)">Reload live</button></div>
-        <label>User<select id="userSelect"><option value="1214671839205396481">Ryan</option><option value="1407957358683885670">Ashely</option></select></label>
-        <label style="margin-top:8px">Owned pet<select id="petSelect" onchange="selectPetFromDropdown()"></select></label>
-        <div class="petImage" style="margin-top:12px"><img id="petImg" alt="Pet image from Sheet 51" style="display:none"><div id="petNoImg" class="muted">No pet loaded yet</div></div>
-      </div>
-      <div class="petCard">
-        <h2 id="petTitle" class="petHeroName">No pet selected</h2><p id="petSub" class="muted"></p>
-        <div class="petBadges"><span class="petBadge" id="petCodeBadge">code —</span><span class="petBadge green" id="petLevelBadge">level —</span><span class="petBadge purple" id="petImageBadge">Sheet 51 image</span></div>
-        <label>Hunger<div class="bar"><span id="hungerBar"></span></div></label><label>Happy<div class="bar"><span id="happyBar"></span></div></label><label>Energy<div class="bar"><span id="energyBar"></span></div></label>
-        <div class="row careButtons" style="margin-top:14px"><button>🍔 Feed visual</button><button>🧸 Play visual</button><button>💤 Rest visual</button><button>💊 Heal visual</button><button class="good" onclick="usePetAsPlayer()">Use Pet in Platform</button></div>
-        <div class="statusBox" id="petDebug">Petbot data is read-only. Pet image must come from Sheet 51.</div>
-      </div>
-    </div>
-  </section>
+  <section class="sidePanel hidden" id="petPanel"><h1>🐾 Pet Care</h1><p>Owned pets come from PetBot. Images come from Sheet 51.</p><div class="buttonRow"><button class="primary" id="closePetBtn">Close</button><button class="blueBtn" id="reloadPetsBtn">Reload live</button><button class="greenBtn" id="usePetBtn">Use pet as player</button></div><div class="petGrid"><div><label>User<select id="userSelect"><option value="1214671839205396481">Ryan</option><option value="1407957358683885670">Ashely</option></select></label><label>Owned pet<select id="petSelect"></select></label><div class="petImage"><img id="petImg" alt="Pet image from Sheet 51" style="display:none"><div id="petNoImg">No pet loaded yet</div></div></div><div><h2 id="petTitle">No pet loaded</h2><p id="petSub">Press Reload live.</p><p><b id="petImageBadge">No Sheet 51 image</b></p><p>Hunger</p><div class="bar"><span id="hungerBar"></span></div><p>Happiness</p><div class="bar"><span id="happyBar"></span></div><p>Energy</p><div class="bar"><span id="energyBar"></span></div><div class="miniStatus" id="petDebug">PetBot ready.</div></div></div></section>
 </div>
 <script>
-const VW=1280,VH=720,WORLD_W=3600;
-const canvas=document.getElementById('gameCanvas'), ctx=canvas.getContext('2d');
-const editCanvas=document.getElementById('editCanvas'), ectx=editCanvas.getContext('2d');
-editCanvas.style.touchAction='none';
+const $=id=>document.getElementById(id);
+const root=document.documentElement;
+const SETTINGS=[
+  ['floorPx',70,30,150,'px','Floor height'],['platformH',48,20,100,'px','Platform thickness'],['playerX',22,5,50,'vw','Player X'],['playerW',260,120,420,'px','Player width'],['playerDrop',26,-50,120,'px','Player drop'],['buddyX',14,2,45,'vw','Follower X'],['buddyW',118,60,260,'px','Follower width'],['buddyDrop',16,-50,120,'px','Follower drop'],['hillsH',600,250,900,'px','Hills height'],['hillsBottom',40,-120,220,'px','Hills bottom'],['groundH',370,160,700,'px','Ground height'],['groundBottom',-13,-150,120,'px','Ground bottom'],['skyZoom',100,60,180,'%','Sky zoom'],['objectSize',60,35,110,'px','Object size'],['gameSpeed',2.05,.5,5,'','Game speed'],['zHills',1,0,80,'','Hills layer'],['zGround',20,0,90,'','Ground layer'],['zPlatform',12,0,90,'','Platform layer'],['zPlayer',30,0,100,'','Player layer'],['zBuddy',24,0,100,'','Follower layer']
+];
+function cssVal(name){return getComputedStyle(root).getPropertyValue('--'+name).trim()}
+function setCss(name,value,unit){root.style.setProperty('--'+name,String(value)+unit)}
+function readNum(name,def){const v=parseFloat(cssVal(name));return Number.isFinite(v)?v:def}
+function currentSettings(){const out={}; for(const [n,d,,,,] of SETTINGS){out[n]=cssVal(n)||String(d)} out.mainChar=activeChar; out.buddyChar=buddyChar; out.teamMode=teamMode; return out}
+function applySettings(s){if(!s)return; for(const [n,,min,max,unit] of SETTINGS){if(s[n]!=null){let raw=String(s[n]).trim(); let val=parseFloat(raw); if(Number.isFinite(val)) setCss(n,Math.max(min,Math.min(max,val)),unit);}} if(s.mainChar)activeChar=s.mainChar;if(s.buddyChar)buddyChar=s.buddyChar; updatePicker(); ensureCharacterEls(); buildSettings();}
+function saveLocal(){localStorage.setItem('ctwgame-v42-layout',JSON.stringify(currentSettings()));}
+function loadLocal(){try{const s=localStorage.getItem('ctwgame-v42-layout'); if(s)applySettings(JSON.parse(s));}catch(e){}}
+function resetLayout(){localStorage.removeItem('ctwgame-v42-layout'); location.reload()}
+function showToast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(showToast._t);showToast._t=setTimeout(()=>t.classList.remove('show'),1800)}
+function hideOverlays(){['startScreen','levelScreen','endScreen'].forEach(id=>$(id).classList.add('hidden'))}
+function togglePanel(id,show){$(id).classList.toggle('hidden',show===false?true:!$(id).classList.contains('hidden')?true:false)}
+function openPanel(id){$(id).classList.remove('hidden')} function closePanel(id){$(id).classList.add('hidden')}
 const imgCache=new Map();
-const AX_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_001.png';
-const CTW_GAME_VERSION='V40_SAFE_RESTORE_PETBOT_BASE';
-const DEFAULT_SKY_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_sky.png';
-const DEFAULT_HILLS_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_hills.png';
-const DEFAULT_GROUND_URL='https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/day_ground.png';
-function id(){return Math.random().toString(36).slice(2,9)}
-function layerDefaults(){return[
-  {id:'layer_sky',kind:'sky',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_SKY_URL,parallax:0,opacity:1,visible:true,z:0},
-  {id:'layer_hills',kind:'hills',type:'layer',x:0,y:0,w:VW,h:VH,value:DEFAULT_HILLS_URL,parallax:.18,opacity:1,visible:true,z:1},
-  {id:'layer_ground',kind:'ground',type:'layer',x:0,y:640,w:VW,h:80,value:DEFAULT_GROUND_URL,parallax:1,opacity:1,visible:true,z:2}
-]}
-let level={layers:layerDefaults(),objects:[
-  {id:id(),type:'platform',x:0,y:640,w:WORLD_W,h:80,label:'ground'},
-  {id:id(),type:'platform',x:420,y:500,w:240,h:34,label:'platform'},
-  {id:id(),type:'platform',x:820,y:385,w:260,h:34,label:'platform'},
-  {id:id(),type:'coin',x:500,y:440,w:48,h:48,label:'💎',collected:false},
-  {id:id(),type:'coin',x:940,y:325,w:48,h:48,label:'💎',collected:false},
-  {id:id(),type:'enemy',x:1350,y:580,w:64,h:58,label:'⚠️'},
-  {id:id(),type:'finish',x:2300,y:540,w:72,h:100,label:'🏁'}
-]};
-let player={x:120,y:540,w:82,h:96,vx:0,vy:0,speed:7.5,jump:-16,gravity:.65,onGround:false,kind:'ax',img:AX_URL,emoji:'🦎',score:0,lives:3,won:false};
-let cameraX=0,running=true,currentPanel='menu',selected=null,drag=null,adminOk=false,currentPet=null,currentPetImage='';
-let builderMode='objects';
-let pendingAdd=null;
-let touch={left:false,right:false};
-let keys={};
-const DEFAULT_ANIM={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};
-let anim={...DEFAULT_ANIM};
-function img(src){if(!src||!/^https?:\/\//.test(src))return null;if(imgCache.has(src))return imgCache.get(src);const im=new Image();im.crossOrigin='anonymous';im.src=src;imgCache.set(src,im);return im}
-function showPanel(name){document.body.classList.toggle('builderFull',name==='builder');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(name).classList.add('active');currentPanel=name;if(name==='game'){running=true;loadLevelCloudSilent()}if(name==='petcare' && !(window.loadedPets||[]).length) loadPetbotPets(false);if(name==='builder'){running=false;setBuilderMode(builderMode||'objects');renderEditor()} }
-async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter CTW_GAME_ADMIN_KEY');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin_key:pass,key:pass})});const d=await r.json();if(d.ok){adminOk=true;sessionStorage.setItem('ctw_admin_key',pass);document.getElementById('adminStatus').textContent='Unlocked. PetBot bridge files are preserved; this builder edits only the game level.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
-function setToolTab(tab){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.toolSec').forEach(s=>s.classList.toggle('active',s.id==='tab-'+tab));}
-document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>{const t=b.dataset.tab;if(t==='layers')setBuilderMode('layers');else if(t==='objects')setBuilderMode('objects');else if(t==='player')setBuilderMode('player');else setToolTab(t);}));
-function canvasPoint(cv,e,world=true){const r=cv.getBoundingClientRect();const p={x:(e.clientX-r.left)*VW/r.width,y:(e.clientY-r.top)*VH/r.height};if(world)p.x+=cameraX;return p}
-function hit(a,b){return a.x<a.x+a.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y&&a.x<b.x+b.w}
-window.addEventListener('keydown',e=>{keys[e.code]=true;if(currentPanel==='builder'&&e.code==='Delete')deleteSelected();if(currentPanel==='builder'&&e.ctrlKey&&e.code==='KeyD'){e.preventDefault();duplicateSelected()}});window.addEventListener('keyup',e=>keys[e.code]=false);
-function bindTouch(id,down,up){const el=document.getElementById(id);['pointerdown','touchstart'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();down()}));['pointerup','pointercancel','touchend','mouseleave'].forEach(ev=>el.addEventListener(ev,e=>{e.preventDefault();up()}))}
-bindTouch('touchLeft',()=>touch.left=true,()=>touch.left=false);bindTouch('touchRight',()=>touch.right=true,()=>touch.right=false);bindTouch('touchJump',()=>jump(),()=>{});
-function jump(){if(player.onGround&&!player.won){player.vy=player.jump;player.onGround=false}}
-function resetRun(){player.x=120;player.y=540;player.vx=0;player.vy=0;player.lives=3;player.score=0;player.won=false;for(const o of level.objects)if(o.type==='coin')o.collected=false;cameraX=0;running=true}
-function toggleRun(){running=!running;document.getElementById('pauseBtn').textContent=running?'Pause':'Resume'}
-function update(){if(currentPanel!=='game'||!running)return;let move=0;if(keys.ArrowLeft||keys.KeyA||touch.left)move=-1;if(keys.ArrowRight||keys.KeyD||touch.right)move=1;if(keys.Space||keys.ArrowUp||keys.KeyW)jump();player.vx=move*player.speed;player.vy+=player.gravity;player.x+=player.vx;player.y+=player.vy;if(player.x<0)player.x=0;if(player.x+player.w>WORLD_W)player.x=WORLD_W-player.w;player.onGround=false;for(const o of level.objects){if(o.type!=='platform')continue;if(player.x+player.w>o.x&&player.x<o.x+o.w&&player.y+player.h>o.y&&player.y+player.h-player.vy<=o.y+10&&player.vy>=0){player.y=o.y-player.h;player.vy=0;player.onGround=true}}for(const o of level.objects){if(o.type==='coin'&&!o.collected&&rects(player,o)){o.collected=true;player.score+=10} if(o.type==='enemy'&&rects(player,o)){player.lives--;player.x=120;player.y=540;player.vx=0;player.vy=0;if(player.lives<=0)resetRun()} if(o.type==='finish'&&rects(player,o)){player.won=true;running=false}}if(player.y>VH+100){player.lives--;player.x=120;player.y=540;player.vy=0;if(player.lives<=0)resetRun()}const target=player.x+player.w/2-VW/2;cameraX+=(Math.max(0,Math.min(target,WORLD_W-VW))-cameraX)*.13}
-function rects(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y}
-function draw(cv,ct,editor=false){ct.clearRect(0,0,VW,VH);drawLayers(ct,editor);ct.save();ct.translate(-Math.round(cameraX),0);if(editor&&document.getElementById('snapCheck')?.checked)drawGrid(ct);for(const o of level.objects)drawObj(ct,o,editor);drawPlayer(ct,editor);ct.restore();if(player.won&&!editor){ct.fillStyle='rgba(0,0,0,.55)';ct.fillRect(0,0,VW,VH);ct.fillStyle='#fff';ct.font='bold 52px system-ui';ct.textAlign='center';ct.fillText('🏁 Level Complete!',VW/2,VH/2)}}
-function fillOrImage(ct,value,x,y,w,h){if(/^https?:\/\//.test(value||'')){const im=img(value);if(im&&im.complete)ct.drawImage(im,x,y,w,h);else{ct.fillStyle='#84d8ff';ct.fillRect(x,y,w,h)}}else{ct.fillStyle=value||'#84d8ff';ct.fillRect(x,y,w,h)}}
-function drawLayers(ct,editor=false){
-  // Clean background stack: sky first, then hills, then ground.
-  // The ground no longer paints a huge green block over the level.
-  ct.fillStyle='#79c8ff';
-  ct.fillRect(0,0,VW,VH);
-  for(const l of [...level.layers].sort((a,b)=>a.z-b.z)){
-    if(!l.visible)continue;
-    ct.save();
-    ct.globalAlpha=Number(l.opacity??1);
-    let x=l.x,y=l.y,w=l.w,h=l.h;
-    if(l.kind!=='sky')x=l.x-(cameraX*(l.parallax??0)%VW);
-    const val=l.value||'';
-    if(l.kind==='ground'){
-      const im=/^https?:\/\//.test(val)?img(val):null;
-      if(im&&im.complete){
-        for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
-      }else{
-        // Small fallback strip only; not a giant block.
-        ct.fillStyle=/^#|rgb|hsl/.test(val)?val:'#5ac66a';
-        ct.fillRect(0,y,VW,h);
-      }
-    }else if(/^https?:\/\//.test(val)){
-      const im=img(val);
-      if(im&&im.complete){
-        if(l.kind==='hills'){
-          for(let tx=x-VW;tx<VW*2;tx+=VW)ct.drawImage(im,tx,y,w,h);
-        }else{
-          ct.drawImage(im,x,y,w,h);
-        }
-      }else{
-        ct.fillStyle=l.kind==='sky'?'#79c8ff':'transparent';
-        if(l.kind==='sky')ct.fillRect(0,0,VW,VH);
-      }
-    }else{
-      fillOrImage(ct,val,x,y,w,h);
-    }
-    ct.restore();
-  }
-  if(editor){
-    ct.save();
-    ct.translate(-Math.round(cameraX),0);
-    for(const l of level.layers){
-      const showAll=document.getElementById('showLayerBoxes')?.checked;
-      const isSel=selected===l;
-      if(!showAll)continue;
-      ct.strokeStyle=isSel?'rgba(253,224,71,.95)':'rgba(56,189,248,.35)';
-      ct.lineWidth=isSel?3:1;
-      ct.setLineDash([10,6]);
-      ct.strokeRect(l.x,l.y,l.w,l.h);
-      ct.setLineDash([]);
-      if(isSel){
-        ct.fillStyle='rgba(15,23,42,.78)';
-        ct.font='bold 16px system-ui';
-        ct.fillText('LAYER: '+l.kind.toUpperCase(),l.x+8,l.y+22);
-        drawSelection(ct,l);
-      }
-    }
-    ct.restore();
-  }
-}
-function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.15)';for(let x=0;x<WORLD_W;x+=25)for(let y=0;y<VH;y+=25)ct.fillRect(x,y,2,2)}
-function drawHandle(ct,x,y){ct.fillStyle='#38bdf8';ct.strokeStyle='#071326';ct.lineWidth=2;ct.fillRect(x-6,y-6,12,12);ct.strokeRect(x-6,y-6,12,12)}
-function drawSelection(ct,o){ct.save();ct.setLineDash([8,5]);ct.strokeStyle='#38bdf8';ct.lineWidth=3;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6);ct.setLineDash([]);drawHandle(ct,o.x,o.y);drawHandle(ct,o.x+o.w,o.y);drawHandle(ct,o.x,o.y+o.h);drawHandle(ct,o.x+o.w,o.y+o.h);ct.restore()}
-function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill()}
-function drawObj(ct,o,editor){const selectedThis=selected===o;const im=img(o.img||'');if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else if(o.type==='platform'){
-  if(editor&&document.getElementById('showPlatformGuides')?.checked){
-    // Platforms are collision guides, not artwork. Keep them subtle so the game scene stays clean.
-    ct.save();
-    ct.fillStyle=selectedThis?'rgba(56,189,248,.12)':'rgba(56,189,248,.055)';
-    ct.fillRect(o.x,o.y,o.w,o.h);
-    ct.strokeStyle=selectedThis?'rgba(253,224,71,.95)':'rgba(56,189,248,.45)';
-    ct.lineWidth=selectedThis?3:1.5;
-    ct.setLineDash(selectedThis?[]:[10,8]);
-    ct.strokeRect(o.x,o.y,o.w,o.h);
-    ct.setLineDash([]);
-    if(selectedThis){ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 14px system-ui';ct.fillText(o.label==='ground'?'GROUND COLLISION':'PLATFORM',o.x+8,o.y-8)}
-    ct.restore();
-  } else if(editor&&selectedThis){
-    // Selected platform still shows even if guides are off.
-    ct.save();ct.strokeStyle='rgba(253,224,71,.95)';ct.lineWidth=3;ct.strokeRect(o.x,o.y,o.w,o.h);ct.restore();
-  }
-}
-  else if(o.type==='coin'){if(o.collected&&!editor)return;ct.save();if(o.collected)ct.globalAlpha=.25;ct.font=`${o.h}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y);ct.restore()}else if(o.type==='enemy'){ct.fillStyle='#fb7185';roundRect(ct,o.x,o.y,o.w,o.h,12,true);ct.font=`${Math.min(o.h,38)}px system-ui`;ct.textBaseline='middle';ct.textAlign='center';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)}else if(o.type==='finish'){ct.font=`${Math.min(o.h,70)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)}else{ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'✨',o.x,o.y)}if(editor&&selectedThis)drawSelection(ct,o)}
-function frameUrl(pattern,n){return pattern.replace('{n}',String(n).padStart(3,'0')).replace('{i}',String(n))}
-function currentPlayerImg(){if(player.kind==='ax'&&anim){let state=player.onGround?(Math.abs(player.vx)>0.4?'walk':'idle'):'jump';let n=1+Math.floor(Date.now()/anim.speed)%anim.count;return frameUrl(anim[state]||anim.idle,n)}return player.img}
-function drawPlayer(ct,editor){let src=currentPlayerImg();const im=img(src||'');if(im&&im.complete)ct.drawImage(im,player.x,player.y,player.w,player.h);else{const fallback=img(AX_URL);if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h);else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}if(editor){ct.strokeStyle=selected===player?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=selected===player?4:2;ct.strokeRect(player.x,player.y,player.w,player.h);if(selected===player){drawHandle(ct,player.x,player.y);drawHandle(ct,player.x+player.w,player.y);drawHandle(ct,player.x,player.y+player.h);drawHandle(ct,player.x+player.w,player.y+player.h);ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10))}}}
-function loop(){update();draw(canvas,ctx,false);if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)}requestAnimationFrame(loop);
-function renderEditor(){draw(editCanvas,ectx,true);updateLayerButtons();updateSelectedReadout();}
-function resizeHandleHit(o,p){if(!o)return null;const hs=14;const handles=[['nw',o.x,o.y],['ne',o.x+o.w,o.y],['sw',o.x,o.y+o.h],['se',o.x+o.w,o.y+o.h]];for(const [name,x,y] of handles)if(Math.abs(p.x-x)<=hs&&Math.abs(p.y-y)<=hs)return name;return null}
-function applyResize(o,handle,p){const minW=o===player?28:o.type==='layer'?80:16,minH=o===player?28:o.type==='layer'?40:12;if(handle.includes('e'))o.w=Math.max(minW,p.x-o.x);if(handle.includes('s'))o.h=Math.max(minH,p.y-o.y);if(handle.includes('w')){const r=o.x+o.w;o.x=Math.min(p.x,r-minW);o.w=r-o.x}if(handle.includes('n')){const b=o.y+o.h;o.y=Math.min(p.y,b-minH);o.h=b-o.y}o.x=Math.round(o.x);o.y=Math.round(o.y);o.w=Math.round(o.w);o.h=Math.round(o.h)}
-editCanvas.addEventListener('pointerdown',e=>{e.preventDefault();const p=canvasPoint(editCanvas,e,true);
-  if(pendingAdd){selected=createObjAt(pendingAdd,p.x,p.y);pendingAdd=null;updateBuilderModeUI();fillForm();renderEditor();editCanvas.setPointerCapture?.(e.pointerId);return;}
-  if(builderMode==='player'){selected=player;}
-  if(selected){const h=resizeHandleHit(selected,p);if(h){drag={mode:'resize',handle:h};editCanvas.setPointerCapture?.(e.pointerId);return}}
-  const hitPlayer=p.x>=player.x&&p.x<=player.x+player.w&&p.y>=player.y&&p.y<=player.y+player.h;
-  let layerHit=null;
-  if(builderMode==='layers'){
-    // In layer mode, selecting the active layer should not require turning boxes on.
-    layerHit=(selected&&selected.type==='layer')?selected:null;
-    if(!layerHit){layerHit=[...level.layers].reverse().find(l=>p.x>=l.x&&p.x<=l.x+l.w&&p.y>=l.y&&p.y<=l.y+l.h)}
-  } else if(document.getElementById('showLayerBoxes')?.checked){layerHit=[...level.layers].reverse().find(l=>p.x>=l.x&&p.x<=l.x+l.w&&p.y>=l.y&&p.y<=l.y+l.h)}
-  let objectHit=[...level.objects].reverse().find(o=>p.x>=o.x&&p.x<=o.x+o.w&&p.y>=o.y&&p.y<=o.y+o.h);
-  if(builderMode==='player') selected=player;
-  else if(builderMode==='layers') selected=layerHit||selected;
-  else selected=hitPlayer?player:(objectHit||layerHit||null);
-  if(selected){drag={mode:'move',dx:p.x-selected.x,dy:p.y-selected.y};editCanvas.setPointerCapture?.(e.pointerId);fillForm()}else fillForm();renderEditor()});
-editCanvas.addEventListener('pointermove',e=>{if(!drag||!selected)return;e.preventDefault();const p=canvasPoint(editCanvas,e,true);if(drag.mode==='resize')applyResize(selected,drag.handle,p);else{let nx=p.x-drag.dx,ny=p.y-drag.dy;if(document.getElementById('snapCheck')?.checked&&selected!==player){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}else{nx=Math.round(nx);ny=Math.round(ny)}selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny))}if(selected===player){syncPlayerFields()}if(selected?.type==='layer')syncLayerFields(false);fillForm(false);renderEditor()});
-window.addEventListener('pointerup',()=>drag=null);
-
-function setBuilderMode(mode){
-  builderMode=mode;
-  pendingAdd=null;
-  if(mode==='layers'){
-    setToolTab('layers');
-    // Select sky by default only if no layer is selected.
-    if(!selected || selected.type!=='layer') selectLayer('sky');
-    document.getElementById('showLayerBoxes').checked=true;
-  }
-  if(mode==='objects'){
-    setToolTab('objects');
-    document.getElementById('showPlatformGuides').checked=true;
-    if(selected&&selected.type==='layer') selected=null;
-  }
-  if(mode==='player'){
-    setToolTab('player');
-    selected=player;
-    syncPlayerFields();
-  }
-  updateBuilderModeUI();
-  fillForm(false);
-  renderEditor();
-}
-function updateBuilderModeUI(){
-  const pill=document.getElementById('builderModePill');
-  const banner=document.getElementById('modeBanner');
-  const txt=document.getElementById('objectModeText');
-  if(!pill||!banner)return;
-  document.querySelectorAll('.quickTools button').forEach(b=>b.classList.remove('addModeActive'));
-  if(pendingAdd){
-    pill.textContent='ADDING '+pendingAdd.toUpperCase();
-    banner.className='modeBanner adding';
-    banner.textContent='ADD '+pendingAdd.toUpperCase()+': click anywhere on the game screen to place it. Press Move/Edit Mode to cancel.';
-    if(txt)txt.textContent='ADDING '+pendingAdd.toUpperCase()+' — click canvas to place';
-    const id='btnAdd'+pendingAdd[0].toUpperCase()+pendingAdd.slice(1);
-    const btn=document.getElementById(id); if(btn)btn.classList.add('addModeActive');
-  }else if(builderMode==='layers'){
-    pill.textContent='EDIT LAYERS';
-    banner.className='modeBanner editing';
-    banner.textContent='EDIT LAYERS: choose Sky, Hills, or Ground below. Drag the layer on the screen or change its numbers.';
-  }else if(builderMode==='player'){
-    pill.textContent='EDIT CHARACTER';
-    banner.className='modeBanner player';
-    banner.textContent='EDIT CHARACTER: drag the character or edit its X/Y/Width/Height below.';
-  }else{
-    pill.textContent='EDIT OBJECTS';
-    banner.className='modeBanner editing';
-    banner.textContent='EDIT OBJECTS: click or drag platforms, coins, enemies, and finish flag. Use Add buttons below to add new things.';
-    if(txt)txt.textContent='EDITING existing objects';
-  }
-}
-function startAddMode(type){builderMode='objects';setToolTab('objects');pendingAdd=type;document.getElementById('showPlatformGuides').checked=true;updateBuilderModeUI();renderEditor();}
-function cancelAddMode(){pendingAdd=null;builderMode='objects';setToolTab('objects');updateBuilderModeUI();renderEditor();}
-function createObjAt(type,x,y){
-  const obj={id:id(),type,x:Math.round(x),y:Math.round(y),w:80,h:60,label:''};
-  if(type==='platform'){obj.w=220;obj.h=34;obj.label='platform';obj.y=Math.round(y-17)}
-  if(type==='coin'){obj.w=48;obj.h=48;obj.label='💎';obj.y=Math.round(y-24)}
-  if(type==='enemy'){obj.w=60;obj.h=55;obj.label='⚠️';obj.y=Math.round(y-28)}
-  if(type==='finish'){obj.w=70;obj.h=105;obj.label='🏁';obj.y=Math.round(y-52)}
-  if(document.getElementById('snapCheck')?.checked){obj.x=Math.round(obj.x/25)*25;obj.y=Math.round(obj.y/25)*25}
-  obj.x=Math.max(0,Math.min(WORLD_W-obj.w,obj.x));
-  obj.y=Math.max(0,Math.min(VH-obj.h,obj.y));
-  level.objects.push(obj);
-  selected=obj;
-  return obj;
-}
-
-function addObj(type){const base={id:id(),type,x:Math.round(cameraX+220),y:520,w:120,h:50,label:''};if(type==='platform'){base.w=220;base.h=34;base.label='platform'}if(type==='coin'){base.w=48;base.h=48;base.label='💎';base.y=450}if(type==='enemy'){base.w=60;base.h=55;base.label='⚠️'}if(type==='finish'){base.w=70;base.h=105;base.label='🏁';base.y=535}level.objects.push(base);selected=base;fillForm();setToolTab('objects');renderEditor()}
-function fillForm(update=true){document.getElementById('builderSelectionPill').textContent=selected?(selected===player?'Character':selected.type==='layer'?'Layer: '+selected.kind:selected.type):'Nothing selected';document.getElementById('selectedInfo').textContent=selected?(selected===player?'Selected CHARACTER':selected.type==='layer'?'Selected layer: '+selected.kind:`Selected ${selected.type} (${selected.id})`):'No object selected';if(!selected){['fX','fY','fW','fH','fLabel','fImg'].forEach(k=>document.getElementById(k).value='');return}if(selected.type==='layer'){syncLayerFields(false);setToolTab('layers')}else{document.getElementById('fType').value=selected===player?'player':selected.type;document.getElementById('fX').value=Math.round(selected.x);document.getElementById('fY').value=Math.round(selected.y);document.getElementById('fW').value=Math.round(selected.w);document.getElementById('fH').value=Math.round(selected.h);document.getElementById('fLabel').value=selected===player?(selected.emoji||selected.kind||'character'):(selected.label||'');document.getElementById('fImg').value=selected.img||''}}
-function applyFormToSelected(){if(!selected)return;if(selected.type==='layer'){applyLayerForm();return}selected.x=+document.getElementById('fX').value||0;selected.y=+document.getElementById('fY').value||0;selected.w=+document.getElementById('fW').value||20;selected.h=+document.getElementById('fH').value||20;if(selected===player){const val=document.getElementById('fImg').value.trim();player.img=val;if(!/^https?:\/\//.test(val)){player.emoji=document.getElementById('fLabel').value||val||player.emoji;if(val)player.img=''}syncPlayerFields()}else{selected.type=document.getElementById('fType').value;selected.label=document.getElementById('fLabel').value;selected.img=document.getElementById('fImg').value}renderEditor()}
-['fType','fX','fY','fW','fH','fLabel','fImg'].forEach(id=>document.getElementById(id).addEventListener('input',applyFormToSelected));
-function deleteSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('This cannot be deleted. Hide or edit it in the Layers/Player tab.');return}level.objects=level.objects.filter(o=>o.id!==selected.id);selected=null;fillForm();renderEditor()}
-function duplicateSelected(){if(!selected)return;if(selected===player||selected.type==='layer'){alert('Duplicate only works on level objects.');return}const n={...selected,id:id(),x:selected.x+40,y:selected.y+40};if(n.type==='coin')n.collected=false;level.objects.push(n);selected=n;fillForm();renderEditor()}
-function bringForward(){if(!selected||selected===player||selected.type==='layer')return;level.objects=level.objects.filter(o=>o.id!==selected.id);level.objects.push(selected);renderEditor()}
-
-function selectNextPlatform(){
-  const plats=level.objects.filter(o=>o.type==='platform');
-  if(!plats.length)return;
-  let i=plats.indexOf(selected);
-  selected=plats[(i+1)%plats.length];
-  document.getElementById('showPlatformGuides').checked=true;
-  fillForm();centerCameraOnSelection();renderEditor();
-}
-function centerCameraOnSelection(){if(!selected)return;cameraX=Math.max(0,Math.min(selected.x-VW/2,WORLD_W-VW));renderEditor()}
-function selectPlayerForEdit(){selected=player;fillForm();syncPlayerFields();centerCameraOnSelection();setToolTab('player');renderEditor()}
-function syncPlayerFields(){document.getElementById('pX').value=Math.round(player.x);document.getElementById('pY').value=Math.round(player.y);document.getElementById('pW').value=Math.round(player.w);document.getElementById('pH').value=Math.round(player.h);document.getElementById('pImg').value=player.img||player.emoji||'';document.getElementById('playerKind').value=player.kind||'ax'}
-function applyPlayerSettings(){player.kind=document.getElementById('playerKind').value;player.x=+document.getElementById('pX').value||player.x;player.y=+document.getElementById('pY').value||player.y;player.w=+document.getElementById('pW').value||82;player.h=+document.getElementById('pH').value||96;const val=document.getElementById('pImg').value.trim();if(val){if(/^https?:\/\//.test(val))player.img=val;else{player.emoji=val;player.img=''}}else if(player.kind==='ax')player.img=AX_URL;else if(player.kind==='pet'&&currentPetImage)player.img=currentPetImage;else{player.img='';player.emoji=player.kind==='pura'?'🐶':'🦎'}renderEditor()}
-function savePlayerSettings(){applyPlayerSettings();localStorage.setItem('ctw_player',JSON.stringify({x:player.x,y:player.y,w:player.w,h:player.h,img:player.img,emoji:player.emoji,kind:player.kind}));alert('Player settings saved in this browser')}
-function selectLayer(kind){builderMode='layers';selected=level.layers.find(l=>l.kind===kind);syncLayerFields();setToolTab('layers');updateBuilderModeUI();renderEditor()}
-function updateLayerButtons(){for(const k of ['sky','hills','ground']){const b=document.getElementById('btnLayer'+k[0].toUpperCase()+k.slice(1));if(b)b.classList.toggle('active',selected?.type==='layer'&&selected.kind===k)}}
-function syncLayerFields(changeSelect=true){if(!selected||selected.type!=='layer')return;if(changeSelect)document.getElementById('lKind').value=selected.kind;document.getElementById('lVisible').value=String(selected.visible!==false);document.getElementById('lX').value=Math.round(selected.x);document.getElementById('lY').value=Math.round(selected.y);document.getElementById('lW').value=Math.round(selected.w);document.getElementById('lH').value=Math.round(selected.h);document.getElementById('lOpacity').value=selected.opacity??1;document.getElementById('lParallax').value=selected.parallax??0;document.getElementById('lValue').value=selected.value||''}
-function applyLayerForm(){let l=selected?.type==='layer'?selected:level.layers.find(x=>x.kind===document.getElementById('lKind').value);if(!l)return;l.kind=document.getElementById('lKind').value;l.visible=document.getElementById('lVisible').value==='true';l.x=+document.getElementById('lX').value||0;l.y=+document.getElementById('lY').value||0;l.w=+document.getElementById('lW').value||VW;l.h=+document.getElementById('lH').value||VH;l.opacity=Math.max(0,Math.min(1,+document.getElementById('lOpacity').value||1));l.parallax=Math.max(0,Math.min(1,+document.getElementById('lParallax').value||0));l.value=document.getElementById('lValue').value.trim();selected=l;renderEditor()}
-['lKind','lVisible','lX','lY','lW','lH','lOpacity','lParallax','lValue'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(selected?.type==='layer')applyLayerForm()}));
-function resetLayerDefaults(){level.layers=layerDefaults();selected=level.layers[0];syncLayerFields();renderEditor()}
-function fitSelectedLayer(){if(!selected)return alert('Click a layer/object/character first.');if(selected.type==='layer'){selected.x=0;selected.y=selected.kind==='ground'?640:0;selected.w=VW;selected.h=selected.kind==='ground'?80:VH;syncLayerFields(false);}else if(selected===player){player.x=120;player.y=540;syncPlayerFields();}else{selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));fillForm(false);}renderEditor()}
-
-function selectedLabel(){
-  if(!selected) return 'Nothing selected yet';
-  if(selected===player) return `Selected: CHARACTER  x:${Math.round(player.x)} y:${Math.round(player.y)} w:${Math.round(player.w)} h:${Math.round(player.h)}`;
-  if(selected.type==='layer') return `Selected: LAYER ${selected.kind.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
-  return `Selected: ${selected.type.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
-}
-function updateSelectedReadout(){
-  const r=document.getElementById('selectedReadout'); if(r) r.textContent=selectedLabel();
-  for(const m of ['layers','objects','player']){const b=document.getElementById('modeBtn'+m[0].toUpperCase()+m.slice(1)); if(b)b.classList.toggle('active',builderMode===m)}
-}
-function syncAllForms(){
-  if(selected===player) syncPlayerFields();
-  if(selected?.type==='layer') syncLayerFields(false);
-  fillForm(false);
-}
-function nudgeSelected(dx,dy){
-  if(!selected) return alert('Click a layer, platform/object, or character first.');
-  selected.x=Math.round((selected.x||0)+dx);
-  selected.y=Math.round((selected.y||0)+dy);
-  if(selected!==player && selected.type!=='layer'){
-    selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));
-    selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));
-  }
-  syncAllForms(); renderEditor();
-}
-function resizeSelected(dw,dh){
-  if(!selected) return alert('Click a layer, platform/object, or character first.');
-  selected.w=Math.max(selected===player?28:selected.type==='layer'?40:12,Math.round((selected.w||80)+dw));
-  selected.h=Math.max(selected===player?28:selected.type==='layer'?30:12,Math.round((selected.h||60)+dh));
-  syncAllForms(); renderEditor();
-}
-
-function getAnimState(){return document.getElementById('animState')?.value||'idle'}
-function normaliseAnimConfig(cfg={}){return {idle:cfg.idle||DEFAULT_ANIM.idle,walk:cfg.walk||DEFAULT_ANIM.walk,jump:cfg.jump||DEFAULT_ANIM.jump,count:10,speed:Math.max(40,Math.min(400,+cfg.speed||DEFAULT_ANIM.speed))}}
-function getAnimFrame(){return Math.max(1,Math.min(10,+document.getElementById('animFrame').value||1))}
-function currentPreviewFrameUrl(){applyAnimationSettings(false,false);return frameUrl(anim[getAnimState()]||anim.idle,getAnimFrame())}
-function buildFrameStrip(){const strip=document.getElementById('animFrameStrip');if(!strip)return;const count=10;const cur=getAnimFrame();strip.innerHTML='';for(let i=1;i<=count;i++){const b=document.createElement('button');b.textContent='Frame '+i;b.className=i===cur?'active':'';b.onclick=()=>{document.getElementById('animFrame').value=i;updateAnimPreview()};strip.appendChild(b)}}
-function updateAnimPreview(){const url=currentPreviewFrameUrl();const out=document.getElementById('animResolvedUrl');if(out)out.textContent=url;const imEl=document.getElementById('animPreviewImg'),fb=document.getElementById('animPreviewFallback');if(imEl&&fb){imEl.onload=()=>{imEl.style.display='block';fb.style.display='none'};imEl.onerror=()=>{imEl.style.display='none';fb.style.display='block';fb.textContent='Missing frame'};imEl.src=url}buildFrameStrip();renderEditor()}
-function stepAnimFrame(delta){let n=getAnimFrame()+delta;if(n<1)n=10;if(n>10)n=1;document.getElementById('animFrame').value=n;updateAnimPreview()}
-function usePreviewFrameOnPlayer(){const url=currentPreviewFrameUrl();document.getElementById('playerKind').value='custom';document.getElementById('pImg').value=url;player.kind='custom';player.img=url;renderEditor();alert('This exact frame is now the character image. Use Save/Load to save it for the shared level.')}
-function applyAnimationSettings(refresh=true,setPlayerKind=true){anim=normaliseAnimConfig({idle:document.getElementById('animIdle').value.trim(),walk:document.getElementById('animWalk').value.trim(),jump:document.getElementById('animJump').value.trim(),count:10,speed:document.getElementById('animSpeed').value});if(setPlayerKind)player.kind='ax';if(refresh){syncAnimFields(false);updateAnimPreview();renderEditor()}}
-function saveAnimationSettings(){applyAnimationSettings(false,false);localStorage.setItem('ctw_anim',JSON.stringify(anim));syncAnimFields(false);updateAnimPreview();alert('Sprite settings saved locally. Frame count is locked to 10.')}
-function resetAnimationSettings(){anim={...DEFAULT_ANIM};localStorage.setItem('ctw_anim',JSON.stringify(anim));syncAnimFields();alert('Sprites reset to 10-frame Ax defaults')}
-function syncAnimFields(refresh=true){anim=normaliseAnimConfig(anim);document.getElementById('animIdle').value=anim.idle;document.getElementById('animWalk').value=anim.walk;document.getElementById('animJump').value=anim.jump;document.getElementById('animCount').value=10;document.getElementById('animSpeed').value=anim.speed;document.getElementById('animFrame').value=Math.min(+document.getElementById('animFrame').value||1,10);if(refresh)updateAnimPreview()}
-function levelName(){return (document.getElementById('levelName').value||'level_1').trim().replace(/[^a-z0-9_\- ]/gi,'_')||'level_1'}
-function gamePack(){return {version:CTW_GAME_VERSION,name:levelName(),savedAt:new Date().toISOString(),level,player:{x:player.x,y:player.y,w:player.w,h:player.h,img:player.img,emoji:player.emoji,kind:player.kind},anim:normaliseAnimConfig(anim)}}
-function applyGamePack(data){const pack=data?.pack||data;const nextLevel=pack.level||pack;if(nextLevel.layers)level.layers=nextLevel.layers;if(nextLevel.objects)level.objects=nextLevel.objects;if(pack.player)Object.assign(player,pack.player);if(pack.anim)anim=normaliseAnimConfig(pack.anim);selected=null;syncPlayerFields();syncAnimFields(false);renderEditor();draw(canvas,ctx,false)}
-function setCloudStatus(msg){const el=document.getElementById('cloudSaveStatus');if(el)el.textContent=msg}
-function getStoredAdminKey(){return sessionStorage.getItem('ctw_admin_key')||''}
-function askAdminKey(){let key=getStoredAdminKey();if(!key){key=prompt('Enter CTW_GAME_ADMIN_KEY for Cloud Save')||'';if(key)sessionStorage.setItem('ctw_admin_key',key)}return key}
-function saveLevelLocal(){const pack=gamePack();localStorage.setItem('ctw_level_'+levelName(),JSON.stringify(pack));localStorage.setItem('ctw_player',JSON.stringify(pack.player));localStorage.setItem('ctw_anim',JSON.stringify(pack.anim));setCloudStatus('Local backup saved in this browser: '+levelName());alert('Local backup saved')}
-function loadLevelLocal(){const raw=localStorage.getItem('ctw_level_'+levelName());if(!raw)return alert('No local backup found for '+levelName());applyGamePack(JSON.parse(raw));setCloudStatus('Loaded local backup: '+levelName());alert('Local backup loaded')}
-async function saveLevelCloud(){const admin_key=askAdminKey();if(!admin_key)return;setCloudStatus('Saving '+levelName()+' to Cloudflare KV...');try{const r=await fetch('/api/levels',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({...gamePack(),admin_key})});const d=await r.json();if(!r.ok||!d.ok){if(r.status===403)sessionStorage.removeItem('ctw_admin_key');throw new Error(d.error||'Cloud Save failed')}setCloudStatus('Cloud saved ✓ '+d.name+' at '+d.savedAt)}catch(e){setCloudStatus('Cloud Save failed: '+e.message);alert('Cloud Save failed: '+e.message)}}
-async function loadLevelCloud(){setCloudStatus('Loading '+levelName()+' from Cloudflare KV...');try{const r=await fetch('/api/levels?name='+encodeURIComponent(levelName()));const d=await r.json();if(!r.ok||!d.ok)throw new Error(d.error||'Cloud Load failed');applyGamePack(d.pack);setCloudStatus('Cloud loaded ✓ '+d.name+' saved '+(d.pack.savedAt||''))}catch(e){setCloudStatus('Cloud Load failed: '+e.message);alert('Cloud Load failed: '+e.message)}}
-async function loadLevelCloudSilent(){try{const r=await fetch('/api/levels?name=level_1');if(!r.ok)return;const d=await r.json();if(d.ok&&d.pack)applyGamePack(d.pack)}catch(e){}}
-function exportLevel(){document.getElementById('levelJson').value=JSON.stringify(gamePack(),null,2)}function importLevel(){try{const data=JSON.parse(document.getElementById('levelJson').value);applyGamePack(data);setCloudStatus('Imported JSON. Press Save shared level to store it on Cloudflare.')}catch(e){alert('Bad JSON')}}
-function testFromBuilder(){running=true;showPanel('game')}
-function petCacheKey(userId){return 'ctw_petbot_cache_'+userId}
-function sheetCacheKey(userId,p){return 'ctw_sheet51_cache_'+userId+'_'+(p.code||'')+'_'+(p.pet||'')+'_'+(p.name||'')}
-function getFreshCache(key,ttlMs){try{const raw=sessionStorage.getItem(key);if(!raw)return null;const obj=JSON.parse(raw);if(Date.now()-obj.t>ttlMs)return null;return obj.v}catch(e){return null}}
-function setFreshCache(key,v){try{sessionStorage.setItem(key,JSON.stringify({t:Date.now(),v}))}catch(e){}}
-async function loadPetbotPets(force=false){const userId=document.getElementById('userSelect').value;const dbg=document.getElementById('petDebug');dbg.classList.add('loadingPulse');dbg.textContent='Loading owned pets for user '+userId+' ...';try{let pets=getFreshCache(petCacheKey(userId),60000);if(!pets||force){const r=await fetch('/api/petbot?mode=view_pets&user_id='+encodeURIComponent(userId)+'&per_page=25');const d=await r.json();pets=[];for(let i=1;i<=50;i++){const name=d['pet_'+i+'_name'];if(!name)continue;pets.push({name,code:d['pet_'+i+'_code']||'',pet:d['pet_'+i+'_pet']||'',level:d['pet_'+i+'_level']||'',xp:d['pet_'+i+'_xp']||'',hunger:d['pet_'+i+'_hunger']||0,happy:d['pet_'+i+'_happiness']||d['pet_'+i+'_happy']||0,energy:d['pet_'+i+'_energy']||0})}setFreshCache(petCacheKey(userId),pets)}window.loadedPets=pets;const sel=document.getElementById('petSelect');sel.innerHTML=pets.map((p,i)=>`<option value="${i}">${p.name} (${p.pet})</option>`).join('');dbg.textContent=(force?'Reloaded live. ':'Loaded quickly. ')+pets.length+' owned pets. Resolving image from Sheet 51.';await selectPetFromDropdown();dbg.classList.remove('loadingPulse')}catch(e){dbg.classList.remove('loadingPulse');dbg.textContent='Petbot load failed: '+e.message}}
-async function selectPetFromDropdown(){const pets=window.loadedPets||[];const p=pets[+document.getElementById('petSelect').value||0];if(!p)return;currentPet=p;document.getElementById('petTitle').textContent=p.name;document.getElementById('petSub').textContent=(p.pet||'pet')+' • code '+p.code+' • level '+p.level;document.getElementById('petCodeBadge').textContent='code '+(p.code||'—');document.getElementById('petLevelBadge').textContent='level '+(p.level||'—');document.getElementById('hungerBar').style.width=(+p.hunger||0)+'%';document.getElementById('happyBar').style.width=(+p.happy||0)+'%';document.getElementById('energyBar').style.width=(+p.energy||0)+'%';const userId=document.getElementById('userSelect').value;const dbg=document.getElementById('petDebug');try{let d=getFreshCache(sheetCacheKey(userId,p),10*60*1000);if(!d){const q=new URLSearchParams({user_id:userId,pet_code:p.code,pet_name:p.name,pet:p.pet||'',action:'main'});const r=await fetch('/api/sheet51?'+q);d=await r.json();setFreshCache(sheetCacheKey(userId,p),d)}currentPetImage=d.image_url||'';const imgEl=document.getElementById('petImg'),no=document.getElementById('petNoImg'),badge=document.getElementById('petImageBadge');if(currentPetImage){imgEl.src=currentPetImage;imgEl.style.display='block';no.style.display='none';badge.textContent='Sheet 51 image ✓';badge.className='petBadge green'}else{imgEl.style.display='none';no.style.display='block';badge.textContent='No Sheet 51 image';badge.className='petBadge'}dbg.classList.remove('loadingPulse');dbg.textContent='Sheet 51 image URL: '+(currentPetImage||'none')+'\nMatch: '+JSON.stringify(d.match||d.reason||'',null,2)}catch(e){dbg.classList.remove('loadingPulse');dbg.textContent='Sheet 51 lookup failed: '+e.message}}
-function usePetAsPlayer(){if(!currentPet||!currentPetImage)return alert('No Sheet 51 pet image loaded yet');document.getElementById('playerKind').value='pet';document.getElementById('pImg').value=currentPetImage;document.getElementById('pW').value=90;document.getElementById('pH').value=100;applyPlayerSettings();alert(currentPet.name+' is now the platform character. Use Save/Load to save it for the shared level.')}
-window.addEventListener('load',()=>{try{const savedPlayer=localStorage.getItem('ctw_player');if(savedPlayer)Object.assign(player,JSON.parse(savedPlayer))}catch(e){}try{const saved=localStorage.getItem('ctw_anim');if(saved){anim=normaliseAnimConfig(JSON.parse(saved));localStorage.setItem('ctw_anim',JSON.stringify(anim))}}catch(e){anim={...DEFAULT_ANIM}}syncPlayerFields();selectLayer('sky');syncAnimFields();['animState','animFrame','animCount','animIdle','animWalk','animJump'].forEach(x=>{const el=document.getElementById(x);if(el)el.addEventListener('input',updateAnimPreview)});document.getElementById('userSelect')?.addEventListener('change',()=>loadPetbotPets(false));loadLevelCloudSilent();});
-
-
-// V40: simple builder helpers
-function enterSimpleObjects(){setBuilderMode('objects');}
-function enterSimpleLayers(){setBuilderMode('layers');}
-function simpleSelectGround(){selectLayer('ground');document.getElementById('showLayerBoxes').checked=true;renderEditor();}
-
+function loadImage(url){if(!url)return null;if(imgCache.has(url))return imgCache.get(url);const im=new Image(); im.crossOrigin='anonymous'; im.src=url; imgCache.set(url,im); return im;}
+function frameList(name,action,count=10){const a=[];for(let i=1;i<=count;i++){a.push(`https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/characters/${name}/${action}/${name}_${action}${i}.png`)}return a}
+const SETS={
+  ax:{name:'Ax',aspect:.78,scale:1,frameMs:{idle:180,walk:180,jump:125},frames:{idle:frameList('ax','idle'),walk:frameList('ax','walk'),jump:frameList('ax','jump')}},
+  pura:{name:'Pura',aspect:.58,scale:1,frameMs:{idle:180,walk:180,jump:125},frames:{idle:frameList('pura','idle'),walk:frameList('pura','walk'),jump:frameList('pura','jump')}},
+  owl:{name:'Owl',aspect:.72,scale:.95,frameMs:{idle:180,walk:180,jump:150},frames:{idle:frameList('owl','idle'),walk:frameList('owl','walk'),jump:frameList('owl','jump')}},
+  unicorn:{name:'Unicorn',aspect:1.18,scale:1.18,frameMs:{idle:170,walk:165,jump:115},frames:{idle:frameList('unicorn','idle'),walk:frameList('unicorn','walk'),jump:frameList('unicorn','jump')}}
+};
+let activeChar='ax', buddyChar='pura', teamMode=false, chosen=new Set(['ax']);
+let running=false, paused=false, jumping=false, jumpStart=0, distance=0, score=0, lives=3, objId=0;
+const keys={left:false,right:false};
+let currentPet=null,currentPetImage='';
+function drawFallback(c,name,w,h){const ctx=c.getContext('2d');ctx.clearRect(0,0,w,h);ctx.save();ctx.translate(w/2,h*.55);ctx.fillStyle='rgba(255,255,255,.75)';ctx.beginPath();ctx.ellipse(0,h*.33,w*.32,h*.09,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=name==='pura'?'#7c4a32':name==='owl'?'#6b4a2b':name==='unicorn'?'#f7e7ff':'#ff7bbd';ctx.beginPath();ctx.ellipse(0,0,w*.24,h*.34,0,0,Math.PI*2);ctx.fill();ctx.fillStyle=name==='ax'?'#ffacd6':name==='pura'?'#b57a52':name==='owl'?'#a56f3a':'#fff';ctx.beginPath();ctx.ellipse(0,-h*.26,w*.25,h*.18,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#0e1229';ctx.beginPath();ctx.arc(-w*.08,-h*.29,3,0,Math.PI*2);ctx.arc(w*.08,-h*.29,3,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.font=`bold ${Math.max(14,w*.13)}px Arial`;ctx.textAlign='center';ctx.fillText(SETS[name]?.name||'Pet',0,h*.43);ctx.restore();}
+function frameFor(name,state){const s=SETS[name]||SETS.ax;const list=s.frames[state]||s.frames.idle;const ms=s.frameMs[state]||160;const idx=Math.floor(performance.now()/ms)%list.length;return list[idx];}
+function ensureCharacterEls(){const box=$('characters');box.innerHTML='';const people=[{id:activeChar,role:'activeChar'},{id:buddyChar,role:'follower'}];people.forEach((p,i)=>{if(!p.id||(!teamMode&&i===1))return;const s=SETS[p.id]||SETS.ax;const wrap=document.createElement('div');wrap.className='character '+p.role;wrap.style.left=i?cssVal('buddyX'):cssVal('playerX');wrap.style.bottom=`calc(var(--floorPx) - ${i?'var(--buddyDrop)':'var(--playerDrop)'})`;const w=i?readNum('buddyW',118):readNum('playerW',260);const h=Math.max(70,w/(s.aspect||.78))*(s.scale||1)*(i?readNum('followerScale',.94):1);const shadow=document.createElement('div');shadow.className='shadow';shadow.style.left=i?cssVal('buddyX'):cssVal('playerX');shadow.style.width=Math.max(55,w*.62)+'px';const cv=document.createElement('canvas');cv.width=Math.round(w);cv.height=Math.round(h);cv.dataset.char=p.id;wrap.appendChild(cv);box.appendChild(shadow);box.appendChild(wrap);});}
+function renderCharacters(){document.querySelectorAll('.character canvas').forEach((cv,idx)=>{const name=cv.dataset.char;const state=jumping?'jump':(running&&!paused?'walk':'idle');const url=currentPetImage&&name==='pet'?currentPetImage:frameFor(name,state);const im=loadImage(url);const ctx=cv.getContext('2d');ctx.clearRect(0,0,cv.width,cv.height);if(im&&im.complete&&im.naturalWidth>0){ctx.drawImage(im,0,0,cv.width,cv.height)}else{drawFallback(cv,name,cv.width,cv.height)}})}
+function updatePicker(){document.querySelectorAll('.charChoice').forEach(b=>b.classList.toggle('selected',chosen.has(b.dataset.char)));$('pickStatus').textContent=(teamMode?'Team Quest: ':'Solo Quest: ')+[...chosen].map(x=>SETS[x]?.name||x).join(' + ');$('startQuestBtn').textContent=teamMode?'Start Team Quest':'Start Solo Quest';$('mainCharSelect').value=activeChar;$('buddyCharSelect').value=buddyChar;}
+function startGame(){hideOverlays();running=true;paused=false;score=0;lives=3;distance=0;activeChar=[...chosen][0]||'ax';buddyChar=[...chosen].find(x=>x!==activeChar)||'pura';ensureCharacterEls();spawnObjects(true);updateHud();showToast(teamMode?'Team quest started':'Solo quest started')}
+function updateHud(){ $('score').textContent=score; $('lives').textContent=lives; $('distance').textContent=Math.floor(distance/10); $('questName').textContent=running?(teamMode?'Team Quest in progress':'Solo Quest in progress'):'Pick Solo Quest or Team Quest.'; }
+function spawnObjects(reset=false){const box=$('worldObjects');if(reset){box.innerHTML='';objId=0;} const need=8-box.children.length; for(let i=0;i<need;i++){const type=(objId%5===2)?'hazard':(objId%7===6)?'teamItem':'token';const el=document.createElement('div');el.className='obj '+type;el.dataset.type=type;el.dataset.id=String(objId++);el.textContent=type==='hazard'?'!':type==='teamItem'?'★':'◆';el.style.left=(105+objId*17)+'vw';el.style.top=type==='hazard'?`calc(100% - var(--floorPx) - var(--hazardLift))`:`calc(100% - var(--floorPx) - var(--tokenLift))`;box.appendChild(el)}}
+function step(){requestAnimationFrame(step);renderCharacters();if(!running||paused)return;distance+=readNum('gameSpeed',2.05);if(keys.left)distance=Math.max(0,distance-3);if(keys.right)distance+=3;const scroll=-(distance%2000);$('hillLayer').style.backgroundPosition=(scroll*.18)+'px bottom';$('groundLayer').style.backgroundPosition=(scroll*.55)+'px bottom';document.querySelectorAll('.obj').forEach(o=>{let x=parseFloat(o.dataset.x||o.style.left)||110; if(!o.dataset.x)o.dataset.x=x; x-=readNum('gameSpeed',2.05)*.035; if(x<-8){x=112+Math.random()*40;o.dataset.type=Math.random()<.22?'hazard':'token';o.className='obj '+o.dataset.type;o.textContent=o.dataset.type==='hazard'?'!':'◆'} o.dataset.x=x; o.style.left=x+'vw'; if(x>18&&x<26){ if(o.dataset.hit!=='1'){ if(o.dataset.type==='hazard'){lives--;document.body.classList.add('hitFlash');setTimeout(()=>document.body.classList.remove('hitFlash'),230);showToast('Drama bump!'); if(lives<=0){running=false;$('endScreen').classList.remove('hidden')}} else {score+=10; o.dataset.hit='1'; o.style.opacity='.15';} updateHud(); }} else if(x<0){o.dataset.hit='0';o.style.opacity='1';}});spawnObjects(false);updateHud();}
+function jump(){if(jumping)return;jumping=true;jumpStart=performance.now();document.querySelectorAll('.character').forEach(el=>{el.animate([{transform:'translateX(-50%) translateY(0)'},{transform:'translateX(-50%) translateY(-135px)'},{transform:'translateX(-50%) translateY(0)'}],{duration:620,easing:'ease-out'});});setTimeout(()=>jumping=false,620)}
+function buildSettings(){const wrap=$('adminLayout');wrap.innerHTML='';SETTINGS.forEach(([n,def,min,max,unit,label])=>{const v=readNum(n,def);const item=document.createElement('div');item.className='settingItem';item.innerHTML=`<label><span>${label}</span><span class="settingValue" id="val_${n}">${v}${unit}</span></label><div class="settingControl"><input type="range" min="${min}" max="${max}" step="${n==='gameSpeed'?0.05:1}" value="${v}" id="rng_${n}"><input type="number" min="${min}" max="${max}" step="${n==='gameSpeed'?0.05:1}" value="${v}" id="num_${n}"></div>`;wrap.appendChild(item);const apply=(val)=>{setCss(n,val,unit);$('val_'+n).textContent=val+unit;$('rng_'+n).value=val;$('num_'+n).value=val;ensureCharacterEls();saveLocal();updateEditDot();};item.querySelector('#rng_'+n).addEventListener('input',e=>apply(e.target.value));item.querySelector('#num_'+n).addEventListener('input',e=>apply(e.target.value));});updateEditDot();}
+function updateEditDot(){const d=$('editDot');d.style.left='calc(var(--playerX) - 50px)';d.style.bottom='calc(var(--floorPx) - var(--playerDrop))';d.style.width='100px';d.style.height='var(--characterH)';}
+function adminTab(name){['Layout','Characters','Petbot','Export'].forEach(x=>$('admin'+x).classList.toggle('hidden',x.toLowerCase()!==name));if(name==='export')$('exportBox').value=JSON.stringify({version:'V42_ACTUAL_GAME_LOOK_RESTORED_PETBOT_SAFE',settings:currentSettings()},null,2)}
+async function saveCloud(){const body={version:'V42_ACTUAL_GAME_LOOK_RESTORED_PETBOT_SAFE',name:$('levelName').value||'level_v42_main',admin_key:$('adminKey').value,settings:currentSettings(),level:{mode:'visual-side-scroller'}};$('adminStatus').textContent='Saving shared layout...';try{const r=await fetch('/api/levels',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)});const d=await r.json();$('adminStatus').textContent=d.ok?'Saved shared layout: '+d.name:'Save failed: '+d.error; if(d.ok)showToast('Shared layout saved')}catch(e){$('adminStatus').textContent='Save failed: '+e.message}}
+async function loadCloud(){const name=$('levelName').value||'level_v42_main';$('adminStatus').textContent='Loading shared layout...';try{const r=await fetch('/api/levels?name='+encodeURIComponent(name));const d=await r.json();if(d.ok&&d.pack?.settings){applySettings(d.pack.settings);$('adminStatus').textContent='Loaded shared layout: '+name;showToast('Shared layout loaded')}else{$('adminStatus').textContent='Load failed: '+(d.error||'No settings found')}}catch(e){$('adminStatus').textContent='Load failed: '+e.message}}
+async function autoLoadCloud(){try{const r=await fetch('/api/levels?name=level_v42_main');if(!r.ok)return;const d=await r.json();if(d.ok&&d.pack?.version==='V42_ACTUAL_GAME_LOOK_RESTORED_PETBOT_SAFE'&&d.pack.settings)applySettings(d.pack.settings)}catch(e){}}
+function clearBadBrowserData(){['ctw_player','ctw_anim','ctw_level_level_1','ctwgame-layout-settings'].forEach(k=>localStorage.removeItem(k));showToast('Old browser game data cleared')}
+function petCacheKey(userId){return 'ctw_petbot_cache_'+userId} function sheetCacheKey(userId,p){return 'ctw_sheet51_cache_'+userId+'_'+(p.code||'')+'_'+(p.pet||'')+'_'+(p.name||'')} function getFreshCache(key,ttlMs){try{const raw=sessionStorage.getItem(key);if(!raw)return null;const obj=JSON.parse(raw);if(Date.now()-obj.t>ttlMs)return null;return obj.v}catch(e){return null}} function setFreshCache(key,v){try{sessionStorage.setItem(key,JSON.stringify({t:Date.now(),v}))}catch(e){}}
+async function loadPetbotPets(force=false){const userId=$('userSelect').value;const dbg=$('petDebug');dbg.textContent='Loading owned pets for user '+userId+' ...';try{let pets=getFreshCache(petCacheKey(userId),60000);if(!pets||force){const r=await fetch('/api/petbot?mode=view_pets&user_id='+encodeURIComponent(userId)+'&per_page=25');const d=await r.json();pets=[];for(let i=1;i<=50;i++){const name=d['pet_'+i+'_name'];if(!name)continue;pets.push({name,code:d['pet_'+i+'_code']||'',pet:d['pet_'+i+'_pet']||'',level:d['pet_'+i+'_level']||'',xp:d['pet_'+i+'_xp']||'',hunger:d['pet_'+i+'_hunger']||0,happy:d['pet_'+i+'_happiness']||d['pet_'+i+'_happy']||0,energy:d['pet_'+i+'_energy']||0})}setFreshCache(petCacheKey(userId),pets)}window.loadedPets=pets;const sel=$('petSelect');sel.innerHTML=pets.map((p,i)=>`<option value="${i}">${p.name} (${p.pet})</option>`).join('');dbg.textContent=(force?'Reloaded live. ':'Loaded quickly. ')+pets.length+' owned pets. Resolving image from Sheet 51.';await selectPetFromDropdown()}catch(e){dbg.textContent='Petbot load failed: '+e.message}}
+async function selectPetFromDropdown(){const pets=window.loadedPets||[];const p=pets[+$('petSelect').value||0];if(!p)return;currentPet=p;$('petTitle').textContent=p.name;$('petSub').textContent=(p.pet||'pet')+' • code '+p.code+' • level '+p.level;$('hungerBar').style.width=(+p.hunger||0)+'%';$('happyBar').style.width=(+p.happy||0)+'%';$('energyBar').style.width=(+p.energy||0)+'%';const userId=$('userSelect').value;const dbg=$('petDebug');try{let d=getFreshCache(sheetCacheKey(userId,p),10*60*1000);if(!d){const q=new URLSearchParams({user_id:userId,pet_code:p.code,pet_name:p.name,pet:p.pet||'',action:'main'});const r=await fetch('/api/sheet51?'+q);d=await r.json();setFreshCache(sheetCacheKey(userId,p),d)}currentPetImage=d.image_url||'';if(currentPetImage){$('petImg').src=currentPetImage;$('petImg').style.display='block';$('petNoImg').style.display='none';$('petImageBadge').textContent='Sheet 51 image ✓'}else{$('petImg').style.display='none';$('petNoImg').style.display='block';$('petImageBadge').textContent='No Sheet 51 image'}dbg.textContent='Sheet 51 image URL: '+(currentPetImage||'none')+'\nMatch: '+JSON.stringify(d.match||d.reason||'',null,2)}catch(e){dbg.textContent='Sheet 51 lookup failed: '+e.message}}
+function usePetAsPlayer(){if(!currentPet||!currentPetImage)return alert('No Sheet 51 pet image loaded yet');SETS.pet={name:currentPet.name,aspect:.85,scale:1,frameMs:{idle:180,walk:180,jump:125},frames:{idle:[currentPetImage],walk:[currentPetImage],jump:[currentPetImage]}};activeChar='pet';chosen=new Set(['pet']);teamMode=false;ensureCharacterEls();hideOverlays();closePanel('petPanel');showToast(currentPet.name+' is now the game character')}
+$('soloModeBtn').onclick=()=>{teamMode=false;chosen=new Set([activeChar==='pet'?'ax':activeChar]);$('teamModeBtn').classList.add('off');$('soloModeBtn').classList.remove('off');updatePicker()};$('teamModeBtn').onclick=()=>{teamMode=true;if(chosen.size<2)chosen=new Set(['ax','pura']);$('soloModeBtn').classList.add('off');$('teamModeBtn').classList.remove('off');updatePicker()};document.querySelectorAll('.charChoice').forEach(b=>b.onclick=()=>{const c=b.dataset.char;if(teamMode){if(chosen.has(c)&&chosen.size>1)chosen.delete(c);else chosen.add(c);activeChar=[...chosen][0]||c;buddyChar=[...chosen].find(x=>x!==activeChar)||'pura'}else{chosen=new Set([c]);activeChar=c}updatePicker();ensureCharacterEls()});$('startQuestBtn').onclick=startGame;$('petCareStartBtn').onclick=()=>openPanel('petPanel');$('adminStartBtn').onclick=()=>openPanel('adminPanel');$('petBtn').onclick=()=>openPanel('petPanel');$('adminBtn').onclick=()=>{openPanel('adminPanel');document.body.classList.add('editorOn');buildSettings()};$('closeAdminBtn').onclick=()=>{closePanel('adminPanel');document.body.classList.remove('editorOn')};$('closePetBtn').onclick=()=>closePanel('petPanel');$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('usePetBtn').onclick=usePetAsPlayer;$('petSelect').onchange=selectPetFromDropdown;$('userSelect').onchange=()=>loadPetbotPets(false);$('swapBtn').onclick=()=>{if(!teamMode)return showToast('Switch needs Team Quest');const a=activeChar;activeChar=buddyChar;buddyChar=a;ensureCharacterEls();updatePicker()};$('abilityBtn').onclick=()=>{score+=15;showToast((SETS[activeChar]?.name||'Pet')+' used ability');updateHud()};$('teamCmdBtn').onclick=()=>{if(!teamMode)return showToast('Team task needs Team Quest');$('teamBox').classList.remove('hidden');$('teamTaskText').textContent=(SETS[activeChar]?.name||'Pet')+' sends '+(SETS[buddyChar]?.name||'friend')+' to grab the shiny evidence.';};$('pauseBtn').onclick=()=>{paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';showToast(paused?'Paused':'Resumed')};$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>{$('instructions').classList.toggle('hidden')};$('restartBtn').onclick=()=>{hideOverlays();startGame()};$('nextLevelBtn').onclick=()=>hideOverlays();$('loadCloudBtn').onclick=loadCloud;$('saveCloudBtn').onclick=saveCloud;$('resetLayoutBtn').onclick=resetLayout;$('applyCharsBtn').onclick=()=>{activeChar=$('mainCharSelect').value;buddyChar=$('buddyCharSelect').value;chosen=new Set(teamMode?[activeChar,buddyChar]:[activeChar]);ensureCharacterEls();updatePicker();saveLocal();};$('clearBadBrowserDataBtn').onclick=clearBadBrowserData;$('copyExportBtn').onclick=()=>navigator.clipboard?.writeText($('exportBox').value);document.querySelectorAll('[data-admin-tab]').forEach(b=>b.onclick=()=>adminTab(b.dataset.adminTab));addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Tab'||e.code==='KeyQ'){e.preventDefault();$('swapBtn').click()}if(e.code==='KeyE')$('abilityBtn').click();if(e.code==='Escape'){closePanel('adminPanel');closePanel('petPanel');document.body.classList.remove('editorOn')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchSwitch').ontouchstart=()=>$('swapBtn').click();$('touchTeam').ontouchstart=()=>$('teamCmdBtn').click();$('touchAbility').ontouchstart=()=>$('abilityBtn').click();
+loadLocal();buildSettings();ensureCharacterEls();updatePicker();updateHud();autoLoadCloud();requestAnimationFrame(step);
 </script>
 </body>
 </html>
