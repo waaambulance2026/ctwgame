@@ -3,7 +3,7 @@ export async function onRequest(context) {
 
   const diagnostics = {
     ok: true,
-    note: 'Safe diagnostic only. Values are not exposed. Delete this route after testing if you want.',
+    note: 'Safe diagnostic only for V53. Values are not exposed.',
     has_admin_key: Boolean(env.CTW_GAME_ADMIN_KEY),
     has_petbot_url: Boolean(env.PETBOT_APPS_SCRIPT_URL),
     has_petbot_key: Boolean(env.PETBOT_API_KEY),
