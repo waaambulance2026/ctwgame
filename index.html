@@ -3,11 +3,38 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V30</title>
+<title>Waaambulance Quest Dash V33</title>
 <style>
 :root{--bg:#07101f;--panel:#101b2f;--panel2:#17243b;--line:#31415d;--text:#f8fafc;--muted:#a9b8cf;--blue:#0ea5e9;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--pink:#ff4fa3;}
 *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#22314d,#07101f 58%,#030712);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:900;cursor:pointer;background:#29384f;color:white;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:var(--blue)} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#172033;border:1px solid #43546e} input,select,textarea{background:#071326;color:white;border:1px solid #43546e;border-radius:10px;padding:8px 10px;min-width:0} label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:900;color:#dbeafe}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(12,20,36,.9);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(180deg,#1c2944,#111b31);border:1px solid #334155;border-radius:22px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.muted{color:var(--muted)}.gameShell{background:#091225;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,.35)}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#0e1830;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#f8fafc;color:#071326;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:950}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#80d8ff;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.7);border:2px solid rgba(255,255,255,.35);font-size:22px}.petGrid{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#111b31;border:1px solid #334155;border-radius:22px;padding:16px}.petImage{height:320px;background:#0b1324;border:1px solid #334155;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:18px;background:#0b1324;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}.statusBox{background:#071326;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-size:12px}.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fieldGrid.one{grid-template-columns:1fr}.wide{width:100%} textarea{width:100%;height:86px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.hint{font-size:12px;color:#9fb0c7}.miniTitle{font-size:13px;font-weight:950;color:#e2e8f0;margin:8px 0}.divider{height:1px;background:#334155;margin:12px 0}
 body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:6px} body.builderFull .top{display:none} body.builderFull #builder{height:100%} .builderGrid{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:8px;height:100%}.builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:14px}.builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0}.tools{background:rgba(8,17,32,.97);border:1px solid #334155;border-radius:14px;padding:12px;overflow:auto;box-shadow:-12px 0 30px rgba(0,0,0,.25)}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px}.tabs button.active{background:var(--blue)}.toolSec{display:none}.toolSec.active{display:block}.builderNote{background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.35);border-radius:12px;padding:8px 10px;font-size:12px;color:#dbeafe;margin:8px 0}.editorHint{position:absolute;left:12px;bottom:12px;background:rgba(15,23,42,.72);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 10px;font-size:12px;color:#fff;pointer-events:none;z-index:3;max-width:590px}.layerButtons{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.layerButtons button{padding:8px 6px;font-size:12px}.layerButtons button.active{background:#0ea5e9}.small{font-size:12px;padding:7px 10px;border-radius:10px}@media(max-width:900px){.petGrid{grid-template-columns:1fr}.touch{display:block}.fieldGrid{grid-template-columns:1fr}body.builderFull .builderGrid{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) 45vh}.tools{min-height:0}.brand h1{font-size:16px}}
+
+/* V33 simple builder reset: big canvas first, simple controls underneath */
+body.builderFull{background:#050b16;overflow:hidden}
+body.builderFull .app{width:100vw;max-width:none;height:100vh;padding:4px}
+body.builderFull .top{display:none}
+body.builderFull #builder{height:100%}
+body.builderFull .builderGrid{display:grid;grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) minmax(190px,30vh);gap:6px;height:100%}
+body.builderFull .builderGrid .gameShell{height:100%;display:flex;flex-direction:column;border-radius:12px;overflow:hidden}
+body.builderFull .builderGrid .canvasWrap{flex:1;aspect-ratio:auto;min-height:0;background:#81d4ff}
+body.builderFull .tools{border-radius:12px;box-shadow:none;padding:10px;overflow:auto;background:#0b1324;border:1px solid #24334d}
+body.builderFull .tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:10px}
+body.builderFull .tabs button{padding:10px 8px;border-radius:10px;font-size:13px}
+body.builderFull .toolSec.active{display:block}
+body.builderFull .fieldGrid{grid-template-columns:repeat(6,minmax(80px,1fr));gap:8px}
+body.builderFull .fieldGrid.one{grid-template-columns:1fr}
+body.builderFull .builderNote{display:none}
+body.builderFull .editorHint{left:12px;bottom:12px;max-width:430px;font-size:12px;background:rgba(8,13,25,.65)}
+body.builderFull .statusBox{padding:8px;min-height:0}
+body.builderFull .layerButtons{grid-template-columns:repeat(3,minmax(0,1fr));max-width:480px}
+body.builderFull #tab-layers .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
+body.builderFull #tab-objects .fieldGrid{grid-template-columns:repeat(6,minmax(90px,1fr))}
+body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(5,minmax(90px,1fr))}
+body.builderFull input, body.builderFull select{padding:7px 8px;font-size:12px}
+body.builderFull label{font-size:11px}
+body.builderFull textarea{height:60px}
+@media(max-width:900px){body.builderFull .builderGrid{grid-template-rows:minmax(0,1fr) 42vh}body.builderFull .tabs{grid-template-columns:repeat(3,1fr)}body.builderFull .fieldGrid,body.builderFull #tab-layers .fieldGrid,body.builderFull #tab-objects .fieldGrid,body.builderFull #tab-player .fieldGrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
 </style>
 </head>
 <body>
@@ -35,11 +62,11 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
   <section id="builder" class="panel">
     <div class="builderGrid">
       <div class="gameShell">
-        <div class="hud"><div class="row"><span class="pill">Full Screen Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span></div><div class="row"><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="testFromBuilder()">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHint">Builder mode: use the right panel first. Select Character, Layers, or Objects. Turn on guides only while editing platforms.</div></div>
+        <div class="hud"><div class="row"><span class="pill">Full Screen Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span></div><div class="row"><button onclick="enterSimpleLayers()">Edit Layers</button><button onclick="enterSimpleObjects()">Edit Platforms / Objects</button><button onclick="selectPlayerForEdit()">Edit Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="testFromBuilder()">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
+        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHint">Builder: pick a tab below. Layers = sky/hills/ground. Objects = platforms/coins/enemies. Click or drag items on the game screen.</div></div>
       </div>
       <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div>
+        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div><div class="statusBox" style="margin:8px 0;background:#0e1a2e">Simple workflow: 1) choose Layers / Objects / Player below  2) click what you want to edit  3) drag on the canvas or edit the numbers  4) Save / Load.</div>
         <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="save">Save / Load</button></div>
 
         <div id="tab-layers" class="toolSec active">
@@ -60,7 +87,7 @@ body.builderFull{overflow:hidden} body.builderFull .app{width:100vw;max-width:no
 
         <div id="tab-objects" class="toolSec">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button><button onclick="selectNextPlatform()">Select Next Platform</button></div>
-          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" checked style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
+          <div class="row" style="margin:10px 0"><label style="flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
           <div class="builderNote">Platforms are real collision pieces. In play mode they can be hidden or lightly visible. In Builder they are editable guides.</div>
           <div class="fieldGrid">
             <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option><option value="player">character</option><option value="layer">layer</option></select></label>
@@ -135,7 +162,7 @@ let keys={};
 let anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};
 function img(src){if(!src||!/^https?:\/\//.test(src))return null;if(imgCache.has(src))return imgCache.get(src);const im=new Image();im.crossOrigin='anonymous';im.src=src;imgCache.set(src,im);return im}
 function showPanel(name){document.body.classList.toggle('builderFull',name==='builder');document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(name).classList.add('active');currentPanel=name;if(name==='game')running=true;if(name==='builder'){running=false;renderEditor()} }
-async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter CTW_GAME_ADMIN_KEY');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin_key:pass,key:pass})});const d=await r.json();if(d.ok){adminOk=true;document.getElementById('adminStatus').textContent='Builder unlocked with CTW_GAME_ADMIN_KEY for this page load.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
+async function openBuilderWithPassword(){if(adminOk){showPanel('builder');return}const pass=prompt('Enter CTW_GAME_ADMIN_KEY');if(pass===null)return;try{const r=await fetch('/api/admin',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({admin_key:pass,key:pass})});const d=await r.json();if(d.ok){adminOk=true;document.getElementById('adminStatus').textContent='Unlocked with CTW_GAME_ADMIN_KEY. Builder is now in simple edit mode.';showPanel('builder')}else alert(d.error||'Wrong admin key')}catch(e){alert('Admin check failed. Make sure /functions/api/admin.js is uploaded and CTW_GAME_ADMIN_KEY is set.')}}
 function setToolTab(tab){document.querySelectorAll('.tabs button').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));document.querySelectorAll('.toolSec').forEach(s=>s.classList.toggle('active',s.id==='tab-'+tab));}
 document.querySelectorAll('.tabs button').forEach(b=>b.addEventListener('click',()=>setToolTab(b.dataset.tab)));
 function canvasPoint(cv,e,world=true){const r=cv.getBoundingClientRect();const p={x:(e.clientX-r.left)*VW/r.width,y:(e.clientY-r.top)*VH/r.height};if(world)p.x+=cameraX;return p}
@@ -283,6 +310,13 @@ async function loadPetbotPets(){const userId=document.getElementById('userSelect
 async function selectPetFromDropdown(){const pets=window.loadedPets||[];const p=pets[+document.getElementById('petSelect').value||0];if(!p)return;currentPet=p;document.getElementById('petTitle').textContent=p.name;document.getElementById('petSub').textContent=(p.pet||'pet')+' • code '+p.code+' • level '+p.level;document.getElementById('hungerBar').style.width=(+p.hunger||0)+'%';document.getElementById('happyBar').style.width=(+p.happy||0)+'%';document.getElementById('energyBar').style.width=(+p.energy||0)+'%';const userId=document.getElementById('userSelect').value;try{const q=new URLSearchParams({user_id:userId,pet_code:p.code,pet_name:p.name,pet:p.pet||'',action:'main'});const r=await fetch('/api/sheet51?'+q);const d=await r.json();currentPetImage=d.image_url||'';const imgEl=document.getElementById('petImg'),no=document.getElementById('petNoImg');if(currentPetImage){imgEl.src=currentPetImage;imgEl.style.display='block';no.style.display='none'}else{imgEl.style.display='none';no.style.display='block'}document.getElementById('petDebug').textContent='Sheet 51 image URL: '+(currentPetImage||'none')+'\nMatch: '+JSON.stringify(d.match||d.reason||'',null,2)}catch(e){document.getElementById('petDebug').textContent='Sheet 51 lookup failed: '+e.message}}
 function usePetAsPlayer(){if(!currentPet||!currentPetImage)return alert('No Sheet 51 pet image loaded yet');document.getElementById('playerKind').value='pet';document.getElementById('pImg').value=currentPetImage;document.getElementById('pW').value=90;document.getElementById('pH').value=100;applyPlayerSettings();alert(currentPet.name+' is now the platform character')}
 window.addEventListener('load',()=>{syncPlayerFields();syncAnimFields();selectLayer('sky');try{const saved=localStorage.getItem('ctw_anim');if(saved){anim=JSON.parse(saved);syncAnimFields()}}catch(e){}});
+
+
+// V33: simple builder helpers
+function enterSimpleObjects(){setToolTab('objects');document.getElementById('showPlatformGuides').checked=true;renderEditor();}
+function enterSimpleLayers(){setToolTab('layers');document.getElementById('showLayerBoxes').checked=false;renderEditor();}
+function simpleSelectGround(){selectLayer('ground');document.getElementById('showLayerBoxes').checked=true;renderEditor();}
+
 </script>
 </body>
 </html>
