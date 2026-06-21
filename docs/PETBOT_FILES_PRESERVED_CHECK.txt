@@ -1,9 +1,0 @@
-These files were copied from ctwgame_PETBOT_READONLY_BRIDGE_UPLOAD.zip and preserved:
-functions/api/admin.js
-functions/api/petbot.js
-functions/api/sheet51.js
-functions/api/sheets.js
-
-The front-end Pet Care panel still calls:
-/api/petbot?mode=view_pets&user_id=...
-/api/sheet51?user_id=...&pet_code=...&pet_name=...&pet=...&action=main
