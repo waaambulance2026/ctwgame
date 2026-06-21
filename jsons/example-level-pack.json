@@ -1,0 +1,10 @@
+{
+  "version": "example",
+  "name": "level_1",
+  "level": {
+    "layers": [],
+    "objects": []
+  },
+  "player": null,
+  "anim": null
+}
