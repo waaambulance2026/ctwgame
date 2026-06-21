@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V27 Full Builder</title>
+<title>Waaambulance Quest Dash V28 Clean Builder</title>
 <style>
 :root{
   --bg:#111827;--panel:#172033;--panel2:#202c45;--line:#334155;--text:#f8fafc;--muted:#9fb0c7;--blue:#38bdf8;--pink:#ff4fa3;--yellow:#ffe66d;--green:#22c55e;--red:#ef4444;
@@ -20,6 +20,14 @@ body.builderFull #builder .gameShell{height:100%;display:flex;flex-direction:col
 body.builderFull #builder .canvasWrap{flex:1;aspect-ratio:auto;min-height:0}
 body.builderFull #builder .tools{height:100%;max-height:none;border-radius:14px;overflow:auto}
 .smallBtn{padding:7px 10px;border-radius:10px;font-size:12px}.toolDivider{height:1px;background:#334155;margin:12px 0}.miniTitle{font-size:13px;font-weight:900;color:#e2e8f0;margin:8px 0}.toggleLine{display:flex!important;flex-direction:row!important;align-items:center;gap:8px}
+
+/* V28 cleaner full-screen builder: the editor is the tool, not a form page */
+body.builderFull .builderGrid{grid-template-columns:minmax(0,1fr) 330px;gap:6px}
+body.builderFull #builder .gameHud{padding:6px 10px}
+body.builderFull #builder .tools{background:rgba(11,18,32,.96);box-shadow:-10px 0 30px rgba(0,0,0,.25)}
+body.builderFull #builder .canvasWrap{background:#80d8ff}
+.builderNote{background:rgba(56,189,248,.10);border:1px solid rgba(56,189,248,.35);border-radius:12px;padding:8px 10px;font-size:12px;color:#dbeafe;margin:8px 0}
+.editorHintOverlay{position:absolute;left:12px;bottom:12px;background:rgba(15,23,42,.72);border:1px solid rgba(255,255,255,.22);border-radius:12px;padding:8px 10px;font-size:12px;color:#f8fafc;pointer-events:none;z-index:3;max-width:520px}
 
 </style>
 </head>
@@ -54,14 +62,14 @@ body.builderFull #builder .tools{height:100%;max-height:none;border-radius:14px;
     <div class="builderGrid">
       <div class="gameShell">
         <div class="gameHud"><span class="pill">Full Screen Builder</span><div class="row"><button onclick="selectPlayerForEdit()">Select Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="showPanel('game')">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas></div>
+        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="editorHintOverlay">Click any object or the character. Drag to move. Drag blue corner handles to resize. Platforms are collision guides, not giant white artwork.</div></div>
       </div>
       <aside class="tools">
         <div class="statusBox" id="adminStatus">Builder locked. Enter the value from Cloudflare env var CTW_GAME_ADMIN_KEY.</div>
         <div class="toolTabs"><button class="active" data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="backgrounds">Backgrounds</button><button data-tab="save">Save / Load</button></div>
         <div id="tab-objects" class="toolSec active">
           <div class="row"><button class="primary" onclick="addObj('platform')">+ Platform</button><button class="primary" onclick="addObj('coin')">+ Coin</button><button class="primary" onclick="addObj('enemy')">+ Enemy</button><button class="primary" onclick="addObj('finish')">+ Finish</button></div>
-          <div class="row" style="margin:10px 0"><label style="display:flex;flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" checked style="width:auto"> Snap to 25px grid</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div>
+          <div class="row" style="margin:10px 0"><label style="display:flex;flex-direction:row;align-items:center;gap:8px"><input id="snapCheck" type="checkbox" checked style="width:auto"> Snap to 25px grid</label><label style="display:flex;flex-direction:row;align-items:center;gap:8px"><input id="guidesCheck" type="checkbox" checked style="width:auto" onchange="renderEditor()"> Show platform guides</label><button onclick="duplicateSelected()">Duplicate</button><button class="bad" onclick="deleteSelected()">Delete</button></div><div class="builderNote">Platforms are mostly hidden in play mode so the game art stays clean. In Builder they appear as editable guide boxes. Click one, drag it, or drag the blue corner squares to resize it.</div>
           <div class="fields">
             <label>Type<select id="fType"><option value="platform">platform</option><option value="coin">coin</option><option value="enemy">enemy</option><option value="finish">finish</option><option value="decor">decor</option><option value="player">character</option></select></label>
             <label>Label / emoji<input id="fLabel" placeholder="🧱 or image label"></label>
@@ -70,7 +78,7 @@ body.builderFull #builder .tools{height:100%;max-height:none;border-radius:14px;
             <label style="grid-column:1/-1">Image URL optional<input id="fImg" placeholder="https://..."></label>
           </div>
           <div class="row" style="margin-top:10px"><button class="good" onclick="applyFormToSelected()">Apply Selected</button><button onclick="bringForward()">Bring Forward</button></div>
-          <div class="statusBox" id="selectedInfo">Click an object OR the character in the preview to edit position and size. Drag directly on the canvas.</div>
+          <div class="statusBox" id="selectedInfo">Click an object or character. Drag to move. Drag blue corner handles to resize. Platforms are guide/collision boxes, not final artwork.</div>
         </div>
         <div id="tab-player" class="toolSec">
           <div class="fields">
@@ -216,7 +224,50 @@ function drawBg(ct){
   else{ct.fillStyle=ground;ct.fillRect(0,640,VW,80)}
 }
 function drawGrid(ct){ct.fillStyle='rgba(255,255,255,.18)';for(let x=0;x<WORLD_W;x+=25)for(let y=0;y<VH;y+=25)ct.fillRect(x,y,2,2)}
-function drawObj(ct,o,editor){if(o.type==='coin'&&o.collected&&!editor)return;ct.save(); if(o.type==='coin'&&o.collected)ct.globalAlpha=.28; const im=img(o.img); if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}else{ if(o.type==='platform'){ct.fillStyle='#ffffff';ct.fillRect(o.x,o.y,o.w,o.h);ct.fillStyle='#fb6fb7';ct.fillRect(o.x,o.y,o.w,Math.min(8,o.h));} else if(o.type==='enemy'){ct.fillStyle='#ef4444';roundRect(ct,o.x,o.y,o.w,o.h,8,true);ct.font=`${Math.min(o.h*.65,38)}px system-ui`;ct.textAlign='center';ct.textBaseline='middle';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)} else if(o.type==='finish'){ct.font=`${o.h*.75}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)} else {ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y)} } if(editor&&selected&&selected.id===o.id){ct.strokeStyle='#38bdf8';ct.lineWidth=4;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6)} ct.restore();}
+function drawHandle(ct,x,y){ct.fillStyle='#38bdf8';ct.strokeStyle='#0f172a';ct.lineWidth=2;ct.fillRect(x-6,y-6,12,12);ct.strokeRect(x-6,y-6,12,12)}
+function drawSelection(ct,o){ct.save();ct.setLineDash([8,5]);ct.strokeStyle='#38bdf8';ct.lineWidth=3;ct.strokeRect(o.x-3,o.y-3,o.w+6,o.h+6);ct.setLineDash([]);drawHandle(ct,o.x,o.y);drawHandle(ct,o.x+o.w,o.y);drawHandle(ct,o.x,o.y+o.h);drawHandle(ct,o.x+o.w,o.y+o.h);ct.restore()}
+function drawObj(ct,o,editor){
+  if(o.type==='coin'&&o.collected&&!editor)return;
+  const selectedThis = editor&&selected&&selected.id===o.id;
+  const showGuides = editor && (document.getElementById('guidesCheck')?.checked ?? true);
+  ct.save();
+  if(o.type==='coin'&&o.collected)ct.globalAlpha=.28;
+  const im=img(o.img);
+  if(im&&im.complete){ct.drawImage(im,o.x,o.y,o.w,o.h)}
+  else if(o.type==='platform'){
+    if(editor){
+      if(showGuides||selectedThis){
+        ct.fillStyle=selectedThis?'rgba(56,189,248,.18)':'rgba(255,255,255,.08)';
+        ct.fillRect(o.x,o.y,o.w,o.h);
+        ct.strokeStyle=selectedThis?'#38bdf8':'rgba(255,255,255,.55)';
+        ct.lineWidth=selectedThis?3:2;
+        ct.setLineDash(selectedThis?[]:[10,7]);
+        ct.strokeRect(o.x,o.y,o.w,o.h);
+        ct.setLineDash([]);
+        ct.fillStyle='rgba(251,111,183,.95)';
+        ct.fillRect(o.x,o.y,Math.max(12,o.w),Math.min(5,o.h));
+      }
+    }else{
+      // Gameplay stays pretty: show only a slim ledge, not a big white block.
+      const isGround=(o.label||'').toLowerCase()==='ground' || o.y>=620;
+      if(!isGround){
+        ct.fillStyle='rgba(255,255,255,.78)';
+        roundRect(ct,o.x,o.y, o.w, Math.min(12,o.h), 6, true);
+        ct.fillStyle='rgba(251,111,183,.95)';
+        ct.fillRect(o.x,o.y, o.w, 4);
+      }
+    }
+  } else if(o.type==='enemy'){
+    ct.fillStyle='#ef4444';roundRect(ct,o.x,o.y,o.w,o.h,8,true);
+    ct.font=`${Math.min(o.h*.65,38)}px system-ui`;ct.textAlign='center';ct.textBaseline='middle';ct.fillText(o.label||'⚠️',o.x+o.w/2,o.y+o.h/2)
+  } else if(o.type==='finish'){
+    ct.font=`${o.h*.75}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'🏁',o.x,o.y)
+  } else {
+    ct.font=`${Math.min(o.h,48)}px system-ui`;ct.textBaseline='top';ct.fillText(o.label||'💎',o.x,o.y)
+  }
+  if(selectedThis)drawSelection(ct,o);
+  ct.restore();
+}
 function playerFrameUrl(){
   if(player.kind!=='ax' || (player.img && player.img!==AX_URL)) return player.img;
   let action='idle';
@@ -231,22 +282,46 @@ function drawPlayer(ct,editor){
   const im=img(src);
   if(im&&im.complete){ct.drawImage(im,player.x,player.y,player.w,player.h)}
   else{const fallback=img(AX_URL); if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h); else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}
-  if(editor){ct.strokeStyle=(selected===player)?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=(selected===player)?4:2;ct.strokeRect(player.x,player.y,player.w,player.h); if(selected===player){ct.fillStyle='rgba(253,224,71,.9)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10));}}
+  if(editor){ct.strokeStyle=(selected===player)?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=(selected===player)?4:2;ct.strokeRect(player.x,player.y,player.w,player.h); if(selected===player){drawHandle(ct,player.x,player.y);drawHandle(ct,player.x+player.w,player.y);drawHandle(ct,player.x,player.y+player.h);drawHandle(ct,player.x+player.w,player.y+player.h);ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10));}}
 }
 function roundRect(ct,x,y,w,h,r,fill){ct.beginPath();ct.roundRect(x,y,w,h,r);if(fill)ct.fill();}
 function loop(t){update();draw(canvas,ctx,false); if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)} requestAnimationFrame(loop);
 // editor
+function resizeHandleHit(o,p){
+  if(!o)return null;
+  const hs=14;
+  const handles=[['nw',o.x,o.y],['ne',o.x+o.w,o.y],['sw',o.x,o.y+o.h],['se',o.x+o.w,o.y+o.h]];
+  for(const [name,x,y] of handles){if(Math.abs(p.x-x)<=hs&&Math.abs(p.y-y)<=hs)return name}
+  return null;
+}
+function applyResize(o,handle,p){
+  const minW=o===player?28:16, minH=o===player?28:12;
+  if(handle.includes('e')) o.w=Math.max(minW,p.x-o.x);
+  if(handle.includes('s')) o.h=Math.max(minH,p.y-o.y);
+  if(handle.includes('w')){const right=o.x+o.w; o.x=Math.min(p.x,right-minW); o.w=right-o.x;}
+  if(handle.includes('n')){const bottom=o.y+o.h; o.y=Math.min(p.y,bottom-minH); o.h=bottom-o.y;}
+  o.x=Math.round(o.x);o.y=Math.round(o.y);o.w=Math.round(o.w);o.h=Math.round(o.h);
+}
 editCanvas.addEventListener('pointerdown',e=>{
   const p=canvasPoint(editCanvas,e,true);
+  if(selected){
+    const h=resizeHandleHit(selected,p);
+    if(h){drag={mode:'resize',handle:h};editCanvas.setPointerCapture?.(e.pointerId);return;}
+  }
   const hitPlayer=p.x>=player.x&&p.x<=player.x+player.w&&p.y>=player.y&&p.y<=player.y+player.h;
   selected=hitPlayer?player:([...level.objects].reverse().find(o=>p.x>=o.x&&p.x<=o.x+o.w&&p.y>=o.y&&p.y<=o.y+o.h)||null);
-  if(selected){drag={dx:p.x-selected.x,dy:p.y-selected.y};fillForm()}else fillForm();renderEditor()
+  if(selected){drag={mode:'move',dx:p.x-selected.x,dy:p.y-selected.y};editCanvas.setPointerCapture?.(e.pointerId);fillForm()}else fillForm();renderEditor()
 });
 editCanvas.addEventListener('pointermove',e=>{
   if(!drag||!selected)return;
-  const p=canvasPoint(editCanvas,e,true);let nx=p.x-drag.dx,ny=p.y-drag.dy;
-  if(document.getElementById('snapCheck').checked && selected!==player){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}else{nx=Math.round(nx);ny=Math.round(ny)}
-  selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny));
+  const p=canvasPoint(editCanvas,e,true);
+  if(drag.mode==='resize'){
+    applyResize(selected,drag.handle,p);
+  }else{
+    let nx=p.x-drag.dx,ny=p.y-drag.dy;
+    if(document.getElementById('snapCheck').checked && selected!==player){nx=Math.round(nx/25)*25;ny=Math.round(ny/25)*25}else{nx=Math.round(nx);ny=Math.round(ny)}
+    selected.x=Math.max(0,Math.min(WORLD_W-selected.w,nx));selected.y=Math.max(0,Math.min(VH-selected.h,ny));
+  }
   if(selected===player){document.getElementById('pW').value=player.w;document.getElementById('pH').value=player.h;document.getElementById('pImg').value=player.img||player.emoji||'';}
   fillForm(false);renderEditor()
 });
