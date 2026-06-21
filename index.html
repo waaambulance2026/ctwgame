@@ -102,11 +102,20 @@ const $=id=>document.getElementById(id);const root=document.documentElement;cons
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:260,playerDrop:26,buddyX:14,buddyW:118,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:24,zPlayer:30,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
+// Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
   const lower=String(k).toLowerCase();
-  if(lower.startsWith('ctw_game_v') || lower.startsWith('ctw_game_layout_v') || /^v\d+_/.test(lower)){
-    localStorage.removeItem(k);
-  }
+  if(
+    lower.startsWith('ctw_game_v') ||
+    lower.startsWith('ctw_game_layout_v') ||
+    /^v\d+_/.test(lower) ||
+    lower === 'ctw_game_current_saved_layout_v2' ||
+    lower === 'ctw_game_current_saved_layout_v3' ||
+    lower === 'ctw_game_current_clean' ||
+    lower.includes('movement_idle_fix') ||
+    lower.includes('team_follower') ||
+    lower.includes('team_editor')
+  ){ localStorage.removeItem(k); }
 });
 
 /* No-spam asset loader.
@@ -134,19 +143,19 @@ const DEFAULT_PATTERNS={
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
 const ALT_PATTERNS={
   ax:{
-    idle:[`${CLOUD}/characters/Ax/idle/ax_idle_{n}.png`],
-    walk:[`${CLOUD}/characters/Ax/walk/ax_walk_{n}.png`],
-    jump:[`${CLOUD}/characters/Ax/jump/ax_jump_{n}.png`]
+    idle:[`${CLOUD}/ax_idle_{n}.png`,`${CLOUD}/characters/Ax/idle/ax_idle_{n}.png`,`${CLOUD}/characters/ax/idle/ax_idle_{n}.png`,`${CLOUD}/Ax/Idle/ax_idle_{n}.png`],
+    walk:[`${CLOUD}/ax_walk_{n}.png`,`${CLOUD}/characters/Ax/walk/ax_walk_{n}.png`,`${CLOUD}/characters/ax/walk/ax_walk_{n}.png`,`${CLOUD}/Ax/Walk/ax_walk_{n}.png`],
+    jump:[`${CLOUD}/ax_jump_{n}.png`,`${CLOUD}/characters/Ax/jump/ax_jump_{n}.png`,`${CLOUD}/characters/ax/jump/ax_jump_{n}.png`,`${CLOUD}/Ax/Jump/ax_jump_{n}.png`]
   },
   pura:{
-    idle:[`${CLOUD}/pura_idle_{n}.png`,`${CLOUD}/v1781797065/pura_idle_{n}.png`,`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`,`${CLOUD}/Pura/Idle/pura_idle_{n}.png`],
-    walk:[`${CLOUD}/pura_walk_{n}.png`,`${CLOUD}/v1781797065/pura_walk_{n}.png`,`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`,`${CLOUD}/Pura/Walk/pura_walk_{n}.png`],
-    jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`]
+    idle:[`${CLOUD}/pura_idle_{n}.png`,`${CLOUD}/v1781797065/pura_idle_{n}.png`,`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`,`${CLOUD}/Pura/Idle/pura_idle_{n}.png`,`${CLOUD}/Pura/idle/pura_idle_{n}.png`],
+    walk:[`${CLOUD}/pura_walk_{n}.png`,`${CLOUD}/v1781797065/pura_walk_{n}.png`,`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`,`${CLOUD}/Pura/Walk/pura_walk_{n}.png`,`${CLOUD}/Pura/walk/pura_walk_{n}.png`],
+    jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`],
-    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`],
-    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`]
+    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`],
+    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`],
+    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
@@ -169,13 +178,19 @@ function setSpriteMissing(elId,on,msg){
 function pushSpriteCandidate(list,pattern,idx){
   if(!pattern)return;
   const raw=String(pattern);
+  const add=u=>{ if(u&&!list.includes(u))list.push(u); };
   const one=fillSpritePattern(raw,idx);
-  if(one&&!list.includes(one))list.push(one);
+  add(one);
   // Some uploaded batches were named 01/02 and some were 001/002. Only add the 2-digit version when the pattern uses {n}.
   if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
     const frame=((idx%10)+1);
-    const two=raw.replaceAll('{n}',pad2(frame));
-    if(two&&!list.includes(two))list.push(two);
+    add(raw.replaceAll('{n}',pad2(frame)));
+  }
+  // If the extension was wrong in the saved URL, try common image extensions without creating a huge 404 storm.
+  const expanded=[...list];
+  for(const u of expanded.slice(-2)){
+    if(/\.png($|\?)/i.test(u)){add(u.replace(/\.png($|\?)/i,'.webp$1'));add(u.replace(/\.png($|\?)/i,'.jpg$1'));}
+    if(/\.webp($|\?)/i.test(u)){add(u.replace(/\.webp($|\?)/i,'.png$1'));}
   }
 }
 function candidateSpriteUrls(char,action,idx){
@@ -211,7 +226,14 @@ function setSpriteFrame(elId,char,action,idx){
   const el=$(elId);
   if(!el)return;
   function tryNext(){
-    if(i>=urls.length){setSpriteMissing(elId,true,'Sprite missing - check URL pattern');return;}
+    if(i>=urls.length){
+      // Do not leave the game invisible. If Pura/Owl/custom sprite paths fail, show Ax as a safe visible fallback.
+      if(char!=='ax'&&char!=='pet'){
+        const fb=candidateSpriteUrls('ax',action,idx).filter(u=>u&&!spriteBroken.has(u));
+        if(fb.length){ urls.push(...fb); return tryNext(); }
+      }
+      setSpriteMissing(elId,true,'Sprite missing - check URL pattern');return;
+    }
     const url=urls[i++];
     if(spriteBroken.has(url)){tryNext();return;}
     if(spriteCurrent[elId]===url){setSpriteMissing(elId,false);return;}
@@ -328,10 +350,23 @@ function loop(now=0){
 }
 const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZObjects:['zObjects','']};
 function clonePatterns(){return JSON.parse(JSON.stringify(SPRITE_PATTERNS||DEFAULT_PATTERNS))}
+function safeSpritePatternValue(v){
+  v=String(v||'').trim();
+  if(!v)return '';
+  const bad=['undefined','null','blob:','data:','peregrine','falcon_portrait'];
+  if(bad.some(b=>v.toLowerCase().includes(b)))return '';
+  return v;
+}
 function mergeSpritePatterns(saved){
   SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
   if(saved&&typeof saved==='object'){
-    Object.keys(saved).forEach(ch=>{SPRITE_PATTERNS[ch]=SPRITE_PATTERNS[ch]||{};Object.assign(SPRITE_PATTERNS[ch],saved[ch]||{});});
+    Object.keys(saved).forEach(ch=>{
+      SPRITE_PATTERNS[ch]=SPRITE_PATTERNS[ch]||{};
+      Object.keys(saved[ch]||{}).forEach(action=>{
+        const clean=safeSpritePatternValue(saved[ch][action]);
+        if(clean)SPRITE_PATTERNS[ch][action]=clean;
+      });
+    });
   }
   spriteBroken.clear();
   if($('axIdleUrl'))fillSpriteUrlInputs();
@@ -357,7 +392,7 @@ function exportSettings(){$('settingsBox').value=JSON.stringify(readSettings(),n
 function persistLocalQuiet(){try{localStorage.setItem(VERSION,JSON.stringify(readSettings()));}catch(e){}}
 function saveLocal(){persistLocalQuiet();$('adminStatus').textContent='Saved in this browser. Layout, layer levels, sprite URLs, character choice and sizes are saved.'}
 function loadLocal(){const d=localStorage.getItem(VERSION);if(!d){$('adminStatus').textContent='No browser save yet.';return}applySettings(JSON.parse(d));$('adminStatus').textContent='Loaded browser save including sprite URLs and layer levels.'}
-function resetCorrect(){Object.keys(localStorage).filter(k=>k.startsWith('ctw_game')||k.includes('v43')||k.includes('v44')||k.includes('v45')||k.includes('v46')||k.includes('v47')||k.includes('v48')).forEach(k=>localStorage.removeItem(k));SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});saveLocal();$('adminStatus').textContent='Reset to safe visual layout.'}
+function resetCorrect(){Object.keys(localStorage).filter(k=>k.startsWith('ctw_game')||String(k).toLowerCase().includes('team')||String(k).toLowerCase().includes('movement')||String(k).toLowerCase().includes('sprite')).forEach(k=>localStorage.removeItem(k));SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});saveLocal();$('adminStatus').textContent='Reset to safe visual layout.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
