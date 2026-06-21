@@ -6,7 +6,7 @@ function json(data, status = 200) {
       'cache-control': 'no-store',
       'access-control-allow-origin': '*',
       'access-control-allow-methods': 'POST, OPTIONS',
-      'access-control-allow-headers': 'content-type'
+      'access-control-allow-headers': 'content-type, x-admin-key'
     }
   });
 }
@@ -33,7 +33,7 @@ export async function onRequest(context) {
     return json({ ok: false, error: 'Invalid JSON body.' }, 400);
   }
 
-  const supplied = String(body.admin_key || body.key || body.password || '').trim();
+  const supplied = String(body.admin_key || body.key || body.password || request.headers.get('x-admin-key') || '').trim();
   const expected = String(env.CTW_GAME_ADMIN_KEY || '').trim();
 
   if (!supplied) return json({ ok: false, error: 'Enter the Builder admin key.' }, 400);
