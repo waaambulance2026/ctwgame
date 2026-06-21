@@ -1,12 +1,7 @@
-# CTW V45 normal-browser cache safety
 /*
-  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
   Pragma: no-cache
   Expires: 0
-  X-CTW-Version: V45_NORMAL_BROWSER_CACHE_SAFE
 
 /index.html
-  Cache-Control: no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0
-  Pragma: no-cache
-  Expires: 0
-  X-CTW-Version: V45_NORMAL_BROWSER_CACHE_SAFE
+  Cache-Control: no-store, no-cache, must-revalidate, max-age=0
