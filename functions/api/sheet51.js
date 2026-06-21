@@ -75,17 +75,32 @@ function parseGviz(text) {
   }
   return rows;
 }
+function cleanCloudinaryPublicId(v) {
+  let publicId = clean(v).replace(/^['"]|['"]$/g, '');
+  if (!publicId) return '';
+  publicId = publicId.split('?')[0].split('#')[0].trim();
+  if (isWebUrl(publicId)) return publicId;
+  // Accept copied partial Cloudinary paths as well as pure public IDs.
+  publicId = publicId.replace(/^\/+/, '');
+  publicId = publicId.replace(/^res\.cloudinary\.com\/dpwlfmhia\/image\/upload\//i, '');
+  publicId = publicId.replace(/^cloudinary\.com\/.*?\/image\/upload\//i, '');
+  publicId = publicId.replace(/^image\/upload\//i, '');
+  const uploadIndex = publicId.toLowerCase().indexOf('/upload/');
+  if (uploadIndex >= 0) publicId = publicId.slice(uploadIndex + 8);
+  // If a transformation prefix was accidentally pasted, keep it; Cloudinary can still serve it.
+  return publicId.replace(/\s/g, '%20');
+}
 function cloudinaryUrlFromPublicId(publicId) {
-  publicId = clean(publicId);
+  publicId = cleanCloudinaryPublicId(publicId);
   if (!publicId) return '';
   if (isWebUrl(publicId)) return publicId;
-  // Sheet 51 public IDs are usually extensionless; f_auto/q_auto works for Cloudinary delivery.
+  // Sheet 51 public IDs can be extensionless or include folders/extensions.
   return `https://res.cloudinary.com/dpwlfmhia/image/upload/f_auto,q_auto/${publicId}`;
 }
 function imageFromRow(row) {
-  const imageUrl = rowVal(row, ['image_url', 'Image URL', 'url', 'custom_image_url', 'pet_image_url']);
-  if (isWebUrl(imageUrl)) return imageUrl;
-  const publicId = rowVal(row, ['Cloudinary Public ID', 'cloudinary_public_id', 'public_id', 'asset_public_id']);
+  const imageUrl = rowVal(row, ['image_url', 'Image URL', 'url', 'custom_image_url', 'pet_image_url', 'cloudinary_image_url']);
+  if (imageUrl) return isWebUrl(imageUrl) ? imageUrl : cloudinaryUrlFromPublicId(imageUrl);
+  const publicId = rowVal(row, ['Cloudinary Public ID', 'cloudinary_public_id', 'public_id', 'asset_public_id', 'cloudinary_public_id']);
   return cloudinaryUrlFromPublicId(publicId);
 }
 function activeOk(row) {
@@ -108,8 +123,9 @@ function genericPetMatch(row, species, petName, petCode) {
   const assetName = lower(rowVal(row, ['Asset Name', 'asset_name', 'name']));
   const category = lower(rowVal(row, ['Category', 'category']));
   const codeBase = lower(petCode).replace(/_\d+$/,'');
+  const wanted = [species, codeBase, petName].filter(Boolean);
   const values = [target, assetKey, assetName, category].filter(Boolean);
-  return (species && values.includes(species)) || (codeBase && values.includes(codeBase)) || (petName && values.includes(petName));
+  return values.some(v => wanted.some(w => v === w || v.includes(w) || w.includes(v)));
 }
 function findPetImage(rows, { userId, petCode, petName, pet, action }) {
   userId = clean(userId);
@@ -201,6 +217,7 @@ export async function onRequest(context) {
           pet,
           action,
           image_url: match ? match.image_url : '',
+          image_url_debug: match ? match.image_url : '',
           match: match || null,
           reason: match ? 'matched Sheet 51 row' : 'no active Sheet 51 row matched on this tab. Checked owned-pet rows and generic Section=pet rows.',
           rows: includeRows ? rows : undefined
@@ -224,6 +241,7 @@ export async function onRequest(context) {
     pet,
     action,
     image_url: '',
+    image_url_debug: '',
     match: null,
     reason: 'no active Sheet 51 row matched in any allowed tab. Checked user_id+pet_code, user_id+pet_name, then Section=pet with Pet / Target or Asset Key matching species.'
   });

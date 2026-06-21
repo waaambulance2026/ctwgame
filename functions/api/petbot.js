@@ -33,7 +33,7 @@ export async function onRequest(context) {
   }
 
   const url = new URL(request.url);
-  const mode = (url.searchParams.get('mode') || '').trim();
+  const mode = (url.searchParams.get('mode') || 'view_pets').trim();
 
   if (!ALLOWED_READ_MODES.has(mode)) {
     return json({
@@ -55,20 +55,26 @@ export async function onRequest(context) {
     if (key !== 'mode' && key !== 'api_key') payload[key] = value;
   }
 
-  const upstream = await fetch(env.PETBOT_APPS_SCRIPT_URL, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload)
-  });
+  let upstream;
+  try {
+    upstream = await fetch(env.PETBOT_APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+  } catch (err) {
+    return json({ found: false, response: 'Could not contact PetBot Apps Script: ' + err.message }, 502);
+  }
 
   const text = await upstream.text();
   let data;
   try { data = JSON.parse(text); }
   catch (err) {
-    return json({ found: false, response: 'Petbot Apps Script did not return JSON.', upstream_status: upstream.status }, 502);
+    return json({ found: false, response: 'PetBot Apps Script did not return JSON.', upstream_status: upstream.status, body_preview: text.slice(0, 240) }, 502);
   }
 
   data.proxy_mode = 'read_only';
   data.proxy_allowed_mode = mode;
+  data.proxy_upstream_status = upstream.status;
   return json(data, upstream.ok ? 200 : 502);
 }
