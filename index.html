@@ -23,7 +23,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),270px);height:clamp(150px,calc(var(--buddyW) * 1.62),450px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}
 .toast{position:absolute;z-index:95;left:50%;bottom:calc(var(--floorPx) + 22px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
-.builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
+.builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
 
 /* Tidy editor slide-out + robust PetBot loading */
 .hudMenu{background:linear-gradient(180deg,#fef7ff,#d282c2);color:#24152e}
@@ -106,14 +106,32 @@ const DEFAULT_PATTERNS={
     jump:`${CLOUD}/v1781797065/ax_jump_{n}.png`
   },
   pura:{
-    idle:`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,
-    walk:`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,
-    jump:`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`
+    idle:`${CLOUD}/v1781797065/pura_idle_{n}.png`,
+    walk:`${CLOUD}/v1781797065/pura_walk_{n}.png`,
+    jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
-    idle:`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,
-    walk:`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,
-    jump:`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`
+    idle:`${CLOUD}/v1781797065/owl_idle_{n}.png`,
+    walk:`${CLOUD}/v1781797065/owl_walk_{n}.png`,
+    jump:`${CLOUD}/v1781797065/owl_jump_{n}.png`
+  }
+};
+// Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
+const ALT_PATTERNS={
+  ax:{
+    idle:[`${CLOUD}/characters/Ax/idle/ax_idle_{n}.png`],
+    walk:[`${CLOUD}/characters/Ax/walk/ax_walk_{n}.png`],
+    jump:[`${CLOUD}/characters/Ax/jump/ax_jump_{n}.png`]
+  },
+  pura:{
+    idle:[`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`],
+    walk:[`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`],
+    jump:[`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`]
+  },
+  owl:{
+    idle:[`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`],
+    walk:[`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`],
+    jump:[`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
@@ -133,12 +151,30 @@ function setSpriteMissing(elId,on,msg){
   wrap.classList.toggle('spriteMissing',!!on);
   if(msg)wrap.dataset.missing=msg;
 }
+function pushSpriteCandidate(list,pattern,idx){
+  if(!pattern)return;
+  const raw=String(pattern);
+  const one=fillSpritePattern(raw,idx);
+  if(one&&!list.includes(one))list.push(one);
+  // Some uploaded batches were named 01/02 and some were 001/002. Only add the 2-digit version when the pattern uses {n}.
+  if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
+    const frame=((idx%10)+1);
+    const two=raw.replaceAll('{n}',pad2(frame));
+    if(two&&!list.includes(two))list.push(two);
+  }
+}
 function candidateSpriteUrls(char,action,idx){
   if(char==='pet'&&currentPetImage)return [currentPetImage];
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
+  const alt=ALT_PATTERNS[char]||{};
   const actions=[];
   [action,'walk','idle','jump'].forEach(a=>{if(a&&!actions.includes(a))actions.push(a)});
-  return actions.map(a=>fillSpritePattern(p&&p[a],idx)).filter(Boolean);
+  const out=[];
+  actions.forEach(a=>{
+    pushSpriteCandidate(out,p&&p[a],idx);
+    (alt[a]||[]).forEach(pattern=>pushSpriteCandidate(out,pattern,idx));
+  });
+  return out.filter(Boolean);
 }
 function setSpriteImage(elId,url){
   const el=$(elId);
@@ -184,20 +220,20 @@ function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function
 function startGame(c,b){closeBuilder();closePetPanel();setPair(c,b);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function makeObject(kind,x){const level=levels[levelIndex];const isFinish=kind==='finish';const data=isFinish?['🏁','Finish flag',0]:(kind==='hazard'?level.hazards[Math.floor(Math.random()*level.hazards.length)]:level.tokens[Math.floor(Math.random()*level.tokens.length)]);const el=document.createElement('div');el.className='obj '+(isFinish?'finish':kind);el.textContent=data[0];$('worldObjects').appendChild(el);const y=innerHeight-floorPx()-(isFinish?130:(kind==='hazard'?cssNumber('--hazardLift',58):(cssNumber('--tokenLift',126)+Math.random()*55)));objects.push({el,x,y,kind,label:data[1],points:data[2]||0,hit:false})}function spawn(){if(finishMade||objects.length>5)return;makeObject(Math.random()<.30?'hazard':'token',innerWidth+260+Math.random()*260)}function makeFinish(){finishMade=true;makeObject('finish',innerWidth+520)}function collide(o){if(o.hit)return;if(o.kind==='hazard'&&player.jump>78)return;o.hit=true;if(o.kind==='token'){score+=o.points;showToast(`+${o.points} ${o.label}.`)}else if(o.kind==='hazard'){lives--;document.body.classList.add('hitFlash');setTimeout(()=>document.body.classList.remove('hitFlash'),230);showToast(`${o.label}. Drama damage.`);if(lives<=0)end(false)}else{score+=500;levelComplete()}updateHud()}function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){if(keys.left)player.x-=dt*.18;if(keys.right)player.x+=dt*.18;player.x=Math.max(-60,Math.min(120,player.x));if(!player.grounded){player.jump+=player.vy*dt*.08;player.vy-=dt*.055;if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}}$('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;$('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${player.grounded?1:.72})`;$('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`}
 function animateSprites(now){const act=player.grounded?(keys.left||keys.right?'walk':'idle'):'jump';const set=SETS[main]||SETS.ax;if(now-lastFrame>(set.frameMs||120)){mainFrame++;lastFrame=now;setSpriteFrame('sprite',main,act,mainFrame)}if(team){const bs=SETS[buddy]||SETS.pura;if(now-lastBuddyFrame>(bs.frameMs||145)){buddyFrame++;lastBuddyFrame=now;setSpriteFrame('buddySprite',buddy,'walk',buddyFrame)}}}
-function getShrunkRect(el,shrinkX=.20,shrinkY=.14){
+function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
   const r=el.getBoundingClientRect();
-  return {left:r.left+r.width*shrinkX,right:r.right-r.width*shrinkX,top:r.top+r.height*shrinkY,bottom:r.bottom-r.height*.08};
+  return {left:r.left+r.width*shrinkX,right:r.right-r.width*shrinkX,top:r.top+r.height*shrinkY,bottom:r.bottom-r.height*.04};
 }
 function rectsOverlap(a,b){return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top}
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-  const pad=o.kind==='token'?18:8;
+  const pad=o.kind==='token'?42:(o.kind==='finish'?36:22);
   return {left:r.left-pad,right:r.right+pad,top:r.top-pad,bottom:r.bottom+pad};
 }
 function shouldHitObject(o){
   if(o.hit)return false;
-  if(o.kind==='hazard'&&player.jump>95)return false;
-  const pr=getShrunkRect($('player'),.22,.16);
+  if(o.kind==='hazard'&&player.jump>125)return false;
+  const pr=getShrunkRect($('player'),.08,.10);
   return rectsOverlap(pr,objectHitRect(o));
 }
 function loop(now=0){
@@ -438,14 +474,24 @@ $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=sele
 $('startAxBtn').onclick=()=>startGame('ax','none');$('startPuraBtn').onclick=()=>startGame('pura','none');$('startOwlBtn').onclick=()=>startGame('owl','none');$('startTeamBtn').onclick=()=>startGame('ax','pura');$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
 let drag=null;
-document.querySelectorAll('.editableTarget').forEach(el=>el.addEventListener('pointerdown',e=>{
+function beginLayerDrag(layer,e){
   if(!document.body.classList.contains('editMode'))return;
-  const layer=el.dataset.layer;
+  if(!layer)return;
   focusEditTarget(layer);
   drag={layer,sx:e.clientX,sy:e.clientY,start:readSettings()};
-  try{el.setPointerCapture(e.pointerId)}catch(err){}
+  try{(e.currentTarget||$('game')).setPointerCapture(e.pointerId)}catch(err){}
   e.preventDefault(); e.stopPropagation();
+}
+document.querySelectorAll('.editableTarget').forEach(el=>el.addEventListener('pointerdown',e=>{
+  if(!document.body.classList.contains('editMode'))return;
+  beginLayerDrag(el.dataset.layer,e);
 }));
+$('game').addEventListener('pointerdown',e=>{
+  if(!document.body.classList.contains('editMode'))return;
+  if(e.target.closest('.builder,.petPanel,.hud,.overlay,.touch,.helpBtn'))return;
+  const selected=(document.body.dataset.editTarget||($('editTarget')&&$('editTarget').value)||'player');
+  beginLayerDrag(selected,e);
+});
 addEventListener('pointermove',e=>{
   if(!drag)return;
   const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy,s=drag.start;
