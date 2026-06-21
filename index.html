@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Waaambulance Quest Dash V34</title>
+<title>Waaambulance Quest Dash V35</title>
 <style>
 :root{--bg:#07101f;--panel:#101b2f;--panel2:#17243b;--line:#31415d;--text:#f8fafc;--muted:#a9b8cf;--blue:#0ea5e9;--green:#22c55e;--yellow:#facc15;--red:#ef4444;--pink:#ff4fa3;}
 *{box-sizing:border-box} html,body{margin:0;min-height:100%;background:radial-gradient(circle at top,#22314d,#07101f 58%,#030712);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif} button,input,select,textarea{font:inherit} button{border:0;border-radius:12px;padding:10px 14px;font-weight:900;cursor:pointer;background:#29384f;color:white;box-shadow:0 2px 0 rgba(0,0,0,.25)} button:hover{filter:brightness(1.1)} button.primary{background:var(--blue)} button.good{background:#16a34a} button.warn{background:#f59e0b;color:#111827} button.bad{background:#dc2626} button.ghost{background:#172033;border:1px solid #43546e} input,select,textarea{background:#071326;color:white;border:1px solid #43546e;border-radius:10px;padding:8px 10px;min-width:0} label{display:flex;flex-direction:column;gap:5px;font-size:12px;font-weight:900;color:#dbeafe}.app{width:min(100%,1220px);margin:0 auto;padding:12px}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;background:rgba(12,20,36,.9);border:1px solid #334155;border-radius:22px;padding:12px 16px;margin-bottom:12px}.brand h1{font-size:18px;margin:0}.brand small{color:var(--muted)}.nav{display:flex;gap:8px;flex-wrap:wrap}.panel{display:none}.panel.active{display:block}.menuGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{background:linear-gradient(180deg,#1c2944,#111b31);border:1px solid #334155;border-radius:22px;padding:20px;min-height:150px;display:flex;flex-direction:column;justify-content:space-between}.muted{color:var(--muted)}.gameShell{background:#091225;border:1px solid #334155;border-radius:20px;overflow:hidden;box-shadow:0 20px 45px rgba(0,0,0,.35)}.hud{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;background:#0e1830;flex-wrap:wrap}.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.pill{background:#f8fafc;color:#071326;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:950}.canvasWrap{position:relative;width:100%;aspect-ratio:16/9;background:#80d8ff;overflow:hidden;touch-action:none}canvas{display:block;width:100%;height:100%;background:#80d8ff}.touch{position:absolute;inset:0;pointer-events:none;display:none}.touch .left,.touch .right{position:absolute;bottom:18px;display:flex;gap:10px}.touch .left{left:18px}.touch .right{right:18px}.touch button{pointer-events:auto;width:58px;height:58px;border-radius:50%;background:rgba(15,23,42,.7);border:2px solid rgba(255,255,255,.35);font-size:22px}.petGrid{display:grid;grid-template-columns:minmax(260px,420px) minmax(0,1fr);gap:14px}.petCard{background:#111b31;border:1px solid #334155;border-radius:22px;padding:16px}.petImage{height:320px;background:#0b1324;border:1px solid #334155;border-radius:18px;display:flex;align-items:center;justify-content:center;overflow:hidden}.petImage img{max-width:100%;max-height:100%;object-fit:contain}.bar{height:18px;background:#0b1324;border:1px solid #334155;border-radius:999px;overflow:hidden}.bar span{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#a3e635)}.statusBox{background:#071326;border:1px solid #334155;border-radius:12px;padding:10px;color:#cbd5e1;white-space:pre-wrap;word-break:break-word;font-size:12px}.fieldGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.fieldGrid.one{grid-template-columns:1fr}.wide{width:100%} textarea{width:100%;height:86px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}.hint{font-size:12px;color:#9fb0c7}.miniTitle{font-size:13px;font-weight:950;color:#e2e8f0;margin:8px 0}.divider{height:1px;background:#334155;margin:12px 0}
@@ -41,6 +41,15 @@ body.builderFull textarea{height:60px}
 .modeBanner.adding{border-color:#facc15;color:#fef3c7}.modeBanner.editing{border-color:#38bdf8;color:#dbeafe}.modeBanner.player{border-color:#22c55e;color:#dcfce7}
 .addModeActive{background:#facc15!important;color:#111827!important}.toolHelp{background:#09162b;border:1px solid #2b4264;border-radius:10px;padding:8px 10px;font-size:12px;color:#cfe5ff;margin:8px 0}.quickTools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px}.quickTools button{padding:8px 10px;font-size:12px}
 
+
+/* V35: plain editing controls so Ryan/Aly can move/resize without guessing */
+.editPad{position:absolute;right:14px;bottom:14px;z-index:6;background:rgba(5,12,24,.88);border:1px solid rgba(255,255,255,.22);border-radius:14px;padding:10px;display:grid;grid-template-columns:repeat(3,42px);gap:6px;pointer-events:auto;box-shadow:0 12px 26px rgba(0,0,0,.35)}
+.editPad button{padding:8px 0;border-radius:10px;font-size:13px;min-width:0}
+.editPad .wide{grid-column:1/-1;width:100%;font-size:12px;padding:8px}
+.selectedReadout{position:absolute;left:12px;top:104px;z-index:5;background:rgba(5,12,24,.82);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:9px 12px;color:#fff;font-size:13px;font-weight:900;pointer-events:none;max-width:680px}
+.modeChoiceBar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:8px 0;padding:10px;border:1px solid #29405e;border-radius:12px;background:#071326}
+.modeChoiceBar button.active{background:#0ea5e9;color:white}
+
 </style>
 </head>
 <body>
@@ -69,10 +78,10 @@ body.builderFull textarea{height:60px}
     <div class="builderGrid">
       <div class="gameShell">
         <div class="hud"><div class="row"><span class="pill">Full Screen Builder</span><span class="pill" id="builderSelectionPill">Nothing selected</span><span class="pill" id="builderModePill">EDIT OBJECTS</span></div><div class="row"><button onclick="setBuilderMode('layers')">Edit Layers</button><button onclick="setBuilderMode('objects')">Edit Platforms / Objects</button><button onclick="setBuilderMode('player')">Edit Character</button><button onclick="centerCameraOnSelection()">Center Selected</button><button onclick="testFromBuilder()">Test Level</button><button class="bad" onclick="showPanel('menu')">Exit Builder</button></div></div>
-        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="modeBanner editing" id="modeBanner">EDIT OBJECTS: click or drag a platform, coin, enemy, or finish flag. Use Add buttons below to place new things.</div><div class="editorHint">Move/edit mode: drag things on the screen. Add mode: click the canvas to place the new item.</div></div>
+        <div class="canvasWrap"><canvas id="editCanvas" width="1280" height="720"></canvas><div class="modeBanner editing" id="modeBanner">EDIT OBJECTS: click or drag a platform, coin, enemy, or finish flag. Use Add buttons below to place new things.</div><div class="selectedReadout" id="selectedReadout">Nothing selected yet</div><div class="editorHint">Pick a mode below. Click something, then drag it or use the move/resize buttons.</div><div class="editPad" id="editPad"><button onclick="nudgeSelected(0,-10)">↑</button><button onclick="resizeSelected(0,-10)">H-</button><button onclick="nudgeSelected(0,10)">↓</button><button onclick="nudgeSelected(-10,0)">←</button><button onclick="resizeSelected(10,10)">Size+</button><button onclick="nudgeSelected(10,0)">→</button><button class="wide" onclick="resizeSelected(-10,-10)">Size -</button><button class="wide" onclick="fitSelectedLayer()">Fit layer/object</button></div></div>
       </div>
       <aside class="tools">
-        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div><div class="statusBox" style="margin:8px 0;background:#0e1a2e">Simple workflow: 1) choose Layers / Objects / Player below  2) click what you want to edit  3) drag on the canvas or edit the numbers  4) Save / Load.</div>
+        <div class="statusBox" id="adminStatus">Builder locked. Enter the value saved in Cloudflare as CTW_GAME_ADMIN_KEY.</div><div class="modeChoiceBar"><b>1. Choose edit mode:</b><button id="modeBtnLayers" onclick="setBuilderMode('layers')">Layers</button><button id="modeBtnObjects" onclick="setBuilderMode('objects')">Platforms / Objects</button><button id="modeBtnPlayer" onclick="setBuilderMode('player')">Character</button><button onclick="cancelAddMode()">Move / Edit</button></div><div class="statusBox" style="margin:8px 0;background:#0e1a2e">2. Click what you want. 3. Drag it, use the arrow buttons on the screen, or change the numbers. 4. Save / Load.</div>
         <div class="tabs"><button class="active" data-tab="layers">Layers</button><button data-tab="objects">Objects</button><button data-tab="player">Player</button><button data-tab="animation">Animation</button><button data-tab="save">Save / Load</button></div>
 
         <div id="tab-layers" class="toolSec active">
@@ -275,7 +284,7 @@ function frameUrl(pattern,n){return pattern.replace('{n}',String(n).padStart(3,'
 function currentPlayerImg(){if(player.kind==='ax'&&anim){let state=player.onGround?(Math.abs(player.vx)>0.4?'walk':'idle'):'jump';let n=1+Math.floor(Date.now()/anim.speed)%anim.count;return frameUrl(anim[state]||anim.idle,n)}return player.img}
 function drawPlayer(ct,editor){let src=currentPlayerImg();const im=img(src||'');if(im&&im.complete)ct.drawImage(im,player.x,player.y,player.w,player.h);else{const fallback=img(AX_URL);if(player.kind==='ax'&&fallback&&fallback.complete)ct.drawImage(fallback,player.x,player.y,player.w,player.h);else{ct.font=`${player.h}px system-ui`;ct.textBaseline='top';ct.fillText(player.emoji||'🦎',player.x,player.y)}}if(editor){ct.strokeStyle=selected===player?'#fde047':'rgba(34,197,94,.75)';ct.lineWidth=selected===player?4:2;ct.strokeRect(player.x,player.y,player.w,player.h);if(selected===player){drawHandle(ct,player.x,player.y);drawHandle(ct,player.x+player.w,player.y);drawHandle(ct,player.x,player.y+player.h);drawHandle(ct,player.x+player.w,player.y+player.h);ct.fillStyle='rgba(253,224,71,.95)';ct.font='bold 16px system-ui';ct.fillText('CHARACTER',player.x,Math.max(18,player.y-10))}}}
 function loop(){update();draw(canvas,ctx,false);if(currentPanel==='builder')renderEditor();document.getElementById('scorePill').textContent='Score: '+player.score;document.getElementById('livesPill').textContent='Lives: '+player.lives;document.getElementById('distPill').textContent='Distance: '+Math.max(0,Math.floor(player.x/10))+'m';requestAnimationFrame(loop)}requestAnimationFrame(loop);
-function renderEditor(){draw(editCanvas,ectx,true);updateLayerButtons();}
+function renderEditor(){draw(editCanvas,ectx,true);updateLayerButtons();updateSelectedReadout();}
 function resizeHandleHit(o,p){if(!o)return null;const hs=14;const handles=[['nw',o.x,o.y],['ne',o.x+o.w,o.y],['sw',o.x,o.y+o.h],['se',o.x+o.w,o.y+o.h]];for(const [name,x,y] of handles)if(Math.abs(p.x-x)<=hs&&Math.abs(p.y-y)<=hs)return name;return null}
 function applyResize(o,handle,p){const minW=o===player?28:o.type==='layer'?80:16,minH=o===player?28:o.type==='layer'?40:12;if(handle.includes('e'))o.w=Math.max(minW,p.x-o.x);if(handle.includes('s'))o.h=Math.max(minH,p.y-o.y);if(handle.includes('w')){const r=o.x+o.w;o.x=Math.min(p.x,r-minW);o.w=r-o.x}if(handle.includes('n')){const b=o.y+o.h;o.y=Math.min(p.y,b-minH);o.h=b-o.y}o.x=Math.round(o.x);o.y=Math.round(o.y);o.w=Math.round(o.w);o.h=Math.round(o.h)}
 editCanvas.addEventListener('pointerdown',e=>{e.preventDefault();const p=canvasPoint(editCanvas,e,true);
@@ -391,7 +400,40 @@ function syncLayerFields(changeSelect=true){if(!selected||selected.type!=='layer
 function applyLayerForm(){let l=selected?.type==='layer'?selected:level.layers.find(x=>x.kind===document.getElementById('lKind').value);if(!l)return;l.kind=document.getElementById('lKind').value;l.visible=document.getElementById('lVisible').value==='true';l.x=+document.getElementById('lX').value||0;l.y=+document.getElementById('lY').value||0;l.w=+document.getElementById('lW').value||VW;l.h=+document.getElementById('lH').value||VH;l.opacity=Math.max(0,Math.min(1,+document.getElementById('lOpacity').value||1));l.parallax=Math.max(0,Math.min(1,+document.getElementById('lParallax').value||0));l.value=document.getElementById('lValue').value.trim();selected=l;renderEditor()}
 ['lKind','lVisible','lX','lY','lW','lH','lOpacity','lParallax','lValue'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{if(selected?.type==='layer')applyLayerForm()}));
 function resetLayerDefaults(){level.layers=layerDefaults();selected=level.layers[0];syncLayerFields();renderEditor()}
-function fitSelectedLayer(){if(!selected||selected.type!=='layer')return alert('Select sky, hills, or ground first.');selected.x=0;selected.y=selected.kind==='ground'?640:0;selected.w=VW;selected.h=selected.kind==='ground'?80:VH;syncLayerFields();renderEditor()}
+function fitSelectedLayer(){if(!selected)return alert('Click a layer/object/character first.');if(selected.type==='layer'){selected.x=0;selected.y=selected.kind==='ground'?640:0;selected.w=VW;selected.h=selected.kind==='ground'?80:VH;syncLayerFields(false);}else if(selected===player){player.x=120;player.y=540;syncPlayerFields();}else{selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));fillForm(false);}renderEditor()}
+
+function selectedLabel(){
+  if(!selected) return 'Nothing selected yet';
+  if(selected===player) return `Selected: CHARACTER  x:${Math.round(player.x)} y:${Math.round(player.y)} w:${Math.round(player.w)} h:${Math.round(player.h)}`;
+  if(selected.type==='layer') return `Selected: LAYER ${selected.kind.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
+  return `Selected: ${selected.type.toUpperCase()}  x:${Math.round(selected.x)} y:${Math.round(selected.y)} w:${Math.round(selected.w)} h:${Math.round(selected.h)}`;
+}
+function updateSelectedReadout(){
+  const r=document.getElementById('selectedReadout'); if(r) r.textContent=selectedLabel();
+  for(const m of ['layers','objects','player']){const b=document.getElementById('modeBtn'+m[0].toUpperCase()+m.slice(1)); if(b)b.classList.toggle('active',builderMode===m)}
+}
+function syncAllForms(){
+  if(selected===player) syncPlayerFields();
+  if(selected?.type==='layer') syncLayerFields(false);
+  fillForm(false);
+}
+function nudgeSelected(dx,dy){
+  if(!selected) return alert('Click a layer, platform/object, or character first.');
+  selected.x=Math.round((selected.x||0)+dx);
+  selected.y=Math.round((selected.y||0)+dy);
+  if(selected!==player && selected.type!=='layer'){
+    selected.x=Math.max(0,Math.min(WORLD_W-selected.w,selected.x));
+    selected.y=Math.max(0,Math.min(VH-selected.h,selected.y));
+  }
+  syncAllForms(); renderEditor();
+}
+function resizeSelected(dw,dh){
+  if(!selected) return alert('Click a layer, platform/object, or character first.');
+  selected.w=Math.max(selected===player?28:selected.type==='layer'?40:12,Math.round((selected.w||80)+dw));
+  selected.h=Math.max(selected===player?28:selected.type==='layer'?30:12,Math.round((selected.h||60)+dh));
+  syncAllForms(); renderEditor();
+}
+
 function applyAnimationSettings(){anim.idle=document.getElementById('animIdle').value.trim()||anim.idle;anim.walk=document.getElementById('animWalk').value.trim()||anim.walk;anim.jump=document.getElementById('animJump').value.trim()||anim.jump;anim.count=+document.getElementById('animCount').value||10;anim.speed=+document.getElementById('animSpeed').value||95;player.kind='ax';renderEditor()}
 function saveAnimationSettings(){applyAnimationSettings();localStorage.setItem('ctw_anim',JSON.stringify(anim));alert('Animation settings saved in this browser')}
 function resetAnimationSettings(){anim={idle:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_idle_{n}.png',walk:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_walk_{n}.png',jump:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797065/ax_jump_{n}.png',count:10,speed:95};syncAnimFields();saveAnimationSettings()}
