@@ -33,7 +33,7 @@ export async function onRequest(context) {
     return json({ ok: false, error: 'Invalid JSON body.' }, 400);
   }
 
-  const supplied = String(body.admin_key || '').trim();
+  const supplied = String(body.admin_key || body.key || body.password || '').trim();
   const expected = String(env.CTW_GAME_ADMIN_KEY || '').trim();
 
   if (!supplied) return json({ ok: false, error: 'Enter the Builder admin key.' }, 400);
