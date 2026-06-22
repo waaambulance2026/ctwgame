@@ -177,9 +177,13 @@ const DEFAULT_PATTERNS={
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
-    idle:`${CLOUD}/v1781738346/owl_idle_{n}.png`,
-    walk:`${CLOUD}/v1781738462/owl_walk{nn}.png`,
-    jump:`${CLOUD}/v1781738410/owl_jump_{n}.png`
+    // Owl files have mixed Cloudinary versions and mixed numbering.
+    // Use no /v.../ version so Cloudinary serves the latest matching public_id.
+    // idle/jump use owl_idle_1.png and owl_jump_1.png, so use {i}.
+    // walk uses owl_walk04.png, so use {nn} with no underscore.
+    idle:`${CLOUD}/owl_idle_{i}.png`,
+    walk:`${CLOUD}/owl_walk{nn}.png`,
+    jump:`${CLOUD}/owl_jump_{i}.png`
   }
 };
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
@@ -196,9 +200,9 @@ const ALT_PATTERNS={
     jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781738342/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
-    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781738342/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
-    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781738342/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
+    idle:[`${CLOUD}/owl_idle_{i}.png`,`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781738342/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
+    walk:[`${CLOUD}/owl_walk{nn}.png`,`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781738342/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
+    jump:[`${CLOUD}/owl_jump_{i}.png`,`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781738342/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
