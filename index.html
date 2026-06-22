@@ -155,7 +155,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Owl fallback-loop fix applied.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn 4-frame baseline fix applied.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -231,7 +231,7 @@ let SPRITE_PATTERNS={
   },
   unicorn:{
     idle:`${CLOUD}/v1781798484/unicorn_idle_{n}.png`,
-    walk:`${CLOUD}/v1782137360/unicorn_walk_{n}.png`,
+    walk:`${CLOUD}/v1782143974/unicorn_walk_{n}.png`,
     jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
   }
 };
@@ -271,8 +271,9 @@ function candidateSpriteUrls(char,action,idx){
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
   const out=[];
   const total=getActionFrameCount(char,action);
+  const shownFrameIndex=displayFrameIndex(char,action,idx,total);
   // Single source of truth: only try the exact path for the selected character/action.
-  pushSpriteCandidate(out,p&&p[action],idx,total);
+  pushSpriteCandidate(out,p&&p[action],shownFrameIndex,total);
   return out.filter(Boolean);
 }
 function spriteFallbackLabel(char){
@@ -324,6 +325,10 @@ function setSpriteFrame(elId,char,action,idx){
   if(!el)return;
   el.dataset.action=action||'idle';
   el.dataset.character=char||'';
+  const totalForDisplay=getActionFrameCount(char,action);
+  const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
+  el.dataset.frameIndex=String(shownFrameIndex);
+  el.dataset.frameNumber=String(shownFrameIndex+1);
   applySpriteTransform();
   ensureActionFrameCount(char,action);
   if(shouldShowImmediateFallback(char)){
@@ -375,23 +380,40 @@ const FRAME_PROBE_MAX=60;
 const FRAME_PROBE_STOP_AFTER_MISSES=2;
 const ACTION_FRAME_CACHE={};
 const ACTION_FRAME_PROBING={};
+// Manual frame counts stop Cloudinary auto-detect using old extra frames.
+// Unicorn walk is now a clean 4-frame set: 001, 002, 003, 004.
+const ACTION_FRAME_OVERRIDES={
+  ax:{walk:4},
+  pura:{walk:4},
+  unicorn:{walk:4}
+};
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
     name:'Unicorn',
-    boxW:180,
+    boxW:178,
     visualScale:1.00,
-    visualY:4,
+    visualY:2,
     shadowScale:.88,
-    reverseWalk:true,
-    // UNICORN SIZE FIX:
-    // The walk artwork has a bigger canvas than idle/jump, so walk must be scaled DOWN.
-    // Increase walk.visualY if the hooves float. Decrease walk.visualScale if she is still too big.
+    reverseWalk:false,
+    // UNICORN BASELINE FIX:
+    // Walk uses exactly 4 frames. Some PNG frames have different bottom padding,
+    // so each walk frame can have its own Y correction.
+    // Smaller visualY = raised up. Bigger visualY = lower down.
     actionVisuals:{
       idle:{visualScale:1.02,visualY:6},
-      walk:{visualScale:.82,visualY:24},
+      walk:{
+        visualScale:.82,
+        visualY:10,
+        frameVisuals:{
+          1:{visualY:10},
+          2:{visualY:2},
+          3:{visualY:10},
+          4:{visualY:2}
+        }
+      },
       jump:{visualScale:1.00,visualY:10}
     }
   },
@@ -400,6 +422,8 @@ const CHARACTER_CONFIGS={
 
 function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${action||'idle'}`}
 function getActionFrameCount(characterKey,action){
+  const forced=ACTION_FRAME_OVERRIDES[characterKey]?.[action];
+  if(forced)return forced;
   const key=actionFrameKey(characterKey,action);
   return ACTION_FRAME_CACHE[key]||1; // 1 frame until the quick auto-count finishes
 }
@@ -493,10 +517,12 @@ function ensureActionFrameCount(characterKey,action){
   }
 }
 function getCharacterVisualConfig(characterKey){return CHARACTER_CONFIGS[characterKey]||CHARACTER_CONFIGS.pet}
-function getActionVisualConfig(characterKey,action){
+function getActionVisualConfig(characterKey,action,frameIndex=0){
   const cfg=getCharacterVisualConfig(characterKey);
   const actionCfg=(cfg.actionVisuals&&cfg.actionVisuals[action])||{};
-  return {...cfg,...actionCfg};
+  const frameNo=(Number(frameIndex)||0)+1;
+  const frameCfg=(actionCfg.frameVisuals&&(actionCfg.frameVisuals[frameNo]||actionCfg.frameVisuals[String(frameNo)]))||{};
+  return {...cfg,...actionCfg,...frameCfg};
 }
 function characterBoxWidth(characterKey){
   if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
@@ -551,14 +577,18 @@ function applySpriteTransform(){
   const buddyAction=($('buddySprite')&&$('buddySprite').dataset.action)||'idle';
   const t2Action=($('teamSprite2')&&$('teamSprite2').dataset.action)||'idle';
   const t3Action=($('teamSprite3')&&$('teamSprite3').dataset.action)||'idle';
-  const mainCfg=getActionVisualConfig(main,mainAction);
-  const buddyCfg=getActionVisualConfig(buddy,buddyAction);
+  const mainFrameIndex=Number(($('sprite')&&$('sprite').dataset.frameIndex)||0);
+  const buddyFrameIndex=Number(($('buddySprite')&&$('buddySprite').dataset.frameIndex)||0);
+  const t2FrameIndex=Number(($('teamSprite2')&&$('teamSprite2').dataset.frameIndex)||0);
+  const t3FrameIndex=Number(($('teamSprite3')&&$('teamSprite3').dataset.frameIndex)||0);
+  const mainCfg=getActionVisualConfig(main,mainAction,mainFrameIndex);
+  const buddyCfg=getActionVisualConfig(buddy,buddyAction,buddyFrameIndex);
   const mainDirection=(Number(mainFlip)||1)*facing;
   const buddyDirection=(Number(buddyFlip)||1)*facing;
   if($('sprite'))$('sprite').style.transform=`translateY(${mainCfg.visualY||0}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
   if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
   const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
-  const t2Cfg=getActionVisualConfig(t2,t2Action), t3Cfg=getActionVisualConfig(t3,t3Action);
+  const t2Cfg=getActionVisualConfig(t2,t2Action,t2FrameIndex), t3Cfg=getActionVisualConfig(t3,t3Action,t3FrameIndex);
   if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.92})`;
   if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.92})`;
   if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
