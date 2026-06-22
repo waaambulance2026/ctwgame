@@ -64,6 +64,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .petPreview{background:#fff!important;border:3px dashed #d282c2!important}
 .petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
 .character img{transition:transform .08s linear}
+.character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
 /* EDIT SECTION 06B: AUTO CHARACTER SIZE RULE
    Main/side slots no longer decide character size.
@@ -166,9 +167,9 @@ const spriteCurrent={sprite:'',buddySprite:''};
 // EDIT SECTION 17: DEFAULT SPRITE PATHS - Ax, Pura and Owl animation file patterns
 const DEFAULT_PATTERNS={
   ax:{
-    idle:`${CLOUD}/v1781797065/ax_idle_{n}.png`,
-    walk:`${CLOUD}/v1781797065/ax_walk_{n}.png`,
-    jump:`${CLOUD}/v1781797065/ax_jump_{n}.png`
+    idle:`${CLOUD}/v1782126921/ax_idle_{n}.png`,
+    walk:`${CLOUD}/v1782126921/ax_walk_{n}.png`,
+    jump:`${CLOUD}/v1782126921/ax_jump_{n}.png`
   },
   pura:{
     idle:`${CLOUD}/v1781797065/pura_idle_{n}.png`,
@@ -210,7 +211,7 @@ function fillSpritePattern(pattern,idx,totalFrames=10){
 function spriteUrlFor(char,action,idx){
   if(char==='pet'&&currentPetImage)return currentPetImage;
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
-  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',idx,getActionFrameCount(action));
+  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',idx,getActionFrameCount(char,action));
 }
 function setSpriteMissing(elId,on,msg){
   const el=$(elId); const wrap=el?el.closest('.character'):null;
@@ -244,7 +245,7 @@ function candidateSpriteUrls(char,action,idx){
   [action,'walk','idle','jump'].forEach(a=>{if(a&&!actions.includes(a))actions.push(a)});
   const out=[];
   actions.forEach(a=>{
-    const total=getActionFrameCount(a);
+    const total=getActionFrameCount(char,a);
     pushSpriteCandidate(out,p&&p[a],idx,total);
     (alt[a]||[]).forEach(pattern=>pushSpriteCandidate(out,pattern,idx,total));
   });
@@ -268,11 +269,17 @@ function fallbackSpriteDataUri(char,action){
 function useFallbackSprite(elId,char,action){
   const el=$(elId);
   if(!el)return;
+  const fallback=fallbackSpriteDataUri(char,action);
   el.onerror=null;
-  el.onload=()=>setSpriteMissing(elId,true,`${spriteFallbackLabel(char)} sprite path missing - check ${action} URL`);
-  el.src=fallbackSpriteDataUri(char,action);
-  spriteCurrent[elId]=el.src;
+  el.onload=null;
+  el.src=fallback;
+  spriteCurrent[elId]=fallback;
   setSpriteMissing(elId,true,`${spriteFallbackLabel(char)} sprite path missing - check ${action} URL`);
+}
+function shouldShowImmediateFallback(char){
+  // Owl was going blank while bad Cloudinary paths were being tested.
+  // Show a visible built-in Owl first, then replace it only when a real image loads.
+  return char==='owl';
 }
 function setSpriteImage(elId,url){
   const el=$(elId);
@@ -289,10 +296,15 @@ function setSpriteImage(elId,url){
 }
 function setSpriteFrame(elId,char,action,idx){
   const urls=candidateSpriteUrls(char,action,idx).filter(u=>u&&!spriteBroken.has(u));
-  if(!urls.length){setSpriteMissing(elId,true,'No working sprite URL');return;}
-  let i=0;
   const el=$(elId);
   if(!el)return;
+  ensureActionFrameCount(char,action);
+  if(shouldShowImmediateFallback(char)){
+    // Important: keep Owl visible immediately, even while real URLs are being checked.
+    useFallbackSprite(elId,char,action);
+  }
+  if(!urls.length){useFallbackSprite(elId,char,action);return;}
+  let i=0;
   function tryNext(){
     if(i>=urls.length){
       // Do not leave the game invisible. Show a visible placeholder for the selected character
@@ -303,10 +315,22 @@ function setSpriteFrame(elId,char,action,idx){
     const url=urls[i++];
     if(spriteBroken.has(url)){tryNext();return;}
     if(spriteCurrent[elId]===url){setSpriteMissing(elId,false);return;}
-    el.onerror=()=>{spriteBroken.add(url);if(spriteCurrent[elId]===url)spriteCurrent[elId]='';tryNext();};
-    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
-    el.src=url;
-    spriteCurrent[elId]=url;
+    const tester=new Image();
+    let done=false;
+    const fail=()=>{if(done)return;done=true;spriteBroken.add(url);tryNext();};
+    const timer=setTimeout(fail,900);
+    tester.onload=()=>{
+      if(done)return;
+      done=true;
+      clearTimeout(timer);
+      el.onerror=()=>{spriteBroken.add(url);if(spriteCurrent[elId]===url)spriteCurrent[elId]='';useFallbackSprite(elId,char,action);};
+      el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
+      el.src=url;
+      spriteCurrent[elId]=url;
+      setSpriteMissing(elId,false);
+    };
+    tester.onerror=fail;
+    tester.src=url;
   }
   tryNext();
 }
@@ -316,15 +340,97 @@ const SETS={
   owl:{name:'Owl',frameMs:155,actionMs:{idle:155,walk:130,jump:80}},
   pet:{name:'Pet',frameMs:120,actionMs:{idle:120,walk:105,jump:75}}
 };
-// EDIT SECTION 18B: CHARACTER-SIZE LOCK - size belongs to the character, not the main/side slot.
-const ACTION_FRAME_COUNTS={idle:10,walk:4,jump:10};
+// EDIT SECTION 18B: CHARACTER-SIZE LOCK + AUTO FRAME COUNT
+// The game no longer needs you to type frame counts for every character/action.
+// It tests the current URL pattern once, counts working frames like 001, 002, 003, and remembers the result.
+const FRAME_PROBE_MAX=60;
+const FRAME_PROBE_STOP_AFTER_MISSES=2;
+const ACTION_FRAME_CACHE={};
+const ACTION_FRAME_PROBING={};
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
 };
-function getActionFrameCount(action){return ACTION_FRAME_COUNTS[action]||10}
+
+function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${action||'idle'}`}
+function getActionFrameCount(characterKey,action){
+  const key=actionFrameKey(characterKey,action);
+  return ACTION_FRAME_CACHE[key]||1; // 1 frame until the quick auto-count finishes
+}
+function fillSpritePatternFrame(pattern,frame){
+  if(!pattern)return'';
+  return String(pattern).replaceAll('{nnn}',pad3(frame)).replaceAll('{nn}',pad2(frame)).replaceAll('{n}',pad3(frame));
+}
+function imageLoads(url,timeout=1200){
+  return new Promise(resolve=>{
+    if(!url)return resolve(false);
+    const img=new Image();
+    let done=false;
+    const finish=ok=>{if(done)return;done=true;clearTimeout(timer);resolve(ok)};
+    const timer=setTimeout(()=>finish(false),timeout);
+    img.onload=()=>finish(true);
+    img.onerror=()=>finish(false);
+    img.src=url;
+  });
+}
+function patternVariants(pattern){
+  if(!pattern)return [];
+  const out=[pattern];
+  if(/\.png($|\?)/i.test(pattern)){out.push(pattern.replace(/\.png($|\?)/i,'.webp$1'));out.push(pattern.replace(/\.png($|\?)/i,'.jpg$1'));}
+  if(/\.webp($|\?)/i.test(pattern))out.push(pattern.replace(/\.webp($|\?)/i,'.png$1'));
+  return [...new Set(out)];
+}
+function patternsForAction(characterKey,action){
+  if(characterKey==='pet')return [];
+  const p=SPRITE_PATTERNS[characterKey]||SPRITE_PATTERNS.ax||{};
+  const alt=ALT_PATTERNS[characterKey]||{};
+  return [...new Set([p[action],...(alt[action]||[])].filter(Boolean).flatMap(patternVariants))];
+}
+async function countFramesForPattern(pattern){
+  let count=0, misses=0;
+  for(let frame=1; frame<=FRAME_PROBE_MAX; frame++){
+    const url=fillSpritePatternFrame(pattern,frame);
+    const ok=await imageLoads(url,900);
+    if(ok){count=frame;misses=0;}
+    else{
+      misses++;
+      if(frame===1)break;
+      if(count>0&&misses>=FRAME_PROBE_STOP_AFTER_MISSES)break;
+    }
+  }
+  return count;
+}
+async function autoDetectActionFrames(characterKey,action){
+  if(!characterKey||characterKey==='pet')return 1;
+  const key=actionFrameKey(characterKey,action);
+  if(ACTION_FRAME_CACHE[key])return ACTION_FRAME_CACHE[key];
+  if(ACTION_FRAME_PROBING[key])return ACTION_FRAME_PROBING[key];
+  ACTION_FRAME_PROBING[key]=(async()=>{
+    let bestCount=0, bestPattern='';
+    for(const pattern of patternsForAction(characterKey,action)){
+      const count=await countFramesForPattern(pattern);
+      if(count>bestCount){bestCount=count;bestPattern=pattern;}
+      if(count>0)break; // use the first working pattern so we do not spam Cloudinary
+    }
+    ACTION_FRAME_CACHE[key]=Math.max(1,bestCount||1);
+    if(bestPattern){
+      SPRITE_PATTERNS[characterKey]=SPRITE_PATTERNS[characterKey]||{};
+      SPRITE_PATTERNS[characterKey][action]=bestPattern;
+    }
+    delete ACTION_FRAME_PROBING[key];
+    if($('spriteStatus'))$('spriteStatus').textContent=`Auto frames: ${characterKey} ${action} = ${ACTION_FRAME_CACHE[key]} frame(s)`;
+    return ACTION_FRAME_CACHE[key];
+  })();
+  return ACTION_FRAME_PROBING[key];
+}
+function ensureActionFrameCount(characterKey,action){
+  const key=actionFrameKey(characterKey,action);
+  if(!ACTION_FRAME_CACHE[key]&&!ACTION_FRAME_PROBING[key]){
+    autoDetectActionFrames(characterKey,action).then(()=>{setSpriteFrame('sprite',main,player.grounded?'idle':'jump',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);});
+  }
+}
 function getCharacterVisualConfig(characterKey){return CHARACTER_CONFIGS[characterKey]||CHARACTER_CONFIGS.pet}
 function characterBoxWidth(characterKey){
   if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
@@ -458,7 +564,7 @@ function updatePlayer(dt){
 function animateOne(elId,char,action,now,state){
   const set=SETS[char]||SETS.ax;
   const frameMs=(set.actionMs&&set.actionMs[action])||set.frameMs||120;
-  const totalFrames=getActionFrameCount(action);
+  const totalFrames=getActionFrameCount(char,action);
   if(action==='idle'){
     if(!state.next)state.next=now+2600+Math.random()*2600;
     if(!state.playing){
