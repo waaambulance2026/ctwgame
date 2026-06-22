@@ -224,7 +224,7 @@ let SPRITE_PATTERNS={
   },
   unicorn:{
     idle:`${CLOUD}/v1781798484/unicorn_idle_{n}.png`,
-    walk:`${CLOUD}/v1782137360/unicorn_walk_{n}.png`,
+    walk:`${CLOUD}/v1782143974/unicorn_walk_{n}.png`,
     jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
   }
 };
@@ -368,6 +368,13 @@ const FRAME_PROBE_MAX=60;
 const FRAME_PROBE_STOP_AFTER_MISSES=2;
 const ACTION_FRAME_CACHE={};
 const ACTION_FRAME_PROBING={};
+// Manual frame counts stop the auto-detector using unwanted extra frames.
+// Unicorn walk is now a clean 4-frame set, like Ax and Pura.
+const ACTION_FRAME_OVERRIDES={
+  ax:{walk:4},
+  pura:{walk:4},
+  unicorn:{walk:4}
+};
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
@@ -378,10 +385,10 @@ const CHARACTER_CONFIGS={
     visualScale:1.00,
     visualY:4,
     shadowScale:.88,
-    reverseWalk:true,
-    // UNICORN SIZE FIX:
-    // The walk artwork has a bigger canvas than idle/jump, so walk must be scaled DOWN.
-    // Increase walk.visualY if the hooves float. Decrease walk.visualScale if she is still too big.
+    reverseWalk:false,
+    // UNICORN 4-FRAME WALK FIX:
+    // New walk frames are unicorn_walk_001.png to unicorn_walk_004.png.
+    // Keep reverseWalk false so the game plays 001 → 002 → 003 → 004, like Ax and Pura.
     actionVisuals:{
       idle:{visualScale:1.02,visualY:6},
       walk:{visualScale:.82,visualY:24},
@@ -393,6 +400,8 @@ const CHARACTER_CONFIGS={
 
 function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${action||'idle'}`}
 function getActionFrameCount(characterKey,action){
+  const forced=ACTION_FRAME_OVERRIDES[characterKey]?.[action];
+  if(forced)return forced;
   const key=actionFrameKey(characterKey,action);
   return ACTION_FRAME_CACHE[key]||1; // 1 frame until the quick auto-count finishes
 }
@@ -480,6 +489,7 @@ async function autoDetectActionFrames(characterKey,action){
   return ACTION_FRAME_PROBING[key];
 }
 function ensureActionFrameCount(characterKey,action){
+  if(ACTION_FRAME_OVERRIDES[characterKey]?.[action])return;
   const key=actionFrameKey(characterKey,action);
   if(!ACTION_FRAME_CACHE[key]&&!ACTION_FRAME_PROBING[key]){
     autoDetectActionFrames(characterKey,action).then(()=>{setSpriteFrame('sprite',main,player.grounded?'idle':'jump',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);});
@@ -963,6 +973,8 @@ function fillSpriteUrlInputs(){
 }
 
 function readSpriteUrlInputs(){
+  Object.keys(ACTION_FRAME_CACHE).forEach(k=>delete ACTION_FRAME_CACHE[k]);
+  Object.keys(ACTION_FRAME_PROBING).forEach(k=>delete ACTION_FRAME_PROBING[k]);
   // The Builder only edits the live page while you test. The real saved source is EDIT SECTION 17 in index.html.
   SPRITE_PATTERNS.ax.idle=$('axIdleUrl').value.trim()||SPRITE_PATTERNS.ax.idle;SPRITE_PATTERNS.ax.walk=$('axWalkUrl').value.trim()||SPRITE_PATTERNS.ax.walk;SPRITE_PATTERNS.ax.jump=$('axJumpUrl').value.trim()||SPRITE_PATTERNS.ax.jump;
   SPRITE_PATTERNS.pura.idle=$('puraIdleUrl').value.trim()||SPRITE_PATTERNS.pura.idle;SPRITE_PATTERNS.pura.walk=$('puraWalkUrl').value.trim()||SPRITE_PATTERNS.pura.walk;SPRITE_PATTERNS.pura.jump=$('puraJumpUrl').value.trim()||SPRITE_PATTERNS.pura.jump;
