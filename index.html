@@ -177,9 +177,10 @@ const DEFAULT_PATTERNS={
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
-    idle:`${CLOUD}/v1782132160/owl_walk_003.png`,
-    walk:`${CLOUD}/v1782132160/owl_walk_003.png`,
-    jump:`${CLOUD}/v1782132160/owl_walk_003.png`
+    // OWL FIX: all owl files should now use the clean 001 naming set uploaded at v1782132160.
+    idle:`${CLOUD}/v1782132160/owl_idle_{n}.png`,
+    walk:`${CLOUD}/v1782132160/owl_walk_{n}.png`,
+    jump:`${CLOUD}/v1782132160/owl_jump_{n}.png`
   }
 };
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
@@ -196,9 +197,10 @@ const ALT_PATTERNS={
     jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/owl_idle_{i}.png`,`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781738342/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
-    walk:[`${CLOUD}/owl_walk{nn}.png`,`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781738342/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
-    jump:[`${CLOUD}/owl_jump_{i}.png`,`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781738342/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
+    // OWL FIX: try the new clean 001 set first. The direct walk_003 fallback keeps Owl visible while testing.
+    idle:[`${CLOUD}/v1782132160/owl_idle_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/owl_idle_{i}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`],
+    walk:[`${CLOUD}/v1782132160/owl_walk_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/owl_walk{nn}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`],
+    jump:[`${CLOUD}/v1782132160/owl_jump_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/owl_jump_{i}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
