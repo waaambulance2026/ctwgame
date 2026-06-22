@@ -381,18 +381,18 @@ const CHARACTER_CONFIGS={
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
     name:'Unicorn',
-    boxW:180,
+    boxW:185,
     visualScale:1.00,
-    visualY:4,
+    visualY:10,
     shadowScale:.88,
     reverseWalk:false,
-    // UNICORN 4-FRAME WALK FIX:
-    // New walk frames are unicorn_walk_001.png to unicorn_walk_004.png.
-    // Keep reverseWalk false so the game plays 001 → 002 → 003 → 004, like Ax and Pura.
+    // UNICORN ALIGNMENT FIX:
+    // Unicorn walk is now a 4-frame set. These numbers line up the hooves better with the floor.
+    // Raise walk.visualY if the hooves float. Lower walk.visualScale if she looks too big.
     actionVisuals:{
-      idle:{visualScale:1.02,visualY:6},
-      walk:{visualScale:.82,visualY:24},
-      jump:{visualScale:1.00,visualY:10}
+      idle:{visualScale:1.00,visualY:12},
+      walk:{visualScale:.90,visualY:34},
+      jump:{visualScale:.96,visualY:16}
     }
   },
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
@@ -544,7 +544,7 @@ function applySpriteTransform(){
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;let mission={clues:0,tasks:0,stomps:0};const MISSION_TARGETS={clues:3,tasks:2,stomps:1};const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
@@ -554,7 +554,7 @@ function updateSpriteFacing(input=0){
   applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
-const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
+const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:3400,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3600,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
 
 /* EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
    This turns the level from random collecting into a planned path.
@@ -567,18 +567,20 @@ function levelPlan(){
   const l=levels[levelIndex];
   if(Array.isArray(l.plan)&&l.plan.length)return l.plan;
   return [
-    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: start the patrol and look for clues.`},
-    {at:230,kind:'token',tokenIndex:0},
-    {at:390,kind:'task',data:['🔎','Inspect the swamp clue',150,''],message:'Clue inspected. The swamp is being suspicious.'},
-    {at:560,kind:'hazard',hazardIndex:0},
-    {at:760,kind:'sign',data:['➡️','Jump warning',0,''],message:'Jump or stomp the bad objects. Do not just walk into drama.'},
-    {at:940,kind:'token',tokenIndex:1},
-    {at:1140,kind:'hazard',hazardIndex:1},
-    {at:1380,kind:'task',data:['🧰','Repair the clue scanner',180,''],message:'Scanner fixed. Very professional.'},
-    {at:1640,kind:'token',tokenIndex:2},
-    {at:1880,kind:'hazard',hazardIndex:2},
-    {at:2120,kind:'task',data:['✅','Confirm the swamp evidence',250,''],message:'Evidence confirmed. Head for the finish.'},
-    {at:2380,kind:'token',tokenIndex:3}
+    {at:70,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: collect 3 clues, complete 2 tasks, and stomp 1 bad object before the finish.`},
+    {at:220,kind:'token',tokenIndex:0},
+    {at:420,kind:'task',data:['🔎','Inspect clue',150,''],message:'Clue inspected. One suspicious swamp clue logged.'},
+    {at:650,kind:'hazard',hazardIndex:0},
+    {at:870,kind:'sign',data:['⬆️','Jump training',0,''],message:'Jump onto bad objects to stomp them. Walking into them costs a life.'},
+    {at:1080,kind:'token',tokenIndex:1},
+    {at:1320,kind:'hazard',hazardIndex:1},
+    {at:1580,kind:'task',data:['🧰','Fix scanner',180,''],message:'Scanner fixed. Now find the final clue.'},
+    {at:1840,kind:'token',tokenIndex:2},
+    {at:2080,kind:'hazard',hazardIndex:2},
+    {at:2360,kind:'sign',data:['✅','Gate check',0,''],message:'Final gate checks clues, tasks, and stomps.'},
+    {at:2600,kind:'token',tokenIndex:3},
+    {at:2860,kind:'hazard',hazardIndex:3},
+    {at:3160,kind:'task',data:['📋','Pack evidence',220,''],message:'Evidence packed. Finish when the gate opens.'}
   ];
 }
 function pickPlannedData(entry){
@@ -612,7 +614,20 @@ function spawnLevelPlanObjects(){
     }
   });
 }
-function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
+function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1600)}
+function missionReady(){return mission.clues>=MISSION_TARGETS.clues&&mission.tasks>=MISSION_TARGETS.tasks&&mission.stomps>=MISSION_TARGETS.stomps}
+function missionStatus(){return `Clues ${mission.clues}/${MISSION_TARGETS.clues} · Tasks ${mission.tasks}/${MISSION_TARGETS.tasks} · Stomps ${mission.stomps}/${MISSION_TARGETS.stomps}`}
+function missionNeeded(){
+  const missing=[];
+  if(mission.clues<MISSION_TARGETS.clues)missing.push(`${MISSION_TARGETS.clues-mission.clues} clue${MISSION_TARGETS.clues-mission.clues===1?'':'s'}`);
+  if(mission.tasks<MISSION_TARGETS.tasks)missing.push(`${MISSION_TARGETS.tasks-mission.tasks} task${MISSION_TARGETS.tasks-mission.tasks===1?'':'s'}`);
+  if(mission.stomps<MISSION_TARGETS.stomps)missing.push(`${MISSION_TARGETS.stomps-mission.stomps} stomp${MISSION_TARGETS.stomps-mission.stomps===1?'':'s'}`);
+  return missing.join(', ');
+}
+function updateHud(){
+  $('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);
+  $('questName').textContent=playing?`${levels[levelIndex].name} · ${missionStatus()}`:levels[levelIndex].name;
+}
 function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}
 function clearCharacterSlot(elId){
   setSpriteMissing(elId,false);
@@ -653,7 +668,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();mission={clues:0,tasks:0,stomps:0};player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast('Mission: collect clues, complete tasks, stomp danger.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -700,17 +715,19 @@ function collide(o){
   if(o.hit||o.vanished)return;
   if(o.kind==='token'){
     o.hit=true;
+    mission.clues=Math.min(MISSION_TARGETS.clues,mission.clues+1);
     score+=o.points;
-    showToast(`✨ Collected ${o.label}! +${o.points}`);
+    showToast(`✨ Clue found: ${o.label}! ${missionStatus()}`);
     vanishObject(o,'collected',220);
   }else if(o.kind==='hazard'){
     if(canStomp(o)){
       o.hit=true;
+      mission.stomps=Math.min(MISSION_TARGETS.stomps,mission.stomps+1);
       score+=200;
       player.vy=13.5;
       player.jump=Math.max(player.jump,18);
       player.grounded=false;
-      showToast(`💥 Stomped ${o.label}! +200`);
+      showToast(`💥 Stomped ${o.label}! ${missionStatus()}`);
       vanishObject(o,'stomped',240);
     }else{
       o.hit=true;
@@ -723,17 +740,24 @@ function collide(o){
     }
   }else if(o.kind==='task'||o.kind==='sign'){
     o.hit=true;
+    if(o.kind==='task')mission.tasks=Math.min(MISSION_TARGETS.tasks,mission.tasks+1);
     score+=o.points||0;
-    showToast(o.message||`${o.label} done!`);
+    showToast(o.message?`${o.message} ${missionStatus()}`:`${o.label} done! ${missionStatus()}`);
     vanishObject(o,'collected',260);
   }else{
+    if(!missionReady()){
+      o.x+=520;
+      showToast(`Finish gate locked. Need ${missionNeeded()}.`);
+      updateHud();
+      return;
+    }
     o.hit=true;
     score+=500;
     levelComplete();
   }
   updateHud();
 }
-function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
+function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} cleared with ${missionStatus()}. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Mission complete with ${missionStatus()}.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){
   if(keys.left)player.x-=dt*.18;
   if(keys.right)player.x+=dt*.18;
