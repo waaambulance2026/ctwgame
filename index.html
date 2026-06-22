@@ -66,6 +66,40 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .character img{transition:transform .08s linear}
 .character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
+
+/* EDIT SECTION 06C: TEAM OF 4 FOLLOWERS
+   Solo mode shows one character. Team mode shows four: main + 3 followers.
+   These are visual followers; the main character still controls jumping/collisions.
+*/
+#teamMate2,#teamMate3{
+  z-index:calc(var(--zBuddy) - 2);
+  width:clamp(82px,120px,260px);
+  height:clamp(135px,195px,430px);
+  opacity:.88;
+  display:none;
+}
+#teamMate2{left:7vw;}
+#teamMate3{left:34vw;}
+body.team4Mode #teamMate2,
+body.team4Mode #teamMate3{display:flex;}
+#teamShadow2,#teamShadow3{
+  position:absolute;
+  bottom:calc(var(--floorPx) - 12px);
+  height:18px;
+  border-radius:50%;
+  background:rgba(0,0,0,.25);
+  filter:blur(8px);
+  transform:translateX(-50%);
+  pointer-events:none;
+  z-index:calc(var(--zBuddy) - 3);
+  display:none;
+}
+#teamShadow2{left:7vw;width:88px;}
+#teamShadow3{left:34vw;width:96px;}
+body.team4Mode #teamShadow2,
+body.team4Mode #teamShadow3{display:block;}
+@media(max-width:820px){#teamMate2{left:7vw;width:82px;height:136px}#teamMate3{left:48vw;width:88px;height:144px}#teamShadow2{left:7vw;width:62px}#teamShadow3{left:48vw;width:68px}}
+
 /* EDIT SECTION 06B: AUTO CHARACTER SIZE RULE
    Main/side slots no longer decide character size.
    JavaScript CHARACTER_CONFIGS decides each character's correct size.
@@ -112,8 +146,8 @@ body.night .platform{
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
-    <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
-    <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
+    <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
+    <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
     <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from index.html, so old cloud saves cannot override Owl/Ax paths.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use index.html defaults. Owl fallback-loop fix applied.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
@@ -130,10 +164,10 @@ body.night .platform{
     </div>
   </aside>
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
-  <div id="buddyShadow"></div><div id="shadow"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
+  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
-  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose a proper game mode. Admins can open Build/Edit from here without breaking the player screen.</p><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startAxBtn">Solo: Ax</button><button id="startPuraBtn">Solo: Pura</button><button id="startOwlBtn">Solo: Owl</button><button id="startTeamBtn" class="good">Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
+  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose a game mode. Solo uses one character. Team uses four characters together.</p><div style="margin:10px auto 14px;max-width:330px;text-align:left"><label style="display:block;font-weight:900;margin-bottom:6px">Solo character</label><select id="soloCharacterSelect" style="width:100%;border:0;border-radius:14px;padding:11px;font-weight:900"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Team Quest: 4 characters</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
 <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
@@ -181,6 +215,12 @@ const DEFAULT_PATTERNS={
     idle:`${CLOUD}/v1782133620/owl_idle_{n}.png`,
     walk:`${CLOUD}/v1782132160/owl_walk_{n}.png`,
     jump:`${CLOUD}/v1782132160/owl_jump_{n}.png`
+  },
+  unicorn:{
+    // UNICORN: upload files as unicorn_idle_001.png, unicorn_walk_001.png, unicorn_jump_001.png
+    idle:`${CLOUD}/unicorn_idle_{n}.png`,
+    walk:`${CLOUD}/unicorn_walk_{n}.png`,
+    jump:`${CLOUD}/unicorn_jump_{n}.png`
   }
 };
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
@@ -202,6 +242,12 @@ const ALT_PATTERNS={
     walk:[`${CLOUD}/v1782132160/owl_walk_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/owl_walk{nn}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`],
     jump:[`${CLOUD}/v1782132160/owl_jump_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/owl_jump_{i}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`]
   }
+};
+
+ALT_PATTERNS.unicorn={
+  idle:[`${CLOUD}/unicorn_idle_{n}.png`,`${CLOUD}/unicorn_idle_{i}.png`,`${CLOUD}/characters/Unicorn/idle/unicorn_idle_{n}.png`,`${CLOUD}/characters/unicorn/idle/unicorn_idle_{n}.png`,`${CLOUD}/Unicorn/Idle/unicorn_idle_{n}.png`,`${CLOUD}/Unicorn/idle/unicorn_idle_{n}.png`],
+  walk:[`${CLOUD}/unicorn_walk_{n}.png`,`${CLOUD}/unicorn_walk_{i}.png`,`${CLOUD}/characters/Unicorn/walk/unicorn_walk_{n}.png`,`${CLOUD}/characters/unicorn/walk/unicorn_walk_{n}.png`,`${CLOUD}/Unicorn/Walk/unicorn_walk_{n}.png`,`${CLOUD}/Unicorn/walk/unicorn_walk_{n}.png`],
+  jump:[`${CLOUD}/unicorn_jump_{n}.png`,`${CLOUD}/unicorn_jump_{i}.png`,`${CLOUD}/characters/Unicorn/jump/unicorn_jump_{n}.png`,`${CLOUD}/characters/unicorn/jump/unicorn_jump_{n}.png`,`${CLOUD}/Unicorn/Jump/unicorn_jump_{n}.png`,`${CLOUD}/Unicorn/jump/unicorn_jump_{n}.png`]
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
 function fillSpritePattern(pattern,idx,totalFrames=10){
@@ -262,11 +308,11 @@ function candidateSpriteUrls(char,action,idx){
   return out.filter(Boolean);
 }
 function spriteFallbackLabel(char){
-  const labels={ax:'AX',pura:'PURA',owl:'OWL',pet:'PET'};
+  const labels={ax:'AX',pura:'PURA',owl:'OWL',unicorn:'UNICORN',pet:'PET'};
   return labels[char]||String(char||'SPRITE').toUpperCase();
 }
 function spriteFallbackEmoji(char){
-  const emojis={ax:'🚑',pura:'🐾',owl:'🦉',pet:'🐾'};
+  const emojis={ax:'🚑',pura:'🐾',owl:'🦉',unicorn:'🦄',pet:'🐾'};
   return emojis[char]||'❔';
 }
 function fallbackSpriteDataUri(char,action){
@@ -348,6 +394,7 @@ const SETS={
   ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
   pura:{name:'Pura',frameMs:115,actionMs:{idle:115,walk:100,jump:70}},
   owl:{name:'Owl',frameMs:155,actionMs:{idle:155,walk:130,jump:80}},
+  unicorn:{name:'Unicorn',frameMs:135,actionMs:{idle:135,walk:115,jump:78}},
   pet:{name:'Pet',frameMs:120,actionMs:{idle:120,walk:105,jump:75}}
 };
 // EDIT SECTION 18B: CHARACTER-SIZE LOCK + AUTO FRAME COUNT
@@ -361,6 +408,7 @@ const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
+  unicorn:{name:'Unicorn',boxW:150,visualScale:1,visualY:0,shadowScale:.86},
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
 };
 
@@ -475,7 +523,10 @@ function applyCharacterSlotSizes(){
   if($('calBuddyW')){$('calBuddyW').value=buddyW;$('calBuddyWVal').textContent=buddyW+'px auto';}
   if($('shadow'))$('shadow').style.width=Math.max(80,mainW*.78)+'px';
   if($('buddyShadow'))$('buddyShadow').style.width=Math.max(58,buddyW*.72)+'px';
+  if($('teamShadow2'))$('teamShadow2').style.width=Math.max(54,characterBoxWidth((teamExtra&&teamExtra[0])||'owl')*.68)+'px';
+  if($('teamShadow3'))$('teamShadow3').style.width=Math.max(54,characterBoxWidth((teamExtra&&teamExtra[1])||'unicorn')*.68)+'px';
 }
+
 function applySpriteTransform(){
   applyCharacterSlotSizes();
   const mainCfg=getCharacterVisualConfig(main);
@@ -484,12 +535,16 @@ function applySpriteTransform(){
   const buddyDirection=(Number(buddyFlip)||1)*facing;
   if($('sprite'))$('sprite').style.transform=`translateY(${mainCfg.visualY||0}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
   if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
+  const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
+  const t2Cfg=getCharacterVisualConfig(t2), t3Cfg=getCharacterVisualConfig(t3);
+  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.86})`;
+  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.86})`;
   if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
-const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0}};
+let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
 function updateSpriteFacing(input=0){
@@ -500,9 +555,47 @@ function updateSpriteFacing(input=0){
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
 const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
-function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();spriteCurrent.sprite='';spriteCurrent.buddySprite='';setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else{setSpriteMissing('buddySprite',false);if($('buddySprite'))$('buddySprite').removeAttribute('src')}updateSpriteFacing(0);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
+function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}
+function clearCharacterSlot(elId){
+  setSpriteMissing(elId,false);
+  const el=$(elId); if(el)el.removeAttribute('src');
+  spriteCurrent[elId]='';
+}
+function setPair(m,b,extraA='owl',extraB='unicorn'){
+  main=m||'ax';
+  buddy=b||'none';
+  team=buddy!=='none';
+  teamExtra=[extraA||'owl',extraB||'unicorn'];
+  document.body.classList.toggle('teamMode',team);
+  document.body.classList.toggle('team4Mode',team);
+  mainFrame=0;buddyFrame=0;lastFrame=0;lastBuddyFrame=0;
+  resetIdleAnim();
+  ['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');
+  setSpriteFrame('sprite',main,'idle',0);
+  if(team){
+    setSpriteFrame('buddySprite',buddy,'idle',0);
+    setSpriteFrame('teamSprite2',teamExtra[0],'idle',0);
+    setSpriteFrame('teamSprite3',teamExtra[1],'idle',0);
+  }else{
+    clearCharacterSlot('buddySprite');
+    clearCharacterSlot('teamSprite2');
+    clearCharacterSlot('teamSprite3');
+  }
+  updateSpriteFacing(0);
+  const leadName=SETS[main]?.name||'Pet';
+  showToast(team?`Team Quest: ${leadName}, ${SETS[buddy]?.name||'Pet'}, ${SETS[teamExtra[0]]?.name||teamExtra[0]}, ${SETS[teamExtra[1]]?.name||teamExtra[1]}`:`${leadName} solo.`);
+  syncCharacterFields();
+}
+function startSoloQuest(){
+  const chosen=$('soloCharacterSelect')?.value||main||'ax';
+  startGame(chosen,'none');
+}
+function startTeamQuest(){
+  startGame('ax','pura','owl','unicorn');
+}
+
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b){closeBuilder();closePetPanel();setPair(c,b);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -590,11 +683,15 @@ function updatePlayer(dt){
   const mainShadow=(getCharacterVisualConfig(main).shadowScale||1)*(player.grounded?1:.72);
   $('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${mainShadow})`;
   $('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`;
+  if($('teamMate2'))$('teamMate2').style.transform=`translateX(-50%) translateY(${-(cssNumber('--buddyDrop',16)+4)}px)`;
+  if($('teamMate3'))$('teamMate3').style.transform=`translateX(-50%) translateY(${-(cssNumber('--buddyDrop',16)+2)}px)`;
 }
+
 function animateOne(elId,char,action,now,state){
   const set=SETS[char]||SETS.ax;
   const frameMs=(set.actionMs&&set.actionMs[action])||set.frameMs||120;
   const totalFrames=getActionFrameCount(char,action);
+  state=state||{playing:false,next:0,frame:0,last:0};
   if(action==='idle'){
     if(!state.next)state.next=now+2600+Math.random()*2600;
     if(!state.playing){
@@ -610,11 +707,12 @@ function animateOne(elId,char,action,now,state){
     }
     return;
   }
-  state.playing=false;state.frame=0;state.next=now+2600+Math.random()*2600;
-  if(elId==='sprite'){
-    if(now-lastFrame>frameMs){mainFrame=(mainFrame+1)%totalFrames;lastFrame=now;setSpriteFrame(elId,char,action,mainFrame)}
-  }else{
-    if(now-lastBuddyFrame>frameMs){buddyFrame=(buddyFrame+1)%totalFrames;lastBuddyFrame=now;setSpriteFrame(elId,char,action,buddyFrame)}
+  state.playing=false;
+  state.next=now+2600+Math.random()*2600;
+  if(now-(state.last||0)>frameMs){
+    state.frame=((state.frame||0)+1)%totalFrames;
+    state.last=now;
+    setSpriteFrame(elId,char,action,state.frame);
   }
 }
 function animateSprites(now){
@@ -624,6 +722,8 @@ function animateSprites(now){
   if(team){
     const buddyAct=player.grounded?(moving?'walk':'idle'):'idle';
     animateOne('buddySprite',buddy,buddyAct,now,idleAnim.buddySprite);
+    animateOne('teamSprite2',teamExtra[0],buddyAct,now,idleAnim.teamSprite2);
+    animateOne('teamSprite3',teamExtra[1],buddyAct,now,idleAnim.teamSprite3);
   }
 }
 function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
@@ -701,7 +801,7 @@ function readSettings(){
   if($('axIdleUrl'))readSpriteUrlInputs();
   const o={};
   Object.entries(settingMap).forEach(([id,[key]])=>o[key]=+$(''+id).value);
-  o.main=main;o.buddy=buddy;o.team=team;o.mainFlip=mainFlip;o.buddyFlip=buddyFlip;o.petPlayerW=petPlayerW;o.petFlip=petFlip;
+  o.main=main;o.buddy=buddy;o.team=team;o.teamExtra=teamExtra;o.mainFlip=mainFlip;o.buddyFlip=buddyFlip;o.petPlayerW=petPlayerW;o.petFlip=petFlip;
   return o;
 }
 function applySettings(o={}){
@@ -709,13 +809,14 @@ function applySettings(o={}){
   // Do NOT load old shared spritePatterns from Cloudflare, because old saves can keep broken Owl/Ax paths alive.
   // Use EDIT SECTION 17 in this file as the source of truth for sprite folders/names.
   if(false && o.spritePatterns)mergeSpritePatterns(o.spritePatterns);
+  if(Array.isArray(o.teamExtra)&&o.teamExtra.length>=2)teamExtra=[o.teamExtra[0]||'owl',o.teamExtra[1]||'unicorn'];
   if(o.petPlayerW!==undefined){petPlayerW=Number(o.petPlayerW)||petPlayerW;if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}}
   if(o.petFlip!==undefined){petFlip=Number(o.petFlip)||petFlip;if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);}
   if(o.mainFlip!==undefined){mainFlip=Number(o.mainFlip)||1;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);}
   if(o.buddyFlip!==undefined){buddyFlip=Number(o.buddyFlip)||1;if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip);}
   Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});
   if(o.main||o.buddy!==undefined){
-    setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'));
+    setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'),teamExtra[0]||'owl',teamExtra[1]||'unicorn');
   }else{
     applyCharacterSlotSizes();
     updateSpriteFacing(0);
@@ -728,7 +829,7 @@ function clearBrowserGameSaves(){try{Object.keys(localStorage).filter(k=>k.start
 function persistLocalQuiet(){/* Browser save disabled on purpose. Use shared cloud save only. */}
 function saveLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Save shared level.'}
 function loadLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Load shared level.'}
-function resetCorrect(){clearBrowserGameSaves();SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Character sizes are auto-locked by character, and browser save is disabled.'}
+function resetCorrect(){clearBrowserGameSaves();SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['owl','unicorn'];setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Character sizes are auto-locked by character, and browser save is disabled.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
@@ -753,7 +854,7 @@ async function loadCloud(auto=false){
     return false;
   }catch(e){if(!auto)$('adminStatus').textContent='Load failed: '+e.message;return false}
 }
-function syncCharacterFields(){$('mainSelect').value=main;$('buddySelect').value=buddy||'none';if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip||1);if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip||1)}
+function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSelect'))$('soloCharacterSelect').value=main;$('buddySelect').value=buddy||'none';if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip||1);if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip||1)}
 function editorRowsFor(layer){return {
   player:['calPlayerX','calDrop','calZPlayer'],
   buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
@@ -798,19 +899,23 @@ document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focus
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
 Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});}));
 $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
-$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,buddy==='none'?'pura':buddy);};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
+$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair('ax','pura','owl','unicorn');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
   $('puraIdleUrl').value=SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=SPRITE_PATTERNS.pura.jump;
   $('owlIdleUrl').value=SPRITE_PATTERNS.owl.idle;$('owlWalkUrl').value=SPRITE_PATTERNS.owl.walk;$('owlJumpUrl').value=SPRITE_PATTERNS.owl.jump;
+  $('unicornIdleUrl').value=SPRITE_PATTERNS.unicorn.idle;$('unicornWalkUrl').value=SPRITE_PATTERNS.unicorn.walk;$('unicornJumpUrl').value=SPRITE_PATTERNS.unicorn.jump;
 }
+
 function readSpriteUrlInputs(){
   SPRITE_PATTERNS.ax.idle=$('axIdleUrl').value.trim()||DEFAULT_PATTERNS.ax.idle;SPRITE_PATTERNS.ax.walk=$('axWalkUrl').value.trim()||DEFAULT_PATTERNS.ax.walk;SPRITE_PATTERNS.ax.jump=$('axJumpUrl').value.trim()||DEFAULT_PATTERNS.ax.jump;
   SPRITE_PATTERNS.pura.idle=$('puraIdleUrl').value.trim()||DEFAULT_PATTERNS.pura.idle;SPRITE_PATTERNS.pura.walk=$('puraWalkUrl').value.trim()||DEFAULT_PATTERNS.pura.walk;SPRITE_PATTERNS.pura.jump=$('puraJumpUrl').value.trim()||DEFAULT_PATTERNS.pura.jump;
   SPRITE_PATTERNS.owl.idle=$('owlIdleUrl').value.trim()||DEFAULT_PATTERNS.owl.idle;SPRITE_PATTERNS.owl.walk=$('owlWalkUrl').value.trim()||DEFAULT_PATTERNS.owl.walk;SPRITE_PATTERNS.owl.jump=$('owlJumpUrl').value.trim()||DEFAULT_PATTERNS.owl.jump;
+  SPRITE_PATTERNS.unicorn.idle=$('unicornIdleUrl').value.trim()||DEFAULT_PATTERNS.unicorn.idle;SPRITE_PATTERNS.unicorn.walk=$('unicornWalkUrl').value.trim()||DEFAULT_PATTERNS.unicorn.walk;SPRITE_PATTERNS.unicorn.jump=$('unicornJumpUrl').value.trim()||DEFAULT_PATTERNS.unicorn.jump;
 }
+
 fillSpriteUrlInputs();
-$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();spriteCurrent.sprite='';spriteCurrent.buddySprite='';setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'walk',0);$('spriteStatus').textContent='Sprite URL patterns applied. If Owl/Pura paths are wrong, a visible placeholder appears instead of a blank character.';showToast('Sprite URL patterns applied')};
+$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setSpriteFrame('sprite',main,'idle',0);if(team){setSpriteFrame('buddySprite',buddy,'walk',0);setSpriteFrame('teamSprite2',teamExtra[0],'walk',0);setSpriteFrame('teamSprite3',teamExtra[1],'walk',0);}$('spriteStatus').textContent='Sprite URL patterns applied. If Owl/Pura paths are wrong, a visible placeholder appears instead of a blank character.';showToast('Sprite URL patterns applied')};
 $('resetSpriteUrlsBtn').onclick=()=>{SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();setPair(main,buddy);$('spriteStatus').textContent='Sprite URL patterns reset to defaults and saved.';};
 function pct(v){v=Number(v);if(!Number.isFinite(v))return 0;if(v<=1&&v>0)v*=100;return Math.max(0,Math.min(100,v))}
 function getPetUserId(){return ($('userIdInput')?.value||'').trim()||$('userSelect').value}
@@ -953,7 +1058,7 @@ async function selectPet(){
 function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange')?.value)||petPlayerW));petFlip=Number($('petFlipSelect')?.value)||petFlip;mainFlip=petFlip;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);if($('calPlayerW'))$('calPlayerW').value=petPlayerW;setVar('playerW',petPlayerW,'px');applySettings({playerW:petPlayerW,main:'pet',buddy:'none',team:false,petPlayerW,petFlip,mainFlip});setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
-$('startAxBtn').onclick=()=>startGame('ax','none');$('startPuraBtn').onclick=()=>startGame('pura','none');$('startOwlBtn').onclick=()=>startGame('owl','none');$('startTeamBtn').onclick=()=>startGame('ax','pura');$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
+$('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
