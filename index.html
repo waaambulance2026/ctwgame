@@ -6,6 +6,19 @@
 <title>Ax + Pura Waaambulance Quests</title>
 <!-- Level 1 object upgrade: image items, vanish-on-collect, Mario-style stomp hazards, level-building checklist support. -->
 <!-- ============================================================
+SAFE REVERTED FIX BUILD
+This file is based on the version you put back, not the broken cleaned file.
+Only safe comments/status text were corrected here; the working game code structure is preserved.
+Key search terms:
+SPRITE PATHS
+ACTION_FRAME_OVERRIDES
+CHARACTER_CONFIGS
+applySpriteTransform
+animateSprites
+TEAM PICKER
+============================================================ -->
+
+<!-- ============================================================
 EDIT SECTION 02: CSS STARTS HERE
 This section controls colours, sizes, layers, menus and mobile layout.
 Use the document guide beside this file. Search EDIT SECTION to jump around.
@@ -155,7 +168,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn 4-frame baseline fix applied. Pura walk auto-detects all frames.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn baseline fix applied. Pura walk forced to 4 frames.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -383,8 +396,8 @@ const ACTION_FRAME_CACHE={};
 const ACTION_FRAME_PROBING={};
 // Manual frame counts stop Cloudinary auto-detect using old extra frames.
 // Only force actions that must be limited.
-// Pura is NOT forced now, so Pura walk can auto-detect and use all uploaded walk frames.
-// Unicorn walk is a clean 4-frame set: 001, 002, 003, 004.
+// Pura walk is forced to 4 frames because Pura currently has 4 walk images.
+// Unicorn walk is also a clean 4-frame set: 001, 002, 003, 004.
 const ACTION_FRAME_OVERRIDES={
   ax:{walk:4},
   pura:{walk:4},
