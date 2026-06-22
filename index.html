@@ -29,7 +29,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
-#worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}
+#worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;bottom:calc(var(--floorPx) + 22px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
 .builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
@@ -543,7 +543,7 @@ function applySpriteTransform(){
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
@@ -554,6 +554,61 @@ function updateSpriteFacing(input=0){
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
 const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
+
+/* EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
+   This turns the level from random collecting into a planned path.
+   Add more entries here to build a proper level:
+   at = distance along the level
+   kind = sign, task, token, hazard, finish
+   tokenIndex/hazardIndex choose from the level tokens/hazards list above
+*/
+function levelPlan(){
+  const l=levels[levelIndex];
+  if(Array.isArray(l.plan)&&l.plan.length)return l.plan;
+  return [
+    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: follow the path and find the clues.`},
+    {at:240,kind:'token',tokenIndex:0},
+    {at:430,kind:'task',data:['🔎','Inspect clue',150,''],message:'Clue checked! Keep moving.'},
+    {at:620,kind:'hazard',hazardIndex:0},
+    {at:850,kind:'token',tokenIndex:1},
+    {at:1080,kind:'hazard',hazardIndex:1},
+    {at:1320,kind:'task',data:['🧰','Fix the Waaambulance part',180,''],message:'Repair job done. Very dramatic.'},
+    {at:1600,kind:'token',tokenIndex:2},
+    {at:1880,kind:'hazard',hazardIndex:2},
+    {at:2160,kind:'task',data:['✅','Complete the objective',250,''],message:'Objective complete! Head to the finish.'}
+  ];
+}
+function pickPlannedData(entry){
+  const level=levels[levelIndex];
+  if(entry.data)return entry.data;
+  if(entry.kind==='hazard')return level.hazards[Number(entry.hazardIndex)||0]||level.hazards[0];
+  if(entry.kind==='token')return level.tokens[Number(entry.tokenIndex)||0]||level.tokens[0];
+  if(entry.kind==='finish')return ['🏁','Finish flag',0,'v1781797065/finish_flag.png'];
+  return ['❔',entry.label||'Level object',Number(entry.points)||0,entry.image||''];
+}
+function makePlannedObject(entry){
+  const kind=entry.kind||'token';
+  const data=pickPlannedData(entry);
+  const x=innerWidth+260;
+  const isFinish=kind==='finish';
+  const visualKind=(kind==='sign'||kind==='task')?kind:(isFinish?'finish':kind);
+  const el=document.createElement('div');
+  el.className='obj '+visualKind;
+  addObjectImage(el,data);
+  $('worldObjects').appendChild(el);
+  const lift=kind==='hazard'?cssNumber('--hazardLift',58):(kind==='sign'?150:(kind==='task'?132:cssNumber('--tokenLift',126)));
+  const y=innerHeight-floorPx()-(isFinish?130:lift);
+  objects.push({el,x,y,kind:visualKind,label:data[1],points:Number(data[2])||Number(entry.points)||0,hit:false,vanished:false,message:entry.message||''});
+}
+function spawnLevelPlanObjects(){
+  const plan=levelPlan();
+  plan.forEach((entry,i)=>{
+    if(!spawnedPlan.has(i)&&distance>=Number(entry.at||0)){
+      spawnedPlan.add(i);
+      makePlannedObject(entry);
+    }
+  });
+}
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
 function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}
 function clearCharacterSlot(elId){
@@ -595,7 +650,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -660,8 +715,14 @@ function collide(o){
       document.body.classList.add('hitFlash');
       setTimeout(()=>document.body.classList.remove('hitFlash'),230);
       showToast(`${o.label}. Drama damage.`);
+      vanishObject(o,'damaged',240);
       if(lives<=0)end(false);
     }
+  }else if(o.kind==='task'||o.kind==='sign'){
+    o.hit=true;
+    score+=o.points||0;
+    showToast(o.message||`${o.label} done!`);
+    vanishObject(o,'collected',260);
   }else{
     o.hit=true;
     score+=500;
@@ -731,14 +792,21 @@ function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
   return {left:r.left+r.width*shrinkX,right:r.right-r.width*shrinkX,top:r.top+r.height*shrinkY,bottom:r.bottom-r.height*.04};
 }
 function rectsOverlap(a,b){return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top}
+function playerHitRectFor(kind){
+  const el=$('player');
+  // Tighter player box stops items collecting just because the outer sprite container is nearby.
+  if(kind==='token'||kind==='task'||kind==='sign')return getShrunkRect(el,.34,.24);
+  if(kind==='hazard')return getShrunkRect(el,.28,.18);
+  return getShrunkRect(el,.22,.16);
+}
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-  const pad=o.kind==='token'?42:(o.kind==='finish'?36:22);
-  return {left:r.left-pad,right:r.right+pad,top:r.top-pad,bottom:r.bottom+pad};
+  const shrink=(o.kind==='token'||o.kind==='task'||o.kind==='sign')?.22:(o.kind==='hazard'?.12:.08);
+  return {left:r.left+r.width*shrink,right:r.right-r.width*shrink,top:r.top+r.height*shrink,bottom:r.bottom-r.height*shrink};
 }
 function shouldHitObject(o){
   if(o.hit||o.vanished)return false;
-  const pr=getShrunkRect($('player'),.08,.10);
+  const pr=playerHitRectFor(o.kind);
   return rectsOverlap(pr,objectHitRect(o));
 }
 // EDIT SECTION 22: MAIN GAME LOOP - movement, scrolling, spawning, collisions and redraw
@@ -752,7 +820,8 @@ function loop(now=0){
     if(input>0){
       distance+=worldMove*.055;
       spawnTimer+=dt;
-      if(spawnTimer>cssNumber('--spawnGap',1450)){spawnTimer=0;spawn()}
+      spawnLevelPlanObjects();
+      if(!levelPlan().length&&spawnTimer>cssNumber('--spawnGap',1450)){spawnTimer=0;spawn()}
       if(distance>levels[levelIndex].goal&&!finishMade)makeFinish();
     }
     if(moving){
