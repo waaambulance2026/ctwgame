@@ -821,7 +821,19 @@ function animateOne(elId,char,action,now,state){
   const set=SETS[char]||SETS.ax;
   const frameMs=(set.actionMs&&set.actionMs[action])||set.frameMs||120;
   const totalFrames=getActionFrameCount(char,action);
-  state=state||{playing:false,next:0,frame:0,last:0};
+  state=state||{playing:false,next:0,frame:0,last:0,action:''};
+
+  // ACTION CHANGE FIX:
+  // Each visible slot keeps its own animation state. When a slot changes from idle to walk
+  // or walk back to idle, reset its frame counter so it does not get stuck showing idle frame 001.
+  if(state.action!==action){
+    state.action=action;
+    state.playing=false;
+    state.next=0;
+    state.frame=0;
+    state.last=0;
+  }
+
   if(action==='idle'){
     if(!state.next)state.next=now+2600+Math.random()*2600;
     if(!state.playing){
@@ -847,18 +859,20 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  // AUTO-SCROLL WALK FIX:
-  // The level moves even when the player is not holding an arrow key,
-  // so characters should walk during an active quest instead of staying on idle.
+  // TEAM WALK FIX:
+  // The main player should NOT walk constantly just because the background scrolls.
+  // Main walks only when the player presses left/right, or jumps when jumping.
+  // Followers walk during active quest movement so Pura/Owl/Unicorn do not sit idle behind Ax.
+  const inputMoving=movementInput()!==0;
   const questMoving=playing&&!paused&&!ended;
-  const moving=movementInput()!==0||questMoving;
-  const act=player.grounded?(moving?'walk':'idle'):'jump';
-  animateOne('sprite',main,act,now,idleAnim.sprite);
+  const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
+  animateOne('sprite',main,mainAct,now,idleAnim.sprite);
   if(team){
-    const buddyAct=player.grounded?(moving?'walk':'idle'):'idle';
-    if(buddy&&buddy!=='none')animateOne('buddySprite',buddy,buddyAct,now,idleAnim.buddySprite);
-    if(teamExtra[0]&&teamExtra[0]!=='none')animateOne('teamSprite2',teamExtra[0],buddyAct,now,idleAnim.teamSprite2);
-    if(teamExtra[1]&&teamExtra[1]!=='none')animateOne('teamSprite3',teamExtra[1],buddyAct,now,idleAnim.teamSprite3);
+    const followerMoving=questMoving||inputMoving;
+    const followerAct=player.grounded?(followerMoving?'walk':'idle'):'idle';
+    if(buddy&&buddy!=='none')animateOne('buddySprite',buddy,followerAct,now,idleAnim.buddySprite);
+    if(teamExtra[0]&&teamExtra[0]!=='none')animateOne('teamSprite2',teamExtra[0],followerAct,now,idleAnim.teamSprite2);
+    if(teamExtra[1]&&teamExtra[1]!=='none')animateOne('teamSprite3',teamExtra[1],followerAct,now,idleAnim.teamSprite3);
   }
 }
 function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
