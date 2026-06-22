@@ -233,15 +233,11 @@ let SPRITE_PATTERNS={
     jump:`${CLOUD}/v1782126921/ax_jump_{n}.png`
   },
   pura:{
-    // PURA: exact 4-frame walk list.
-    // This avoids missing frames when Cloudinary frame versions do not behave like one shared pattern.
+    // PURA: use the working shared pattern again.
+    // ACTION_FRAME_OVERRIDES below forces this walk cycle to exactly 4 frames:
+    // pura_walk_001, pura_walk_002, pura_walk_003, pura_walk_004.
     idle:`${CLOUD}/v1781797065/pura_idle_{n}.png`,
-    walk:[
-      `${CLOUD}/v1781797065/pura_walk_001.png`,
-      `${CLOUD}/v1781797065/pura_walk_002.png`,
-      `${CLOUD}/v1781797065/pura_walk_003.png`,
-      `${CLOUD}/v1781797065/pura_walk_004.png`
-    ],
+    walk:`${CLOUD}/v1781797065/pura_walk_{n}.png`,
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
@@ -1100,7 +1096,7 @@ $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveClo
 $('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
-  $('puraIdleUrl').value=SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=SPRITE_PATTERNS.pura.jump;
+  $('puraIdleUrl').value=Array.isArray(SPRITE_PATTERNS.pura.idle)?SPRITE_PATTERNS.pura.idle[0]:SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=Array.isArray(SPRITE_PATTERNS.pura.walk)?`${CLOUD}/v1781797065/pura_walk_{n}.png`:SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=Array.isArray(SPRITE_PATTERNS.pura.jump)?SPRITE_PATTERNS.pura.jump[0]:SPRITE_PATTERNS.pura.jump;
   $('owlIdleUrl').value=SPRITE_PATTERNS.owl.idle;$('owlWalkUrl').value=SPRITE_PATTERNS.owl.walk;$('owlJumpUrl').value=SPRITE_PATTERNS.owl.jump;
   $('unicornIdleUrl').value=SPRITE_PATTERNS.unicorn.idle;$('unicornWalkUrl').value=SPRITE_PATTERNS.unicorn.walk;$('unicornJumpUrl').value=SPRITE_PATTERNS.unicorn.jump;
 }
