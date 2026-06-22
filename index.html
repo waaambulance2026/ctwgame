@@ -391,7 +391,7 @@ const ACTION_FRAME_OVERRIDES={
   unicorn:{walk:4}
 };
 const CHARACTER_CONFIGS={
-  ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
+  ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1,slotY:{buddy:16,team:18}},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
@@ -574,6 +574,11 @@ function applyCharacterSlotSizes(){
   if($('teamShadow3'))$('teamShadow3').style.width=Math.max(48,t3W*.66)+'px';
 }
 
+function slotVisualY(characterKey,slotName){
+  const cfg=getCharacterVisualConfig(characterKey);
+  return Number((cfg.slotY&&cfg.slotY[slotName])||0);
+}
+
 function applySpriteTransform(){
   applyCharacterSlotSizes();
   const mainAction=($('sprite')&&$('sprite').dataset.action)||'idle';
@@ -588,12 +593,16 @@ function applySpriteTransform(){
   const buddyCfg=getActionVisualConfig(buddy,buddyAction,buddyFrameIndex);
   const mainDirection=(Number(mainFlip)||1)*facing;
   const buddyDirection=(Number(buddyFlip)||1)*facing;
-  if($('sprite'))$('sprite').style.transform=`translateY(${mainCfg.visualY||0}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
-  if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
+  const mainY=(mainCfg.visualY||0)+slotVisualY(main,'main');
+  const buddyY=(buddyCfg.visualY||0)+slotVisualY(buddy,'buddy');
+  if($('sprite'))$('sprite').style.transform=`translateY(${mainY}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
+  if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyY}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
   const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
   const t2Cfg=getActionVisualConfig(t2,t2Action,t2FrameIndex), t3Cfg=getActionVisualConfig(t3,t3Action,t3FrameIndex);
-  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.92})`;
-  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.92})`;
+  const t2Y=(t2Cfg.visualY||0)+slotVisualY(t2,'team');
+  const t3Y=(t3Cfg.visualY||0)+slotVisualY(t3,'team');
+  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Y}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.92})`;
+  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Y}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.92})`;
   if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
@@ -859,35 +868,19 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  // Correct animation behaviour:
-  // Main character idles unless the player is actually pressing left/right.
-  // Team followers copy the same walk/idle behaviour, so Pura does not sit idle while Ax walks.
-  // The background moving by itself no longer forces anyone to walk.
+  // MAIN + TEAM ANIMATION FIX:
+  // Main walks only when the player presses left/right.
+  // Followers copy the main action, so Pura does not swap back to idle while Ax is walking.
+  // Background scrolling by itself does not force anyone to walk.
+  const inputMoving=!!(keys.left||keys.right);
+  const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
+  const followerAct=mainAct==='jump'?'idle':mainAct;
 
-  const inputMoving = !!(keys.left || keys.right);
-
-  const mainAct = player.grounded
-    ? (inputMoving ? 'walk' : 'idle')
-    : 'jump';
-
-  const followerAct = player.grounded
-    ? (inputMoving ? 'walk' : 'idle')
-    : 'idle';
-
-  animateOne('sprite', main, mainAct, now, idleAnim.sprite);
-
+  animateOne('sprite',main,mainAct,now,idleAnim.sprite);
   if(team){
-    if(buddy && buddy !== 'none'){
-      animateOne('buddySprite', buddy, followerAct, now, idleAnim.buddySprite);
-    }
-
-    if(teamExtra[0] && teamExtra[0] !== 'none'){
-      animateOne('teamSprite2', teamExtra[0], followerAct, now, idleAnim.teamSprite2);
-    }
-
-    if(teamExtra[1] && teamExtra[1] !== 'none'){
-      animateOne('teamSprite3', teamExtra[1], followerAct, now, idleAnim.teamSprite3);
-    }
+    if(buddy&&buddy!=='none')animateOne('buddySprite',buddy,followerAct,now,idleAnim.buddySprite);
+    if(teamExtra[0]&&teamExtra[0]!=='none')animateOne('teamSprite2',teamExtra[0],followerAct,now,idleAnim.teamSprite2);
+    if(teamExtra[1]&&teamExtra[1]!=='none')animateOne('teamSprite3',teamExtra[1],followerAct,now,idleAnim.teamSprite3);
   }
 }
 function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
