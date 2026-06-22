@@ -15,8 +15,8 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
 :root{
   --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
   --floorPx:116px; --platformH:48px;
-  --playerX:22vw; --playerW:260px; --playerDrop:26px;
-  --buddyX:14vw; --buddyW:118px; --buddyDrop:16px;
+  --playerX:22vw; --playerW:170px; --playerDrop:26px;
+  --buddyX:14vw; --buddyW:150px; --buddyDrop:16px;
   --skyY:center; --hillsH:285px; --hillsBottom:128px; --groundH:158px; --groundBottom:-22px;
   --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
   --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:30; --zPlayer:30; --zObjects:50;
@@ -28,7 +28,7 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
 body.night #game{background:#12113b} body.night .sky{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png')} body.night .hills{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png');filter:brightness(.9) saturate(1.1)} body.night .groundDecor{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png');filter:brightness(.9) saturate(1.1)} body.night .platform{background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 6px,rgba(168,88,190,1) 6px 22px,rgba(92,95,189,1) 22px 28px,rgba(22,42,95,1) 28px 100%)} body.night .underFloor{background:#14275d}
 .hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
-.character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),270px);height:clamp(150px,calc(var(--buddyW) * 1.62),450px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
+.character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;bottom:calc(var(--floorPx) + 22px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
@@ -65,6 +65,11 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
 .character img{transition:transform .08s linear}
 
+/* EDIT SECTION 06B: AUTO CHARACTER SIZE RULE
+   Main/side slots no longer decide character size.
+   JavaScript CHARACTER_CONFIGS decides each character's correct size.
+   Keep #player and #buddy as physics boxes; scale #sprite and #buddySprite only.
+*/
 
 /* EDIT SECTION 06A: INVISIBLE FLOOR FIX
    This keeps the floor physics working but hides the coloured platform stripe.
@@ -95,20 +100,20 @@ body.night .platform{
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
     <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
-    <div class="builderHelp"><b>How to edit:</b> 1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right.</div>
+    <div class="builderHelp"><b>How to edit:</b> 1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right. Character size is automatic by character, not by main/side slot.</div>
     <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
-      <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
+      <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
+      <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is just for you. Shared cloud save is what your Discord users will get.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveLocalBtn" class="good">Save in this browser</button><button id="loadLocalBtn">Load browser save</button><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Use shared cloud save only, so old browser layouts cannot override the game.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -135,7 +140,7 @@ body.night .platform{
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
-const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:260,playerDrop:26,buddyX:14,buddyW:118,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zObjects:50};
+const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:170,playerDrop:26,buddyX:14,buddyW:150,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
@@ -196,15 +201,16 @@ const ALT_PATTERNS={
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
-function fillSpritePattern(pattern,idx){
+function fillSpritePattern(pattern,idx,totalFrames=10){
   if(!pattern)return'';
-  const frame=((idx%10)+1);
+  totalFrames=Math.max(1,Number(totalFrames)||10);
+  const frame=((idx%totalFrames)+1);
   return String(pattern).replaceAll('{nnn}',pad3(frame)).replaceAll('{nn}',pad2(frame)).replaceAll('{n}',pad3(frame));
 }
 function spriteUrlFor(char,action,idx){
   if(char==='pet'&&currentPetImage)return currentPetImage;
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
-  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',idx);
+  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',idx,getActionFrameCount(action));
 }
 function setSpriteMissing(elId,on,msg){
   const el=$(elId); const wrap=el?el.closest('.character'):null;
@@ -212,15 +218,15 @@ function setSpriteMissing(elId,on,msg){
   wrap.classList.toggle('spriteMissing',!!on);
   if(msg)wrap.dataset.missing=msg;
 }
-function pushSpriteCandidate(list,pattern,idx){
+function pushSpriteCandidate(list,pattern,idx,totalFrames=10){
   if(!pattern)return;
   const raw=String(pattern);
   const add=u=>{ if(u&&!list.includes(u))list.push(u); };
-  const one=fillSpritePattern(raw,idx);
+  const one=fillSpritePattern(raw,idx,totalFrames);
   add(one);
   // Some uploaded batches were named 01/02 and some were 001/002. Only add the 2-digit version when the pattern uses {n}.
   if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
-    const frame=((idx%10)+1);
+    const frame=((idx%(Math.max(1,Number(totalFrames)||10)))+1);
     add(raw.replaceAll('{n}',pad2(frame)));
   }
   // If the extension was wrong in the saved URL, try common image extensions without creating a huge 404 storm.
@@ -238,8 +244,9 @@ function candidateSpriteUrls(char,action,idx){
   [action,'walk','idle','jump'].forEach(a=>{if(a&&!actions.includes(a))actions.push(a)});
   const out=[];
   actions.forEach(a=>{
-    pushSpriteCandidate(out,p&&p[a],idx);
-    (alt[a]||[]).forEach(pattern=>pushSpriteCandidate(out,pattern,idx));
+    const total=getActionFrameCount(a);
+    pushSpriteCandidate(out,p&&p[a],idx,total);
+    (alt[a]||[]).forEach(pattern=>pushSpriteCandidate(out,pattern,idx,total));
   });
   return out.filter(Boolean);
 }
@@ -282,11 +289,46 @@ function setSpriteFrame(elId,char,action,idx){
   tryNext();
 }
 const SETS={
-  ax:{name:'Ax',frameMs:105,scale:1},
-  pura:{name:'Pura',frameMs:115,scale:1.05},
-  owl:{name:'Owl',frameMs:175,scale:.46},
-  pet:{name:'Pet',frameMs:140,scale:1}
+  ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
+  pura:{name:'Pura',frameMs:115,actionMs:{idle:115,walk:100,jump:70}},
+  owl:{name:'Owl',frameMs:155,actionMs:{idle:155,walk:130,jump:80}},
+  pet:{name:'Pet',frameMs:120,actionMs:{idle:120,walk:105,jump:75}}
 };
+// EDIT SECTION 18B: CHARACTER-SIZE LOCK - size belongs to the character, not the main/side slot.
+const ACTION_FRAME_COUNTS={idle:10,walk:10,jump:10};
+const CHARACTER_CONFIGS={
+  ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
+  pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
+  owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
+  pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
+};
+function getActionFrameCount(action){return ACTION_FRAME_COUNTS[action]||10}
+function getCharacterVisualConfig(characterKey){return CHARACTER_CONFIGS[characterKey]||CHARACTER_CONFIGS.pet}
+function characterBoxWidth(characterKey){
+  if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
+  return getCharacterVisualConfig(characterKey).boxW||150;
+}
+function applyCharacterSlotSizes(){
+  const mainW=characterBoxWidth(main);
+  const buddyW=characterBoxWidth(buddy);
+  setVar('playerW',mainW,'px');
+  if(buddy&&buddy!=='none')setVar('buddyW',buddyW,'px');
+  if($('calPlayerW')){$('calPlayerW').value=mainW;$('calPlayerWVal').textContent=mainW+'px auto';}
+  if($('calBuddyW')){$('calBuddyW').value=buddyW;$('calBuddyWVal').textContent=buddyW+'px auto';}
+  if($('shadow'))$('shadow').style.width=Math.max(80,mainW*.78)+'px';
+  if($('buddyShadow'))$('buddyShadow').style.width=Math.max(58,buddyW*.72)+'px';
+}
+function applySpriteTransform(){
+  applyCharacterSlotSizes();
+  const mainCfg=getCharacterVisualConfig(main);
+  const buddyCfg=getCharacterVisualConfig(buddy);
+  const mainDirection=(Number(mainFlip)||1)*facing;
+  const buddyDirection=(Number(buddyFlip)||1)*facing;
+  if($('sprite'))$('sprite').style.transform=`translateY(${mainCfg.visualY||0}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
+  if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
+  if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
+  if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
+}
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
 let main='ax', buddy='none', team=false, mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0}};
@@ -295,13 +337,10 @@ function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
 function updateSpriteFacing(input=0){
   if(input<0)facing=-1;
   if(input>0)facing=1;
-  const mainScale=(Number(mainFlip)||1)*facing;
-  const buddyScale=(Number(buddyFlip)||1)*facing;
-  if($('sprite'))$('sprite').style.transform='scaleX('+mainScale+')';
-  if($('buddySprite'))$('buddySprite').style.transform='scaleX('+buddyScale+')';
+  applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
-const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:900,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:1100,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
+const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
 function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else setSpriteMissing('buddySprite',false);updateSpriteFacing(0);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
@@ -380,10 +419,24 @@ function collide(o){
   updateHud();
 }
 function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
-function updatePlayer(dt){if(keys.left)player.x-=dt*.18;if(keys.right)player.x+=dt*.18;player.x=Math.max(-60,Math.min(120,player.x));if(!player.grounded){player.jump+=player.vy*dt*.08;player.vy-=dt*.055;if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}}$('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;$('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${player.grounded?1:.72})`;$('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`}
+function updatePlayer(dt){
+  if(keys.left)player.x-=dt*.18;
+  if(keys.right)player.x+=dt*.18;
+  player.x=Math.max(-60,Math.min(120,player.x));
+  if(!player.grounded){
+    player.jump+=player.vy*dt*.08;
+    player.vy-=dt*.055;
+    if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}
+  }
+  $('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;
+  const mainShadow=(getCharacterVisualConfig(main).shadowScale||1)*(player.grounded?1:.72);
+  $('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${mainShadow})`;
+  $('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`;
+}
 function animateOne(elId,char,action,now,state){
   const set=SETS[char]||SETS.ax;
-  const frameMs=set.frameMs||120;
+  const frameMs=(set.actionMs&&set.actionMs[action])||set.frameMs||120;
+  const totalFrames=getActionFrameCount(action);
   if(action==='idle'){
     if(!state.next)state.next=now+2600+Math.random()*2600;
     if(!state.playing){
@@ -395,16 +448,15 @@ function animateOne(elId,char,action,now,state){
       setSpriteFrame(elId,char,'idle',state.frame);
       state.frame++;
       state.last=now;
-      if(state.frame>=10){state.playing=false;state.frame=0;state.next=now+4200+Math.random()*4200;setSpriteFrame(elId,char,'idle',0);}
+      if(state.frame>=totalFrames){state.playing=false;state.frame=0;state.next=now+4200+Math.random()*4200;setSpriteFrame(elId,char,'idle',0);}
     }
     return;
   }
   state.playing=false;state.frame=0;state.next=now+2600+Math.random()*2600;
-  const store=elId==='sprite'?'lastFrame':'lastBuddyFrame';
   if(elId==='sprite'){
-    if(now-lastFrame>frameMs){mainFrame++;lastFrame=now;setSpriteFrame(elId,char,action,mainFrame)}
+    if(now-lastFrame>frameMs){mainFrame=(mainFrame+1)%totalFrames;lastFrame=now;setSpriteFrame(elId,char,action,mainFrame)}
   }else{
-    if(now-lastBuddyFrame>frameMs){buddyFrame++;lastBuddyFrame=now;setSpriteFrame(elId,char,action,buddyFrame)}
+    if(now-lastBuddyFrame>frameMs){buddyFrame=(buddyFrame+1)%totalFrames;lastBuddyFrame=now;setSpriteFrame(elId,char,action,buddyFrame)}
   }
 }
 function animateSprites(now){
@@ -487,6 +539,7 @@ function mergeSpritePatterns(saved){
   if($('axIdleUrl'))fillSpriteUrlInputs();
 }
 function readSettings(){
+  applyCharacterSlotSizes();
   if($('axIdleUrl'))readSpriteUrlInputs();
   const o={};
   Object.entries(settingMap).forEach(([id,[key]])=>o[key]=+$(''+id).value);
@@ -500,14 +553,21 @@ function applySettings(o={}){
   if(o.mainFlip!==undefined){mainFlip=Number(o.mainFlip)||1;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);}
   if(o.buddyFlip!==undefined){buddyFlip=Number(o.buddyFlip)||1;if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip);}
   Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});
-  if(o.main||o.buddy!==undefined)setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'));
+  if(o.main||o.buddy!==undefined){
+    setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'));
+  }else{
+    applyCharacterSlotSizes();
+    updateSpriteFacing(0);
+  }
   exportSettings();
 }
 function exportSettings(){$('settingsBox').value=JSON.stringify(readSettings(),null,2)}
-function persistLocalQuiet(){try{localStorage.setItem(VERSION,JSON.stringify(readSettings()));}catch(e){}}
-function saveLocal(){persistLocalQuiet();$('adminStatus').textContent='Saved in this browser. Layout, layer levels, sprite URLs, character choice and sizes are saved.'}
-function loadLocal(){const d=localStorage.getItem(VERSION);if(!d){$('adminStatus').textContent='No browser save yet.';return}applySettings(JSON.parse(d));$('adminStatus').textContent='Loaded browser save including sprite URLs and layer levels.'}
-function resetCorrect(){Object.keys(localStorage).filter(k=>k.startsWith('ctw_game')||String(k).toLowerCase().includes('team')||String(k).toLowerCase().includes('movement')||String(k).toLowerCase().includes('sprite')).forEach(k=>localStorage.removeItem(k));SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});saveLocal();$('adminStatus').textContent='Reset to safe visual layout.'}
+// EDIT SECTION 23A: BROWSER SAVE DISABLED - shared cloud save is the only saved layout source
+function clearBrowserGameSaves(){try{Object.keys(localStorage).filter(k=>k.startsWith('ctw_game')||String(k).toLowerCase().includes('team')||String(k).toLowerCase().includes('movement')||String(k).toLowerCase().includes('sprite')).forEach(k=>localStorage.removeItem(k));}catch(e){}}
+function persistLocalQuiet(){/* Browser save disabled on purpose. Use shared cloud save only. */}
+function saveLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Save shared level.'}
+function loadLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Load shared level.'}
+function resetCorrect(){clearBrowserGameSaves();SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Character sizes are auto-locked by character, and browser save is disabled.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
@@ -520,27 +580,28 @@ async function saveCloud(){
     $('adminStatus').textContent='Save failed: '+((d&&(d.error||d.message))||('HTTP '+r.status));
   }catch(e){$('adminStatus').textContent='Save failed: '+e.message}
 }
-async function loadCloud(){
+async function loadCloud(auto=false){
   const name=$('levelName').value.trim()||'level_main';
-  $('adminStatus').textContent='Loading shared level...';
+  if(!auto)$('adminStatus').textContent='Loading shared level...';
   try{
     const r=await fetch('/api/levels?name='+encodeURIComponent(name)+'&t='+Date.now(),{cache:'no-store'});
     const d=await r.json();
     const settings=d?.data||d?.settings||d?.pack?.settings||d?.pack?.data||d?.level||null;
-    if(r.ok&&settings){applySettings(settings);persistLocalQuiet();$('adminStatus').textContent='Loaded shared cloud level.';showToast('Shared level loaded.');return}
-    $('adminStatus').textContent='Load failed: '+(d?.error||'No cloud level found.');
-  }catch(e){$('adminStatus').textContent='Load failed: '+e.message}
+    if(r.ok&&settings){applySettings(settings);$('adminStatus').textContent=auto?'Loaded shared cloud level automatically. Browser save is off.':'Loaded shared cloud level.';if(!auto)showToast('Shared level loaded.');return true}
+    if(!auto)$('adminStatus').textContent='Load failed: '+(d?.error||'No cloud level found.');
+    return false;
+  }catch(e){if(!auto)$('adminStatus').textContent='Load failed: '+e.message;return false}
 }
 function syncCharacterFields(){$('mainSelect').value=main;$('buddySelect').value=buddy||'none';if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip||1);if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip||1)}
 function editorRowsFor(layer){return {
-  player:['calPlayerX','calPlayerW','calDrop','calZPlayer'],
-  buddy:['calBuddyX','calBuddyW','calBuddyDrop','calZBuddy'],
+  player:['calPlayerX','calDrop','calZPlayer'],
+  buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
   ground:['calGroundH','calGroundB','calZGround'],
   hills:['calHillH','calHillB','calZHills'],
   platform:['calFloor','calPlatform','calZPlatform'],
   sky:['calZSky'],
   objects:['calTokenLift','calHazardLift','calZObjects']
-}[layer]||['calPlayerX','calPlayerW','calDrop','calZPlayer'];}
+}[layer]||['calPlayerX','calDrop','calZPlayer'];}
 function syncEditorVisibility(layer){
   const b=$('builder'); if(!b)return;
   b.classList.remove('show-player','show-buddy','show-world','show-objects');
@@ -553,7 +614,7 @@ function syncEditorVisibility(layer){
   else if(layer==='objects'){b.classList.add('show-objects');showSection('.section-objects');showSection('.section-layers');}
   else {b.classList.add('show-world');showSection('.section-layers');}
   const layerTitle=document.querySelector('.section-layers h3');
-  if(layerTitle){const names={ground:'Ground settings',hills:'Hills settings',platform:'Floor/platform settings',sky:'Sky layer level',player:'Main character layer level',buddy:'Side character layer level',objects:'Items layer level'};layerTitle.textContent=names[layer]||'Selected settings';}
+  if(layerTitle){const names={ground:'Ground settings',hills:'Hills settings',platform:'Invisible floor line settings',sky:'Sky layer level',player:'Main character layer level',buddy:'Side character layer level',objects:'Items layer level'};layerTitle.textContent=names[layer]||'Selected settings';}
 }
 function focusEditTarget(layer){
   document.body.dataset.editTarget=layer; if($('builder')) $('builder').dataset.target=layer;
@@ -562,7 +623,7 @@ function focusEditTarget(layer){
   document.querySelectorAll('.targetPick').forEach(x=>x.classList.toggle('active',x.dataset.selectTarget===layer));
   const el=document.querySelector('[data-layer="'+layer+'"]'); if(el)el.classList.add('selectedEditTarget');
   if($('editTarget')) $('editTarget').value=layer;
-  const names={player:'main character',buddy:'side character',ground:'ground artwork',hills:'hills layer',platform:'floor/platform',sky:'sky',objects:'items'};
+  const names={player:'main character',buddy:'side character',ground:'ground artwork',hills:'hills layer',platform:'invisible floor line',sky:'sky',objects:'items'};
   $('adminStatus') && ($('adminStatus').textContent='Editing '+(names[layer]||layer)+'. Only these settings are shown. Drag on the game or use the sliders.');
 }
 function openBuilder(){document.body.classList.add('editMode');$('builder').classList.remove('hidden');$('petPanel').classList.add('hidden');paused=true;$('pauseBtn').textContent='Resume';exportSettings();focusEditTarget(($('editTarget')&&$('editTarget').value)||'player')}
@@ -574,9 +635,9 @@ function resumeGame(){if(!playing){$('startScreen').classList.remove('hidden');r
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabBody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('tab-'+b.dataset.tab).classList.add('active')});
 document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focusEditTarget(b.dataset.selectTarget));
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
-Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});persistLocalQuiet();}));
-$('saveLocalBtn').onclick=saveLocal;$('loadLocalBtn').onclick=loadLocal;$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=saveCloud;$('loadCloudBtn').onclick=loadCloud;$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);persistLocalQuiet();}
-$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');persistLocalQuiet();};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,buddy==='none'?'pura':buddy);persistLocalQuiet();};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);persistLocalQuiet();};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);persistLocalQuiet();};
+Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});}));
+$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
+$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,buddy==='none'?'pura':buddy);};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
   $('puraIdleUrl').value=SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=SPRITE_PATTERNS.pura.jump;
@@ -588,8 +649,8 @@ function readSpriteUrlInputs(){
   SPRITE_PATTERNS.owl.idle=$('owlIdleUrl').value.trim()||DEFAULT_PATTERNS.owl.idle;SPRITE_PATTERNS.owl.walk=$('owlWalkUrl').value.trim()||DEFAULT_PATTERNS.owl.walk;SPRITE_PATTERNS.owl.jump=$('owlJumpUrl').value.trim()||DEFAULT_PATTERNS.owl.jump;
 }
 fillSpriteUrlInputs();
-$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'walk',0);$('spriteStatus').textContent='Sprite URL patterns applied and saved. Missing characters will show a yellow warning in edit mode.';persistLocalQuiet();showToast('Sprite URL patterns applied')};
-$('resetSpriteUrlsBtn').onclick=()=>{SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();setPair(main,buddy);$('spriteStatus').textContent='Sprite URL patterns reset to defaults and saved.';persistLocalQuiet();};
+$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'walk',0);$('spriteStatus').textContent='Sprite URL patterns applied and saved. Missing characters will show a yellow warning in edit mode.';showToast('Sprite URL patterns applied')};
+$('resetSpriteUrlsBtn').onclick=()=>{SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();setPair(main,buddy);$('spriteStatus').textContent='Sprite URL patterns reset to defaults and saved.';};
 function pct(v){v=Number(v);if(!Number.isFinite(v))return 0;if(v<=1&&v>0)v*=100;return Math.max(0,Math.min(100,v))}
 function getPetUserId(){return ($('userIdInput')?.value||'').trim()||$('userSelect').value}
 function parseMaybeJson(v){
@@ -730,7 +791,7 @@ async function selectPet(){
 }
 function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange')?.value)||petPlayerW));petFlip=Number($('petFlipSelect')?.value)||petFlip;mainFlip=petFlip;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);if($('calPlayerW'))$('calPlayerW').value=petPlayerW;setVar('playerW',petPlayerW,'px');applySettings({playerW:petPlayerW,main:'pet',buddy:'none',team:false,petPlayerW,petFlip,mainFlip});setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
-$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';persistLocalQuiet();};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);persistLocalQuiet();};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
+$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startAxBtn').onclick=()=>startGame('ax','none');$('startPuraBtn').onclick=()=>startGame('pura','none');$('startOwlBtn').onclick=()=>startGame('owl','none');$('startTeamBtn').onclick=()=>startGame('ax','pura');$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
 let drag=null;
@@ -761,11 +822,11 @@ addEventListener('pointermove',e=>{
   if(drag.layer==='hills'){$('calHillB').value=Math.max(-250,Math.min(600,s.hillsBottom-dy))}
   if(drag.layer==='ground'){$('calGroundB').value=Math.max(-350,Math.min(350,s.groundBottom-dy))}
   if(drag.layer==='platform'){$('calFloor').value=Math.max(70,Math.min(240,s.floorPx-dy));}
-  applySettings({});persistLocalQuiet();
+  applySettings({});
   $('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px';
 });
 addEventListener('pointerup',()=>{drag=null});
-applySettings(JSON.parse(localStorage.getItem(VERSION)||'{}'));if(!localStorage.getItem(VERSION))resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';requestAnimationFrame(loop);
+clearBrowserGameSaves();resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';loadCloud(true);requestAnimationFrame(loop);
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
 </script>
 </body>
