@@ -195,9 +195,9 @@ const ALT_PATTERNS={
     jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`],
-    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`],
-    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`]
+    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
+    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
+    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
@@ -250,6 +250,30 @@ function candidateSpriteUrls(char,action,idx){
   });
   return out.filter(Boolean);
 }
+function spriteFallbackLabel(char){
+  const labels={ax:'AX',pura:'PURA',owl:'OWL',pet:'PET'};
+  return labels[char]||String(char||'SPRITE').toUpperCase();
+}
+function spriteFallbackEmoji(char){
+  const emojis={ax:'🚑',pura:'🐾',owl:'🦉',pet:'🐾'};
+  return emojis[char]||'❔';
+}
+function fallbackSpriteDataUri(char,action){
+  const label=spriteFallbackLabel(char);
+  const emoji=spriteFallbackEmoji(char);
+  const bg=char==='owl'?'#76C7D8':(char==='pura'?'#d282c2':'#F5C542');
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 260"><rect width="220" height="260" rx="44" fill="${bg}" opacity="0.92"/><text x="110" y="105" text-anchor="middle" font-size="70">${emoji}</text><text x="110" y="178" text-anchor="middle" font-size="32" font-family="Arial" font-weight="900" fill="#24152e">${label}</text><text x="110" y="214" text-anchor="middle" font-size="17" font-family="Arial" font-weight="700" fill="#24152e">sprite path missing</text></svg>`;
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+}
+function useFallbackSprite(elId,char,action){
+  const el=$(elId);
+  if(!el)return;
+  el.onerror=null;
+  el.onload=()=>setSpriteMissing(elId,true,`${spriteFallbackLabel(char)} sprite path missing - check ${action} URL`);
+  el.src=fallbackSpriteDataUri(char,action);
+  spriteCurrent[elId]=el.src;
+  setSpriteMissing(elId,true,`${spriteFallbackLabel(char)} sprite path missing - check ${action} URL`);
+}
 function setSpriteImage(elId,url){
   const el=$(elId);
   if(!el||!url||spriteBroken.has(url)||spriteCurrent[elId]===url)return false;
@@ -271,12 +295,10 @@ function setSpriteFrame(elId,char,action,idx){
   if(!el)return;
   function tryNext(){
     if(i>=urls.length){
-      // Do not leave the game invisible. If Pura/Owl/custom sprite paths fail, show Ax as a safe visible fallback.
-      if(char!=='ax'&&char!=='pet'){
-        const fb=candidateSpriteUrls('ax',action,idx).filter(u=>u&&!spriteBroken.has(u));
-        if(fb.length){ urls.push(...fb); return tryNext(); }
-      }
-      setSpriteMissing(elId,true,'Sprite missing - check URL pattern');return;
+      // Do not leave the game invisible. Show a visible placeholder for the selected character
+      // instead of silently falling back to Ax. This makes missing Owl/Pura paths obvious.
+      useFallbackSprite(elId,char,action);
+      return;
     }
     const url=urls[i++];
     if(spriteBroken.has(url)){tryNext();return;}
@@ -342,7 +364,7 @@ function updateSpriteFacing(input=0){
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
 const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
-function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else setSpriteMissing('buddySprite',false);updateSpriteFacing(0);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
+function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}function setPair(m,b){main=m||'ax';buddy=b||'none';team=buddy!=='none';document.body.classList.toggle('teamMode',team);mainFrame=0;buddyFrame=0;resetIdleAnim();spriteCurrent.sprite='';spriteCurrent.buddySprite='';setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);else{setSpriteMissing('buddySprite',false);if($('buddySprite'))$('buddySprite').removeAttribute('src')}updateSpriteFacing(0);showToast(`${SETS[main]?.name||'Pet'} leads${team?' with '+(SETS[buddy]?.name||'Pet'):' solo'}.`);syncCharacterFields()}
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
 function startGame(c,b){closeBuilder();closePetPanel();setPair(c,b);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
@@ -649,7 +671,7 @@ function readSpriteUrlInputs(){
   SPRITE_PATTERNS.owl.idle=$('owlIdleUrl').value.trim()||DEFAULT_PATTERNS.owl.idle;SPRITE_PATTERNS.owl.walk=$('owlWalkUrl').value.trim()||DEFAULT_PATTERNS.owl.walk;SPRITE_PATTERNS.owl.jump=$('owlJumpUrl').value.trim()||DEFAULT_PATTERNS.owl.jump;
 }
 fillSpriteUrlInputs();
-$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'walk',0);$('spriteStatus').textContent='Sprite URL patterns applied and saved. Missing characters will show a yellow warning in edit mode.';showToast('Sprite URL patterns applied')};
+$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();spriteCurrent.sprite='';spriteCurrent.buddySprite='';setSpriteFrame('sprite',main,'idle',0);if(team)setSpriteFrame('buddySprite',buddy,'walk',0);$('spriteStatus').textContent='Sprite URL patterns applied. If Owl/Pura paths are wrong, a visible placeholder appears instead of a blank character.';showToast('Sprite URL patterns applied')};
 $('resetSpriteUrlsBtn').onclick=()=>{SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();setPair(main,buddy);$('spriteStatus').textContent='Sprite URL patterns reset to defaults and saved.';};
 function pct(v){v=Number(v);if(!Number.isFinite(v))return 0;if(v<=1&&v>0)v*=100;return Math.max(0,Math.min(100,v))}
 function getPetUserId(){return ($('userIdInput')?.value||'').trim()||$('userSelect').value}
