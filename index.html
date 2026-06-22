@@ -200,7 +200,7 @@ const spriteBroken=new Set();
 const spriteCurrent={sprite:'',buddySprite:''};
 // EDIT SECTION 17: SPRITE PATHS - ONE PLACE ONLY
 // This is now the single source of truth for character images.
-// No second backup list. No separate alternate list.
+// No DEFAULT_PATTERNS. No ALT_PATTERNS. No hidden backup list.
 // Edit these paths only, then upload index.html and hard refresh.
 // Number rules:
 //   {n}  = 001, 002, 003
@@ -228,6 +228,7 @@ let SPRITE_PATTERNS={
     jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
   }
 };
+
 function fillSpritePattern(pattern,idx,totalFrames=10){
   if(!pattern)return'';
   totalFrames=Math.max(1,Number(totalFrames)||10);
@@ -243,7 +244,8 @@ function fillSpritePattern(pattern,idx,totalFrames=10){
 function spriteUrlFor(char,action,idx){
   if(char==='pet'&&currentPetImage)return currentPetImage;
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
-  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',idx,getActionFrameCount(char,action));
+  const total=getActionFrameCount(char,action);
+  return fillSpritePattern((p&&p[action])||(p&&p.walk)||(p&&p.idle)||'',displayFrameIndex(char,action,idx,total),total);
 }
 function setSpriteMissing(elId,on,msg){
   const el=$(elId); const wrap=el?el.closest('.character'):null;
@@ -263,7 +265,7 @@ function candidateSpriteUrls(char,action,idx){
   const out=[];
   const total=getActionFrameCount(char,action);
   // Single source of truth: only try the exact path for the selected character/action.
-  pushSpriteCandidate(out,p&&p[action],idx,total);
+  pushSpriteCandidate(out,p&&p[action],displayFrameIndex(char,action,idx,total),total);
   return out.filter(Boolean);
 }
 function spriteFallbackLabel(char){
@@ -353,7 +355,7 @@ const SETS={
   ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
   pura:{name:'Pura',frameMs:115,actionMs:{idle:115,walk:100,jump:70}},
   owl:{name:'Owl',frameMs:155,actionMs:{idle:155,walk:130,jump:80}},
-  unicorn:{name:'Unicorn',frameMs:135,actionMs:{idle:135,walk:115,jump:78}},
+  unicorn:{name:'Unicorn',frameMs:125,actionMs:{idle:135,walk:95,jump:78}},
   pet:{name:'Pet',frameMs:120,actionMs:{idle:120,walk:105,jump:75}}
 };
 // EDIT SECTION 18B: CHARACTER-SIZE LOCK + AUTO FRAME COUNT
@@ -367,7 +369,7 @@ const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
-  unicorn:{name:'Unicorn',boxW:150,visualScale:1,visualY:0,shadowScale:.86},
+  unicorn:{name:'Unicorn',boxW:210,visualScale:1.08,visualY:-2,shadowScale:.95,reverseWalk:true},
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
 };
 
@@ -375,6 +377,15 @@ function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${act
 function getActionFrameCount(characterKey,action){
   const key=actionFrameKey(characterKey,action);
   return ACTION_FRAME_CACHE[key]||1; // 1 frame until the quick auto-count finishes
+}
+function displayFrameIndex(characterKey,action,idx,totalFrames){
+  const total=Math.max(1,Number(totalFrames)||1);
+  const clean=((Number(idx)||0)%total+total)%total;
+  const cfg=getCharacterVisualConfig(characterKey);
+  // Unicorn walk art was drawn facing the right way but animated backwards.
+  // This plays walk frames as 10,9,8...1 instead of 1,2,3...10.
+  if(cfg&&cfg.reverseWalk&&action==='walk')return total-1-clean;
+  return clean;
 }
 function fillSpritePatternFrame(pattern,frame){
   if(!pattern)return'';
@@ -470,8 +481,14 @@ function applyCharacterSlotSizes(){
   if($('calBuddyW')){$('calBuddyW').value=buddyW;$('calBuddyWVal').textContent=buddyW+'px auto';}
   if($('shadow'))$('shadow').style.width=Math.max(80,mainW*.78)+'px';
   if($('buddyShadow'))$('buddyShadow').style.width=Math.max(58,buddyW*.72)+'px';
-  if($('teamShadow2'))$('teamShadow2').style.width=Math.max(54,characterBoxWidth((teamExtra&&teamExtra[0])||'owl')*.68)+'px';
-  if($('teamShadow3'))$('teamShadow3').style.width=Math.max(54,characterBoxWidth((teamExtra&&teamExtra[1])||'unicorn')*.68)+'px';
+  const t2Key=(teamExtra&&teamExtra[0])||'owl';
+  const t3Key=(teamExtra&&teamExtra[1])||'unicorn';
+  const t2W=Math.round(Math.max(82,characterBoxWidth(t2Key)*.80));
+  const t3W=Math.round(Math.max(96,characterBoxWidth(t3Key)*.84));
+  if($('teamMate2')){$('teamMate2').style.width=t2W+'px';$('teamMate2').style.height=Math.round(t2W*1.62)+'px';}
+  if($('teamMate3')){$('teamMate3').style.width=t3W+'px';$('teamMate3').style.height=Math.round(t3W*1.62)+'px';}
+  if($('teamShadow2'))$('teamShadow2').style.width=Math.max(54,t2W*.68)+'px';
+  if($('teamShadow3'))$('teamShadow3').style.width=Math.max(54,t3W*.68)+'px';
 }
 
 function applySpriteTransform(){
@@ -513,16 +530,18 @@ function levelPlan(){
   const l=levels[levelIndex];
   if(Array.isArray(l.plan)&&l.plan.length)return l.plan;
   return [
-    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: follow the path and find the clues.`},
-    {at:240,kind:'token',tokenIndex:0},
-    {at:430,kind:'task',data:['🔎','Inspect clue',150,''],message:'Clue checked! Keep moving.'},
-    {at:620,kind:'hazard',hazardIndex:0},
-    {at:850,kind:'token',tokenIndex:1},
-    {at:1080,kind:'hazard',hazardIndex:1},
-    {at:1320,kind:'task',data:['🧰','Fix the Waaambulance part',180,''],message:'Repair job done. Very dramatic.'},
-    {at:1600,kind:'token',tokenIndex:2},
+    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: start the patrol and look for clues.`},
+    {at:230,kind:'token',tokenIndex:0},
+    {at:390,kind:'task',data:['🔎','Inspect the swamp clue',150,''],message:'Clue inspected. The swamp is being suspicious.'},
+    {at:560,kind:'hazard',hazardIndex:0},
+    {at:760,kind:'sign',data:['➡️','Jump warning',0,''],message:'Jump or stomp the bad objects. Do not just walk into drama.'},
+    {at:940,kind:'token',tokenIndex:1},
+    {at:1140,kind:'hazard',hazardIndex:1},
+    {at:1380,kind:'task',data:['🧰','Repair the clue scanner',180,''],message:'Scanner fixed. Very professional.'},
+    {at:1640,kind:'token',tokenIndex:2},
     {at:1880,kind:'hazard',hazardIndex:2},
-    {at:2160,kind:'task',data:['✅','Complete the objective',250,''],message:'Objective complete! Head to the finish.'}
+    {at:2120,kind:'task',data:['✅','Confirm the swamp evidence',250,''],message:'Evidence confirmed. Head for the finish.'},
+    {at:2380,kind:'token',tokenIndex:3}
   ];
 }
 function pickPlannedData(entry){
@@ -718,9 +737,10 @@ function animateOne(elId,char,action,now,state){
   state.playing=false;
   state.next=now+2600+Math.random()*2600;
   if(now-(state.last||0)>frameMs){
-    state.frame=((state.frame||0)+1)%totalFrames;
+    const frame=state.frame||0;
+    setSpriteFrame(elId,char,action,frame);
+    state.frame=(frame+1)%totalFrames;
     state.last=now;
-    setSpriteFrame(elId,char,action,state.frame);
   }
 }
 function animateSprites(now){
