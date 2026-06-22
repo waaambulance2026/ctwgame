@@ -265,7 +265,7 @@ function candidateSpriteUrls(char,action,idx){
   const out=[];
   const total=getActionFrameCount(char,action);
   // Single source of truth: only try the exact path for the selected character/action.
-  pushSpriteCandidate(out,p&&p[action],displayFrameIndex(char,action,idx,total),total);
+  pushSpriteCandidate(out,p&&p[action],idx,total);
   return out.filter(Boolean);
 }
 function spriteFallbackLabel(char){
@@ -315,6 +315,9 @@ function setSpriteFrame(elId,char,action,idx){
   const urls=candidateSpriteUrls(char,action,idx).filter(u=>u&&!spriteBroken.has(u));
   const el=$(elId);
   if(!el)return;
+  el.dataset.action=action||'idle';
+  el.dataset.character=char||'';
+  applySpriteTransform();
   ensureActionFrameCount(char,action);
   if(shouldShowImmediateFallback(char)){
     // Important: keep Owl visible immediately, even while real URLs are being checked.
@@ -369,7 +372,20 @@ const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
-  unicorn:{name:'Unicorn',boxW:210,visualScale:1.08,visualY:-2,shadowScale:.95,reverseWalk:true},
+  unicorn:{
+    name:'Unicorn',
+    boxW:205,
+    visualScale:1.06,
+    visualY:4,
+    shadowScale:.95,
+    reverseWalk:true,
+    // Unicorn action art has different canvas/baseline sizes, so each action gets its own correction.
+    actionVisuals:{
+      idle:{visualScale:1.10,visualY:6},
+      walk:{visualScale:1.24,visualY:34},
+      jump:{visualScale:1.12,visualY:10}
+    }
+  },
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
 };
 
@@ -468,6 +484,11 @@ function ensureActionFrameCount(characterKey,action){
   }
 }
 function getCharacterVisualConfig(characterKey){return CHARACTER_CONFIGS[characterKey]||CHARACTER_CONFIGS.pet}
+function getActionVisualConfig(characterKey,action){
+  const cfg=getCharacterVisualConfig(characterKey);
+  const actionCfg=(cfg.actionVisuals&&cfg.actionVisuals[action])||{};
+  return {...cfg,...actionCfg};
+}
 function characterBoxWidth(characterKey){
   if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
   return getCharacterVisualConfig(characterKey).boxW||150;
@@ -493,14 +514,18 @@ function applyCharacterSlotSizes(){
 
 function applySpriteTransform(){
   applyCharacterSlotSizes();
-  const mainCfg=getCharacterVisualConfig(main);
-  const buddyCfg=getCharacterVisualConfig(buddy);
+  const mainAction=($('sprite')&&$('sprite').dataset.action)||'idle';
+  const buddyAction=($('buddySprite')&&$('buddySprite').dataset.action)||'idle';
+  const t2Action=($('teamSprite2')&&$('teamSprite2').dataset.action)||'idle';
+  const t3Action=($('teamSprite3')&&$('teamSprite3').dataset.action)||'idle';
+  const mainCfg=getActionVisualConfig(main,mainAction);
+  const buddyCfg=getActionVisualConfig(buddy,buddyAction);
   const mainDirection=(Number(mainFlip)||1)*facing;
   const buddyDirection=(Number(buddyFlip)||1)*facing;
   if($('sprite'))$('sprite').style.transform=`translateY(${mainCfg.visualY||0}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
   if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
   const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
-  const t2Cfg=getCharacterVisualConfig(t2), t3Cfg=getCharacterVisualConfig(t3);
+  const t2Cfg=getActionVisualConfig(t2,t2Action), t3Cfg=getActionVisualConfig(t3,t3Action);
   if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.86})`;
   if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.86})`;
   if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
