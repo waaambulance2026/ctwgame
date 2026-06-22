@@ -148,7 +148,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from index.html, so old cloud saves cannot override Owl/Ax paths.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use index.html defaults. Owl fallback-loop fix applied.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Owl fallback-loop fix applied.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -198,8 +198,15 @@ Object.keys(localStorage).forEach(k=>{
    This version uses ONE pattern per character/action and remembers failed URLs so the browser is not hammered. */
 const spriteBroken=new Set();
 const spriteCurrent={sprite:'',buddySprite:''};
-// EDIT SECTION 17: DEFAULT SPRITE PATHS - Ax, Pura and Owl animation file patterns
-const DEFAULT_PATTERNS={
+// EDIT SECTION 17: SPRITE PATHS - ONE PLACE ONLY
+// This is now the single source of truth for character images.
+// No second backup list. No separate alternate list.
+// Edit these paths only, then upload index.html and hard refresh.
+// Number rules:
+//   {n}  = 001, 002, 003
+//   {nn} = 01, 02, 03
+//   {i}  = 1, 2, 3
+let SPRITE_PATTERNS={
   ax:{
     idle:`${CLOUD}/v1782126921/ax_idle_{n}.png`,
     walk:`${CLOUD}/v1782126921/ax_walk_{n}.png`,
@@ -211,45 +218,18 @@ const DEFAULT_PATTERNS={
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
-    // OWL FIX: Owl idle has its own new Cloudinary version. Walk stays on the version you reuploaded.
     idle:`${CLOUD}/v1782133620/owl_idle_{n}.png`,
     walk:`${CLOUD}/v1782132160/owl_walk_{n}.png`,
     jump:`${CLOUD}/v1782132160/owl_jump_{n}.png`
   },
   unicorn:{
-    // UNICORN: upload files as unicorn_idle_001.png, unicorn_walk_001.png, unicorn_jump_001.png
+    // Put the fixed Unicorn Cloudinary version here when you have it.
     idle:`${CLOUD}/unicorn_idle_{n}.png`,
     walk:`${CLOUD}/unicorn_walk_{n}.png`,
     jump:`${CLOUD}/unicorn_jump_{n}.png`
   }
 };
-// Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
-// EDIT SECTION 18: CONTROLLED SPRITE FALLBACK PATHS - avoids endless missing-image spam
-const ALT_PATTERNS={
-  ax:{
-    idle:[`${CLOUD}/ax_idle_{n}.png`,`${CLOUD}/characters/Ax/idle/ax_idle_{n}.png`,`${CLOUD}/characters/ax/idle/ax_idle_{n}.png`,`${CLOUD}/Ax/Idle/ax_idle_{n}.png`],
-    walk:[`${CLOUD}/ax_walk_{n}.png`,`${CLOUD}/characters/Ax/walk/ax_walk_{n}.png`,`${CLOUD}/characters/ax/walk/ax_walk_{n}.png`,`${CLOUD}/Ax/Walk/ax_walk_{n}.png`],
-    jump:[`${CLOUD}/ax_jump_{n}.png`,`${CLOUD}/characters/Ax/jump/ax_jump_{n}.png`,`${CLOUD}/characters/ax/jump/ax_jump_{n}.png`,`${CLOUD}/Ax/Jump/ax_jump_{n}.png`]
-  },
-  pura:{
-    idle:[`${CLOUD}/pura_idle_{n}.png`,`${CLOUD}/v1781797065/pura_idle_{n}.png`,`${CLOUD}/characters/Pura/idle/pura_idle_{n}.png`,`${CLOUD}/characters/pura/idle/pura_idle_{n}.png`,`${CLOUD}/Pura/Idle/pura_idle_{n}.png`,`${CLOUD}/Pura/idle/pura_idle_{n}.png`],
-    walk:[`${CLOUD}/pura_walk_{n}.png`,`${CLOUD}/v1781797065/pura_walk_{n}.png`,`${CLOUD}/characters/Pura/walk/pura_walk_{n}.png`,`${CLOUD}/characters/pura/walk/pura_walk_{n}.png`,`${CLOUD}/Pura/Walk/pura_walk_{n}.png`,`${CLOUD}/Pura/walk/pura_walk_{n}.png`],
-    jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
-  },
-  owl:{
-    // OWL FIX: try the newest idle version first. Direct walk_003 remains as a visible safety fallback.
-    idle:[`${CLOUD}/v1782133620/owl_idle_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/owl_idle_{i}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`],
-    walk:[`${CLOUD}/v1782132160/owl_walk_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/owl_walk{nn}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`],
-    jump:[`${CLOUD}/v1782132160/owl_jump_{n}.png`,`${CLOUD}/v1782132160/owl_walk_003.png`,`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/owl_jump_{i}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`]
-  }
-};
 
-ALT_PATTERNS.unicorn={
-  idle:[`${CLOUD}/unicorn_idle_{n}.png`,`${CLOUD}/unicorn_idle_{i}.png`,`${CLOUD}/characters/Unicorn/idle/unicorn_idle_{n}.png`,`${CLOUD}/characters/unicorn/idle/unicorn_idle_{n}.png`,`${CLOUD}/Unicorn/Idle/unicorn_idle_{n}.png`,`${CLOUD}/Unicorn/idle/unicorn_idle_{n}.png`],
-  walk:[`${CLOUD}/unicorn_walk_{n}.png`,`${CLOUD}/unicorn_walk_{i}.png`,`${CLOUD}/characters/Unicorn/walk/unicorn_walk_{n}.png`,`${CLOUD}/characters/unicorn/walk/unicorn_walk_{n}.png`,`${CLOUD}/Unicorn/Walk/unicorn_walk_{n}.png`,`${CLOUD}/Unicorn/walk/unicorn_walk_{n}.png`],
-  jump:[`${CLOUD}/unicorn_jump_{n}.png`,`${CLOUD}/unicorn_jump_{i}.png`,`${CLOUD}/characters/Unicorn/jump/unicorn_jump_{n}.png`,`${CLOUD}/characters/unicorn/jump/unicorn_jump_{n}.png`,`${CLOUD}/Unicorn/Jump/unicorn_jump_{n}.png`,`${CLOUD}/Unicorn/jump/unicorn_jump_{n}.png`]
-};
-let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
 function fillSpritePattern(pattern,idx,totalFrames=10){
   if(!pattern)return'';
   totalFrames=Math.max(1,Number(totalFrames)||10);
@@ -277,34 +257,15 @@ function pushSpriteCandidate(list,pattern,idx,totalFrames=10){
   if(!pattern)return;
   const raw=String(pattern);
   const add=u=>{ if(u&&!list.includes(u))list.push(u); };
-  const frame=((idx%(Math.max(1,Number(totalFrames)||10)))+1);
   add(fillSpritePattern(raw,idx,totalFrames));
-  // Auto-try all common numbering styles: 001, 01 and 1. This fixes Owl files like owl_idle_1.png.
-  if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
-    add(raw.replaceAll('{n}',pad2(frame)));
-    add(raw.replaceAll('{n}',String(frame)));
-  }
-  if(raw.includes('{i}'))add(raw.replaceAll('{i}',String(frame)));
-  if(raw.includes('{raw}'))add(raw.replaceAll('{raw}',String(frame)));
-  // If the extension was wrong in the saved URL, try common image extensions without creating a huge 404 storm.
-  const expanded=[...list];
-  for(const u of expanded.slice(-3)){
-    if(/\.png($|\?)/i.test(u)){add(u.replace(/\.png($|\?)/i,'.webp$1'));add(u.replace(/\.png($|\?)/i,'.jpg$1'));}
-    if(/\.webp($|\?)/i.test(u)){add(u.replace(/\.webp($|\?)/i,'.png$1'));}
-  }
 }
 function candidateSpriteUrls(char,action,idx){
   if(char==='pet'&&currentPetImage)return [currentPetImage];
   const p=SPRITE_PATTERNS[char]||SPRITE_PATTERNS.ax;
-  const alt=ALT_PATTERNS[char]||{};
-  const actions=[];
-  [action,'walk','idle','jump'].forEach(a=>{if(a&&!actions.includes(a))actions.push(a)});
   const out=[];
-  actions.forEach(a=>{
-    const total=getActionFrameCount(char,a);
-    pushSpriteCandidate(out,p&&p[a],idx,total);
-    (alt[a]||[]).forEach(pattern=>pushSpriteCandidate(out,pattern,idx,total));
-  });
+  const total=getActionFrameCount(char,action);
+  // Single source of truth: only try the exact path for the selected character/action.
+  pushSpriteCandidate(out,p&&p[action],idx,total);
   return out.filter(Boolean);
 }
 function spriteFallbackLabel(char){
@@ -428,16 +389,8 @@ function fillSpritePatternFrame(pattern,frame){
 }
 function frameUrlNumberVariants(pattern,frame){
   if(!pattern)return [];
-  const raw=String(pattern);
-  const out=[fillSpritePatternFrame(raw,frame)];
-  // When a pattern uses plain {n}, also test 01 and 1 because Cloudinary uploads may not be padded.
-  if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
-    out.push(raw.replaceAll('{n}',pad2(frame)));
-    out.push(raw.replaceAll('{n}',String(frame)));
-  }
-  if(raw.includes('{i}'))out.push(raw.replaceAll('{i}',String(frame)));
-  if(raw.includes('{raw}'))out.push(raw.replaceAll('{raw}',String(frame)));
-  return [...new Set(out)];
+  // No number-format guessing. Use {n}, {nn}, or {i} correctly in SPRITE_PATTERNS.
+  return [fillSpritePatternFrame(pattern,frame)];
 }
 function imageLoads(url,timeout=1200){
   return new Promise(resolve=>{
@@ -452,17 +405,13 @@ function imageLoads(url,timeout=1200){
   });
 }
 function patternVariants(pattern){
-  if(!pattern)return [];
-  const out=[pattern];
-  if(/\.png($|\?)/i.test(pattern)){out.push(pattern.replace(/\.png($|\?)/i,'.webp$1'));out.push(pattern.replace(/\.png($|\?)/i,'.jpg$1'));}
-  if(/\.webp($|\?)/i.test(pattern))out.push(pattern.replace(/\.webp($|\?)/i,'.png$1'));
-  return [...new Set(out)];
+  // No extension guessing. The URL in SPRITE_PATTERNS must be the real file path.
+  return pattern?[pattern]:[];
 }
 function patternsForAction(characterKey,action){
   if(characterKey==='pet')return [];
   const p=SPRITE_PATTERNS[characterKey]||SPRITE_PATTERNS.ax||{};
-  const alt=ALT_PATTERNS[characterKey]||{};
-  return [...new Set([p[action],...(alt[action]||[])].filter(Boolean).flatMap(patternVariants))];
+  return [...new Set([p[action]].filter(Boolean).flatMap(patternVariants))];
 }
 async function countFramesForPattern(pattern){
   let count=0, misses=0;
@@ -843,7 +792,7 @@ function loop(now=0){
 }
 // EDIT SECTION 23: BUILDER SETTINGS, SAVE/LOAD, CHARACTER CONTROLS AND PETBOT
 const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZObjects:['zObjects','']};
-function clonePatterns(){return JSON.parse(JSON.stringify(SPRITE_PATTERNS||DEFAULT_PATTERNS))}
+function clonePatterns(){return JSON.parse(JSON.stringify(SPRITE_PATTERNS))}
 function safeSpritePatternValue(v){
   v=String(v||'').trim();
   if(!v)return '';
@@ -852,16 +801,8 @@ function safeSpritePatternValue(v){
   return v;
 }
 function mergeSpritePatterns(saved){
-  SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
-  if(saved&&typeof saved==='object'){
-    Object.keys(saved).forEach(ch=>{
-      SPRITE_PATTERNS[ch]=SPRITE_PATTERNS[ch]||{};
-      Object.keys(saved[ch]||{}).forEach(action=>{
-        const clean=safeSpritePatternValue(saved[ch][action]);
-        if(clean)SPRITE_PATTERNS[ch][action]=clean;
-      });
-    });
-  }
+  // Sprite paths are no longer loaded from shared/cloud saves.
+  // Edit SPRITE_PATTERNS in EDIT SECTION 17 only.
   spriteBroken.clear();
   if($('axIdleUrl'))fillSpriteUrlInputs();
 }
@@ -874,9 +815,9 @@ function readSettings(){
   return o;
 }
 function applySettings(o={}){
-  // Sprite URL patterns now come from index.html only.
+  // Sprite URL patterns now come from the single SPRITE_PATTERNS block in index.html only.
   // Do NOT load old shared spritePatterns from Cloudflare, because old saves can keep broken Owl/Ax paths alive.
-  // Use EDIT SECTION 17 in this file as the source of truth for sprite folders/names.
+  // Use only EDIT SECTION 17 / SPRITE_PATTERNS as the source of truth for sprite folders/names.
   if(false && o.spritePatterns)mergeSpritePatterns(o.spritePatterns);
   if(Array.isArray(o.teamExtra)&&o.teamExtra.length>=2)teamExtra=[o.teamExtra[0]||'owl',o.teamExtra[1]||'unicorn'];
   if(o.petPlayerW!==undefined){petPlayerW=Number(o.petPlayerW)||petPlayerW;if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}}
@@ -898,7 +839,7 @@ function clearBrowserGameSaves(){try{Object.keys(localStorage).filter(k=>k.start
 function persistLocalQuiet(){/* Browser save disabled on purpose. Use shared cloud save only. */}
 function saveLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Save shared level.'}
 function loadLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Load shared level.'}
-function resetCorrect(){clearBrowserGameSaves();SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['owl','unicorn'];setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Character sizes are auto-locked by character, and browser save is disabled.'}
+function resetCorrect(){clearBrowserGameSaves();spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['owl','unicorn'];setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Sprite paths stay exactly as written in EDIT SECTION 17.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
@@ -977,15 +918,16 @@ function fillSpriteUrlInputs(){
 }
 
 function readSpriteUrlInputs(){
-  SPRITE_PATTERNS.ax.idle=$('axIdleUrl').value.trim()||DEFAULT_PATTERNS.ax.idle;SPRITE_PATTERNS.ax.walk=$('axWalkUrl').value.trim()||DEFAULT_PATTERNS.ax.walk;SPRITE_PATTERNS.ax.jump=$('axJumpUrl').value.trim()||DEFAULT_PATTERNS.ax.jump;
-  SPRITE_PATTERNS.pura.idle=$('puraIdleUrl').value.trim()||DEFAULT_PATTERNS.pura.idle;SPRITE_PATTERNS.pura.walk=$('puraWalkUrl').value.trim()||DEFAULT_PATTERNS.pura.walk;SPRITE_PATTERNS.pura.jump=$('puraJumpUrl').value.trim()||DEFAULT_PATTERNS.pura.jump;
-  SPRITE_PATTERNS.owl.idle=$('owlIdleUrl').value.trim()||DEFAULT_PATTERNS.owl.idle;SPRITE_PATTERNS.owl.walk=$('owlWalkUrl').value.trim()||DEFAULT_PATTERNS.owl.walk;SPRITE_PATTERNS.owl.jump=$('owlJumpUrl').value.trim()||DEFAULT_PATTERNS.owl.jump;
-  SPRITE_PATTERNS.unicorn.idle=$('unicornIdleUrl').value.trim()||DEFAULT_PATTERNS.unicorn.idle;SPRITE_PATTERNS.unicorn.walk=$('unicornWalkUrl').value.trim()||DEFAULT_PATTERNS.unicorn.walk;SPRITE_PATTERNS.unicorn.jump=$('unicornJumpUrl').value.trim()||DEFAULT_PATTERNS.unicorn.jump;
+  // The Builder only edits the live page while you test. The real saved source is EDIT SECTION 17 in index.html.
+  SPRITE_PATTERNS.ax.idle=$('axIdleUrl').value.trim()||SPRITE_PATTERNS.ax.idle;SPRITE_PATTERNS.ax.walk=$('axWalkUrl').value.trim()||SPRITE_PATTERNS.ax.walk;SPRITE_PATTERNS.ax.jump=$('axJumpUrl').value.trim()||SPRITE_PATTERNS.ax.jump;
+  SPRITE_PATTERNS.pura.idle=$('puraIdleUrl').value.trim()||SPRITE_PATTERNS.pura.idle;SPRITE_PATTERNS.pura.walk=$('puraWalkUrl').value.trim()||SPRITE_PATTERNS.pura.walk;SPRITE_PATTERNS.pura.jump=$('puraJumpUrl').value.trim()||SPRITE_PATTERNS.pura.jump;
+  SPRITE_PATTERNS.owl.idle=$('owlIdleUrl').value.trim()||SPRITE_PATTERNS.owl.idle;SPRITE_PATTERNS.owl.walk=$('owlWalkUrl').value.trim()||SPRITE_PATTERNS.owl.walk;SPRITE_PATTERNS.owl.jump=$('owlJumpUrl').value.trim()||SPRITE_PATTERNS.owl.jump;
+  SPRITE_PATTERNS.unicorn.idle=$('unicornIdleUrl').value.trim()||SPRITE_PATTERNS.unicorn.idle;SPRITE_PATTERNS.unicorn.walk=$('unicornWalkUrl').value.trim()||SPRITE_PATTERNS.unicorn.walk;SPRITE_PATTERNS.unicorn.jump=$('unicornJumpUrl').value.trim()||SPRITE_PATTERNS.unicorn.jump;
 }
 
 fillSpriteUrlInputs();
-$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setSpriteFrame('sprite',main,'idle',0);if(team){setSpriteFrame('buddySprite',buddy,'walk',0);setSpriteFrame('teamSprite2',teamExtra[0],'walk',0);setSpriteFrame('teamSprite3',teamExtra[1],'walk',0);}$('spriteStatus').textContent='Sprite URL patterns applied. If Owl/Pura paths are wrong, a visible placeholder appears instead of a blank character.';showToast('Sprite URL patterns applied')};
-$('resetSpriteUrlsBtn').onclick=()=>{SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();setPair(main,buddy);$('spriteStatus').textContent='Sprite URL patterns reset to defaults and saved.';};
+$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setSpriteFrame('sprite',main,'idle',0);if(team){setSpriteFrame('buddySprite',buddy,'walk',0);setSpriteFrame('teamSprite2',teamExtra[0],'walk',0);setSpriteFrame('teamSprite3',teamExtra[1],'walk',0);}$('spriteStatus').textContent='Sprite URL patterns applied for this page. Permanent paths are edited in the single SPRITE_PATTERNS block.';showToast('Sprite URL patterns applied')};
+$('resetSpriteUrlsBtn').onclick=()=>{spriteBroken.clear();fillSpriteUrlInputs();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setPair(main,buddy,teamExtra[0],teamExtra[1]);$('spriteStatus').textContent='Sprite cache cleared. To change permanent sprite paths, edit the single SPRITE_PATTERNS block in EDIT SECTION 17, upload, then Ctrl+F5.';};
 function pct(v){v=Number(v);if(!Number.isFinite(v))return 0;if(v<=1&&v>0)v*=100;return Math.max(0,Math.min(100,v))}
 function getPetUserId(){return ($('userIdInput')?.value||'').trim()||$('userSelect').value}
 function parseMaybeJson(v){
