@@ -865,7 +865,7 @@ function animateSprites(now){
   // Followers walk during active quest movement so Pura/Owl/Unicorn do not sit idle behind Ax.
   const inputMoving=movementInput()!==0;
   const questMoving=playing&&!paused&&!ended;
-  const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
+  const mainAct=player.grounded?(keys.left||keys.right?'walk':'idle'):'jump';
   animateOne('sprite',main,mainAct,now,idleAnim.sprite);
   if(team){
     const followerMoving=questMoving||inputMoving;
