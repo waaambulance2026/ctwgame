@@ -1,17 +1,45 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Ax + Pura Waaambulance Quests</title>
-<!-- Level 1 object upgrade: image items, vanish-on-collect, Mario-style stomp hazards, level-building checklist support. -->
+<!DOCTYPE html>
 <!-- ============================================================
+WAAAMBULANCE GAME - CLEAN HELPFUL INDEX.HTML
+
+This file keeps the latest working fixes:
+- Team picker: player can choose 1 to 4 characters.
+- Pura walk: 4 frame walk cycle.
+- Unicorn walk: 4 frame walk cycle with per-frame baseline fixes.
+- Text pop-ups: shown at the top under the HUD.
+- Ax buddy/team slot: extra ground offset so Ax does not float.
+
+SAFE SEARCH WORDS:
+1. MASTER SIZING VARIABLES        = main CSS layout numbers
+2. START MENU TEAM PICKER         = Solo / Team character choices
+3. SPRITE PATHS                   = Cloudinary sprite folders
+4. ACTION_FRAME_OVERRIDES         = force 4-frame walks
+5. CHARACTER_CONFIGS              = size, scale, up/down baseline
+6. applySpriteTransform           = applies size/flip/up-down to images
+7. animateSprites                 = chooses idle/walk/jump
+8. LEVEL PLAN                     = signs, clues, tasks, hazards, finish gate
+9. CLOUD SAVE                     = shared save/load
+
+DO NOT EDIT unless you are deliberately changing game logic:
+- collision rectangles
+- asset loading fallback functions
+- Cloudflare save/load functions
+============================================================ -->
+<html lang="en">
+ <head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+  <title>
+   Ax + Pura Waaambulance Quests
+  </title>
+  <!-- Level 1 object upgrade: image items, vanish-on-collect, Mario-style stomp hazards, level-building checklist support. -->
+  <!-- ============================================================
 EDIT SECTION 02: CSS STARTS HERE
 This section controls colours, sizes, layers, menus and mobile layout.
 Use the document guide beside this file. Search EDIT SECTION to jump around.
 ============================================================ -->
-<style>
-/* EDIT SECTION 03: MASTER SIZING VARIABLES - easiest values to change safely */
+  <style>
+   /* EDIT SECTION 03: MASTER SIZING VARIABLES - easiest values to change safely */
 :root{
   --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
   --floorPx:116px; --platformH:48px;
@@ -21,51 +49,412 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
   --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
   --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:30; --zPlayer:30; --zObjects:50;
 }
+
 /* EDIT SECTION 04: PAGE RESET, GAME CANVAS, SKY, HILLS, GROUND, FLOOR AND HUD */
-*{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
+*{box-sizing:border-box}
+
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif}
+
+button,input,select,textarea{font-family:inherit}
+
+button{cursor:pointer}
+
 #game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;background:#79d9ff}
-.layer{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:var(--zSky);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');background-size:cover;background-position:center var(--skyY);background-repeat:no-repeat}.hills{z-index:var(--zHills);height:var(--hillsH);bottom:var(--hillsBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.groundDecor{z-index:var(--zGround);height:var(--groundH);bottom:var(--groundBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.underFloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--floorPx) - var(--platformH));z-index:2;background:#204884;pointer-events:none}.platform{position:absolute;left:0;right:0;bottom:calc(var(--floorPx) - var(--platformH));height:var(--platformH);z-index:var(--zPlatform);pointer-events:none;background:linear-gradient(to bottom,rgba(255,255,255,.92) 0 6px,rgba(210,130,194,1) 6px 22px,rgba(118,199,216,1) 22px 28px,rgba(32,72,132,1) 28px 100%);box-shadow:0 -6px 0 rgba(255,255,255,.16) inset,0 -18px 45px rgba(0,0,0,.14) inset}
-body.night #game{background:#12113b} body.night .sky{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png')} body.night .hills{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png');filter:brightness(.9) saturate(1.1)} body.night .groundDecor{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png');filter:brightness(.9) saturate(1.1)} body.night .platform{background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 6px,rgba(168,88,190,1) 6px 22px,rgba(92,95,189,1) 22px 28px,rgba(22,42,95,1) 28px 100%)} body.night .underFloor{background:#14275d}
-.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
+
+.layer{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:repeat-x}
+
+.sky{inset:0;z-index:var(--zSky);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');background-size:cover;background-position:center var(--skyY);background-repeat:no-repeat}
+
+.hills{z-index:var(--zHills);height:var(--hillsH);bottom:var(--hillsBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}
+
+.groundDecor{z-index:var(--zGround);height:var(--groundH);bottom:var(--groundBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}
+
+.underFloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--floorPx) - var(--platformH));z-index:2;background:#204884;pointer-events:none}
+
+.platform{position:absolute;left:0;right:0;bottom:calc(var(--floorPx) - var(--platformH));height:var(--platformH);z-index:var(--zPlatform);pointer-events:none;background:linear-gradient(to bottom,rgba(255,255,255,.92) 0 6px,rgba(210,130,194,1) 6px 22px,rgba(118,199,216,1) 22px 28px,rgba(32,72,132,1) 28px 100%);box-shadow:0 -6px 0 rgba(255,255,255,.16) inset,0 -18px 45px rgba(0,0,0,.14) inset}
+
+body.night #game{background:#12113b}
+
+body.night .sky{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png')}
+
+body.night .hills{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_hills.png');filter:brightness(.9) saturate(1.1)}
+
+body.night .groundDecor{background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/night_ground.png');filter:brightness(.9) saturate(1.1)}
+
+body.night .platform{background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 6px,rgba(168,88,190,1) 6px 22px,rgba(92,95,189,1) 22px 28px,rgba(22,42,95,1) 28px 100%)}
+
+body.night .underFloor{background:#14275d}
+
+.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}
+
+.title{display:flex;flex-direction:column;gap:1px;min-width:250px}
+
+.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}
+
+.title span{font-size:12px;opacity:.82}
+
+.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}
+
+.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}
+
+.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}
+
+.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}
+
+.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}
+
+.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}
+
+.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
+
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
-.character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
-#worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
+.character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}
+
+.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}
+
+.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}
+
+body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}
+
+#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}
+
+#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}
+
+body.teamMode #buddy{display:flex}
+
+#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}
+
+#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}
+
+#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}
+
+body.teamMode #buddyShadow{display:block}
+
+#worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}
+
+.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}
+
+.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}
+
+.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}
+
+.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}
+
+.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}
+
+.obj.hasImage{background:rgba(255,255,255,.66)}
+
+.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}
+
+.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}
+
+.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}
+
+.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}
+
+.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}
+
+.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
+
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
-.toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
-.builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
+/* TOP TEXT POP-UP: item/clue/task messages appear under the HUD, not at the bottom. */
+.toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}
+
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}
+
+.instructions h2{font-size:17px;margin:0 0 5px}
+
+.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}
+
+.instructions.hidden{display:none}
+
+.builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}
+
+.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}
+
+.builder.hidden,.petPanel.hidden{display:none}
+
+.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}
+
+.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}
+
+.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}
+
+.petPanel input,.petPanel select{border:1px solid #76C7D8}
+
+.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}
+
+.calRow input{width:100%}
+
+.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+
+.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}
+
+.calButtons .good,.petPanel .good{background:#22c55e;color:white}
+
+.calButtons .warn,.petPanel .warn{background:#F5C542}
+
+.calButtons .bad{background:#e11d48;color:white}
+
+textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}
+
+body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}
+
+body.editMode .editableTarget{pointer-events:auto!important}
+
+body.editMode .character{pointer-events:auto!important}
+
+body.editMode .platform{pointer-events:auto!important}
+
+body.editMode .layer{pointer-events:auto!important}
+
+body.editMode #game{cursor:move}
+
+.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}
+
+.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}
+
+body.editMode .dragHint{display:block}
+
+.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+
+.quickTabs button.active{background:#76C7D8;color:#102033}
+
+.tabBody{display:none}
+
+.tabBody.active{display:block}
+
+.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}
+
+.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}
+
+.petPreview img{max-width:100%;max-height:100%;object-fit:contain}
+
+.petPreview.empty{color:#594164}
 
 /* Tidy editor slide-out + robust PetBot loading */
 .hudMenu{background:linear-gradient(180deg,#fef7ff,#d282c2);color:#24152e}
-.panelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}.panelHead h2{margin:0}.miniClose{border:0;border-radius:999px;padding:8px 10px;font-weight:900;background:#F5C542;color:#21142d}.builder{width:min(520px,calc(100vw - 28px))}.builderHelp{background:rgba(118,199,216,.13);border:1px solid rgba(118,199,216,.45);border-radius:14px;padding:9px 10px;margin:8px 0 10px;font-size:12px;line-height:1.35}.editPickGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px}.targetPick{border:0;border-radius:14px;padding:10px;font-weight:900;background:rgba(255,255,255,.87);color:#21142d}.targetPick.active{background:#76C7D8;color:#102033;outline:3px solid rgba(245,197,66,.45)}.editSection{border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px;margin:9px 0;background:rgba(255,255,255,.06)}.editSection h3{margin:0 0 8px;font-size:13px;color:#F5C542}.selectedEditTarget{outline:4px dashed rgba(118,199,216,.95)!important;outline-offset:8px!important}.tabHint{font-size:12px;opacity:.84;margin:0 0 8px}.menuModal .choiceRow button.secondary{background:#76C7D8}.menuModal .choiceRow button.dark{background:#2a1535;color:#fff}.menuModal .choiceRow button.good{background:#22c55e;color:#fff}
-.petPanel{width:min(480px,calc(100vw - 28px));padding:14px;background:linear-gradient(180deg,#fff7fd,#ffe7f7);border:3px solid #d282c2;color:#24152e}.tamaShell{border-radius:28px;padding:14px;background:linear-gradient(180deg,#ffcfef,#d282c2);box-shadow:inset 0 -12px 0 rgba(0,0,0,.08),0 16px 34px rgba(0,0,0,.28)}.tamaTop{display:flex;justify-content:space-between;align-items:center;gap:8px}.tamaTop h2{font-size:20px}.tamaScreen{min-height:220px;margin:12px 0;padding:12px;border-radius:20px;background:linear-gradient(180deg,#eafdff,#ffffff);border:4px solid #76C7D8;display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:center}.petPreview{height:170px;margin:0;border:2px dashed #d282c2;background:#fff;border-radius:18px}.petInfo h3{margin:0 0 2px;font-size:22px;color:#24152e}.petInfo p{margin:0 0 8px}.petBadges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}.petBadge{display:inline-flex;border-radius:999px;padding:5px 8px;background:#f1d7ec;font-size:11px;font-weight:900}.petBadge.green{background:#bbf7d0}.petBadge.blue{background:#bfedf6}.petStats label{display:block;margin:7px 0 3px;font-size:12px;font-weight:900}.bar{height:13px;border-radius:999px;background:#ead7e9;overflow:hidden}.bar span{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#76C7D8,#22c55e)}.tamaControls{display:grid;grid-template-columns:1fr 1fr;gap:8px}.tamaControls button{border:0;border-radius:999px;padding:10px;font-weight:900;background:#fff;color:#24152e}.tamaControls .good{background:#22c55e;color:#fff}.tamaControls .warn{background:#F5C542}.petFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}.petFormGrid label{font-size:12px;font-weight:900}.petFormGrid input,.petFormGrid select{margin-top:3px}.petStatusLine{margin-top:8px;background:rgba(255,255,255,.62);border:1px solid rgba(118,199,216,.55);color:#24152e}.petNoPets{font-weight:900;color:#8a315f}
+
+.panelHead{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px}
+
+.panelHead h2{margin:0}
+
+.miniClose{border:0;border-radius:999px;padding:8px 10px;font-weight:900;background:#F5C542;color:#21142d}
+
+.builder{width:min(520px,calc(100vw - 28px))}
+
+.builderHelp{background:rgba(118,199,216,.13);border:1px solid rgba(118,199,216,.45);border-radius:14px;padding:9px 10px;margin:8px 0 10px;font-size:12px;line-height:1.35}
+
+.editPickGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0 10px}
+
+.targetPick{border:0;border-radius:14px;padding:10px;font-weight:900;background:rgba(255,255,255,.87);color:#21142d}
+
+.targetPick.active{background:#76C7D8;color:#102033;outline:3px solid rgba(245,197,66,.45)}
+
+.editSection{border:1px solid rgba(255,255,255,.14);border-radius:14px;padding:10px;margin:9px 0;background:rgba(255,255,255,.06)}
+
+.editSection h3{margin:0 0 8px;font-size:13px;color:#F5C542}
+
+.selectedEditTarget{outline:4px dashed rgba(118,199,216,.95)!important;outline-offset:8px!important}
+
+.tabHint{font-size:12px;opacity:.84;margin:0 0 8px}
+
+.menuModal .choiceRow button.secondary{background:#76C7D8}
+
+.menuModal .choiceRow button.dark{background:#2a1535;color:#fff}
+
+.menuModal .choiceRow button.good{background:#22c55e;color:#fff}
+
+.petPanel{width:min(480px,calc(100vw - 28px));padding:14px;background:linear-gradient(180deg,#fff7fd,#ffe7f7);border:3px solid #d282c2;color:#24152e}
+
+.tamaShell{border-radius:28px;padding:14px;background:linear-gradient(180deg,#ffcfef,#d282c2);box-shadow:inset 0 -12px 0 rgba(0,0,0,.08),0 16px 34px rgba(0,0,0,.28)}
+
+.tamaTop{display:flex;justify-content:space-between;align-items:center;gap:8px}
+
+.tamaTop h2{font-size:20px}
+
+.tamaScreen{min-height:220px;margin:12px 0;padding:12px;border-radius:20px;background:linear-gradient(180deg,#eafdff,#ffffff);border:4px solid #76C7D8;display:grid;grid-template-columns:170px 1fr;gap:12px;align-items:center}
+
+.petPreview{height:170px;margin:0;border:2px dashed #d282c2;background:#fff;border-radius:18px}
+
+.petInfo h3{margin:0 0 2px;font-size:22px;color:#24152e}
+
+.petInfo p{margin:0 0 8px}
+
+.petBadges{display:flex;gap:6px;flex-wrap:wrap;margin:6px 0}
+
+.petBadge{display:inline-flex;border-radius:999px;padding:5px 8px;background:#f1d7ec;font-size:11px;font-weight:900}
+
+.petBadge.green{background:#bbf7d0}
+
+.petBadge.blue{background:#bfedf6}
+
+.petStats label{display:block;margin:7px 0 3px;font-size:12px;font-weight:900}
+
+.bar{height:13px;border-radius:999px;background:#ead7e9;overflow:hidden}
+
+.bar span{display:block;height:100%;width:0%;border-radius:999px;background:linear-gradient(90deg,#76C7D8,#22c55e)}
+
+.tamaControls{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+.tamaControls button{border:0;border-radius:999px;padding:10px;font-weight:900;background:#fff;color:#24152e}
+
+.tamaControls .good{background:#22c55e;color:#fff}
+
+.tamaControls .warn{background:#F5C542}
+
+.petFormGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+
+.petFormGrid label{font-size:12px;font-weight:900}
+
+.petFormGrid input,.petFormGrid select{margin-top:3px}
+
+.petStatusLine{margin-top:8px;background:rgba(255,255,255,.62);border:1px solid rgba(118,199,216,.55);color:#24152e}
+
+.petNoPets{font-weight:900;color:#8a315f}
 
 /* Editor cleanup: right-side slide panel, one section at a time */
 .builder{left:auto!important;right:14px!important;width:min(390px,calc(100vw - 28px))!important;background:rgba(23,17,35,.96)!important;color:#fff;max-height:calc(100dvh - 100px)!important;padding:10px!important}
-.builder .builderHelp{font-size:11px;padding:8px;margin:6px 0 8px}.builder h2{font-size:16px}.quickTabs{position:sticky;top:0;background:rgba(23,17,35,.96);z-index:2;padding:4px 0}.editPickGrid{grid-template-columns:1fr 1fr;gap:6px}.targetPick{padding:8px;font-size:12px}.calRow{grid-template-columns:104px 1fr 52px;font-size:11px;gap:6px;margin:6px 0}.builder .editSection{display:none}.builder[data-target="player"] .section-player,.builder[data-target="buddy"] .section-buddy,.builder[data-target="hills"] .section-layers,.builder[data-target="ground"] .section-layers,.builder[data-target="platform"] .section-layers,.builder[data-target="sky"] .section-layers,.builder[data-target="objects"] .section-objects{display:block}.panelHead{position:sticky;top:0;background:rgba(23,17,35,.97);z-index:3;padding-bottom:4px}.petStatusLine{min-height:34px;display:block}.tamaScreen.loading{opacity:.75}.tamaScreen.loading .petPreview{background:linear-gradient(90deg,#fff,#eafdff,#fff);background-size:200% 100%;animation:tamaLoad 1.1s linear infinite}@keyframes tamaLoad{to{background-position:-200% 0}}
-@media(max-width:820px){.builder{left:8px!important;right:8px!important;width:auto!important;max-height:68vh!important}.builder .builderHelp{display:none}.editPickGrid{grid-template-columns:1fr 1fr}.calRow{grid-template-columns:94px 1fr 48px}}
 
-@media(max-width:820px){.builder,.petPanel{width:auto}.tamaScreen{grid-template-columns:1fr}.petFormGrid{grid-template-columns:1fr}.editPickGrid{grid-template-columns:1fr 1fr}.tamaControls{grid-template-columns:1fr 1fr}}
+.builder .builderHelp{font-size:11px;padding:8px;margin:6px 0 8px}
 
-.overlay{position:absolute;inset:0;z-index:120;display:grid;place-items:center;background:rgba(12,7,20,.38);backdrop-filter:blur(5px)}.overlay.hidden{display:none}.modal{width:min(680px,calc(100vw - 26px));padding:24px;text-align:center;background:rgba(36,24,55,.9);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.modal p{margin:0 0 16px;line-height:1.45}.modal button{border:0;border-radius:999px;padding:12px 22px;margin:4px;background:var(--yellow);color:#21142d;font-size:18px;font-weight:900}.choiceRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
-.touch{position:absolute;z-index:90;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:60px 60px 60px;gap:8px}.touch button{height:56px;border:0;border-radius:16px;font-size:24px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}.touch .wide{grid-column:span 3;background:linear-gradient(180deg,#fff7bd,var(--yellow))}.helpBtn{position:absolute;z-index:90;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}.hitFlash{animation:shake .2s linear}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-@media(max-width:820px){:root{--floorPx:92px;--platformH:42px;--playerX:30vw;--playerW:190px;--playerDrop:22px;--buddyX:14vw;--buddyW:88px;--buddyDrop:12px;--hillsH:205px;--hillsBottom:108px;--groundH:128px;--groundBottom:-20px;--tokenLift:106px;--hazardLift:50px}.hud{top:calc(env(safe-area-inset-top) + 6px);width:calc(100vw - 10px);min-height:auto;padding:6px 7px;border-radius:14px}.title{min-width:0}.title strong{font-size:15px}.title span{display:none}.stats{gap:4px}.pill{padding:6px 7px;font-size:11px}.instructions{display:none}.touch{display:grid}.helpBtn{bottom:calc(env(safe-area-inset-bottom) + 86px)}.builder,.petPanel{left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 62px);max-height:66vh}}
-@media(min-width:821px){.touch{display:none}}
+.builder h2{font-size:16px}
+
+.quickTabs{position:sticky;top:0;background:rgba(23,17,35,.96);z-index:2;padding:4px 0}
+
+.editPickGrid{grid-template-columns:1fr 1fr;gap:6px}
+
+.targetPick{padding:8px;font-size:12px}
+
+.calRow{grid-template-columns:104px 1fr 52px;font-size:11px;gap:6px;margin:6px 0}
+
+.builder .editSection{display:none}
+
+.builder[data-target="player"] .section-player,.builder[data-target="buddy"] .section-buddy,.builder[data-target="hills"] .section-layers,.builder[data-target="ground"] .section-layers,.builder[data-target="platform"] .section-layers,.builder[data-target="sky"] .section-layers,.builder[data-target="objects"] .section-objects{display:block}
+
+.panelHead{position:sticky;top:0;background:rgba(23,17,35,.97);z-index:3;padding-bottom:4px}
+
+.petStatusLine{min-height:34px;display:block}
+
+.tamaScreen.loading{opacity:.75}
+
+.tamaScreen.loading .petPreview{background:linear-gradient(90deg,#fff,#eafdff,#fff);background-size:200% 100%;animation:tamaLoad 1.1s linear infinite}
+
+@keyframes tamaLoad{to{background-position:-200% 0}
+
+}
+
+@media(max-width:820px){.builder{left:8px!important;right:8px!important;width:auto!important;max-height:68vh!important}
+
+.builder .builderHelp{display:none}
+
+.editPickGrid{grid-template-columns:1fr 1fr}
+
+.calRow{grid-template-columns:94px 1fr 48px}
+
+}
+
+@media(max-width:820px){.builder,.petPanel{width:auto}
+
+.tamaScreen{grid-template-columns:1fr}
+
+.petFormGrid{grid-template-columns:1fr}
+
+.editPickGrid{grid-template-columns:1fr 1fr}
+
+.tamaControls{grid-template-columns:1fr 1fr}
+
+}
+
+.overlay{position:absolute;inset:0;z-index:120;display:grid;place-items:center;background:rgba(12,7,20,.38);backdrop-filter:blur(5px)}
+
+.overlay.hidden{display:none}
+
+.modal{width:min(680px,calc(100vw - 26px));padding:24px;text-align:center;background:rgba(36,24,55,.9);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}
+
+.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}
+
+.modal p{margin:0 0 16px;line-height:1.45}
+
+.modal button{border:0;border-radius:999px;padding:12px 22px;margin:4px;background:var(--yellow);color:#21142d;font-size:18px;font-weight:900}
+
+.choiceRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+
+.touch{position:absolute;z-index:90;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:60px 60px 60px;gap:8px}
+
+.touch button{height:56px;border:0;border-radius:16px;font-size:24px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}
+
+.touch .wide{grid-column:span 3;background:linear-gradient(180deg,#fff7bd,var(--yellow))}
+
+.helpBtn{position:absolute;z-index:90;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}
+
+.hitFlash{animation:shake .2s linear}
+
+@keyframes shake{0%,100%{transform:translateX(0)}
+
+25%{transform:translateX(-7px)}
+
+75%{transform:translateX(7px)}
+
+}
+
+@media(max-width:820px){:root{--floorPx:92px;--platformH:42px;--playerX:30vw;--playerW:190px;--playerDrop:22px;--buddyX:14vw;--buddyW:88px;--buddyDrop:12px;--hillsH:205px;--hillsBottom:108px;--groundH:128px;--groundBottom:-20px;--tokenLift:106px;--hazardLift:50px}
+
+.hud{top:calc(env(safe-area-inset-top) + 6px);width:calc(100vw - 10px);min-height:auto;padding:6px 7px;border-radius:14px}
+
+.title{min-width:0}
+
+.title strong{font-size:15px}
+
+.title span{display:none}
+
+.stats{gap:4px}
+
+.pill{padding:6px 7px;font-size:11px}
+
+.instructions{display:none}
+
+.touch{display:grid}
+
+.helpBtn{bottom:calc(env(safe-area-inset-bottom) + 86px)}
+
+.builder,.petPanel{left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 62px);max-height:66vh}
+
+}
+
+@media(min-width:821px){.touch{display:none}
+
+}
 
 /* Clean selected-only editor + Tamagotchi restore + direction fixes */
 .builder .editSection{display:none!important}
+
 .builder .calRow{display:none}
+
 .builder.show-player .section-player,
 .builder.show-buddy .section-buddy,
 .builder.show-world .section-layers,
 .builder.show-objects .section-objects{display:block!important}
-.petPanel{background:transparent!important;border:0!important;box-shadow:none!important;padding:10px!important}
-.tamaShell{border:5px solid #d282c2!important;border-radius:38px!important;background:radial-gradient(circle at 50% 0%,#fff3fb 0 18%,#ffc7ea 19% 45%,#d282c2 46% 100%)!important;box-shadow:inset 0 -16px 0 rgba(92,39,93,.18),0 20px 45px rgba(0,0,0,.32)!important}
-.tamaScreen{border:5px solid #76C7D8!important;border-radius:24px!important;background:linear-gradient(180deg,#eaffff,#ffffff)!important;min-height:230px!important}
-.petPreview{background:#fff!important;border:3px dashed #d282c2!important}
-.petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
-.character img{transition:transform .08s linear}
-.character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
+.petPanel{background:transparent!important;border:0!important;box-shadow:none!important;padding:10px!important}
+
+.tamaShell{border:5px solid #d282c2!important;border-radius:38px!important;background:radial-gradient(circle at 50% 0%,#fff3fb 0 18%,#ffc7ea 19% 45%,#d282c2 46% 100%)!important;box-shadow:inset 0 -16px 0 rgba(92,39,93,.18),0 20px 45px rgba(0,0,0,.32)!important}
+
+.tamaScreen{border:5px solid #76C7D8!important;border-radius:24px!important;background:linear-gradient(180deg,#eaffff,#ffffff)!important;min-height:230px!important}
+
+.petPreview{background:#fff!important;border:3px dashed #d282c2!important}
+
+.petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}
+
+.petSizeControls label{font-size:12px;font-weight:900}
+
+.petSizeControls input,.petSizeControls select{margin-top:4px}
+
+.character img{transition:transform .08s linear}
+
+.character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
 /* EDIT SECTION 06C: TEAM OF 4 FOLLOWERS
    Solo mode shows one character. Team mode shows four: main + 3 followers.
@@ -78,10 +467,14 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
   opacity:.88;
   display:none;
 }
+
 #teamMate2{left:7vw;}
+
 #teamMate3{left:34vw;}
+
 body.team4Mode #teamMate2,
 body.team4Mode #teamMate3{display:flex;}
+
 #teamShadow2,#teamShadow3{
   position:absolute;
   bottom:calc(var(--floorPx) - 12px);
@@ -94,25 +487,55 @@ body.team4Mode #teamMate3{display:flex;}
   z-index:calc(var(--zBuddy) - 3);
   display:none;
 }
+
 #teamShadow2{left:7vw;width:88px;}
+
 #teamShadow3{left:34vw;width:96px;}
+
 body.team4Mode #teamShadow2,
 body.team4Mode #teamShadow3{display:block;}
-@media(max-width:820px){#teamMate2{left:7vw;width:82px;height:136px}#teamMate3{left:48vw;width:88px;height:144px}#teamShadow2{left:7vw;width:62px}#teamShadow3{left:48vw;width:68px}}
+
+@media(max-width:820px){#teamMate2{left:7vw;width:82px;height:136px}
+
+#teamMate3{left:48vw;width:88px;height:144px}
+
+#teamShadow2{left:7vw;width:62px}
+
+#teamShadow3{left:48vw;width:68px}
+
+}
 
 /* EDIT SECTION 06D: TEAM PICKER + FLEXIBLE TEAM SLOTS
    Team mode can now use 1, 2, 3 or 4 selected characters.
    Extra followers are hidden unless the player picked them.
 */
-.teamPickerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 14px;text-align:left}.teamPickerGrid label,.soloPickerBox label{font-weight:900;font-size:13px}.teamPickerGrid select,.soloPickerBox select{width:100%;border:0;border-radius:14px;padding:10px;margin-top:4px;font-weight:900}.teamPickerBox,.soloPickerBox{margin:10px auto 12px;max-width:560px}.teamPickerBox p{font-size:13px;margin:0 0 8px;opacity:.9}body.teamExtra2 #teamMate2{display:flex}body.teamExtra3 #teamMate3{display:flex}body.teamExtra2 #teamShadow2{display:block}body.teamExtra3 #teamShadow3{display:block}@media(max-width:820px){.teamPickerGrid{grid-template-columns:1fr}}
+.teamPickerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 14px;text-align:left}
 
+.teamPickerGrid label,.soloPickerBox label{font-weight:900;font-size:13px}
+
+.teamPickerGrid select,.soloPickerBox select{width:100%;border:0;border-radius:14px;padding:10px;margin-top:4px;font-weight:900}
+
+.teamPickerBox,.soloPickerBox{margin:10px auto 12px;max-width:560px}
+
+.teamPickerBox p{font-size:13px;margin:0 0 8px;opacity:.9}
+
+body.teamExtra2 #teamMate2{display:flex}
+
+body.teamExtra3 #teamMate3{display:flex}
+
+body.teamExtra2 #teamShadow2{display:block}
+
+body.teamExtra3 #teamShadow3{display:block}
+
+@media(max-width:820px){.teamPickerGrid{grid-template-columns:1fr}
+
+}
 
 /* EDIT SECTION 06B: AUTO CHARACTER SIZE RULE
    Main/side slots no longer decide character size.
    JavaScript CHARACTER_CONFIGS decides each character's correct size.
    Keep #player and #buddy as physics boxes; scale #sprite and #buddySprite only.
 */
-
 /* EDIT SECTION 06A: INVISIBLE FLOOR FIX
    This keeps the floor physics working but hides the coloured platform stripe.
    Do not delete .platform or .underFloor — they help the characters stand in the right place.
@@ -130,56 +553,902 @@ body.night .platform{
 }
 
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
-</style>
-</head>
-<!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
-<body>
-<!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
-<div id="game">
-  <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
-  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Pet Care</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
-  <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p>Menu opens game choices. Build/Edit is for admins. Pet Care loads your PetBot pets and Sheet 51 images.</p></aside>
-  <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
-  <aside class="builder hidden" id="builder">
-    <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
-    <div class="builderHelp"><b>How to edit:</b> 1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right. Character size is automatic by character, not by main/side slot.</div>
-    <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
-    <div id="tab-layout" class="tabBody active">
-      <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
-      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
-      <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
-      <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
-      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
-      <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
+  </style>
+ </head>
+ <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
+ <body>
+  <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
+  <div id="game">
+   <div class="layer sky editableTarget" data-layer="sky" id="skyLayer">
+   </div>
+   <div class="layer hills editableTarget" data-layer="hills" id="hillLayer">
+   </div>
+   <div class="underFloor">
+   </div>
+   <div class="layer groundDecor editableTarget" data-layer="ground" id="groundLayer">
+   </div>
+   <div class="platform editableTarget" data-layer="platform" id="platform">
+   </div>
+   <header class="hud">
+    <div class="title">
+     <strong>
+      🚑 Ax + Pura Waaambulance Quests
+     </strong>
+     <span id="questName">
+      Main menu: choose a quest.
+     </span>
     </div>
-    <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
-    <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn 4-frame baseline fix applied. Pura walk auto-detects all frames.</div></div>
-  </aside>
-  <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
-  <aside class="petPanel hidden" id="petPanel">
+    <div class="stats">
+     <button class="pill hudMenu" id="menuBtn">
+      Menu
+     </button>
+     <span class="pill gold">
+      Score:
+      <b id="score">
+       0
+      </b>
+     </span>
+     <span class="pill pink">
+      Lives:
+      <b id="lives">
+       3
+      </b>
+     </span>
+     <span class="pill blue">
+      Level:
+      <b id="level">
+       1
+      </b>
+     </span>
+     <span class="pill">
+      Distance:
+      <b id="distance">
+       0
+      </b>
+      m
+     </span>
+     <button class="pill" id="swapBtn">
+      Swap
+     </button>
+     <button class="pill" id="pauseBtn">
+      Pause
+     </button>
+     <button class="pill purple" id="petBtn">
+      Pet Care
+     </button>
+     <button class="pill purple" id="buildBtn">
+      Build/Edit 🛠️
+     </button>
+     <button class="pill" id="modeBtn">
+      Night 🌙
+     </button>
+    </div>
+   </header>
+   <aside class="instructions hidden" id="instructions">
+    <h2>
+     Quest help
+    </h2>
+    <p>
+     Menu opens game choices. Build/Edit is for admins. Pet Care loads your PetBot pets and Sheet 51 images.
+    </p>
+   </aside>
+   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
+   <aside class="builder hidden" id="builder">
+    <div class="panelHead">
+     <div>
+      <h2>
+       🛠️ Admin Builder
+      </h2>
+      <p>
+       Simple editing: pick what you want, drag it on the game, then save.
+      </p>
+     </div>
+     <button class="miniClose" id="closeBuilderTop">
+      Close
+     </button>
+    </div>
+    <div class="builderHelp">
+     <b>
+      How to edit:
+     </b>
+     1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right. Character size is automatic by character, not by main/side slot.
+    </div>
+    <div class="quickTabs">
+     <button class="active" data-tab="layout">
+      Layout
+     </button>
+     <button data-tab="chars">
+      Characters
+     </button>
+     <button data-tab="sprites">
+      Sprites
+     </button>
+     <button data-tab="save">
+      Save / Load
+     </button>
+    </div>
+    <div class="tabBody active" id="tab-layout">
+     <p class="tabHint">
+      Use the big buttons first. The selected item gets a blue dashed outline.
+     </p>
+     <div class="editPickGrid">
+      <button class="targetPick active" data-select-target="player">
+       Main character
+      </button>
+      <button class="targetPick" data-select-target="buddy">
+       Side character
+      </button>
+      <button class="targetPick" data-select-target="ground">
+       Ground artwork
+      </button>
+      <button class="targetPick" data-select-target="hills">
+       Hills background
+      </button>
+      <button class="targetPick" data-select-target="platform">
+       Invisible floor line
+      </button>
+      <button class="targetPick" data-select-target="sky">
+       Sky
+      </button>
+      <button class="targetPick" data-select-target="objects">
+       Pickups / hazards
+      </button>
+     </div>
+     <label>
+      Selected part
+     </label>
+     <select id="editTarget">
+      <option value="player">
+       Main character
+      </option>
+      <option value="buddy">
+       Side character
+      </option>
+      <option value="hills">
+       Hills layer
+      </option>
+      <option value="ground">
+       Ground artwork
+      </option>
+      <option value="platform">
+       Invisible floor line
+      </option>
+      <option value="sky">
+       Sky layer
+      </option>
+      <option value="objects">
+       Pickups / hazards
+      </option>
+     </select>
+     <div class="editSection section-player">
+      <h3>
+       Main character
+      </h3>
+      <label class="calRow">
+       X position
+       <input id="calPlayerX" max="55" min="8" type="range" value="22"/>
+       <span id="calPlayerXVal">
+        22vw
+       </span>
+      </label>
+      <label class="calRow">
+       Auto character size
+       <input id="calPlayerW" max="450" min="110" type="range" value="260"/>
+       <span id="calPlayerWVal">
+        260px
+       </span>
+      </label>
+      <label class="calRow">
+       Feet up/down
+       <input id="calDrop" max="110" min="-45" type="range" value="26"/>
+       <span id="calDropVal">
+        26px
+       </span>
+      </label>
+     </div>
+     <div class="editSection section-buddy">
+      <h3>
+       Side character
+      </h3>
+      <label class="calRow">
+       X position
+       <input id="calBuddyX" max="55" min="2" type="range" value="14"/>
+       <span id="calBuddyXVal">
+        14vw
+       </span>
+      </label>
+      <label class="calRow">
+       Auto character size
+       <input id="calBuddyW" max="300" min="70" type="range" value="118"/>
+       <span id="calBuddyWVal">
+        118px
+       </span>
+      </label>
+      <label class="calRow">
+       Feet up/down
+       <input id="calBuddyDrop" max="110" min="-45" type="range" value="16"/>
+       <span id="calBuddyDropVal">
+        16px
+       </span>
+      </label>
+     </div>
+     <div class="editSection section-layers">
+      <h3>
+       World layers
+      </h3>
+      <label class="calRow">
+       Floor line
+       <input id="calFloor" max="240" min="70" type="range" value="116"/>
+       <span id="calFloorVal">
+        116px
+       </span>
+      </label>
+      <label class="calRow">
+       Invisible floor height
+       <input id="calPlatform" max="110" min="30" type="range" value="48"/>
+       <span id="calPlatformVal">
+        48px
+       </span>
+      </label>
+      <label class="calRow">
+       Hill height
+       <input id="calHillH" max="1000" min="80" type="range" value="285"/>
+       <span id="calHillHVal">
+        285px
+       </span>
+      </label>
+      <label class="calRow">
+       Hill bottom
+       <input id="calHillB" max="600" min="-250" type="range" value="128"/>
+       <span id="calHillBVal">
+        128px
+       </span>
+      </label>
+      <label class="calRow">
+       Ground height
+       <input id="calGroundH" max="1000" min="40" type="range" value="158"/>
+       <span id="calGroundHVal">
+        158px
+       </span>
+      </label>
+      <label class="calRow">
+       Ground bottom
+       <input id="calGroundB" max="350" min="-350" type="range" value="-22"/>
+       <span id="calGroundBVal">
+        -22px
+       </span>
+      </label>
+      <h3>
+       Layer levels / front-back order
+      </h3>
+      <label class="calRow">
+       Sky z
+       <input id="calZSky" max="80" min="0" type="range" value="0"/>
+       <span id="calZSkyVal">
+        0
+       </span>
+      </label>
+      <label class="calRow">
+       Hills z
+       <input id="calZHills" max="80" min="0" type="range" value="1"/>
+       <span id="calZHillsVal">
+        1
+       </span>
+      </label>
+      <label class="calRow">
+       Ground z
+       <input id="calZGround" max="80" min="0" type="range" value="3"/>
+       <span id="calZGroundVal">
+        3
+       </span>
+      </label>
+      <label class="calRow">
+       Invisible floor z
+       <input id="calZPlatform" max="80" min="0" type="range" value="12"/>
+       <span id="calZPlatformVal">
+        12
+       </span>
+      </label>
+      <label class="calRow">
+       Side char z
+       <input id="calZBuddy" max="80" min="0" type="range" value="30"/>
+       <span id="calZBuddyVal">
+        30
+       </span>
+      </label>
+      <label class="calRow">
+       Main char z
+       <input id="calZPlayer" max="80" min="0" type="range" value="30"/>
+       <span id="calZPlayerVal">
+        30
+       </span>
+      </label>
+      <label class="calRow">
+       Items z
+       <input id="calZObjects" max="80" min="0" type="range" value="50"/>
+       <span id="calZObjectsVal">
+        50
+       </span>
+      </label>
+     </div>
+     <div class="editSection section-objects">
+      <h3>
+       Pickups and hazards
+      </h3>
+      <label class="calRow">
+       Token height
+       <input id="calTokenLift" max="520" min="20" type="range" value="126"/>
+       <span id="calTokenLiftVal">
+        126px
+       </span>
+      </label>
+      <label class="calRow">
+       Hazard height
+       <input id="calHazardLift" max="300" min="0" type="range" value="58"/>
+       <span id="calHazardLiftVal">
+        58px
+       </span>
+      </label>
+      <label class="calRow" style="display:none">
+       Layer front/back
+       <input id="calZ" max="70" min="0" type="range" value="30"/>
+       <span id="calZVal">
+        30
+       </span>
+      </label>
+     </div>
+    </div>
+    <div class="tabBody" id="tab-chars">
+     <p class="tabHint">
+      Choose the visible characters and fix their facing without touching code.
+     </p>
+     <label>
+      Main character
+     </label>
+     <select id="mainSelect">
+      <option value="ax">
+       Ax
+      </option>
+      <option value="pura">
+       Pura
+      </option>
+      <option value="owl">
+       Owl
+      </option>
+      <option value="unicorn">
+       Unicorn
+      </option>
+      <option value="pet">
+       Selected Pet
+      </option>
+     </select>
+     <label>
+      Main facing
+     </label>
+     <select id="mainFlipSelect">
+      <option value="1">
+       Normal
+      </option>
+      <option value="-1">
+       Flip left/right
+      </option>
+     </select>
+     <label>
+      Side character / team follower
+     </label>
+     <select id="buddySelect">
+      <option value="none">
+       No side character
+      </option>
+      <option value="pura">
+       Pura
+      </option>
+      <option value="ax">
+       Ax
+      </option>
+      <option value="owl">
+       Owl
+      </option>
+      <option value="unicorn">
+       Unicorn
+      </option>
+      <option value="pet">
+       Selected Pet
+      </option>
+     </select>
+     <label>
+      Side character facing
+     </label>
+     <select id="buddyFlipSelect">
+      <option value="1">
+       Normal
+      </option>
+      <option value="-1">
+       Flip left/right
+      </option>
+     </select>
+     <p class="tabHint">
+      Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.
+     </p>
+     <div class="calButtons">
+      <button class="good" id="applyCharsBtn">
+       Apply characters
+      </button>
+      <button class="warn" id="soloBtn">
+       Make Solo Quest
+      </button>
+      <button class="warn" id="teamBtn">
+       Make Team Quest
+      </button>
+     </div>
+    </div>
+    <div class="tabBody" id="tab-sprites">
+     <p class="tabHint">
+      Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.
+     </p>
+     <h3>
+      Ax
+     </h3>
+     <label>
+      Ax idle URL pattern
+     </label>
+     <input id="axIdleUrl"/>
+     <label>
+      Ax walk URL pattern
+     </label>
+     <input id="axWalkUrl"/>
+     <label>
+      Ax jump URL pattern
+     </label>
+     <input id="axJumpUrl"/>
+     <h3>
+      Pura
+     </h3>
+     <label>
+      Pura idle URL pattern
+     </label>
+     <input id="puraIdleUrl"/>
+     <label>
+      Pura walk URL pattern
+     </label>
+     <input id="puraWalkUrl"/>
+     <label>
+      Pura jump URL pattern
+     </label>
+     <input id="puraJumpUrl"/>
+     <h3>
+      Owl
+     </h3>
+     <label>
+      Owl idle URL pattern
+     </label>
+     <input id="owlIdleUrl"/>
+     <label>
+      Owl walk URL pattern
+     </label>
+     <input id="owlWalkUrl"/>
+     <label>
+      Owl jump URL pattern
+     </label>
+     <input id="owlJumpUrl"/>
+     <h3>
+      Unicorn
+     </h3>
+     <label>
+      Unicorn idle URL pattern
+     </label>
+     <input id="unicornIdleUrl"/>
+     <label>
+      Unicorn walk URL pattern
+     </label>
+     <input id="unicornWalkUrl"/>
+     <label>
+      Unicorn jump URL pattern
+     </label>
+     <input id="unicornJumpUrl"/>
+     <div class="calButtons">
+      <button class="good" id="applySpriteUrlsBtn">
+       Apply sprite URLs
+      </button>
+      <button class="warn" id="resetSpriteUrlsBtn">
+       Reset sprite URLs
+      </button>
+     </div>
+     <div class="statusBox" id="spriteStatus">
+      Sprite URL patterns ready.
+     </div>
+    </div>
+    <div class="tabBody" id="tab-save">
+     <p class="tabHint">
+      Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.
+     </p>
+     <label>
+      Admin key
+     </label>
+     <input id="adminKey" placeholder="CTW_GAME_ADMIN_KEY" type="password"/>
+     <label>
+      Level name
+     </label>
+     <input id="levelName" value="level_main"/>
+     <div class="calButtons">
+      <button class="good" id="saveCloudBtn">
+       Save shared level
+      </button>
+      <button id="loadCloudBtn">
+       Load shared level
+      </button>
+      <button class="bad" id="resetSettingsBtn">
+       Reset safe layout
+      </button>
+      <button id="closeBuilderBtn">
+       Close editor
+      </button>
+     </div>
+     <textarea id="settingsBox" readonly=""></textarea>
+     <div class="statusBox" id="adminStatus">
+      Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn 4-frame baseline fix applied. Pura walk auto-detects all frames.
+     </div>
+    </div>
+   </aside>
+   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
+   <aside class="petPanel hidden" id="petPanel">
     <div class="tamaShell">
-      <div class="tamaTop"><div><h2>🐾 PetBot Tamagotchi</h2><p>Your owned pets come from PetBot. Pictures come from Sheet 51.</p></div><button class="miniClose" id="closePetBtn">Close</button></div>
-      <div class="petFormGrid"><label>User<select id="userSelect"><option value="1214671839205396481">Ryan</option><option value="1407957358683885670">Ashely</option></select></label><label>Or paste Discord user ID<input id="userIdInput" placeholder="optional Discord user ID"></label><label style="grid-column:1/-1">Owned pet<select id="petSelect"></select></label></div>
-      <div class="tamaScreen" id="tamaScreen">
-        <div class="petPreview empty" id="petPreview">No pet loaded yet</div>
-        <div class="petInfo"><h3 id="petTitle">No pet selected</h3><p id="petSub">Press Reload live.</p><div class="petBadges"><span class="petBadge" id="petCodeBadge">code —</span><span class="petBadge green" id="petLevelBadge">level —</span><span class="petBadge blue" id="petImageBadge">Sheet 51 image</span></div><div class="petStats"><label>Hunger</label><div class="bar"><span id="hungerBar"></span></div><label>Happiness</label><div class="bar"><span id="happyBar"></span></div><label>Energy</label><div class="bar"><span id="energyBar"></span></div></div></div>
+     <div class="tamaTop">
+      <div>
+       <h2>
+        🐾 PetBot Tamagotchi
+       </h2>
+       <p>
+        Your owned pets come from PetBot. Pictures come from Sheet 51.
+       </p>
       </div>
-      <div class="petSizeControls"><label>Pet game size<input id="petSizeRange" type="range" min="45" max="240" value="115"><span id="petSizeVal">115px</span></label><label>Pet facing<select id="petFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select></label></div><div class="tamaControls"><button class="warn" id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button><button id="feedVisualBtn">🍔 Feed visual</button><button id="playVisualBtn">🧸 Play visual</button><button id="restVisualBtn">💤 Rest visual</button><button id="healVisualBtn">💊 Heal visual</button></div>
-      <div class="statusBox petStatusLine" id="petStatus">PetBot ready.</div>
+      <button class="miniClose" id="closePetBtn">
+       Close
+      </button>
+     </div>
+     <div class="petFormGrid">
+      <label>
+       User
+       <select id="userSelect">
+        <option value="1214671839205396481">
+         Ryan
+        </option>
+        <option value="1407957358683885670">
+         Ashely
+        </option>
+       </select>
+      </label>
+      <label>
+       Or paste Discord user ID
+       <input id="userIdInput" placeholder="optional Discord user ID"/>
+      </label>
+      <label style="grid-column:1/-1">
+       Owned pet
+       <select id="petSelect">
+       </select>
+      </label>
+     </div>
+     <div class="tamaScreen" id="tamaScreen">
+      <div class="petPreview empty" id="petPreview">
+       No pet loaded yet
+      </div>
+      <div class="petInfo">
+       <h3 id="petTitle">
+        No pet selected
+       </h3>
+       <p id="petSub">
+        Press Reload live.
+       </p>
+       <div class="petBadges">
+        <span class="petBadge" id="petCodeBadge">
+         code —
+        </span>
+        <span class="petBadge green" id="petLevelBadge">
+         level —
+        </span>
+        <span class="petBadge blue" id="petImageBadge">
+         Sheet 51 image
+        </span>
+       </div>
+       <div class="petStats">
+        <label>
+         Hunger
+        </label>
+        <div class="bar">
+         <span id="hungerBar">
+         </span>
+        </div>
+        <label>
+         Happiness
+        </label>
+        <div class="bar">
+         <span id="happyBar">
+         </span>
+        </div>
+        <label>
+         Energy
+        </label>
+        <div class="bar">
+         <span id="energyBar">
+         </span>
+        </div>
+       </div>
+      </div>
+     </div>
+     <div class="petSizeControls">
+      <label>
+       Pet game size
+       <input id="petSizeRange" max="240" min="45" type="range" value="115"/>
+       <span id="petSizeVal">
+        115px
+       </span>
+      </label>
+      <label>
+       Pet facing
+       <select id="petFlipSelect">
+        <option value="1">
+         Normal
+        </option>
+        <option value="-1">
+         Flip left/right
+        </option>
+       </select>
+      </label>
+     </div>
+     <div class="tamaControls">
+      <button class="warn" id="reloadPetsBtn">
+       Reload live
+      </button>
+      <button class="good" id="usePetBtn">
+       Use pet as player
+      </button>
+      <button id="feedVisualBtn">
+       🍔 Feed visual
+      </button>
+      <button id="playVisualBtn">
+       🧸 Play visual
+      </button>
+      <button id="restVisualBtn">
+       💤 Rest visual
+      </button>
+      <button id="healVisualBtn">
+       💊 Heal visual
+      </button>
+     </div>
+     <div class="statusBox petStatusLine" id="petStatus">
+      PetBot ready.
+     </div>
     </div>
-  </aside>
-  <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
-  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
-  <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
-  <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
-  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
-  <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
-</div>
-<!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
-<script>
-// EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
+   </aside>
+   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
+   <div id="teamShadow2">
+   </div>
+   <div id="buddyShadow">
+   </div>
+   <div id="shadow">
+   </div>
+   <div id="teamShadow3">
+   </div>
+   <div class="character teamMate editableTarget" data-layer="team2" id="teamMate2">
+    <img alt="team character 3" id="teamSprite2"/>
+   </div>
+   <div class="character editableTarget" data-layer="buddy" id="buddy">
+    <img alt="side character" id="buddySprite"/>
+   </div>
+   <div class="character editableTarget" data-layer="player" id="player">
+    <img alt="main character" id="sprite"/>
+   </div>
+   <div class="character teamMate editableTarget" data-layer="team3" id="teamMate3">
+    <img alt="team character 4" id="teamSprite3"/>
+   </div>
+   <div id="worldObjects">
+   </div>
+   <div class="toast" id="toast">
+    Waaambulance activated
+   </div>
+   <div class="dragHint" id="dragHint">
+    drag selected layer
+   </div>
+   <div class="touch">
+    <button id="touchLeft">
+     ←
+    </button>
+    <button id="touchJump">
+     ↑
+    </button>
+    <button id="touchRight">
+     →
+    </button>
+    <button class="wide" id="touchJump2">
+     JUMP / WEE-WOO
+    </button>
+   </div>
+   <button class="pill helpBtn" id="helpBtn">
+    ?
+   </button>
+   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
+   <!-- START MENU TEAM PICKER: edit the select boxes here if you want different default team choices. -->
+   <div class="overlay" id="startScreen">
+    <div class="modal menuModal">
+     <h1>
+      🚑 Waaambulance Quest Dash
+     </h1>
+     <p>
+      Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.
+     </p>
+     <div class="soloPickerBox">
+      <label>
+       Solo character
+      </label>
+      <select id="soloCharacterSelect">
+       <option value="ax">
+        Ax
+       </option>
+       <option value="pura">
+        Pura
+       </option>
+       <option value="owl">
+        Owl
+       </option>
+       <option value="unicorn">
+        Unicorn
+       </option>
+       <option value="pet">
+        Selected Pet
+       </option>
+      </select>
+     </div>
+     <div class="teamPickerBox">
+      <p>
+       <b>
+        Team characters
+       </b>
+       — pick up to 4. Leave a slot as None if you do not want that many.
+      </p>
+      <div class="teamPickerGrid">
+       <label>
+        1 Main
+        <select id="teamSlot1Select">
+         <option value="ax">
+          Ax
+         </option>
+         <option value="pura">
+          Pura
+         </option>
+         <option value="owl">
+          Owl
+         </option>
+         <option value="unicorn">
+          Unicorn
+         </option>
+         <option value="pet">
+          Selected Pet
+         </option>
+        </select>
+       </label>
+       <label>
+        2 Follower
+        <select id="teamSlot2Select">
+         <option value="none">
+          None
+         </option>
+         <option value="ax">
+          Ax
+         </option>
+         <option value="pura">
+          Pura
+         </option>
+         <option value="owl">
+          Owl
+         </option>
+         <option value="unicorn">
+          Unicorn
+         </option>
+         <option value="pet">
+          Selected Pet
+         </option>
+        </select>
+       </label>
+       <label>
+        3 Follower
+        <select id="teamSlot3Select">
+         <option value="none">
+          None
+         </option>
+         <option value="ax">
+          Ax
+         </option>
+         <option value="pura">
+          Pura
+         </option>
+         <option value="owl">
+          Owl
+         </option>
+         <option value="unicorn">
+          Unicorn
+         </option>
+         <option value="pet">
+          Selected Pet
+         </option>
+        </select>
+       </label>
+       <label>
+        4 Follower
+        <select id="teamSlot4Select">
+         <option value="none">
+          None
+         </option>
+         <option value="ax">
+          Ax
+         </option>
+         <option value="pura">
+          Pura
+         </option>
+         <option value="owl">
+          Owl
+         </option>
+         <option value="unicorn">
+          Unicorn
+         </option>
+         <option value="pet">
+          Selected Pet
+         </option>
+        </select>
+       </label>
+      </div>
+     </div>
+     <div class="choiceRow">
+      <button class="secondary" id="resumeBtn">
+       Resume game
+      </button>
+      <button id="startSoloBtn">
+       Solo Quest
+      </button>
+      <button class="good" id="startTeamBtn">
+       Start Team Quest
+      </button>
+      <button class="secondary" id="menuPetBtn">
+       Pet Care
+      </button>
+      <button class="dark" id="menuBuildBtn">
+       Admin Builder
+      </button>
+     </div>
+     <p style="font-size:13px;opacity:.85;margin-top:12px">
+      Controls: arrows/space. Menu pauses the game and brings this screen back.
+     </p>
+    </div>
+   </div>
+   <div class="overlay hidden" id="levelScreen">
+    <div class="modal">
+     <h1 id="levelTitle">
+      Level complete
+     </h1>
+     <p id="levelText">
+      The quest chaos continues.
+     </p>
+     <button id="nextLevelBtn">
+      Next level
+     </button>
+    </div>
+   </div>
+   <div class="overlay hidden" id="endScreen">
+    <div class="modal">
+     <h1 id="endTitle">
+      Patrol over
+     </h1>
+     <p id="endText">
+      The Waaambulance is being dramatic.
+     </p>
+     <button id="restartBtn">
+      Restart
+     </button>
+    </div>
+   </div>
+  </div>
+  <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
+  <script>
+   // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:170,playerDrop:26,buddyX:14,buddyW:150,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zObjects:50};
@@ -385,11 +1654,16 @@ const ACTION_FRAME_PROBING={};
 // Only force actions that must be limited.
 // Pura is NOT forced now, so Pura walk can auto-detect and use all uploaded walk frames.
 // Unicorn walk is a clean 4-frame set: 001, 002, 003, 004.
+// ACTION_FRAME_OVERRIDES: use this when a character has a fixed number of frames.
+// Example: pura:{walk:4} means Pura walk always uses 001, 002, 003, 004.
 const ACTION_FRAME_OVERRIDES={
   ax:{walk:4},
   pura:{walk:4},
   unicorn:{walk:4}
 };
+// CHARACTER_CONFIGS: safe place to fix character size and ground alignment.
+// boxW = width of character slot. visualScale = sprite size. visualY = up/down.
+// Smaller visualY or negative visualY raises the sprite. Bigger visualY lowers it.
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1,slotY:{buddy:16,team:18}},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
@@ -579,6 +1853,8 @@ function slotVisualY(characterKey,slotName){
   return Number((cfg.slotY&&cfg.slotY[slotName])||0);
 }
 
+// applySpriteTransform: applies each character's size, flip, and up/down baseline.
+// Do not use this to choose walk/idle; that happens in animateSprites.
 function applySpriteTransform(){
   applyCharacterSlotSizes();
   const mainAction=($('sprite')&&$('sprite').dataset.action)||'idle';
@@ -722,6 +1998,7 @@ function startSoloQuest(){
   const chosen=$('soloCharacterSelect')?.value||main||'ax';
   startGame(chosen,'none','none','none');
 }
+// START TEAM QUEST: reads the four menu slots and starts with only the selected characters.
 function startTeamQuest(){
   const members=teamSelectionFromMenu();
   startGame(members[0],members[1]||'none',members[2]||'none',members[3]||'none');
@@ -867,6 +2144,8 @@ function animateOne(elId,char,action,now,state){
     state.last=now;
   }
 }
+// animateSprites: this decides whether each character shows idle, walk, or jump.
+// This is the section to check if Ax/Pura/Owl/Unicorn walk or idle at the wrong time.
 function animateSprites(now){
   // MAIN + TEAM ANIMATION FIX:
   // Main walks only when the player presses left/right.
@@ -1252,6 +2531,6 @@ addEventListener('pointermove',e=>{
 addEventListener('pointerup',()=>{drag=null});
 clearBrowserGameSaves();resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';loadCloud(true);requestAnimationFrame(loop);
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
-</script>
-</body>
+  </script>
+ </body>
 </html>
