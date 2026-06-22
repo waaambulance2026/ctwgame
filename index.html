@@ -177,9 +177,9 @@ const DEFAULT_PATTERNS={
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
   owl:{
-    idle:`${CLOUD}/v1781797065/owl_idle_{n}.png`,
-    walk:`${CLOUD}/v1781797065/owl_walk_{n}.png`,
-    jump:`${CLOUD}/v1781797065/owl_jump_{n}.png`
+    idle:`${CLOUD}/v1781738342/owl_idle_{n}.png`,
+    walk:`${CLOUD}/v1781738342/owl_walk_{n}.png`,
+    jump:`${CLOUD}/v1781738342/owl_jump_{n}.png`
   }
 };
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
@@ -196,9 +196,9 @@ const ALT_PATTERNS={
     jump:[`${CLOUD}/pura_jump_{n}.png`,`${CLOUD}/v1781797065/pura_jump_{n}.png`,`${CLOUD}/characters/Pura/jump/pura_jump_{n}.png`,`${CLOUD}/characters/pura/jump/pura_jump_{n}.png`,`${CLOUD}/Pura/Jump/pura_jump_{n}.png`,`${CLOUD}/Pura/jump/pura_jump_{n}.png`]
   },
   owl:{
-    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781797065/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
-    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781797065/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
-    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781797065/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
+    idle:[`${CLOUD}/owl_idle_{n}.png`,`${CLOUD}/Owl_idle_{n}.png`,`${CLOUD}/owl/idle/owl_idle_{n}.png`,`${CLOUD}/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/v1781738342/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/idle/owl_idle_{n}.png`,`${CLOUD}/characters/owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/owl_idle_{n}.png`,`${CLOUD}/Owl/idle/owl_idle_{n}.png`,`${CLOUD}/Owl/Idle/Owl_idle_{n}.png`,`${CLOUD}/Owl/idle/Owl_idle_{n}.png`],
+    walk:[`${CLOUD}/owl_walk_{n}.png`,`${CLOUD}/Owl_walk_{n}.png`,`${CLOUD}/owl/walk/owl_walk_{n}.png`,`${CLOUD}/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/v1781738342/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/walk/owl_walk_{n}.png`,`${CLOUD}/characters/owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/owl_walk_{n}.png`,`${CLOUD}/Owl/walk/owl_walk_{n}.png`,`${CLOUD}/Owl/Walk/Owl_walk_{n}.png`,`${CLOUD}/Owl/walk/Owl_walk_{n}.png`],
+    jump:[`${CLOUD}/owl_jump_{n}.png`,`${CLOUD}/Owl_jump_{n}.png`,`${CLOUD}/owl/jump/owl_jump_{n}.png`,`${CLOUD}/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/v1781738342/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/jump/owl_jump_{n}.png`,`${CLOUD}/characters/owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/owl_jump_{n}.png`,`${CLOUD}/Owl/jump/owl_jump_{n}.png`,`${CLOUD}/Owl/Jump/Owl_jump_{n}.png`,`${CLOUD}/Owl/jump/Owl_jump_{n}.png`]
   }
 };
 let SPRITE_PATTERNS=JSON.parse(JSON.stringify(DEFAULT_PATTERNS));
@@ -206,7 +206,13 @@ function fillSpritePattern(pattern,idx,totalFrames=10){
   if(!pattern)return'';
   totalFrames=Math.max(1,Number(totalFrames)||10);
   const frame=((idx%totalFrames)+1);
-  return String(pattern).replaceAll('{nnn}',pad3(frame)).replaceAll('{nn}',pad2(frame)).replaceAll('{n}',pad3(frame));
+  // {n} = 001 by default for old Ax/Pura files. {nn} = 01. {i} = 1 for unpadded files like owl_idle_1.png.
+  return String(pattern)
+    .replaceAll('{nnn}',pad3(frame))
+    .replaceAll('{nn}',pad2(frame))
+    .replaceAll('{i}',String(frame))
+    .replaceAll('{raw}',String(frame))
+    .replaceAll('{n}',pad3(frame));
 }
 function spriteUrlFor(char,action,idx){
   if(char==='pet'&&currentPetImage)return currentPetImage;
@@ -223,16 +229,18 @@ function pushSpriteCandidate(list,pattern,idx,totalFrames=10){
   if(!pattern)return;
   const raw=String(pattern);
   const add=u=>{ if(u&&!list.includes(u))list.push(u); };
-  const one=fillSpritePattern(raw,idx,totalFrames);
-  add(one);
-  // Some uploaded batches were named 01/02 and some were 001/002. Only add the 2-digit version when the pattern uses {n}.
+  const frame=((idx%(Math.max(1,Number(totalFrames)||10)))+1);
+  add(fillSpritePattern(raw,idx,totalFrames));
+  // Auto-try all common numbering styles: 001, 01 and 1. This fixes Owl files like owl_idle_1.png.
   if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
-    const frame=((idx%(Math.max(1,Number(totalFrames)||10)))+1);
     add(raw.replaceAll('{n}',pad2(frame)));
+    add(raw.replaceAll('{n}',String(frame)));
   }
+  if(raw.includes('{i}'))add(raw.replaceAll('{i}',String(frame)));
+  if(raw.includes('{raw}'))add(raw.replaceAll('{raw}',String(frame)));
   // If the extension was wrong in the saved URL, try common image extensions without creating a huge 404 storm.
   const expanded=[...list];
-  for(const u of expanded.slice(-2)){
+  for(const u of expanded.slice(-3)){
     if(/\.png($|\?)/i.test(u)){add(u.replace(/\.png($|\?)/i,'.webp$1'));add(u.replace(/\.png($|\?)/i,'.jpg$1'));}
     if(/\.webp($|\?)/i.test(u)){add(u.replace(/\.webp($|\?)/i,'.png$1'));}
   }
@@ -361,7 +369,25 @@ function getActionFrameCount(characterKey,action){
 }
 function fillSpritePatternFrame(pattern,frame){
   if(!pattern)return'';
-  return String(pattern).replaceAll('{nnn}',pad3(frame)).replaceAll('{nn}',pad2(frame)).replaceAll('{n}',pad3(frame));
+  return String(pattern)
+    .replaceAll('{nnn}',pad3(frame))
+    .replaceAll('{nn}',pad2(frame))
+    .replaceAll('{i}',String(frame))
+    .replaceAll('{raw}',String(frame))
+    .replaceAll('{n}',pad3(frame));
+}
+function frameUrlNumberVariants(pattern,frame){
+  if(!pattern)return [];
+  const raw=String(pattern);
+  const out=[fillSpritePatternFrame(raw,frame)];
+  // When a pattern uses plain {n}, also test 01 and 1 because Cloudinary uploads may not be padded.
+  if(raw.includes('{n}')&&!raw.includes('{nn}')&&!raw.includes('{nnn}')){
+    out.push(raw.replaceAll('{n}',pad2(frame)));
+    out.push(raw.replaceAll('{n}',String(frame)));
+  }
+  if(raw.includes('{i}'))out.push(raw.replaceAll('{i}',String(frame)));
+  if(raw.includes('{raw}'))out.push(raw.replaceAll('{raw}',String(frame)));
+  return [...new Set(out)];
 }
 function imageLoads(url,timeout=1200){
   return new Promise(resolve=>{
@@ -391,8 +417,10 @@ function patternsForAction(characterKey,action){
 async function countFramesForPattern(pattern){
   let count=0, misses=0;
   for(let frame=1; frame<=FRAME_PROBE_MAX; frame++){
-    const url=fillSpritePatternFrame(pattern,frame);
-    const ok=await imageLoads(url,900);
+    let ok=false;
+    for(const url of frameUrlNumberVariants(pattern,frame)){
+      if(await imageLoads(url,900)){ok=true;break;}
+    }
     if(ok){count=frame;misses=0;}
     else{
       misses++;
