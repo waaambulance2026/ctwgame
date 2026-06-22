@@ -176,15 +176,11 @@ const DEFAULT_PATTERNS={
     walk:`${CLOUD}/v1781797065/pura_walk_{n}.png`,
     jump:`${CLOUD}/v1781797065/pura_jump_{n}.png`
   },
-  owl:{
-    // Owl files have mixed Cloudinary versions and mixed numbering.
-    // Use no /v.../ version so Cloudinary serves the latest matching public_id.
-    // idle/jump use owl_idle_1.png and owl_jump_1.png, so use {i}.
-    // walk uses owl_walk04.png, so use {nn} with no underscore.
-    idle:`${CLOUD}/owl_idle_{i}.png`,
-    walk:`${CLOUD}/owl_walk{nn}.png`,
-    jump:`${CLOUD}/owl_jump_{i}.png`
-  }
+owl:{
+  idle:`${CLOUD}/v1782132160/owl_idle_{n}.png`,
+  walk:`${CLOUD}/v1782132160/owl_walk_{n}.png`,
+  jump:`${CLOUD}/v1782132160/owl_jump_{n}.png`
+}
 };
 // Small, controlled fallbacks only. This stops old missing-sprite spam but still lets nested Cloudinary folders work.
 // EDIT SECTION 18: CONTROLLED SPRITE FALLBACK PATHS - avoids endless missing-image spam
