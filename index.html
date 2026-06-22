@@ -374,16 +374,18 @@ const CHARACTER_CONFIGS={
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
     name:'Unicorn',
-    boxW:205,
-    visualScale:1.06,
+    boxW:180,
+    visualScale:1.00,
     visualY:4,
-    shadowScale:.95,
+    shadowScale:.88,
     reverseWalk:true,
-    // Unicorn action art has different canvas/baseline sizes, so each action gets its own correction.
+    // UNICORN SIZE FIX:
+    // The walk artwork has a bigger canvas than idle/jump, so walk must be scaled DOWN.
+    // Increase walk.visualY if the hooves float. Decrease walk.visualScale if she is still too big.
     actionVisuals:{
-      idle:{visualScale:1.10,visualY:6},
-      walk:{visualScale:1.24,visualY:34},
-      jump:{visualScale:1.12,visualY:10}
+      idle:{visualScale:1.02,visualY:6},
+      walk:{visualScale:.82,visualY:24},
+      jump:{visualScale:1.00,visualY:10}
     }
   },
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
