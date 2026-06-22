@@ -31,7 +31,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
-.toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 92px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
+.toast{position:absolute;z-index:95;left:50%;bottom:calc(var(--floorPx) + 22px);transform:translateX(-50%) translateY(12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
 .builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
 
 /* Tidy editor slide-out + robust PetBot loading */
@@ -100,6 +100,13 @@ body.team4Mode #teamShadow2,
 body.team4Mode #teamShadow3{display:block;}
 @media(max-width:820px){#teamMate2{left:7vw;width:82px;height:136px}#teamMate3{left:48vw;width:88px;height:144px}#teamShadow2{left:7vw;width:62px}#teamShadow3{left:48vw;width:68px}}
 
+/* EDIT SECTION 06D: TEAM PICKER + FLEXIBLE TEAM SLOTS
+   Team mode can now use 1, 2, 3 or 4 selected characters.
+   Extra followers are hidden unless the player picked them.
+*/
+.teamPickerGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:8px 0 14px;text-align:left}.teamPickerGrid label,.soloPickerBox label{font-weight:900;font-size:13px}.teamPickerGrid select,.soloPickerBox select{width:100%;border:0;border-radius:14px;padding:10px;margin-top:4px;font-weight:900}.teamPickerBox,.soloPickerBox{margin:10px auto 12px;max-width:560px}.teamPickerBox p{font-size:13px;margin:0 0 8px;opacity:.9}body.teamExtra2 #teamMate2{display:flex}body.teamExtra3 #teamMate3{display:flex}body.teamExtra2 #teamShadow2{display:block}body.teamExtra3 #teamShadow3{display:block}@media(max-width:820px){.teamPickerGrid{grid-template-columns:1fr}}
+
+
 /* EDIT SECTION 06B: AUTO CHARACTER SIZE RULE
    Main/side slots no longer decide character size.
    JavaScript CHARACTER_CONFIGS decides each character's correct size.
@@ -167,7 +174,7 @@ body.night .platform{
   <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
-  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose a game mode. Solo uses one character. Team uses four characters together.</p><div style="margin:10px auto 14px;max-width:330px;text-align:left"><label style="display:block;font-weight:900;margin-bottom:6px">Solo character</label><select id="soloCharacterSelect" style="width:100%;border:0;border-radius:14px;padding:11px;font-weight:900"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Team Quest: 4 characters</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
+  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
 <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
@@ -224,7 +231,7 @@ let SPRITE_PATTERNS={
   },
   unicorn:{
     idle:`${CLOUD}/v1781798484/unicorn_idle_{n}.png`,
-    walk:`${CLOUD}/v1782143974/unicorn_walk_{n}.png`,
+    walk:`${CLOUD}/v1782137360/unicorn_walk_{n}.png`,
     jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
   }
 };
@@ -368,31 +375,24 @@ const FRAME_PROBE_MAX=60;
 const FRAME_PROBE_STOP_AFTER_MISSES=2;
 const ACTION_FRAME_CACHE={};
 const ACTION_FRAME_PROBING={};
-// Manual frame counts stop the auto-detector using unwanted extra frames.
-// Unicorn walk is now a clean 4-frame set, like Ax and Pura.
-const ACTION_FRAME_OVERRIDES={
-  ax:{walk:4},
-  pura:{walk:4},
-  unicorn:{walk:4}
-};
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1},
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
     name:'Unicorn',
-    boxW:185,
+    boxW:180,
     visualScale:1.00,
-    visualY:2,
+    visualY:4,
     shadowScale:.88,
-    reverseWalk:false,
-    // UNICORN ALIGNMENT FIX:
-    // Smaller visualY raises the unicorn. Positive visualY moves her down.
-    // This keeps the 4-frame walk above the ground instead of sinking into it.
+    reverseWalk:true,
+    // UNICORN SIZE FIX:
+    // The walk artwork has a bigger canvas than idle/jump, so walk must be scaled DOWN.
+    // Increase walk.visualY if the hooves float. Decrease walk.visualScale if she is still too big.
     actionVisuals:{
-      idle:{visualScale:1.00,visualY:4},
-      walk:{visualScale:.90,visualY:14},
-      jump:{visualScale:.96,visualY:8}
+      idle:{visualScale:1.02,visualY:6},
+      walk:{visualScale:.82,visualY:24},
+      jump:{visualScale:1.00,visualY:10}
     }
   },
   pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
@@ -400,8 +400,6 @@ const CHARACTER_CONFIGS={
 
 function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${action||'idle'}`}
 function getActionFrameCount(characterKey,action){
-  const forced=ACTION_FRAME_OVERRIDES[characterKey]?.[action];
-  if(forced)return forced;
   const key=actionFrameKey(characterKey,action);
   return ACTION_FRAME_CACHE[key]||1; // 1 frame until the quick auto-count finishes
 }
@@ -489,7 +487,6 @@ async function autoDetectActionFrames(characterKey,action){
   return ACTION_FRAME_PROBING[key];
 }
 function ensureActionFrameCount(characterKey,action){
-  if(ACTION_FRAME_OVERRIDES[characterKey]?.[action])return;
   const key=actionFrameKey(characterKey,action);
   if(!ACTION_FRAME_CACHE[key]&&!ACTION_FRAME_PROBING[key]){
     autoDetectActionFrames(characterKey,action).then(()=>{setSpriteFrame('sprite',main,player.grounded?'idle':'jump',0);if(team)setSpriteFrame('buddySprite',buddy,'idle',0);});
@@ -505,23 +502,47 @@ function characterBoxWidth(characterKey){
   if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
   return getCharacterVisualConfig(characterKey).boxW||150;
 }
+function selectedTeamMembers(){
+  const raw=[main,buddy,...(teamExtra||[])];
+  const out=[];
+  raw.forEach(ch=>{if(ch&&ch!=='none'&&!out.includes(ch))out.push(ch)});
+  return out.length?out:['ax'];
+}
+function applyTeamSlotPositions(members=selectedTeamMembers()){
+  const count=members.length;
+  const positions={
+    1:[''],
+    2:['24vw','13vw'],
+    3:['26vw','15vw','6vw'],
+    4:['24vw','14vw','6vw','34vw']
+  }[Math.min(4,Math.max(1,count))]||[''];
+  const pairs=[['player','shadow'],['buddy','buddyShadow'],['teamMate2','teamShadow2'],['teamMate3','teamShadow3']];
+  pairs.forEach(([charId,shadowId],i)=>{
+    const ch=$(charId), sh=$(shadowId), pos=positions[i];
+    if(ch)ch.style.left=pos||'';
+    if(sh)sh.style.left=pos||'';
+  });
+}
 function applyCharacterSlotSizes(){
-  const mainW=characterBoxWidth(main);
-  const buddyW=characterBoxWidth(buddy);
+  const members=selectedTeamMembers();
+  applyTeamSlotPositions(members);
+  const teamScale=members.length>1?.88:1;
+  const mainW=Math.round(characterBoxWidth(main)*(members.length>1?.94:1));
+  const buddyW=buddy&&buddy!=='none'?Math.round(characterBoxWidth(buddy)*teamScale):0;
   setVar('playerW',mainW,'px');
   if(buddy&&buddy!=='none')setVar('buddyW',buddyW,'px');
   if($('calPlayerW')){$('calPlayerW').value=mainW;$('calPlayerWVal').textContent=mainW+'px auto';}
-  if($('calBuddyW')){$('calBuddyW').value=buddyW;$('calBuddyWVal').textContent=buddyW+'px auto';}
-  if($('shadow'))$('shadow').style.width=Math.max(80,mainW*.78)+'px';
-  if($('buddyShadow'))$('buddyShadow').style.width=Math.max(58,buddyW*.72)+'px';
-  const t2Key=(teamExtra&&teamExtra[0])||'owl';
-  const t3Key=(teamExtra&&teamExtra[1])||'unicorn';
-  const t2W=Math.round(Math.max(82,characterBoxWidth(t2Key)*.80));
-  const t3W=Math.round(Math.max(96,characterBoxWidth(t3Key)*.84));
-  if($('teamMate2')){$('teamMate2').style.width=t2W+'px';$('teamMate2').style.height=Math.round(t2W*1.62)+'px';}
-  if($('teamMate3')){$('teamMate3').style.width=t3W+'px';$('teamMate3').style.height=Math.round(t3W*1.62)+'px';}
-  if($('teamShadow2'))$('teamShadow2').style.width=Math.max(54,t2W*.68)+'px';
-  if($('teamShadow3'))$('teamShadow3').style.width=Math.max(54,t3W*.68)+'px';
+  if($('calBuddyW')){$('calBuddyW').value=buddyW||characterBoxWidth(buddy);$('calBuddyWVal').textContent=(buddyW||0)+'px auto';}
+  if($('shadow'))$('shadow').style.width=Math.max(72,mainW*.72)+'px';
+  if($('buddyShadow'))$('buddyShadow').style.width=Math.max(52,buddyW*.68)+'px';
+  const t2Key=(teamExtra&&teamExtra[0])||'none';
+  const t3Key=(teamExtra&&teamExtra[1])||'none';
+  const t2W=t2Key!=='none'?Math.round(Math.max(76,characterBoxWidth(t2Key)*teamScale)):0;
+  const t3W=t3Key!=='none'?Math.round(Math.max(76,characterBoxWidth(t3Key)*teamScale)):0;
+  if($('teamMate2')){$('teamMate2').style.width=(t2W||1)+'px';$('teamMate2').style.height=Math.round((t2W||1)*1.62)+'px';}
+  if($('teamMate3')){$('teamMate3').style.width=(t3W||1)+'px';$('teamMate3').style.height=Math.round((t3W||1)*1.62)+'px';}
+  if($('teamShadow2'))$('teamShadow2').style.width=Math.max(48,t2W*.66)+'px';
+  if($('teamShadow3'))$('teamShadow3').style.width=Math.max(48,t3W*.66)+'px';
 }
 
 function applySpriteTransform(){
@@ -538,13 +559,13 @@ function applySpriteTransform(){
   if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyCfg.visualY||0}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
   const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
   const t2Cfg=getActionVisualConfig(t2,t2Action), t3Cfg=getActionVisualConfig(t3,t3Action);
-  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.86})`;
-  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.86})`;
+  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.92})`;
+  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Cfg.visualY||0}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.92})`;
   if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;let mission={clues:0,tasks:0,stomps:0};const MISSION_TARGETS={clues:3,tasks:2,stomps:1};const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
@@ -554,7 +575,7 @@ function updateSpriteFacing(input=0){
   applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
-const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:3400,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3600,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
+const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
 
 /* EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
    This turns the level from random collecting into a planned path.
@@ -567,20 +588,18 @@ function levelPlan(){
   const l=levels[levelIndex];
   if(Array.isArray(l.plan)&&l.plan.length)return l.plan;
   return [
-    {at:70,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: collect 3 clues, complete 2 tasks, and stomp 1 bad object before the finish.`},
-    {at:220,kind:'token',tokenIndex:0},
-    {at:420,kind:'task',data:['🔎','Inspect clue',150,''],message:'Clue inspected. One suspicious swamp clue logged.'},
-    {at:650,kind:'hazard',hazardIndex:0},
-    {at:870,kind:'sign',data:['⬆️','Jump training',0,''],message:'Jump onto bad objects to stomp them. Walking into them costs a life.'},
-    {at:1080,kind:'token',tokenIndex:1},
-    {at:1320,kind:'hazard',hazardIndex:1},
-    {at:1580,kind:'task',data:['🧰','Fix scanner',180,''],message:'Scanner fixed. Now find the final clue.'},
-    {at:1840,kind:'token',tokenIndex:2},
-    {at:2080,kind:'hazard',hazardIndex:2},
-    {at:2360,kind:'sign',data:['✅','Gate check',0,''],message:'Final gate checks clues, tasks, and stomps.'},
-    {at:2600,kind:'token',tokenIndex:3},
-    {at:2860,kind:'hazard',hazardIndex:3},
-    {at:3160,kind:'task',data:['📋','Pack evidence',220,''],message:'Evidence packed. Finish when the gate opens.'}
+    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: start the patrol and look for clues.`},
+    {at:230,kind:'token',tokenIndex:0},
+    {at:390,kind:'task',data:['🔎','Inspect the swamp clue',150,''],message:'Clue inspected. The swamp is being suspicious.'},
+    {at:560,kind:'hazard',hazardIndex:0},
+    {at:760,kind:'sign',data:['➡️','Jump warning',0,''],message:'Jump or stomp the bad objects. Do not just walk into drama.'},
+    {at:940,kind:'token',tokenIndex:1},
+    {at:1140,kind:'hazard',hazardIndex:1},
+    {at:1380,kind:'task',data:['🧰','Repair the clue scanner',180,''],message:'Scanner fixed. Very professional.'},
+    {at:1640,kind:'token',tokenIndex:2},
+    {at:1880,kind:'hazard',hazardIndex:2},
+    {at:2120,kind:'task',data:['✅','Confirm the swamp evidence',250,''],message:'Evidence confirmed. Head for the finish.'},
+    {at:2380,kind:'token',tokenIndex:3}
   ];
 }
 function pickPlannedData(entry){
@@ -614,61 +633,60 @@ function spawnLevelPlanObjects(){
     }
   });
 }
-function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1600)}
-function missionReady(){return mission.clues>=MISSION_TARGETS.clues&&mission.tasks>=MISSION_TARGETS.tasks&&mission.stomps>=MISSION_TARGETS.stomps}
-function missionStatus(){return `Clues ${mission.clues}/${MISSION_TARGETS.clues} · Tasks ${mission.tasks}/${MISSION_TARGETS.tasks} · Stomps ${mission.stomps}/${MISSION_TARGETS.stomps}`}
-function missionNeeded(){
-  const missing=[];
-  if(mission.clues<MISSION_TARGETS.clues)missing.push(`${MISSION_TARGETS.clues-mission.clues} clue${MISSION_TARGETS.clues-mission.clues===1?'':'s'}`);
-  if(mission.tasks<MISSION_TARGETS.tasks)missing.push(`${MISSION_TARGETS.tasks-mission.tasks} task${MISSION_TARGETS.tasks-mission.tasks===1?'':'s'}`);
-  if(mission.stomps<MISSION_TARGETS.stomps)missing.push(`${MISSION_TARGETS.stomps-mission.stomps} stomp${MISSION_TARGETS.stomps-mission.stomps===1?'':'s'}`);
-  return missing.join(', ');
-}
-function updateHud(){
-  $('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);
-  $('questName').textContent=playing?`${levels[levelIndex].name} · ${missionStatus()}`:levels[levelIndex].name;
-}
+function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
 function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}
 function clearCharacterSlot(elId){
   setSpriteMissing(elId,false);
   const el=$(elId); if(el)el.removeAttribute('src');
   spriteCurrent[elId]='';
 }
-function setPair(m,b,extraA='owl',extraB='unicorn'){
-  main=m||'ax';
-  buddy=b||'none';
-  team=buddy!=='none';
-  teamExtra=[extraA||'owl',extraB||'unicorn'];
+function normaliseTeamList(a,b,c,d){
+  const out=[];
+  [a,b,c,d].forEach(ch=>{if(ch&&ch!=='none'&&!out.includes(ch))out.push(ch)});
+  return (out.length?out:['ax']).slice(0,4);
+}
+function teamSelectionFromMenu(){
+  return normaliseTeamList(
+    $('teamSlot1Select')?.value||'ax',
+    $('teamSlot2Select')?.value||'none',
+    $('teamSlot3Select')?.value||'none',
+    $('teamSlot4Select')?.value||'none'
+  );
+}
+function characterName(ch){return SETS[ch]?.name||(ch==='pet'?'Pet':String(ch||'').toUpperCase())}
+function setPair(m,b='none',extraA='none',extraB='none'){
+  const members=normaliseTeamList(m,b,extraA,extraB);
+  main=members[0]||'ax';
+  buddy=members[1]||'none';
+  teamExtra=[members[2]||'none',members[3]||'none'];
+  team=members.length>1;
   document.body.classList.toggle('teamMode',team);
-  document.body.classList.toggle('team4Mode',team);
+  document.body.classList.toggle('teamExtra2',members.length>2);
+  document.body.classList.toggle('teamExtra3',members.length>3);
+  document.body.classList.toggle('team4Mode',members.length>3);
   mainFrame=0;buddyFrame=0;lastFrame=0;lastBuddyFrame=0;
   resetIdleAnim();
   ['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');
   setSpriteFrame('sprite',main,'idle',0);
-  if(team){
-    setSpriteFrame('buddySprite',buddy,'idle',0);
-    setSpriteFrame('teamSprite2',teamExtra[0],'idle',0);
-    setSpriteFrame('teamSprite3',teamExtra[1],'idle',0);
-  }else{
-    clearCharacterSlot('buddySprite');
-    clearCharacterSlot('teamSprite2');
-    clearCharacterSlot('teamSprite3');
-  }
+  if(buddy&&buddy!=='none')setSpriteFrame('buddySprite',buddy,'idle',0); else clearCharacterSlot('buddySprite');
+  if(teamExtra[0]&&teamExtra[0]!=='none')setSpriteFrame('teamSprite2',teamExtra[0],'idle',0); else clearCharacterSlot('teamSprite2');
+  if(teamExtra[1]&&teamExtra[1]!=='none')setSpriteFrame('teamSprite3',teamExtra[1],'idle',0); else clearCharacterSlot('teamSprite3');
   updateSpriteFacing(0);
-  const leadName=SETS[main]?.name||'Pet';
-  showToast(team?`Team Quest: ${leadName}, ${SETS[buddy]?.name||'Pet'}, ${SETS[teamExtra[0]]?.name||teamExtra[0]}, ${SETS[teamExtra[1]]?.name||teamExtra[1]}`:`${leadName} solo.`);
+  const names=members.map(characterName).join(', ');
+  showToast(members.length>1?`Team Quest: ${names}`:`${characterName(main)} solo.`);
   syncCharacterFields();
 }
 function startSoloQuest(){
   const chosen=$('soloCharacterSelect')?.value||main||'ax';
-  startGame(chosen,'none');
+  startGame(chosen,'none','none','none');
 }
 function startTeamQuest(){
-  startGame('ax','pura','owl','unicorn');
+  const members=teamSelectionFromMenu();
+  startGame(members[0],members[1]||'none',members[2]||'none',members[3]||'none');
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();mission={clues:0,tasks:0,stomps:0};player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast('Mission: collect clues, complete tasks, stomp danger.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -715,19 +733,17 @@ function collide(o){
   if(o.hit||o.vanished)return;
   if(o.kind==='token'){
     o.hit=true;
-    mission.clues=Math.min(MISSION_TARGETS.clues,mission.clues+1);
     score+=o.points;
-    showToast(`✨ Clue found: ${o.label}! ${missionStatus()}`);
+    showToast(`✨ Collected ${o.label}! +${o.points}`);
     vanishObject(o,'collected',220);
   }else if(o.kind==='hazard'){
     if(canStomp(o)){
       o.hit=true;
-      mission.stomps=Math.min(MISSION_TARGETS.stomps,mission.stomps+1);
       score+=200;
       player.vy=13.5;
       player.jump=Math.max(player.jump,18);
       player.grounded=false;
-      showToast(`💥 Stomped ${o.label}! ${missionStatus()}`);
+      showToast(`💥 Stomped ${o.label}! +200`);
       vanishObject(o,'stomped',240);
     }else{
       o.hit=true;
@@ -740,24 +756,17 @@ function collide(o){
     }
   }else if(o.kind==='task'||o.kind==='sign'){
     o.hit=true;
-    if(o.kind==='task')mission.tasks=Math.min(MISSION_TARGETS.tasks,mission.tasks+1);
     score+=o.points||0;
-    showToast(o.message?`${o.message} ${missionStatus()}`:`${o.label} done! ${missionStatus()}`);
+    showToast(o.message||`${o.label} done!`);
     vanishObject(o,'collected',260);
   }else{
-    if(!missionReady()){
-      o.x+=520;
-      showToast(`Finish gate locked. Need ${missionNeeded()}.`);
-      updateHud();
-      return;
-    }
     o.hit=true;
     score+=500;
     levelComplete();
   }
   updateHud();
 }
-function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} cleared with ${missionStatus()}. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Mission complete with ${missionStatus()}.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
+function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){
   if(keys.left)player.x-=dt*.18;
   if(keys.right)player.x+=dt*.18;
@@ -810,9 +819,9 @@ function animateSprites(now){
   animateOne('sprite',main,act,now,idleAnim.sprite);
   if(team){
     const buddyAct=player.grounded?(moving?'walk':'idle'):'idle';
-    animateOne('buddySprite',buddy,buddyAct,now,idleAnim.buddySprite);
-    animateOne('teamSprite2',teamExtra[0],buddyAct,now,idleAnim.teamSprite2);
-    animateOne('teamSprite3',teamExtra[1],buddyAct,now,idleAnim.teamSprite3);
+    if(buddy&&buddy!=='none')animateOne('buddySprite',buddy,buddyAct,now,idleAnim.buddySprite);
+    if(teamExtra[0]&&teamExtra[0]!=='none')animateOne('teamSprite2',teamExtra[0],buddyAct,now,idleAnim.teamSprite2);
+    if(teamExtra[1]&&teamExtra[1]!=='none')animateOne('teamSprite3',teamExtra[1],buddyAct,now,idleAnim.teamSprite3);
   }
 }
 function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
@@ -898,14 +907,14 @@ function applySettings(o={}){
   // Do NOT load old shared spritePatterns from Cloudflare, because old saves can keep broken Owl/Ax paths alive.
   // Use only EDIT SECTION 17 / SPRITE_PATTERNS as the source of truth for sprite folders/names.
   if(false && o.spritePatterns)mergeSpritePatterns(o.spritePatterns);
-  if(Array.isArray(o.teamExtra)&&o.teamExtra.length>=2)teamExtra=[o.teamExtra[0]||'owl',o.teamExtra[1]||'unicorn'];
+  if(Array.isArray(o.teamExtra)&&o.teamExtra.length>=2)teamExtra=[o.teamExtra[0]||'none',o.teamExtra[1]||'none'];
   if(o.petPlayerW!==undefined){petPlayerW=Number(o.petPlayerW)||petPlayerW;if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}}
   if(o.petFlip!==undefined){petFlip=Number(o.petFlip)||petFlip;if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);}
   if(o.mainFlip!==undefined){mainFlip=Number(o.mainFlip)||1;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);}
   if(o.buddyFlip!==undefined){buddyFlip=Number(o.buddyFlip)||1;if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip);}
   Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});
   if(o.main||o.buddy!==undefined){
-    setPair(o.main||main,o.team?(o.buddy||'pura'):(o.buddy||'none'),teamExtra[0]||'owl',teamExtra[1]||'unicorn');
+    setPair(o.main||main,o.team?(o.buddy||'none'):(o.buddy||'none'),teamExtra[0]||'none',teamExtra[1]||'none');
   }else{
     applyCharacterSlotSizes();
     updateSpriteFacing(0);
@@ -918,7 +927,7 @@ function clearBrowserGameSaves(){try{Object.keys(localStorage).filter(k=>k.start
 function persistLocalQuiet(){/* Browser save disabled on purpose. Use shared cloud save only. */}
 function saveLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Save shared level.'}
 function loadLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Load shared level.'}
-function resetCorrect(){clearBrowserGameSaves();spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['owl','unicorn'];setPair('ax','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Sprite paths stay exactly as written in EDIT SECTION 17.'}
+function resetCorrect(){clearBrowserGameSaves();spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['none','none'];setPair('ax','none','none','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Sprite paths stay exactly as written in EDIT SECTION 17.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
@@ -943,7 +952,7 @@ async function loadCloud(auto=false){
     return false;
   }catch(e){if(!auto)$('adminStatus').textContent='Load failed: '+e.message;return false}
 }
-function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSelect'))$('soloCharacterSelect').value=main;$('buddySelect').value=buddy||'none';if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip||1);if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip||1)}
+function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSelect'))$('soloCharacterSelect').value=main;$('buddySelect').value=buddy||'none';if($('teamSlot1Select'))$('teamSlot1Select').value=main||'ax';if($('teamSlot2Select'))$('teamSlot2Select').value=buddy||'none';if($('teamSlot3Select'))$('teamSlot3Select').value=(teamExtra&&teamExtra[0])||'none';if($('teamSlot4Select'))$('teamSlot4Select').value=(teamExtra&&teamExtra[1])||'none';if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip||1);if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip||1)}
 function editorRowsFor(layer){return {
   player:['calPlayerX','calDrop','calZPlayer'],
   buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
@@ -988,7 +997,7 @@ document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focus
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
 Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});}));
 $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
-$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair('ax','pura','owl','unicorn');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
+$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
   $('puraIdleUrl').value=SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=SPRITE_PATTERNS.pura.jump;
@@ -997,8 +1006,6 @@ function fillSpriteUrlInputs(){
 }
 
 function readSpriteUrlInputs(){
-  Object.keys(ACTION_FRAME_CACHE).forEach(k=>delete ACTION_FRAME_CACHE[k]);
-  Object.keys(ACTION_FRAME_PROBING).forEach(k=>delete ACTION_FRAME_PROBING[k]);
   // The Builder only edits the live page while you test. The real saved source is EDIT SECTION 17 in index.html.
   SPRITE_PATTERNS.ax.idle=$('axIdleUrl').value.trim()||SPRITE_PATTERNS.ax.idle;SPRITE_PATTERNS.ax.walk=$('axWalkUrl').value.trim()||SPRITE_PATTERNS.ax.walk;SPRITE_PATTERNS.ax.jump=$('axJumpUrl').value.trim()||SPRITE_PATTERNS.ax.jump;
   SPRITE_PATTERNS.pura.idle=$('puraIdleUrl').value.trim()||SPRITE_PATTERNS.pura.idle;SPRITE_PATTERNS.pura.walk=$('puraWalkUrl').value.trim()||SPRITE_PATTERNS.pura.walk;SPRITE_PATTERNS.pura.jump=$('puraJumpUrl').value.trim()||SPRITE_PATTERNS.pura.jump;
@@ -1007,8 +1014,8 @@ function readSpriteUrlInputs(){
 }
 
 fillSpriteUrlInputs();
-$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setSpriteFrame('sprite',main,'idle',0);if(team){setSpriteFrame('buddySprite',buddy,'walk',0);setSpriteFrame('teamSprite2',teamExtra[0],'walk',0);setSpriteFrame('teamSprite3',teamExtra[1],'walk',0);}$('spriteStatus').textContent='Sprite URL patterns applied for this page. Permanent paths are edited in the single SPRITE_PATTERNS block.';showToast('Sprite URL patterns applied')};
-$('resetSpriteUrlsBtn').onclick=()=>{spriteBroken.clear();fillSpriteUrlInputs();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setPair(main,buddy,teamExtra[0],teamExtra[1]);$('spriteStatus').textContent='Sprite cache cleared. To change permanent sprite paths, edit the single SPRITE_PATTERNS block in EDIT SECTION 17, upload, then Ctrl+F5.';};
+$('applySpriteUrlsBtn').onclick=()=>{readSpriteUrlInputs();spriteBroken.clear();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setSpriteFrame('sprite',main,'idle',0);if(team){if(buddy&&buddy!=='none')setSpriteFrame('buddySprite',buddy,'walk',0);if(teamExtra[0]&&teamExtra[0]!=='none')setSpriteFrame('teamSprite2',teamExtra[0],'walk',0);if(teamExtra[1]&&teamExtra[1]!=='none')setSpriteFrame('teamSprite3',teamExtra[1],'walk',0);}$('spriteStatus').textContent='Sprite URL patterns applied for this page. Permanent paths are edited in the single SPRITE_PATTERNS block.';showToast('Sprite URL patterns applied')};
+$('resetSpriteUrlsBtn').onclick=()=>{spriteBroken.clear();fillSpriteUrlInputs();['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');setPair(main,buddy||'none',teamExtra[0]||'none',teamExtra[1]||'none');$('spriteStatus').textContent='Sprite cache cleared. To change permanent sprite paths, edit the single SPRITE_PATTERNS block in EDIT SECTION 17, upload, then Ctrl+F5.';};
 function pct(v){v=Number(v);if(!Number.isFinite(v))return 0;if(v<=1&&v>0)v*=100;return Math.max(0,Math.min(100,v))}
 function getPetUserId(){return ($('userIdInput')?.value||'').trim()||$('userSelect').value}
 function parseMaybeJson(v){
@@ -1150,7 +1157,7 @@ async function selectPet(){
 function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange')?.value)||petPlayerW));petFlip=Number($('petFlipSelect')?.value)||petFlip;mainFlip=petFlip;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);if($('calPlayerW'))$('calPlayerW').value=petPlayerW;setVar('playerW',petPlayerW,'px');applySettings({playerW:petPlayerW,main:'pet',buddy:'none',team:false,petPlayerW,petFlip,mainFlip});setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
-$('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team)return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a)};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
+$('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
