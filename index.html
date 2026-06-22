@@ -222,12 +222,12 @@ let SPRITE_PATTERNS={
     walk:`${CLOUD}/v1782132160/owl_walk_{n}.png`,
     jump:`${CLOUD}/v1782132160/owl_jump_{n}.png`
   },
-unicorn:{
-  idle:`${CLOUD}/v1781798484/unicorn_idle_{n}.png`,
-  walk:`${CLOUD}/v1782137360/unicorn_walk_{n}.png`,
-  jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
+  unicorn:{
+    idle:`${CLOUD}/v1781798484/unicorn_idle_{n}.png`,
+    walk:`${CLOUD}/v1782137360/unicorn_walk_{n}.png`,
+    jump:`${CLOUD}/v1781862367/unicorn_jump_{n}.png`
+  }
 };
-
 function fillSpritePattern(pattern,idx,totalFrames=10){
   if(!pattern)return'';
   totalFrames=Math.max(1,Number(totalFrames)||10);
