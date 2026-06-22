@@ -847,7 +847,11 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  const moving=movementInput()!==0;
+  // AUTO-SCROLL WALK FIX:
+  // The level moves even when the player is not holding an arrow key,
+  // so characters should walk during an active quest instead of staying on idle.
+  const questMoving=playing&&!paused&&!ended;
+  const moving=movementInput()!==0||questMoving;
   const act=player.grounded?(moving?'walk':'idle'):'jump';
   animateOne('sprite',main,act,now,idleAnim.sprite);
   if(team){
