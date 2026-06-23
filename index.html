@@ -75,21 +75,24 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
    These should be buildings in the world, not tiny task icons.
 */
 .building{
-  width:clamp(190px,24vw,360px)!important;
-  height:clamp(140px,19vw,280px)!important;
+  width:clamp(210px,26vw,390px)!important;
+  height:clamp(155px,20vw,300px)!important;
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
   border-radius:0!important;
   overflow:visible!important;
+  /* Buildings use top as their floor point, so they sit on the ground instead of floating. */
+  transform:translate(-50%,-100%)!important;
 }
 .building img{
   width:100%!important;
   height:100%!important;
   object-fit:contain!important;
+  object-position:center bottom!important;
   filter:drop-shadow(0 18px 20px rgba(0,0,0,.30));
 }
-.building:hover{transform:translate(-50%,-50%) scale(1.04)!important}
+.building:hover{transform:translate(-50%,-100%) scale(1.04)!important}
 
 .doorStop{pointer-events:auto;cursor:pointer}
 
@@ -131,7 +134,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 }
 .shopCard strong{display:block;font-size:18px;margin-bottom:4px}
 .shopCard span{font-size:13px;opacity:.9}
-@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:190px!important;height:145px!important}}
+@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:210px!important;height:155px!important}}
 
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
@@ -780,9 +783,7 @@ const levels=[
       {at:850,kind:'task',data:['🔎','Practice clue',120,''],message:'This is a task/clue object. Some objects give instructions or jobs.'},
 
       {at:1040,kind:'building',place:'petShop',data:['','Pet Shop',0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
-      {at:1260,kind:'task',data:['🎣','Hook-a-Waaambulance',0,PLACE_IMAGES.door],message:'Hook-a-Waaambulance: stop here to play the hook game later.'},
       {at:1480,kind:'building',place:'habitat',data:['','Habitat',0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
-      {at:1700,kind:'task',data:['🗺️','Quest Selector',0,PLACE_IMAGES.door],message:'Quest Selector: stop here to choose the next quest later.'},
 
       {at:1940,kind:'sign',data:['🏁','Finish lesson',0,''],message:'Tutorial done. Go to the flag to start Wrong Moon next.'},
       {at:2140,kind:'finish'}
@@ -903,7 +904,10 @@ function makePlannedObject(entry){
           ? 118
           : cssNumber('--tokenLift',126);
 
-  const y=innerHeight-floorPx()-(isFinish?130:lift);
+  // Buildings sit on the ground line. Smaller objects use their normal lift height.
+  const y=kind==='building'
+    ? innerHeight-floorPx()+8
+    : innerHeight-floorPx()-(isFinish?130:lift);
 
   const obj={
     el,
