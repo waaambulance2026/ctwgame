@@ -58,7 +58,7 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
   --buddyX:14vw; --buddyW:150px; --buddyDrop:16px;
   --skyY:center; --hillsH:285px; --hillsBottom:128px; --groundH:158px; --groundBottom:-22px;
   --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
-  --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:30; --zPlayer:30; --zObjects:50;
+  --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:30; --zPlayer:30; --zBuildings:48; --zObjects:50;
 }
 /* EDIT SECTION 04: PAGE RESET, GAME CANVAS, SKY, HILLS, GROUND, FLOOR AND HUD */
 *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
@@ -68,7 +68,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
-#buildingObjects{position:absolute;inset:0;z-index:48;pointer-events:none}
+#buildingObjects{position:absolute;inset:0;z-index:var(--zBuildings);pointer-events:none}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
 
 /* EDIT SECTION 05B: BIG BUILDINGS + FULL SCREEN DOOR
@@ -138,6 +138,17 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .shopCard span{font-size:13px;opacity:.9}
 @media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:190px!important;height:140px!important}}
 
+
+/* EDIT SECTION 05C: SIMPLE BUILDING / PLACE EDITING
+   Buildings can now be dragged in Build/Edit mode. Use Places / Buildings in the editor.
+*/
+body.editMode #buildingObjects{pointer-events:auto!important}
+body.editMode .building{pointer-events:auto!important;cursor:grab;outline:3px dashed rgba(245,197,66,.95);outline-offset:4px}
+body.editMode .building:active{cursor:grabbing}
+body.editMode .building.selectedPlaceTarget{outline:4px dashed rgba(118,199,216,.98)!important;outline-offset:7px!important}
+.placeEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.placeEditorGrid label{font-size:12px;font-weight:900}.placeEditorGrid select{margin-top:4px}
+.layerHelp{font-size:12px;line-height:1.35;background:rgba(118,199,216,.12);border:1px solid rgba(118,199,216,.42);border-radius:12px;padding:8px;margin:6px 0 8px}
+
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
 .builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
@@ -165,7 +176,9 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .builder.show-player .section-player,
 .builder.show-buddy .section-buddy,
 .builder.show-world .section-layers,
-.builder.show-objects .section-objects{display:block!important}
+.builder.show-objects .section-objects,
+.builder.show-places .section-places,
+.builder.show-layers .section-layers{display:block!important}
 .petPanel{background:transparent!important;border:0!important;box-shadow:none!important;padding:10px!important}
 .tamaShell{border:5px solid #d282c2!important;border-radius:38px!important;background:radial-gradient(circle at 50% 0%,#fff3fb 0 18%,#ffc7ea 19% 45%,#d282c2 46% 100%)!important;box-shadow:inset 0 -16px 0 rgba(92,39,93,.18),0 20px 45px rgba(0,0,0,.32)!important}
 .tamaScreen{border:5px solid #76C7D8!important;border-radius:24px!important;background:linear-gradient(180deg,#eaffff,#ffffff)!important;min-height:230px!important}
@@ -254,11 +267,12 @@ body.night .platform{
     <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
-      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
-      <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
+      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
+      <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick a building, then drag the building on the game. Drag left/right to change where it appears in the level. Drag up/down to place its feet on the ground.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="100" max="3400" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
-      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
+      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
@@ -292,7 +306,7 @@ body.night .platform{
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
-const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:170,playerDrop:26,buddyX:14,buddyW:150,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zObjects:50};
+const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:170,playerDrop:26,buddyX:14,buddyW:150,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zBuildings:48,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
@@ -756,6 +770,18 @@ const PLACE_IMAGES={
   petShop:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/pet_shop.png',
   habitat:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/habitat.png'
 };
+
+// EDIT SECTION 20A: PLACE / BUILDING LAYOUT
+// at = how far through the level the building appears.
+// width = building size.
+// yOffset = feet up/down. Smaller number moves up, bigger number moves down.
+// z = layer level. Higher number goes in front.
+const PLACE_LAYOUT_DEFAULT={
+  petShop:{at:1040,width:230,yOffset:18,z:48},
+  habitat:{at:1480,width:230,yOffset:18,z:48}
+};
+let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
+
 const levels=[
   {
     name:'Level 1: Tutorial Town',
@@ -880,6 +906,16 @@ function pickPlannedData(entry){
   if(entry.kind==='finish')return ['🏁','Finish flag',0,'v1781797065/finish_flag.png'];
   return ['❔',entry.label||'Level object',Number(entry.points)||0,entry.image||''];
 }
+function buildingLayout(place){return PLACE_LAYOUT[place]||PLACE_LAYOUT.petShop||{at:0,width:220,yOffset:18,z:48}}
+function applyBuildingLayout(o){
+  if(!o||o.kind!=='building')return;
+  const l=buildingLayout(o.place);
+  const w=Math.max(90,Number(l.width)||220);
+  o.el.style.width=w+'px';
+  o.el.style.height='auto';
+  o.el.style.zIndex=String(Number(l.z)||48);
+  o.y=innerHeight-floorPx()+(Number(l.yOffset)||0);
+}
 function makePlannedObject(entry){
   const kind=entry.kind||'token';
   const data=pickPlannedData(entry);
@@ -907,9 +943,8 @@ function makePlannedObject(entry){
           ? 118
           : cssNumber('--tokenLift',126);
 
-  // Buildings sit on the ground line. Smaller objects use their normal lift height.
   const y=kind==='building'
-    ? innerHeight-floorPx()+18
+    ? innerHeight-floorPx()+buildingLayout(entry.place).yOffset
     : innerHeight-floorPx()-(isFinish?130:lift);
 
   const obj={
@@ -927,19 +962,27 @@ function makePlannedObject(entry){
 
   if(kind==='building'){
     el.classList.add('doorStop');
+    el.dataset.layer='places';
+    el.dataset.place=obj.place;
     el.title='Enter '+obj.label;
+    applyBuildingLayout(obj);
     el.addEventListener('pointerdown',ev=>{
       ev.preventDefault();
-      openBuilding(obj);
+      if(document.body.classList.contains('editMode'))beginPlaceDrag(obj,ev);
+      else openBuilding(obj);
     });
   }
 
   objects.push(obj);
 }
+function plannedAt(entry){
+  if(entry&&entry.kind==='building'&&entry.place&&PLACE_LAYOUT[entry.place])return Number(PLACE_LAYOUT[entry.place].at||entry.at||0);
+  return Number((entry&&entry.at)||0);
+}
 function spawnLevelPlanObjects(){
   const plan=levelPlan();
   plan.forEach((entry,i)=>{
-    if(!spawnedPlan.has(i)&&distance>=Number(entry.at||0)){
+    if(!spawnedPlan.has(i)&&distance>=plannedAt(entry)){
       spawnedPlan.add(i);
       makePlannedObject(entry);
     }
@@ -1254,7 +1297,7 @@ function loop(now=0){
   animateSprites(now);requestAnimationFrame(loop);
 }
 // EDIT SECTION 23: BUILDER SETTINGS, SAVE/LOAD, CHARACTER CONTROLS AND PETBOT
-const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZObjects:['zObjects','']};
+const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZBuildings:['zBuildings',''],calZObjects:['zObjects','']};
 function clonePatterns(){return JSON.parse(JSON.stringify(SPRITE_PATTERNS))}
 function safeSpritePatternValue(v){
   v=String(v||'').trim();
@@ -1274,7 +1317,7 @@ function readSettings(){
   if($('axIdleUrl'))readSpriteUrlInputs();
   const o={};
   Object.entries(settingMap).forEach(([id,[key]])=>o[key]=+$(''+id).value);
-  o.main=main;o.buddy=buddy;o.team=team;o.teamExtra=teamExtra;o.mainFlip=mainFlip;o.buddyFlip=buddyFlip;o.petPlayerW=petPlayerW;o.petFlip=petFlip;
+  o.main=main;o.buddy=buddy;o.team=team;o.teamExtra=teamExtra;o.mainFlip=mainFlip;o.buddyFlip=buddyFlip;o.petPlayerW=petPlayerW;o.petFlip=petFlip;o.placeLayout=JSON.parse(JSON.stringify(PLACE_LAYOUT));
   return o;
 }
 function applySettings(o={}){
@@ -1282,12 +1325,14 @@ function applySettings(o={}){
   // Do NOT load old shared spritePatterns from Cloudflare, because old saves can keep broken Owl/Ax paths alive.
   // Use only EDIT SECTION 17 / SPRITE_PATTERNS as the source of truth for sprite folders/names.
   if(false && o.spritePatterns)mergeSpritePatterns(o.spritePatterns);
+  if(o.placeLayout&&typeof o.placeLayout==='object'){Object.keys(PLACE_LAYOUT).forEach(k=>{if(o.placeLayout[k])PLACE_LAYOUT[k]={...PLACE_LAYOUT[k],...o.placeLayout[k]};});}
   if(Array.isArray(o.teamExtra)&&o.teamExtra.length>=2)teamExtra=[o.teamExtra[0]||'none',o.teamExtra[1]||'none'];
   if(o.petPlayerW!==undefined){petPlayerW=Number(o.petPlayerW)||petPlayerW;if($('petSizeRange')){$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';}}
   if(o.petFlip!==undefined){petFlip=Number(o.petFlip)||petFlip;if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);}
   if(o.mainFlip!==undefined){mainFlip=Number(o.mainFlip)||1;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);}
   if(o.buddyFlip!==undefined){buddyFlip=Number(o.buddyFlip)||1;if($('buddyFlipSelect'))$('buddyFlipSelect').value=String(buddyFlip);}
   Object.entries(settingMap).forEach(([id,[key,unit]])=>{if(o[key]!==undefined)$(id).value=o[key];const val=$(id).value;setVar(key,val,unit);$(id+'Val').textContent=val+unit});
+  objects.forEach(applyBuildingLayout); if($('placeSelect'))syncPlaceControls();
   if(o.main||o.buddy!==undefined){
     setPair(o.main||main,o.team?(o.buddy||'none'):(o.buddy||'none'),teamExtra[0]||'none',teamExtra[1]||'none');
   }else{
@@ -1302,7 +1347,7 @@ function clearBrowserGameSaves(){try{Object.keys(localStorage).filter(k=>k.start
 function persistLocalQuiet(){/* Browser save disabled on purpose. Use shared cloud save only. */}
 function saveLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Save shared level.'}
 function loadLocal(){clearBrowserGameSaves();$('adminStatus').textContent='Browser save is disabled. Use Load shared level.'}
-function resetCorrect(){clearBrowserGameSaves();spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['none','none'];setPair('ax','none','none','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Sprite paths stay exactly as written in EDIT SECTION 17.'}
+function resetCorrect(){clearBrowserGameSaves();spriteBroken.clear();mainFlip=1;buddyFlip=1;if($('mainFlipSelect'))$('mainFlipSelect').value='1';if($('buddyFlipSelect'))$('buddyFlipSelect').value='1';fillSpriteUrlInputs();PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));syncPlaceControls&&syncPlaceControls();Object.entries(DEFAULTS).forEach(([k,v])=>{const ent=Object.entries(settingMap).find(e=>e[1][0]===k);if(ent)$(ent[0]).value=v});teamExtra=['none','none'];setPair('ax','none','none','none');applySettings({});exportSettings();$('adminStatus').textContent='Reset to safe visual layout. Sprite paths stay exactly as written in EDIT SECTION 17.'}
 async function saveCloud(){
   const key=$('adminKey').value.trim(),name=$('levelName').value.trim()||'level_main';
   if(!key){$('adminStatus').textContent='Enter admin key first.';return}
@@ -1331,6 +1376,8 @@ function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSel
 function editorRowsFor(layer){return {
   player:['calPlayerX','calDrop','calZPlayer'],
   buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
+  places:['calPlaceAt','calPlaceW','calPlaceY','calPlaceZ','calZBuildings'],
+  layers:['calZSky','calZHills','calZGround','calZPlatform','calZBuddy','calZPlayer','calZBuildings','calZObjects'],
   ground:['calGroundH','calGroundB','calZGround'],
   hills:['calHillH','calHillB','calZHills'],
   platform:['calFloor','calPlatform','calZPlatform'],
@@ -1339,17 +1386,19 @@ function editorRowsFor(layer){return {
 }[layer]||['calPlayerX','calDrop','calZPlayer'];}
 function syncEditorVisibility(layer){
   const b=$('builder'); if(!b)return;
-  b.classList.remove('show-player','show-buddy','show-world','show-objects');
+  b.classList.remove('show-player','show-buddy','show-world','show-objects','show-places','show-layers');
   const show=new Set(editorRowsFor(layer));
   document.querySelectorAll('.builder .editSection').forEach(sec=>sec.style.setProperty('display','none','important'));
   Object.keys(settingMap).forEach(id=>{const row=$(id)?.closest('.calRow'); if(row)row.style.display=show.has(id)?'grid':'none';});
   const showSection=sel=>{const el=document.querySelector(sel); if(el)el.style.setProperty('display','block','important');};
   if(layer==='player'){b.classList.add('show-player');showSection('.section-player');showSection('.section-layers');}
   else if(layer==='buddy'){b.classList.add('show-buddy');showSection('.section-buddy');showSection('.section-layers');}
+  else if(layer==='places'){b.classList.add('show-places');showSection('.section-places');showSection('.section-layers');syncPlaceControls();}
+  else if(layer==='layers'){b.classList.add('show-layers');showSection('.section-layers');}
   else if(layer==='objects'){b.classList.add('show-objects');showSection('.section-objects');showSection('.section-layers');}
   else {b.classList.add('show-world');showSection('.section-layers');}
   const layerTitle=document.querySelector('.section-layers h3');
-  if(layerTitle){const names={ground:'Ground settings',hills:'Hills settings',platform:'Invisible floor line settings',sky:'Sky layer level',player:'Main character layer level',buddy:'Side character layer level',objects:'Items layer level'};layerTitle.textContent=names[layer]||'Selected settings';}
+  if(layerTitle){const names={ground:'Ground settings',hills:'Hills settings',platform:'Invisible floor line settings',sky:'Sky layer level',player:'Main character layer level',buddy:'Side character layer level',objects:'Items layer level',places:'Place / building settings',layers:'All layer levels'};layerTitle.textContent=names[layer]||'Selected settings';}
 }
 function focusEditTarget(layer){
   document.body.dataset.editTarget=layer; if($('builder')) $('builder').dataset.target=layer;
@@ -1358,11 +1407,61 @@ function focusEditTarget(layer){
   document.querySelectorAll('.targetPick').forEach(x=>x.classList.toggle('active',x.dataset.selectTarget===layer));
   const el=document.querySelector('[data-layer="'+layer+'"]'); if(el)el.classList.add('selectedEditTarget');
   if($('editTarget')) $('editTarget').value=layer;
-  const names={player:'main character',buddy:'side character',ground:'ground artwork',hills:'hills layer',platform:'invisible floor line',sky:'sky',objects:'items'};
+  const names={player:'main character',buddy:'side character',places:'places / buildings',layers:'layer levels',ground:'ground artwork',hills:'hills layer',platform:'invisible floor line',sky:'sky',objects:'items'};
   $('adminStatus') && ($('adminStatus').textContent='Editing '+(names[layer]||layer)+'. Only these settings are shown. Drag on the game or use the sliders.');
 }
+
+let selectedPlace='petShop';
+function clampNum(v,min,max){v=Number(v);if(!Number.isFinite(v))v=min;return Math.max(min,Math.min(max,v));}
+function visiblePlaceObject(place){return objects.find(o=>o.kind==='building'&&o.place===place&&!o.vanished)||null;}
+function syncPlaceControls(){
+  if(!$('placeSelect'))return;
+  selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
+  const l=buildingLayout(selectedPlace);
+  $('calPlaceAt').value=clampNum(l.at,100,3400);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
+  $('calPlaceW').value=clampNum(l.width,110,420);$('calPlaceWVal').textContent=$('calPlaceW').value+'px';
+  $('calPlaceY').value=clampNum(l.yOffset,-120,180);$('calPlaceYVal').textContent=$('calPlaceY').value+'px';
+  $('calPlaceZ').value=clampNum(l.z,0,80);$('calPlaceZVal').textContent=$('calPlaceZ').value;
+  if($('calZBuildings')){$('calZBuildings').value=$('calPlaceZ').value;$('calZBuildingsVal').textContent=$('calPlaceZ').value;setVar('zBuildings',$('calPlaceZ').value,'');}
+  document.querySelectorAll('.building').forEach(el=>el.classList.toggle('selectedPlaceTarget',el.dataset.place===selectedPlace));
+}
+function readPlaceControls(){
+  if(!$('placeSelect'))return;
+  selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
+  PLACE_LAYOUT[selectedPlace]={
+    ...(PLACE_LAYOUT[selectedPlace]||{}),
+    at:+$('calPlaceAt').value,
+    width:+$('calPlaceW').value,
+    yOffset:+$('calPlaceY').value,
+    z:+$('calPlaceZ').value
+  };
+  $('calPlaceAtVal').textContent=$('calPlaceAt').value;
+  $('calPlaceWVal').textContent=$('calPlaceW').value+'px';
+  $('calPlaceYVal').textContent=$('calPlaceY').value+'px';
+  $('calPlaceZVal').textContent=$('calPlaceZ').value;
+  if($('calZBuildings')){$('calZBuildings').value=$('calPlaceZ').value;$('calZBuildingsVal').textContent=$('calPlaceZ').value;setVar('zBuildings',$('calPlaceZ').value,'');}
+  objects.forEach(applyBuildingLayout);
+  exportSettings();
+}
+function bringSelectedPlaceHere(){
+  if(!$('placeSelect'))return;
+  selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
+  const l=buildingLayout(selectedPlace);
+  l.at=Math.max(80,Math.round(distance+260));
+  l.yOffset=18;
+  const obj=visiblePlaceObject(selectedPlace);
+  if(obj){obj.x=innerWidth*.58;applyBuildingLayout(obj);}
+  syncPlaceControls();exportSettings();showToast('Moved '+selectedPlace+' near here');
+}
+function snapSelectedPlaceToGround(){
+  if(!$('placeSelect'))return;
+  selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
+  buildingLayout(selectedPlace).yOffset=18;
+  const obj=visiblePlaceObject(selectedPlace); if(obj)applyBuildingLayout(obj);
+  syncPlaceControls();exportSettings();showToast('Snapped building feet to ground');
+}
 function openBuilder(){document.body.classList.add('editMode');$('builder').classList.remove('hidden');$('petPanel').classList.add('hidden');paused=true;$('pauseBtn').textContent='Resume';exportSettings();focusEditTarget(($('editTarget')&&$('editTarget').value)||'player')}
-function closeBuilder(){document.body.classList.remove('editMode');$('builder').classList.add('hidden');document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'))}
+function closeBuilder(){document.body.classList.remove('editMode');$('builder').classList.add('hidden');document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'));document.querySelectorAll('.building').forEach(x=>x.classList.remove('selectedPlaceTarget'))}
 function openPetPanel(){closeBuilder();$('petPanel').classList.remove('hidden');loadPetbotPets(false)}
 function closePetPanel(){$('petPanel').classList.add('hidden')}
 function openMenu(){paused=true;$('pauseBtn').textContent='Resume';$('startScreen').classList.remove('hidden');$('resumeBtn').style.display=playing?'inline-block':'none';$('questName').textContent=playing?'Paused in menu':'Main menu: choose a quest.'}
@@ -1371,6 +1470,9 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.query
 document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focusEditTarget(b.dataset.selectTarget));
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
 Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});}));
+['calPlaceAt','calPlaceW','calPlaceY','calPlaceZ'].forEach(id=>{if($(id))$(id).addEventListener('input',readPlaceControls);});
+if($('placeSelect'))$('placeSelect').onchange=()=>{selectedPlace=$('placeSelect').value;syncPlaceControls();};
+if($('placeQuick'))$('placeQuick').onchange=()=>{const v=$('placeQuick').value;$('placeQuick').value='';if(v==='bringHere')bringSelectedPlaceHere();if(v==='groundSnap')snapSelectedPlaceToGround();};
 $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
 $('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
 function fillSpriteUrlInputs(){
@@ -1556,6 +1658,18 @@ function beginLayerDrag(layer,e){
   try{(e.currentTarget||$('game')).setPointerCapture(e.pointerId)}catch(err){}
   e.preventDefault(); e.stopPropagation();
 }
+function beginPlaceDrag(o,e){
+  if(!o||o.kind!=='building')return;
+  selectedPlace=o.place||'petShop';
+  if($('placeSelect'))$('placeSelect').value=selectedPlace;
+  focusEditTarget('places');
+  syncPlaceControls();
+  const l={...buildingLayout(selectedPlace)};
+  drag={layer:'place',place:selectedPlace,obj:o,sx:e.clientX,sy:e.clientY,startLayout:l,startX:o.x,startY:o.y};
+  try{o.el.setPointerCapture(e.pointerId)}catch(err){}
+  e.preventDefault();e.stopPropagation();
+}
+
 document.querySelectorAll('.editableTarget').forEach(el=>el.addEventListener('pointerdown',e=>{
   if(!document.body.classList.contains('editMode'))return;
   beginLayerDrag(el.dataset.layer,e);
@@ -1569,12 +1683,22 @@ $('game').addEventListener('pointerdown',e=>{
 addEventListener('pointermove',e=>{
   if(!drag)return;
   const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy,s=drag.start;
+  if(drag.layer==='place'){
+    const l=PLACE_LAYOUT[drag.place]||buildingLayout(drag.place);
+    const xPerM=0.10/0.055;
+    const newX=drag.startX+dx;
+    l.at=clampNum(Math.round(distance-((innerWidth+260)-newX)/xPerM),80,3400);
+    l.yOffset=clampNum(drag.startLayout.yOffset+dy,-120,180);
+    if(drag.obj){drag.obj.x=newX;applyBuildingLayout(drag.obj);}
+    syncPlaceControls();
+    exportSettings();
+  }
   if(drag.layer==='player'){$('calPlayerX').value=Math.max(8,Math.min(55,s.playerX+dx/innerWidth*100));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
   if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(2,Math.min(55,s.buddyX+dx/innerWidth*100));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
   if(drag.layer==='hills'){$('calHillB').value=Math.max(-250,Math.min(600,s.hillsBottom-dy))}
   if(drag.layer==='ground'){$('calGroundB').value=Math.max(-350,Math.min(350,s.groundBottom-dy))}
   if(drag.layer==='platform'){$('calFloor').value=Math.max(70,Math.min(240,s.floorPx-dy));}
-  applySettings({});
+  if(drag.layer!=='place')applySettings({});
   $('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px';
 });
 addEventListener('pointerup',()=>{drag=null});
