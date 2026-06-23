@@ -146,6 +146,7 @@ body.editMode #buildingObjects{pointer-events:auto!important;z-index:95!importan
 body.editMode .building{pointer-events:auto!important;cursor:grab;outline:3px dashed rgba(245,197,66,.95);outline-offset:4px}
 body.editMode .building:active{cursor:grabbing}
 body.editMode .building.selectedPlaceTarget{outline:4px dashed rgba(118,199,216,.98)!important;outline-offset:7px!important}
+body:not(.editMode) .building.buildingNearby{outline:4px solid rgba(245,197,66,.95)!important;outline-offset:6px!important;filter:drop-shadow(0 0 14px rgba(245,197,66,.65))}
 body.editMode .building.editorPreview{outline-style:solid!important;filter:drop-shadow(0 0 12px rgba(245,197,66,.55))}
 .placeEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.placeEditorGrid label{font-size:12px;font-weight:900}.placeEditorGrid select{margin-top:4px}
 .layerHelp{font-size:12px;line-height:1.35;background:rgba(118,199,216,.12);border:1px solid rgba(118,199,216,.42);border-radius:12px;padding:8px;margin:6px 0 8px}
@@ -757,7 +758,7 @@ function applySpriteTransform(){
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null,lastBuildingPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
@@ -1122,8 +1123,8 @@ function vanishObject(o,cls='collected',delay=220){
   setTimeout(()=>{try{o.el.remove()}catch(e){}},delay);
 }
 function openBuilding(o){
-  if(o.hit||o.vanished)return;
-  o.hit=true;
+  if(!o||o.kind!=='building'||o.vanished||o.opening)return;
+  o.opening=true;
 
   const wasPaused=paused;
   paused=true;
@@ -1161,10 +1162,31 @@ function openBuilding(o){
       showToast('🐾 Pet Shop opened');
     }
 
+    o.opening=false;
     paused=wasPaused;
   },900);
 }
-
+function enterNearbyBuilding(){
+  if(!nearbyBuilding||nearbyBuilding.vanished||nearbyBuilding.opening)return false;
+  if(!playing||ended||document.body.classList.contains('editMode'))return false;
+  if(!$('startScreen').classList.contains('hidden'))return false;
+  if(!$('doorScreen').classList.contains('hidden'))return false;
+  if(!$('shopScreen').classList.contains('hidden'))return false;
+  openBuilding(nearbyBuilding);
+  return true;
+}
+function markNearbyBuilding(o,isNear){
+  if(!o||o.kind!=='building'||!o.el)return;
+  o.el.classList.toggle('buildingNearby',!!isNear);
+  if(isNear){
+    nearbyBuilding=o;
+    const now=performance.now();
+    if(now-lastBuildingPrompt>1700){
+      lastBuildingPrompt=now;
+      showToast(`Press Enter or tap ${o.label} to enter.`);
+    }
+  }
+}
 function canStomp(o){
   if(o.kind!=='hazard'||player.grounded||player.vy>=0)return false;
   const pr=getShrunkRect($('player'),.08,.10);
@@ -1203,7 +1225,9 @@ function collide(o){
     showToast(o.message||`${o.label} done!`);
     vanishObject(o,'collected',260);
   }else if(o.kind==='building'){
-    openBuilding(o);
+    // Buildings no longer open just because the player walks near them.
+    // Use Enter, or click/tap the building.
+    markNearbyBuilding(o,true);
   }else{
     o.hit=true;
     score+=500;
@@ -1330,6 +1354,7 @@ function loop(now=0){
       $('hillLayer').style.backgroundPosition=`${hillX}px bottom, ${hillX}px bottom`;
     }
     updatePlayer(dt);
+    nearbyBuilding=null;
     objects.forEach(o=>{
       if(moving){
         // Buildings move with the ground so they look planted in the level.
@@ -1337,7 +1362,12 @@ function loop(now=0){
         o.x-=worldMove*(o.kind==='building'?.05:.10);
       }
       renderObjectNow(o);
-      if(shouldHitObject(o))collide(o);
+      if(o.kind==='building'){
+        const near=shouldHitObject(o);
+        markNearbyBuilding(o,near);
+      }else if(shouldHitObject(o)){
+        collide(o);
+      }
     });
     objects=objects.filter(o=>{if(o.vanished)return false;if(o.x<-140||o.x>innerWidth+900){o.el.remove();return false}return true});
     updateHud();
@@ -1752,7 +1782,7 @@ function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image 
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
   btn.onpointerdown=e=>{e.preventDefault();down();};
