@@ -269,7 +269,7 @@ body.night .platform{
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick Pet Shop or Habitat, then drag anywhere on the game canvas or on the building box. Left/right changes its fixed screen position. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Left / right <input type="range" id="calPlaceAt" min="5" max="95" value="42"><span id="calPlaceAtVal">42%</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick Pet Shop or Habitat, then drag anywhere on the game canvas or on the building box. Left/right changes where it appears. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="100" max="3400" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
@@ -277,7 +277,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings are fixed tutorial places. Pet Shop and Habitat stay where you drag them.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings are scenery behind the ground. Pet Shop and Habitat open with full-screen door.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -777,10 +777,8 @@ const PLACE_IMAGES={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
-  // xPct keeps the building fixed on the screen while the level moves.
-  // This stops shops floating along after you place them in the editor.
-  petShop:{at:0,xPct:42,width:230,yOffset:18,z:48},
-  habitat:{at:0,xPct:72,width:230,yOffset:18,z:48}
+  petShop:{at:1040,width:230,yOffset:18,z:48},
+  habitat:{at:1480,width:230,yOffset:18,z:48}
 };
 let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
 
@@ -916,11 +914,27 @@ function buildingLayout(place){return PLACE_LAYOUT[place]||PLACE_LAYOUT.petShop|
 // When that happened, requestAnimationFrame stopped and the character/world looked frozen.
 function plannedAt(entry){
   if(entry&&entry.kind==='building'&&entry.place){
-    // Place buildings are fixed tutorial stops, so spawn them straight away.
-    // Their left/right position is controlled by PLACE_LAYOUT[place].xPct, not by scrolling distance.
-    return 0;
+    const l=buildingLayout(entry.place);
+    return Number(l.at)||Number(entry.at)||0;
   }
   return Number(entry&&entry.at)||0;
+}
+// BUILDING ROUTE FIX:
+// Buildings are not fixed screen stickers and they are not token/hazard objects.
+// They are route places, so they keep their own level distance (at) and scroll with the ground.
+function buildingScrollScale(){return 0.05/0.055;}
+function buildingXFromAt(at){
+  return (innerWidth+260)-((distance-Number(at||0))*buildingScrollScale());
+}
+function buildingAtFromX(x){
+  return Math.round(distance-(((innerWidth+260)-Number(x||0))/buildingScrollScale()));
+}
+function applyBuildingRoutePosition(o){
+  if(!o||o.kind!=='building')return;
+  const l=buildingLayout(o.place);
+  o.x=buildingXFromAt(Number(l.at)||0);
+  applyBuildingLayout(o);
+  renderObjectNow(o);
 }
 function applyBuildingLayout(o){
   if(!o||o.kind!=='building')return;
@@ -929,11 +943,6 @@ function applyBuildingLayout(o){
   o.el.style.width=w+'px';
   o.el.style.height='auto';
   o.el.style.zIndex=String(Number(l.z)||48);
-
-  // Buildings are now screen-anchored tutorial places.
-  // They do not scroll away with the tokens/hazards.
-  const pct=Number.isFinite(Number(l.xPct)) ? Number(l.xPct) : (o.place==='habitat'?72:42);
-  o.x=innerWidth*Math.max(5,Math.min(95,pct))/100;
   o.y=innerHeight-floorPx()+(Number(l.yOffset)||0);
 }
 function renderObjectNow(o){
@@ -944,9 +953,7 @@ function renderObjectNow(o){
 function makePlannedObject(entry){
   const kind=entry.kind||'token';
   const data=pickPlannedData(entry);
-  const x=(kind==='building'&&entry.place)
-    ? innerWidth*Math.max(5,Math.min(95,Number(buildingLayout(entry.place).xPct)||42))/100
-    : innerWidth+260;
+  const x=(kind==='building'&&entry.place)?buildingXFromAt(plannedAt(entry)):innerWidth+260;
   const isFinish=kind==='finish';
 
   // SIMPLE EDITOR NOTE:
@@ -1310,21 +1317,15 @@ function loop(now=0){
     }
     updatePlayer(dt);
     objects.forEach(o=>{
-      if(o.kind==='building'){
-        // Keep shops/places exactly where the editor put them.
-        applyBuildingLayout(o);
-      }else if(moving){
-        o.x-=worldMove*.10;
+      if(moving){
+        // Buildings move with the ground so they look planted in the level.
+        // Tokens/hazards still use the normal gameplay object speed.
+        o.x-=worldMove*(o.kind==='building'?.05:.10);
       }
       renderObjectNow(o);
       if(shouldHitObject(o))collide(o);
     });
-    objects=objects.filter(o=>{
-      if(o.vanished)return false;
-      if(o.kind==='building')return true;
-      if(o.x<-140||o.x>innerWidth+900){o.el.remove();return false}
-      return true
-    });
+    objects=objects.filter(o=>{if(o.vanished)return false;if(o.x<-140||o.x>innerWidth+900){o.el.remove();return false}return true});
     updateHud();
   }
   animateSprites(now);requestAnimationFrame(loop);
@@ -1451,7 +1452,7 @@ function syncPlaceControls(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
-  $('calPlaceAt').value=clampNum(Number.isFinite(Number(l.xPct))?l.xPct:(selectedPlace==='habitat'?72:42),5,95);$('calPlaceAtVal').textContent=$('calPlaceAt').value+'%';
+  $('calPlaceAt').value=clampNum(l.at,100,3400);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
   $('calPlaceW').value=clampNum(l.width,110,420);$('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceY').value=clampNum(l.yOffset,-120,180);$('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZ').value=clampNum(l.z,0,80);$('calPlaceZVal').textContent=$('calPlaceZ').value;
@@ -1462,35 +1463,37 @@ function readPlaceControls(){
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   PLACE_LAYOUT[selectedPlace]={
     ...(PLACE_LAYOUT[selectedPlace]||{}),
-    at:0,
-    xPct:+$('calPlaceAt').value,
+    at:+$('calPlaceAt').value,
     width:+$('calPlaceW').value,
     yOffset:+$('calPlaceY').value,
     z:+$('calPlaceZ').value
   };
-  $('calPlaceAtVal').textContent=$('calPlaceAt').value+'%';
+  $('calPlaceAtVal').textContent=$('calPlaceAt').value;
   $('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZVal').textContent=$('calPlaceZ').value;
-  objects.forEach(o=>{applyBuildingLayout(o);renderObjectNow(o);});
+  objects.forEach(o=>{
+    if(o.kind==='building')applyBuildingRoutePosition(o);
+    else{applyBuildingLayout(o);renderObjectNow(o);}
+  });
   exportSettings();
 }
 function bringSelectedPlaceHere(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
-  l.at=0;
-  l.xPct=58;
+  const targetX=innerWidth*.58;
+  l.at=clampNum(buildingAtFromX(targetX),80,3400);
   l.yOffset=18;
   const obj=visiblePlaceObject(selectedPlace);
-  if(obj){applyBuildingLayout(obj);renderObjectNow(obj);}
+  if(obj){applyBuildingRoutePosition(obj);}
   syncPlaceControls();exportSettings();showToast('Moved '+selectedPlace+' near here');
 }
 function snapSelectedPlaceToGround(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   buildingLayout(selectedPlace).yOffset=18;
-  const obj=visiblePlaceObject(selectedPlace); if(obj){applyBuildingLayout(obj);renderObjectNow(obj);}
+  const obj=visiblePlaceObject(selectedPlace); if(obj){applyBuildingRoutePosition(obj);}
   syncPlaceControls();exportSettings();showToast('Snapped building feet to ground');
 }
 // EDITOR PAUSE / RESUME FIX:
@@ -1792,13 +1795,13 @@ addEventListener('pointermove',e=>{
   const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy,s=drag.start;
   if(drag.layer==='place'){
     const l=PLACE_LAYOUT[drag.place]||buildingLayout(drag.place);
-    const newX=clampNum(drag.startX+dx,40,innerWidth-40);
-    l.at=0;
-    l.xPct=clampNum(Math.round((newX/innerWidth)*1000)/10,5,95);
+    const newX=drag.startX+dx;
+    l.at=clampNum(buildingAtFromX(newX),80,3400);
     l.yOffset=clampNum(drag.startLayout.yOffset+dy,-120,180);
     if(drag.obj){
-      applyBuildingLayout(drag.obj);
-      renderObjectNow(drag.obj);
+      // Redraw this one building immediately, using its own route position.
+      // Do not convert all buildings into one shared background position.
+      applyBuildingRoutePosition(drag.obj);
     }
     syncPlaceControls();
     exportSettings();
