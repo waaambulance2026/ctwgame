@@ -262,7 +262,7 @@ body.night .platform{
   <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p>Menu opens game choices. Build/Edit is for admins. Pet Care loads your PetBot pets and Sheet 51 images.</p></aside>
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
-    <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
+    <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save. Editor pauses play; Close resumes walking.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
     <div class="builderHelp"><b>How to edit:</b> 1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right. Character size is automatic by character, not by main/side slot.</div>
     <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
@@ -1454,10 +1454,50 @@ function snapSelectedPlaceToGround(){
   const obj=visiblePlaceObject(selectedPlace); if(obj)applyBuildingLayout(obj);
   syncPlaceControls();exportSettings();showToast('Snapped building feet to ground');
 }
-function openBuilder(){document.body.classList.add('editMode');$('builder').classList.remove('hidden');$('petPanel').classList.add('hidden');paused=true;$('pauseBtn').textContent='Resume';exportSettings();focusEditTarget(($('editTarget')&&$('editTarget').value)||'player')}
-function closeBuilder(){document.body.classList.remove('editMode');$('builder').classList.add('hidden');document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'));document.querySelectorAll('.building').forEach(x=>x.classList.remove('selectedPlaceTarget'))}
-function openPetPanel(){closeBuilder();$('petPanel').classList.remove('hidden');loadPetbotPets(false)}
-function closePetPanel(){$('petPanel').classList.add('hidden')}
+// EDITOR PAUSE / RESUME FIX:
+// Opening the editor pauses the game so dragging is safe.
+// Closing the editor now resumes the game automatically if you were already playing.
+let builderWasPlaying=false;
+function openBuilder(){
+  builderWasPlaying=!!(playing&&!ended&&$('startScreen').classList.contains('hidden'));
+  keys.left=false;keys.right=false;
+  document.body.classList.add('editMode');
+  $('builder').classList.remove('hidden');
+  $('petPanel').classList.add('hidden');
+  paused=true;
+  $('pauseBtn').textContent='Resume';
+  exportSettings();
+  focusEditTarget(($('editTarget')&&$('editTarget').value)||'player');
+}
+function closeBuilder(resumeAfter=true){
+  document.body.classList.remove('editMode');
+  $('builder').classList.add('hidden');
+  document.querySelectorAll('.editableTarget').forEach(x=>x.classList.remove('selectedEditTarget'));
+  document.querySelectorAll('.building').forEach(x=>x.classList.remove('selectedPlaceTarget'));
+  keys.left=false;keys.right=false;
+  const shopHidden=!$('shopScreen')||$('shopScreen').classList.contains('hidden');
+  const shouldResume=resumeAfter!==false&&builderWasPlaying&&playing&&!ended&&$('startScreen').classList.contains('hidden')&&$('petPanel').classList.contains('hidden')&&shopHidden;
+  if(shouldResume){
+    paused=false;
+    $('pauseBtn').textContent='Pause';
+    showToast('Game resumed');
+  }
+  builderWasPlaying=false;
+}
+function openPetPanel(){
+  closeBuilder(false);
+  paused=true;
+  $('pauseBtn').textContent='Resume';
+  $('petPanel').classList.remove('hidden');
+  loadPetbotPets(false);
+}
+function closePetPanel(){
+  $('petPanel').classList.add('hidden');
+  if(playing&&!ended&&$('startScreen').classList.contains('hidden')){
+    paused=false;
+    $('pauseBtn').textContent='Pause';
+  }
+}
 function openMenu(){paused=true;$('pauseBtn').textContent='Resume';$('startScreen').classList.remove('hidden');$('resumeBtn').style.display=playing?'inline-block':'none';$('questName').textContent=playing?'Paused in menu':'Main menu: choose a quest.'}
 function resumeGame(){if(!playing){$('startScreen').classList.remove('hidden');return}$('startScreen').classList.add('hidden');paused=false;$('pauseBtn').textContent='Pause';$('questName').textContent=(team?'Team Quest':'Solo Quest')+' in progress'}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabBody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('tab-'+b.dataset.tab).classList.add('active')});
@@ -1641,7 +1681,13 @@ function holdButton(id,down,up){
 holdButton('touchLeft',()=>keys.left=true,()=>keys.left=false);
 holdButton('touchRight',()=>keys.right=true,()=>keys.right=false);
 ['touchJump','touchJump2'].forEach(id=>{const btn=$(id); if(btn){btn.onpointerdown=e=>{e.preventDefault();jump();};btn.ontouchstart=e=>{e.preventDefault();jump();};}});
-if($('closeShopBtn'))$('closeShopBtn').onclick=()=>$('shopScreen').classList.add('hidden');
+if($('closeShopBtn'))$('closeShopBtn').onclick=()=>{
+  $('shopScreen').classList.add('hidden');
+  if(playing&&!ended&&$('startScreen').classList.contains('hidden')&&!document.body.classList.contains('editMode')){
+    paused=false;
+    $('pauseBtn').textContent='Pause';
+  }
+};
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
 function beginSelectedPlaceDrag(e){
