@@ -614,10 +614,12 @@ const ACTION_FRAME_PROBING={};
 // Pura walk is forced to 4 frames because Pura currently has 4 walk images.
 // Unicorn walk is also a clean 4-frame set: 001, 002, 003, 004.
 const ACTION_FRAME_OVERRIDES={
-  ax:{walk:4},
-  pura:{walk:4},
+  // Your walk batches are intended to be 10-frame animations.
+  // If one character only has 4 working walk PNGs, change just that one back to walk:4.
+  ax:{walk:10},
+  pura:{walk:10},
   owl:{walk:10},
-  unicorn:{walk:4}
+  unicorn:{walk:10}
 };
 const CHARACTER_CONFIGS={
   ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1,slotY:{buddy:16,team:18}},
@@ -885,6 +887,7 @@ const PLACE_LABELS={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
+  // Tutorial buildings. These are placeholders until you swap the PLACE_IMAGES links.
   welcomeBoard:{at:180,width:250,yOffset:14,z:48},
   petShop:{at:2600,width:230,yOffset:18,z:48},
   habitat:{at:3650,width:230,yOffset:18,z:48},
@@ -1178,6 +1181,37 @@ function spawnLevelPlanObjects(){
     makePlannedObject(entry);
   });
 }
+
+// EDIT SECTION 20B: AUTO DAY / NIGHT
+// Uses the user's own device time. Night auto-starts from 7pm to 7am.
+// The button still lets the user manually swap Day/Night.
+const THEME_PREF_KEY='ctw_day_night_manual_v1';
+function isAutoNightTime(){
+  const h=new Date().getHours();
+  return h>=19 || h<7;
+}
+function applyDayNightMode(mode='auto',save=false){
+  let useNight;
+  if(mode==='day')useNight=false;
+  else if(mode==='night')useNight=true;
+  else useNight=isAutoNightTime();
+  document.body.classList.toggle('night',!!useNight);
+  const btn=$('modeBtn');
+  if(btn)btn.textContent=useNight?'Day ☀️':'Night 🌙';
+  if(save){
+    try{localStorage.setItem(THEME_PREF_KEY,useNight?'night':'day')}catch(e){}
+  }
+}
+function initDayNight(){
+  let saved='auto';
+  try{saved=localStorage.getItem(THEME_PREF_KEY)||'auto'}catch(e){}
+  applyDayNightMode(saved,false);
+}
+function toggleDayNightManual(){
+  const next=document.body.classList.contains('night')?'day':'night';
+  applyDayNightMode(next,true);
+  showToast(next==='night'?'Night mode on':'Day mode on');
+}
 function cssNumber(name,fallback){const n=parseFloat(getComputedStyle(root).getPropertyValue(name));return Number.isFinite(n)?n:fallback}function floorPx(){return cssNumber('--floorPx',116)}function setVar(n,v,unit='px'){root.style.setProperty('--'+n,v+unit)}function showToast(msg){$('toast').textContent=msg;$('toast').classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>$('toast').classList.remove('show'),1300)}function updateHud(){$('score').textContent=score;$('lives').textContent=lives;$('level').textContent=levelIndex+1;$('distance').textContent=Math.floor(distance);$('questName').textContent=levels[levelIndex].name}
 function frameUrl(char,action,idx){return spriteUrlFor(char,action,idx)}
 function clearCharacterSlot(elId){
@@ -1231,7 +1265,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();spawnLevelPlanObjects();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^(https?:|data:)/i.test(raw))return raw;
@@ -1987,7 +2021,7 @@ async function selectPet(){
 function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image loaded yet.';return}spriteBroken.clear();petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange')?.value)||petPlayerW));petFlip=Number($('petFlipSelect')?.value)||petFlip;mainFlip=petFlip;if($('mainFlipSelect'))$('mainFlipSelect').value=String(mainFlip);if($('calPlayerW'))$('calPlayerW').value=petPlayerW;setVar('playerW',petPlayerW,'px');applySettings({playerW:petPlayerW,main:'pet',buddy:'none',team:false,petPlayerW,petFlip,mainFlip});setPair('pet','none');$('petPanel').classList.add('hidden');showToast((currentPet?.name||'Pet')+' is now the player')}
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
-$('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
+$('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=toggleDayNightManual;$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
@@ -2105,9 +2139,24 @@ addEventListener('pointermove',e=>{
   $('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px';
 });
 addEventListener('pointerup',()=>{if(drag&&drag.layer==='place'){saveBrowserLayout(readSettings());showToast('Building position saved in browser.');}drag=null});
-clearBrowserGameSaves();resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';
-// Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
-if(!loadBrowserLayout()){loadCloud(true);}
+clearBrowserGameSaves();
+resetCorrect();
+// Always open on the menu with Tutorial Town ready. Do not auto-load old cloud saves, because
+// old shared saves can make the build look like the wrong quest or hide new building examples.
+levelIndex=0;
+distance=0;
+playing=false;
+paused=false;
+ended=false;
+objects.forEach(o=>{try{o.el.remove()}catch(e){}});
+objects=[];
+spawnedPlan=new Set();
+updateHud();
+$('questName').textContent='Main menu: choose a quest.';
+focusEditTarget('player');
+$('resumeBtn').style.display='none';
+loadBrowserLayout();
+initDayNight();
 requestAnimationFrame(loop);
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
 </script>
