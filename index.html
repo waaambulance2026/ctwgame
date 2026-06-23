@@ -928,6 +928,11 @@ function applyBuildingLayout(o){
   o.el.style.zIndex=String(Number(l.z)||48);
   o.y=innerHeight-floorPx()+(Number(l.yOffset)||0);
 }
+function renderObjectNow(o){
+  if(!o||!o.el)return;
+  o.el.style.left=o.x+'px';
+  o.el.style.top=o.y+'px';
+}
 function makePlannedObject(entry){
   const kind=entry.kind||'token';
   const data=pickPlannedData(entry);
@@ -1296,7 +1301,7 @@ function loop(now=0){
     updatePlayer(dt);
     objects.forEach(o=>{
       if(moving)o.x-=worldMove*.10;
-      o.el.style.left=o.x+'px';o.el.style.top=o.y+'px';
+      renderObjectNow(o);
       if(shouldHitObject(o))collide(o);
     });
     objects=objects.filter(o=>{if(o.vanished)return false;if(o.x<-140||o.x>innerWidth+900){o.el.remove();return false}return true});
@@ -1446,7 +1451,7 @@ function readPlaceControls(){
   $('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZVal').textContent=$('calPlaceZ').value;
-  objects.forEach(applyBuildingLayout);
+  objects.forEach(o=>{applyBuildingLayout(o);renderObjectNow(o);});
   exportSettings();
 }
 function bringSelectedPlaceHere(){
@@ -1456,14 +1461,14 @@ function bringSelectedPlaceHere(){
   l.at=Math.max(80,Math.round(distance+260));
   l.yOffset=18;
   const obj=visiblePlaceObject(selectedPlace);
-  if(obj){obj.x=innerWidth*.58;applyBuildingLayout(obj);}
+  if(obj){obj.x=innerWidth*.58;applyBuildingLayout(obj);renderObjectNow(obj);}
   syncPlaceControls();exportSettings();showToast('Moved '+selectedPlace+' near here');
 }
 function snapSelectedPlaceToGround(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   buildingLayout(selectedPlace).yOffset=18;
-  const obj=visiblePlaceObject(selectedPlace); if(obj)applyBuildingLayout(obj);
+  const obj=visiblePlaceObject(selectedPlace); if(obj){applyBuildingLayout(obj);renderObjectNow(obj);}
   syncPlaceControls();exportSettings();showToast('Snapped building feet to ground');
 }
 // EDITOR PAUSE / RESUME FIX:
@@ -1769,7 +1774,11 @@ addEventListener('pointermove',e=>{
     const newX=drag.startX+dx;
     l.at=clampNum(Math.round(distance-((innerWidth+260)-newX)/xPerM),80,3400);
     l.yOffset=clampNum(drag.startLayout.yOffset+dy,-120,180);
-    if(drag.obj){drag.obj.x=newX;applyBuildingLayout(drag.obj);}
+    if(drag.obj){
+      drag.obj.x=newX;
+      applyBuildingLayout(drag.obj);
+      renderObjectNow(drag.obj);
+    }
     syncPlaceControls();
     exportSettings();
   }
