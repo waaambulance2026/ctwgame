@@ -909,7 +909,7 @@ function makePlannedObject(entry){
 
   // Buildings sit on the ground line. Smaller objects use their normal lift height.
   const y=kind==='building'
-    ? innerHeight-floorPx()+42
+    ? innerHeight-floorPx()+18
     : innerHeight-floorPx()-(isFinish?130:lift);
 
   const obj={
