@@ -558,51 +558,39 @@ function setSpriteImage(elId,url){
   return true;
 }
 function setSpriteFrame(elId,char,action,idx){
-  const urls=candidateSpriteUrls(char,action,idx).filter(u=>u&&!spriteBroken.has(u));
   const el=$(elId);
   if(!el)return;
+
   el.dataset.action=action||'idle';
   el.dataset.character=char||'';
+
   const totalForDisplay=getActionFrameCount(char,action);
   const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
   el.dataset.frameIndex=String(shownFrameIndex);
   el.dataset.frameNumber=String(shownFrameIndex+1);
+
   applySpriteTransform();
   ensureActionFrameCount(char,action);
-  if(shouldShowImmediateFallback(char)){
-    // Important: keep Owl visible immediately, even while real URLs are being checked.
-    useFallbackSprite(elId,char,action);
-  }
-  if(!urls.length){useFallbackSprite(elId,char,action);return;}
-  let i=0;
-  function tryNext(){
-    if(i>=urls.length){
-      // Do not leave the game invisible. Show a visible placeholder for the selected character
-      // instead of silently falling back to Ax. This makes missing Owl/Pura paths obvious.
+
+  const urls=candidateSpriteUrls(char,action,idx).filter(Boolean);
+  const url=urls.find(u=>!spriteBroken.has(u))||urls[0]||'';
+  if(!url){useFallbackSprite(elId,char,action);return;}
+
+  // WALK ANIMATION FIX:
+  // Do not wait for a hidden tester image before swapping frames.
+  // The old tester could time out on Cloudinary and leave the sprite dragging along
+  // on one frame. Set the frame immediately; only use the fallback after a real image error.
+  if(spriteCurrent[elId]!==url){
+    el.onerror=()=>{
+      spriteBroken.add(url);
+      if(spriteCurrent[elId]===url)spriteCurrent[elId]='';
       useFallbackSprite(elId,char,action);
-      return;
-    }
-    const url=urls[i++];
-    if(spriteBroken.has(url)){tryNext();return;}
-    if(spriteCurrent[elId]===url){setSpriteMissing(elId,false);return;}
-    const tester=new Image();
-    let done=false;
-    const fail=()=>{if(done)return;done=true;spriteBroken.add(url);tryNext();};
-    const timer=setTimeout(fail,900);
-    tester.onload=()=>{
-      if(done)return;
-      done=true;
-      clearTimeout(timer);
-      el.onerror=()=>{spriteBroken.add(url);if(spriteCurrent[elId]===url)spriteCurrent[elId]='';useFallbackSprite(elId,char,action);};
-      el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
-      el.src=url;
-      spriteCurrent[elId]=url;
-      setSpriteMissing(elId,false);
     };
-    tester.onerror=fail;
-    tester.src=url;
+    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
+    el.src=url;
+    spriteCurrent[elId]=url;
   }
-  tryNext();
+  setSpriteMissing(elId,false);
 }
 const SETS={
   ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
@@ -625,6 +613,7 @@ const ACTION_FRAME_PROBING={};
 const ACTION_FRAME_OVERRIDES={
   ax:{walk:4},
   pura:{walk:4},
+  owl:{walk:10},
   unicorn:{walk:4}
 };
 const CHARACTER_CONFIGS={
@@ -859,6 +848,7 @@ function applySpriteTransform(){
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
 let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
+let visualWalkUntil=0;
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
 function updateSpriteFacing(input=0){
@@ -1454,7 +1444,7 @@ function animateSprites(now){
   // SIMPLE EDITOR NOTE:
   // Walking animation is based on movementInput(), so keyboard and screen buttons both count.
   const input=movementInput();
-  const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&input!==0;
+  const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&(input!==0 || now<visualWalkUntil);
   const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
@@ -1497,6 +1487,7 @@ function loop(now=0){
     updateSpriteFacing(input);
     const worldMove=input*dt*cssNumber('--gameSpeed',2.2);
     const moving=input!==0;
+    if(moving)visualWalkUntil=now+220;
     const oldDistance=distance;
 
     if(moving){
