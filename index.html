@@ -68,21 +68,23 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 .hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
+#buildingObjects{position:absolute;inset:0;z-index:2;pointer-events:none}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
 
 /* EDIT SECTION 05B: BIG BUILDINGS + FULL SCREEN DOOR
    Use kind:'building' in the level plan for places like Pet Shop and Habitat.
-   These should be buildings in the world, not tiny task icons.
+   These should be scenery buildings behind the foreground ground, not tiny task icons.
 */
 .building{
-  width:clamp(210px,26vw,390px)!important;
-  height:clamp(155px,20vw,300px)!important;
+  width:clamp(160px,18vw,265px)!important;
+  height:clamp(118px,14vw,205px)!important;
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
   border-radius:0!important;
   overflow:visible!important;
-  /* Buildings use top as their floor point, so they sit on the ground instead of floating. */
+  pointer-events:auto!important;
+  /* Buildings sit in the scenery layer behind the foreground ground. */
   transform:translate(-50%,-100%)!important;
 }
 .building img{
@@ -92,7 +94,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
   object-position:center bottom!important;
   filter:drop-shadow(0 18px 20px rgba(0,0,0,.30));
 }
-.building:hover{transform:translate(-50%,-100%) scale(1.04)!important}
+.building:hover{transform:translate(-50%,-100%) scale(1.025)!important}
 
 .doorStop{pointer-events:auto;cursor:pointer}
 
@@ -134,7 +136,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 }
 .shopCard strong{display:block;font-size:18px;margin-bottom:4px}
 .shopCard span{font-size:13px;opacity:.9}
-@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:210px!important;height:155px!important}}
+@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:165px!important;height:122px!important}}
 
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
@@ -242,7 +244,7 @@ body.night .platform{
 <body>
 <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
 <div id="game">
-  <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
+  <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div id="buildingObjects"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
   <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Pet Care</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
   <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p>Menu opens game choices. Build/Edit is for admins. Pet Care loads your PetBot pets and Sheet 51 images.</p></aside>
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
@@ -261,7 +263,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings enabled. Pet Shop and Habitat use full-screen door opening. Habitat opens PetBot panel.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings are scenery behind the ground. Pet Shop and Habitat open with full-screen door.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -892,7 +894,8 @@ function makePlannedObject(entry){
   const el=document.createElement('div');
   el.className='obj '+visualKind;
   addObjectImage(el,data);
-  $('worldObjects').appendChild(el);
+  const targetLayer=(kind==='building'&&$('buildingObjects'))?$('buildingObjects'):$('worldObjects');
+  targetLayer.appendChild(el);
 
   const lift=kind==='hazard'
     ? cssNumber('--hazardLift',58)
@@ -906,7 +909,7 @@ function makePlannedObject(entry){
 
   // Buildings sit on the ground line. Smaller objects use their normal lift height.
   const y=kind==='building'
-    ? innerHeight-floorPx()+8
+    ? innerHeight-floorPx()+42
     : innerHeight-floorPx()-(isFinish?130:lift);
 
   const obj={
