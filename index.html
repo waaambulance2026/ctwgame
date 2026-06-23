@@ -140,16 +140,84 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 
 
 /* EDIT SECTION 05C: SIMPLE BUILDING / PLACE EDITING
-   Buildings can now be dragged in Build/Edit mode. Use Places / Buildings in the editor.
+   Buildings can be dragged in Build/Edit mode.
+   Yellow dashed boxes have been replaced with Waaambulance pink/blue glow.
 */
-body.editMode #buildingObjects{pointer-events:auto!important;z-index:95!important}
-body.editMode .building{pointer-events:auto!important;cursor:grab;outline:3px dashed rgba(245,197,66,.95);outline-offset:4px}
-body.editMode .building:active{cursor:grabbing}
-body.editMode .building.selectedPlaceTarget{outline:4px dashed rgba(118,199,216,.98)!important;outline-offset:7px!important}
-body:not(.editMode) .building.buildingNearby{outline:4px solid rgba(245,197,66,.95)!important;outline-offset:6px!important;filter:drop-shadow(0 0 14px rgba(245,197,66,.65))}
-body.editMode .building.editorPreview{outline-style:solid!important;filter:drop-shadow(0 0 12px rgba(245,197,66,.55))}
-.placeEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.placeEditorGrid label{font-size:12px;font-weight:900}.placeEditorGrid select{margin-top:4px}
-.layerHelp{font-size:12px;line-height:1.35;background:rgba(118,199,216,.12);border:1px solid rgba(118,199,216,.42);border-radius:12px;padding:8px;margin:6px 0 8px}
+
+body.editMode #buildingObjects{
+  pointer-events:auto!important;
+  z-index:95!important;
+}
+
+body.editMode .building{
+  pointer-events:auto!important;
+  cursor:grab;
+  outline:none!important;
+  filter:
+    drop-shadow(0 0 6px rgba(210,130,194,.95))
+    drop-shadow(0 0 14px rgba(210,130,194,.75))
+    drop-shadow(0 0 22px rgba(118,199,216,.65))!important;
+}
+
+body.editMode .building:active{
+  cursor:grabbing;
+  filter:
+    drop-shadow(0 0 8px rgba(118,199,216,1))
+    drop-shadow(0 0 18px rgba(210,130,194,.9))
+    drop-shadow(0 0 30px rgba(118,199,216,.8))!important;
+}
+
+body.editMode .building.selectedPlaceTarget{
+  outline:none!important;
+  filter:
+    drop-shadow(0 0 8px rgba(118,199,216,1))
+    drop-shadow(0 0 18px rgba(210,130,194,.95))
+    drop-shadow(0 0 32px rgba(118,199,216,.85))
+    drop-shadow(0 0 48px rgba(210,130,194,.55))!important;
+}
+
+body.editMode .building.selectedPlaceTarget::after{
+  content:'drag selected place';
+  position:absolute;
+  left:50%;
+  bottom:calc(100% + 10px);
+  transform:translateX(-50%);
+  white-space:nowrap;
+  padding:6px 10px;
+  border-radius:999px;
+  background:linear-gradient(90deg,#d282c2,#76C7D8);
+  color:#21142d;
+  font-size:12px;
+  font-weight:900;
+  box-shadow:0 8px 18px rgba(0,0,0,.25);
+  pointer-events:none;
+}
+
+.placeEditorGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin:8px 0;
+}
+
+.placeEditorGrid label{
+  font-size:12px;
+  font-weight:900;
+}
+
+.placeEditorGrid select{
+  margin-top:4px;
+}
+
+.layerHelp{
+  font-size:12px;
+  line-height:1.35;
+  background:rgba(118,199,216,.12);
+  border:1px solid rgba(118,199,216,.42);
+  border-radius:12px;
+  padding:8px;
+  margin:6px 0 8px;
+}
 
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
