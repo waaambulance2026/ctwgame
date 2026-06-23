@@ -250,6 +250,15 @@ body.night .platform{
   box-shadow:none!important;
 }
 
+
+/* WALKING FAILSAFE FIX:
+   Even if frame images are slow to swap, the selected sprite visibly bobs while walking.
+   This is a visual safety net and does not change character sizes. */
+.character.walking img{animation:ctwWalkBob .34s steps(2,end) infinite}
+.character.jumping img{animation:ctwJumpPulse .22s ease-in-out infinite alternate}
+@keyframes ctwWalkBob{0%{margin-bottom:0}50%{margin-bottom:7px}100%{margin-bottom:0}}
+@keyframes ctwJumpPulse{0%{margin-bottom:0}100%{margin-bottom:5px}}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -277,7 +286,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Movement + sprite animation restored. Buildings/drag editor still active.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Walk failsafe on. Buildings, dragging, Pet Shop and Habitat are active.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -296,7 +305,7 @@ body.night .platform{
   <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
-  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: auto-walks forward. Use ←/→ to steer and Space/↑ to jump. Menu pauses the game.</p></div></div>
+  <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
   <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Next it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>🎟️ Special</strong><span>Event and Hook-a-Waaambulance prizes will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
@@ -456,51 +465,45 @@ function setSpriteImage(elId,url){
   return true;
 }
 function setSpriteFrame(elId,char,action,idx){
-  const urls=candidateSpriteUrls(char,action,idx).filter(u=>u&&!spriteBroken.has(u));
   const el=$(elId);
   if(!el)return;
-  el.dataset.action=action||'idle';
+  action=action||'idle';
+  el.dataset.action=action;
   el.dataset.character=char||'';
   const totalForDisplay=getActionFrameCount(char,action);
   const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
   el.dataset.frameIndex=String(shownFrameIndex);
   el.dataset.frameNumber=String(shownFrameIndex+1);
+
+  const wrap=el.closest('.character');
+  if(wrap){
+    wrap.classList.toggle('walking',action==='walk');
+    wrap.classList.toggle('jumping',action==='jump');
+    wrap.dataset.action=action;
+  }
+
   applySpriteTransform();
   ensureActionFrameCount(char,action);
-  if(shouldShowImmediateFallback(char)){
-    // Important: keep Owl visible immediately, even while real URLs are being checked.
-    useFallbackSprite(elId,char,action);
-  }
+
+  const urls=candidateSpriteUrls(char,action,idx).filter(Boolean);
   if(!urls.length){useFallbackSprite(elId,char,action);return;}
-  let i=0;
-  function tryNext(){
-    if(i>=urls.length){
-      // Do not leave the game invisible. Show a visible placeholder for the selected character
-      // instead of silently falling back to Ax. This makes missing Owl/Pura paths obvious.
+  const url=urls[0];
+
+  // DIRECT FRAME SWAP FIX:
+  // The old loader waited for a hidden test image on every single frame.
+  // That made walking look frozen when Cloudinary/browser loading was slow.
+  // This swaps the frame immediately; the browser cache handles the image.
+  if(spriteCurrent[elId]!==url){
+    el.onerror=()=>{
+      spriteBroken.add(url);
+      if(spriteCurrent[elId]===url)spriteCurrent[elId]='';
       useFallbackSprite(elId,char,action);
-      return;
-    }
-    const url=urls[i++];
-    if(spriteBroken.has(url)){tryNext();return;}
-    if(spriteCurrent[elId]===url){setSpriteMissing(elId,false);return;}
-    const tester=new Image();
-    let done=false;
-    const fail=()=>{if(done)return;done=true;spriteBroken.add(url);tryNext();};
-    const timer=setTimeout(fail,2200);
-    tester.onload=()=>{
-      if(done)return;
-      done=true;
-      clearTimeout(timer);
-      el.onerror=()=>{spriteBroken.add(url);if(spriteCurrent[elId]===url)spriteCurrent[elId]='';useFallbackSprite(elId,char,action);};
-      el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
-      el.src=url;
-      spriteCurrent[elId]=url;
-      setSpriteMissing(elId,false);
     };
-    tester.onerror=fail;
-    tester.src=url;
+    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
+    el.src=url;
+    spriteCurrent[elId]=url;
   }
-  tryNext();
+  setSpriteMissing(elId,false);
 }
 const SETS={
   ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
@@ -758,15 +761,21 @@ function applySpriteTransform(){
 let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
+function playScreenIsOpen(){
+  return playing && !ended &&
+    !document.body.classList.contains('editMode') &&
+    (!$('startScreen') || $('startScreen').classList.contains('hidden')) &&
+    (!$('petPanel') || $('petPanel').classList.contains('hidden')) &&
+    (!$('shopScreen') || $('shopScreen').classList.contains('hidden')) &&
+    (!$('doorScreen') || $('doorScreen').classList.contains('hidden'));
+}
 function movementInput(){
-  // AUTO-WALK FIX:
-  // The quest should start walking after Solo/Team Quest starts.
-  // Left/right keys still work, but if no key is held the game moves forward automatically.
+  // TRUE AUTO-WALK FIX:
+  // The quest moves forward by itself during play, so sprites enter the walk action
+  // even when the browser does not pass ArrowRight after clicking a menu button.
   if(keys.left&&!keys.right)return -1;
   if(keys.right&&!keys.left)return 1;
-  try{
-    if(playing&&!paused&&!ended&&!isMovementBlockedForPlay())return 1;
-  }catch(err){}
+  if(playScreenIsOpen()&&!paused)return 1;
   return 0;
 }
 function updateSpriteFacing(input=0){
@@ -812,7 +821,7 @@ const levels=[
     ],
 
     plan:[
-      {at:80,kind:'sign',data:['🪧','Tutorial board',0,''],message:'Tutorial: the quest auto-walks. Use left/right to steer and jump to dodge.'},
+      {at:80,kind:'sign',data:['🪧','Tutorial board',0,''],message:'Tutorial: use left and right to move.'},
       {at:260,kind:'token',tokenIndex:0,message:'Collect this token by touching it properly.'},
 
       {at:450,kind:'sign',data:['⬆️','Jump lesson',0,''],message:'Press SPACE, W, Arrow Up, or the jump button to jump.'},
@@ -1047,7 +1056,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){spriteBroken.clear();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(err){}score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;keys.left=false;keys.right=false;if($('startScreen'))$('startScreen').classList.add('hidden');if($('shopScreen'))$('shopScreen').classList.add('hidden');if($('doorScreen'))$('doorScreen').classList.add('hidden');spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -1233,12 +1242,11 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  // MOTION FIX:
-  // The visible character action comes from the movement buttons/keys.
-  // It does not depend on the old pause flag getting stuck.
+  // WALK STATE FIX:
+  // Walking is now based on the play screen being open, not only key focus.
   const input=movementInput();
-  const blocked=isMovementBlockedForPlay();
-  const inputMoving=playing&&!ended&&!blocked&&input!==0;
+  const canWalk=playScreenIsOpen()&&!paused;
+  const inputMoving=canWalk&&input!==0;
   const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
@@ -1275,17 +1283,8 @@ function shouldHitObject(o){
 // EDIT SECTION 22: MAIN GAME LOOP - movement, scrolling, spawning, collisions and redraw
 function loop(now=0){
   const dt=Math.min(34,now-last||16);last=now;
-
-  // MOVEMENT FIX:
-  // If the user is holding left/right and no editor/menu/panel is open,
-  // force play to resume so the sprite/world cannot get stuck frozen.
-  const blocked=isMovementBlockedForPlay();
-  if(playing&&!ended&&!blocked&&movementInput()!==0){
-    paused=false;
-    if($('pauseBtn'))$('pauseBtn').textContent='Pause';
-  }
-
-  if(playing&&!paused&&!ended&&!blocked){
+  if(playScreenIsOpen()&&paused){paused=false;if($('pauseBtn'))$('pauseBtn').textContent='Pause';}
+  if(playing&&!paused&&!document.body.classList.contains('editMode')){
     const input=movementInput();
     updateSpriteFacing(input);
     const worldMove=input*dt*cssNumber('--gameSpeed',2.2);
@@ -1521,7 +1520,7 @@ function closePetPanel(){
   }
 }
 function openMenu(){paused=true;$('pauseBtn').textContent='Resume';$('startScreen').classList.remove('hidden');$('resumeBtn').style.display=playing?'inline-block':'none';$('questName').textContent=playing?'Paused in menu':'Main menu: choose a quest.'}
-function resumeGame(){if(!playing){$('startScreen').classList.remove('hidden');return}$('startScreen').classList.add('hidden');try{document.activeElement&&document.activeElement.blur&&document.activeElement.blur()}catch(err){}paused=false;$('pauseBtn').textContent='Pause';$('questName').textContent=(team?'Team Quest':'Solo Quest')+' in progress'}
+function resumeGame(){if(!playing){$('startScreen').classList.remove('hidden');return}$('startScreen').classList.add('hidden');paused=false;$('pauseBtn').textContent='Pause';$('questName').textContent=(team?'Team Quest':'Solo Quest')+' in progress'}
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tabBody').forEach(x=>x.classList.remove('active'));b.classList.add('active');$('tab-'+b.dataset.tab).classList.add('active')});
 document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focusEditTarget(b.dataset.selectTarget));
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
@@ -1691,29 +1690,7 @@ function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image 
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-function isMovementBlockedForPlay(){
-  return document.body.classList.contains('editMode') ||
-    !$('startScreen').classList.contains('hidden') ||
-    ($('petPanel')&&!$('petPanel').classList.contains('hidden')) ||
-    ($('shopScreen')&&!$('shopScreen').classList.contains('hidden')) ||
-    ($('doorScreen')&&!$('doorScreen').classList.contains('hidden'));
-}
-function canResumeForMovement(){return playing&&!ended&&!isMovementBlockedForPlay()}
-function resumeForMovement(){if(canResumeForMovement()){paused=false;if($('pauseBtn'))$('pauseBtn').textContent='Pause'}}
-addEventListener('keydown',e=>{
-  const typing=['INPUT','TEXTAREA','SELECT'].includes((e.target&&e.target.tagName)||'') || (e.target&&e.target.isContentEditable);
-  if(typing)return;
-  if(e.code==='ArrowLeft'||e.code==='KeyA'){keys.left=true;resumeForMovement();e.preventDefault()}
-  if(e.code==='ArrowRight'||e.code==='KeyD'){keys.right=true;resumeForMovement();e.preventDefault()}
-  if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW'){resumeForMovement();jump();e.preventDefault()}
-  if(e.code==='Escape'){
-    closeBuilder();
-    if($('petPanel'))$('petPanel').classList.add('hidden');
-    if($('shopScreen'))$('shopScreen').classList.add('hidden');
-    resumeForMovement();
-  }
-});
-addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
   btn.onpointerdown=e=>{e.preventDefault();down();};
@@ -1722,9 +1699,9 @@ function holdButton(id,down,up){
   btn.ontouchstart=e=>{e.preventDefault();down();};
   btn.ontouchend=e=>{e.preventDefault();up();};
 }
-holdButton('touchLeft',()=>{keys.left=true;resumeForMovement();},()=>keys.left=false);
-holdButton('touchRight',()=>{keys.right=true;resumeForMovement();},()=>keys.right=false);
-['touchJump','touchJump2'].forEach(id=>{const btn=$(id); if(btn){btn.onpointerdown=e=>{e.preventDefault();resumeForMovement();jump();};btn.ontouchstart=e=>{e.preventDefault();resumeForMovement();jump();};}});
+holdButton('touchLeft',()=>keys.left=true,()=>keys.left=false);
+holdButton('touchRight',()=>keys.right=true,()=>keys.right=false);
+['touchJump','touchJump2'].forEach(id=>{const btn=$(id); if(btn){btn.onpointerdown=e=>{e.preventDefault();jump();};btn.ontouchstart=e=>{e.preventDefault();jump();};}});
 if($('closeShopBtn'))$('closeShopBtn').onclick=()=>{
   $('shopScreen').classList.add('hidden');
   if(playing&&!ended&&$('startScreen').classList.contains('hidden')&&!document.body.classList.contains('editMode')){
