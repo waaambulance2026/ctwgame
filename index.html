@@ -250,15 +250,6 @@ body.night .platform{
   box-shadow:none!important;
 }
 
-
-/* WALKING FAILSAFE FIX:
-   Even if frame images are slow to swap, the selected sprite visibly bobs while walking.
-   This is a visual safety net and does not change character sizes. */
-.character.walking img{animation:ctwWalkBob .34s steps(2,end) infinite}
-.character.jumping img{animation:ctwJumpPulse .22s ease-in-out infinite alternate}
-@keyframes ctwWalkBob{0%{margin-bottom:0}50%{margin-bottom:7px}100%{margin-bottom:0}}
-@keyframes ctwJumpPulse{0%{margin-bottom:0}100%{margin-bottom:5px}}
-
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -286,7 +277,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Walk failsafe on. Buildings, dragging, Pet Shop and Habitat are active.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings are scenery behind the ground. Pet Shop and Habitat open with full-screen door.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -465,45 +456,51 @@ function setSpriteImage(elId,url){
   return true;
 }
 function setSpriteFrame(elId,char,action,idx){
+  const urls=candidateSpriteUrls(char,action,idx).filter(u=>u&&!spriteBroken.has(u));
   const el=$(elId);
   if(!el)return;
-  action=action||'idle';
-  el.dataset.action=action;
+  el.dataset.action=action||'idle';
   el.dataset.character=char||'';
   const totalForDisplay=getActionFrameCount(char,action);
   const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
   el.dataset.frameIndex=String(shownFrameIndex);
   el.dataset.frameNumber=String(shownFrameIndex+1);
-
-  const wrap=el.closest('.character');
-  if(wrap){
-    wrap.classList.toggle('walking',action==='walk');
-    wrap.classList.toggle('jumping',action==='jump');
-    wrap.dataset.action=action;
-  }
-
   applySpriteTransform();
   ensureActionFrameCount(char,action);
-
-  const urls=candidateSpriteUrls(char,action,idx).filter(Boolean);
-  if(!urls.length){useFallbackSprite(elId,char,action);return;}
-  const url=urls[0];
-
-  // DIRECT FRAME SWAP FIX:
-  // The old loader waited for a hidden test image on every single frame.
-  // That made walking look frozen when Cloudinary/browser loading was slow.
-  // This swaps the frame immediately; the browser cache handles the image.
-  if(spriteCurrent[elId]!==url){
-    el.onerror=()=>{
-      spriteBroken.add(url);
-      if(spriteCurrent[elId]===url)spriteCurrent[elId]='';
-      useFallbackSprite(elId,char,action);
-    };
-    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
-    el.src=url;
-    spriteCurrent[elId]=url;
+  if(shouldShowImmediateFallback(char)){
+    // Important: keep Owl visible immediately, even while real URLs are being checked.
+    useFallbackSprite(elId,char,action);
   }
-  setSpriteMissing(elId,false);
+  if(!urls.length){useFallbackSprite(elId,char,action);return;}
+  let i=0;
+  function tryNext(){
+    if(i>=urls.length){
+      // Do not leave the game invisible. Show a visible placeholder for the selected character
+      // instead of silently falling back to Ax. This makes missing Owl/Pura paths obvious.
+      useFallbackSprite(elId,char,action);
+      return;
+    }
+    const url=urls[i++];
+    if(spriteBroken.has(url)){tryNext();return;}
+    if(spriteCurrent[elId]===url){setSpriteMissing(elId,false);return;}
+    const tester=new Image();
+    let done=false;
+    const fail=()=>{if(done)return;done=true;spriteBroken.add(url);tryNext();};
+    const timer=setTimeout(fail,900);
+    tester.onload=()=>{
+      if(done)return;
+      done=true;
+      clearTimeout(timer);
+      el.onerror=()=>{spriteBroken.add(url);if(spriteCurrent[elId]===url)spriteCurrent[elId]='';useFallbackSprite(elId,char,action);};
+      el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
+      el.src=url;
+      spriteCurrent[elId]=url;
+      setSpriteMissing(elId,false);
+    };
+    tester.onerror=fail;
+    tester.src=url;
+  }
+  tryNext();
 }
 const SETS={
   ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
@@ -761,23 +758,7 @@ function applySpriteTransform(){
 let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
-function playScreenIsOpen(){
-  return playing && !ended &&
-    !document.body.classList.contains('editMode') &&
-    (!$('startScreen') || $('startScreen').classList.contains('hidden')) &&
-    (!$('petPanel') || $('petPanel').classList.contains('hidden')) &&
-    (!$('shopScreen') || $('shopScreen').classList.contains('hidden')) &&
-    (!$('doorScreen') || $('doorScreen').classList.contains('hidden'));
-}
-function movementInput(){
-  // TRUE AUTO-WALK FIX:
-  // The quest moves forward by itself during play, so sprites enter the walk action
-  // even when the browser does not pass ArrowRight after clicking a menu button.
-  if(keys.left&&!keys.right)return -1;
-  if(keys.right&&!keys.left)return 1;
-  if(playScreenIsOpen()&&!paused)return 1;
-  return 0;
-}
+function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
 function updateSpriteFacing(input=0){
   if(input<0)facing=-1;
   if(input>0)facing=1;
@@ -926,6 +907,18 @@ function pickPlannedData(entry){
   return ['❔',entry.label||'Level object',Number(entry.points)||0,entry.image||''];
 }
 function buildingLayout(place){return PLACE_LAYOUT[place]||PLACE_LAYOUT.petShop||{at:0,width:220,yOffset:18,z:48}}
+
+// MOVEMENT FREEZE FIX:
+// spawnLevelPlanObjects() calls plannedAt(entry).
+// That helper was missing, so Level 1 crashed as soon as the game tried to spawn tutorial objects.
+// When that happened, requestAnimationFrame stopped and the character/world looked frozen.
+function plannedAt(entry){
+  if(entry&&entry.kind==='building'&&entry.place){
+    const l=buildingLayout(entry.place);
+    return Number(l.at)||Number(entry.at)||0;
+  }
+  return Number(entry&&entry.at)||0;
+}
 function applyBuildingLayout(o){
   if(!o||o.kind!=='building')return;
   const l=buildingLayout(o.place);
@@ -1056,7 +1049,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;keys.left=false;keys.right=false;if($('startScreen'))$('startScreen').classList.add('hidden');if($('shopScreen'))$('shopScreen').classList.add('hidden');if($('doorScreen'))$('doorScreen').classList.add('hidden');spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^https?:\/\//i.test(raw))return raw;
@@ -1242,11 +1235,10 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  // WALK STATE FIX:
-  // Walking is now based on the play screen being open, not only key focus.
+  // SIMPLE EDITOR NOTE:
+  // Walking animation is based on movementInput(), so keyboard and screen buttons both count.
   const input=movementInput();
-  const canWalk=playScreenIsOpen()&&!paused;
-  const inputMoving=canWalk&&input!==0;
+  const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&input!==0;
   const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
@@ -1283,7 +1275,6 @@ function shouldHitObject(o){
 // EDIT SECTION 22: MAIN GAME LOOP - movement, scrolling, spawning, collisions and redraw
 function loop(now=0){
   const dt=Math.min(34,now-last||16);last=now;
-  if(playScreenIsOpen()&&paused){paused=false;if($('pauseBtn'))$('pauseBtn').textContent='Pause';}
   if(playing&&!paused&&!document.body.classList.contains('editMode')){
     const input=movementInput();
     updateSpriteFacing(input);
