@@ -370,7 +370,7 @@ body.night .platform{
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick Pet Shop or Habitat, then click/drag anywhere on the game canvas to place it exactly there, or drag the building box. Left/right changes where it appears, including fully left or right of the current screen. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="5000" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="5000" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
@@ -399,7 +399,10 @@ body.night .platform{
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
   <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
-  <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Next it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>🎟️ Special</strong><span>Event and Hook-a-Waaambulance prizes will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
+  <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Later it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat items</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>💊 Care extras</strong><span>Healing, rest and training items will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
+  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> walk with Left/Right or A/D. Jump with Space, W or Arrow Up. Glowing buildings open only when you press Enter or tap/click them. Tutorial boards also need Enter or tap.</p><p>Collect tokens, avoid hazards, visit the Pet Shop and Habitat, then use the Quest Starter to choose the next quest.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
+  <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>🎣 Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>🎟️ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>🏆 Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
+  <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
 <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
@@ -857,10 +860,23 @@ function updateSpriteFacing(input=0){
   applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
+function placeSvg(title,emoji,colourA='#d282c2',colourB='#76C7D8'){
+  return 'data:image/svg+xml;charset=utf-8,'+encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 310"><defs><linearGradient id="g" x1="0" x2="1"><stop stop-color="${colourA}"/><stop offset="1" stop-color="${colourB}"/></linearGradient></defs><ellipse cx="210" cy="284" rx="150" ry="20" fill="rgba(0,0,0,.22)"/><rect x="55" y="80" width="310" height="175" rx="34" fill="url(#g)" stroke="white" stroke-width="10"/><rect x="82" y="112" width="256" height="100" rx="22" fill="rgba(255,255,255,.88)"/><text x="210" y="174" text-anchor="middle" font-family="Arial" font-size="38" font-weight="900" fill="#24152e">${title}</text><text x="210" y="76" text-anchor="middle" font-size="70">${emoji}</text><rect x="112" y="255" width="28" height="45" rx="10" fill="#8b5a3c"/><rect x="280" y="255" width="28" height="45" rx="10" fill="#8b5a3c"/></svg>`);
+}
 const PLACE_IMAGES={
   door:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png',
+  welcomeBoard:placeSvg('WELCOME','🪧'),
   petShop:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/pet_shop.png',
-  habitat:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/habitat.png'
+  habitat:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/habitat.png',
+  hookWaaambulance:placeSvg('HOOK','🎣','#F5C542','#d282c2'),
+  questStarter:placeSvg('QUESTS','🗺️','#76C7D8','#d282c2')
+};
+const PLACE_LABELS={
+  welcomeBoard:'Welcome Board',
+  petShop:'Pet Shop',
+  habitat:'Habitat',
+  hookWaaambulance:'Hook-a-Waaambulance',
+  questStarter:'Quest Starter'
 };
 
 // EDIT SECTION 20A: PLACE / BUILDING LAYOUT
@@ -869,8 +885,11 @@ const PLACE_IMAGES={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
-  petShop:{at:2200,width:230,yOffset:18,z:48},
-  habitat:{at:2850,width:230,yOffset:18,z:48}
+  welcomeBoard:{at:180,width:250,yOffset:14,z:48},
+  petShop:{at:2600,width:230,yOffset:18,z:48},
+  habitat:{at:3650,width:230,yOffset:18,z:48},
+  hookWaaambulance:{at:4700,width:250,yOffset:16,z:48},
+  questStarter:{at:5750,width:260,yOffset:14,z:48}
 };
 let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
 
@@ -878,7 +897,7 @@ const levels=[
   {
     name:'Level 1: Tutorial Town',
     quest:'Tutorial Town',
-    goal:4700,
+    goal:7200,
 
     tokens:[
       ['🪙','Practice coin',40,''],
@@ -895,26 +914,30 @@ const levels=[
     ],
 
     plan:[
-      {at:80,kind:'sign',data:['🪧','Welcome board',0,''],message:'Tutorial: use left and right to move. Walk to the glowing boards, then press Enter or tap them.'},
-      {at:300,kind:'token',tokenIndex:0,message:'Practice token collected.'},
-      {at:560,kind:'sign',data:['↔️','Movement lesson',0,''],message:'Good. You can move right to go forward, and left to go back along the tutorial path.'},
-      {at:820,kind:'task',data:['✅','Interaction lesson',100,''],message:'Interaction done. Some boxes need Enter or tap — they will not complete just because you brush past them.'},
-      {at:1120,kind:'sign',data:['⬆️','Jump lesson',0,''],message:'Jump with Space, W, Arrow Up, or the jump button.'},
-      {at:1360,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
-      {at:1640,kind:'token',tokenIndex:1,message:'Care token collected.'},
+      {at:180,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
+      {at:460,kind:'sign',data:['↔️','Movement lesson',0,''],message:'Use Right/A to move forward. Use Left/A to go backwards along the route.'},
+      {at:760,kind:'token',tokenIndex:0,message:'Practice coin collected.'},
+      {at:1050,kind:'sign',data:['⏎','Enter lesson',0,''],message:'When a board or building glows, press Enter or tap/click it. It will not open just from walking near it.'},
+      {at:1350,kind:'task',data:['✅','Interaction practice',100,''],message:'Good. This tutorial stop was completed with Enter/tap.'},
+      {at:1660,kind:'sign',data:['⬆️','Jump lesson',0,''],message:'Jump with Space, W, Arrow Up, or the jump button.'},
+      {at:1980,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
+      {at:2260,kind:'token',tokenIndex:1,message:'Care token collected.'},
 
-      {at:1900,kind:'sign',data:['🐾','Pet Shop lesson',0,''],message:'Pet Shop: stand near the glowing building, then press Enter or tap/click it.'},
-      {at:2200,kind:'building',place:'petShop',data:['','Pet Shop',0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+      {at:2400,kind:'sign',data:['🐾','Pet Shop lesson',0,''],message:'Pet Shop: stand near the glowing shop, then press Enter or tap/click it.'},
+      {at:2600,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+      {at:3050,kind:'token',tokenIndex:3,message:'Habitat badge collected.'},
 
-      {at:2550,kind:'sign',data:['🏡','Habitat lesson',0,''],message:'Habitat works the same way. Stand near it, then press Enter or tap/click.'},
-      {at:2850,kind:'building',place:'habitat',data:['','Habitat',0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
+      {at:3420,kind:'sign',data:['🏡','Habitat lesson',0,''],message:'Habitat works the same way. Stand near it, then press Enter or tap/click.'},
+      {at:3650,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:3250,kind:'task',data:['🎣','Hook-a-Waaambulance stop',150,''],message:'Hook-a-Waaambulance stop found. Later this can open the hook-a-duck style game.'},
-      {at:3580,kind:'hazard',hazardIndex:0,message:'Tiny puddle: avoid or jump it.'},
-      {at:3860,kind:'token',tokenIndex:2,message:'Hook ticket collected.'},
-      {at:4140,kind:'task',data:['🗺️','Quest selector stop',200,''],message:'Quest selector found. Later this can let players pick a quest from the town.'},
-      {at:4400,kind:'sign',data:['🏁','Tutorial finish board',0,''],message:'Tutorial done. Head to the flag to begin Wrong Moon next.'},
-      {at:4620,kind:'finish'}
+      {at:4250,kind:'sign',data:['🎣','Hook lesson',0,''],message:'Hook-a-Waaambulance is its own building now, not inside the Pet Shop.'},
+      {at:4700,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
+      {at:5120,kind:'token',tokenIndex:2,message:'Hook ticket collected.'},
+
+      {at:5450,kind:'sign',data:['🗺️','Quest Starter lesson',0,''],message:'The Quest Starter building lets players pick the next quest.'},
+      {at:5750,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
+      {at:6350,kind:'sign',data:['🏁','Tutorial finish board',0,''],message:'Tutorial done. Head to the flag or use the Quest Starter to begin Wrong Moon.'},
+      {at:6900,kind:'finish'}
     ]
   },
 
@@ -1024,7 +1047,7 @@ function buildingPlanEntry(place){
   const found=levelPlan().find(e=>e&&e.kind==='building'&&e.place===place);
   if(found)return found;
   const img=PLACE_IMAGES[place]||PLACE_IMAGES.petShop||'';
-  const label=place==='habitat'?'Habitat':'Pet Shop';
+  const label=PLACE_LABELS[place]||place||'Place';
   return {at:buildingLayout(place).at||1000,kind:'building',place,data:['',label,0,img],message:'Opening '+label+'...'};
 }
 // BUILDING ROUTE FIX:
@@ -1211,7 +1234,7 @@ function startTeamQuest(){
 function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
-  if(/^https?:\/\//i.test(raw))return raw;
+  if(/^(https?:|data:)/i.test(raw))return raw;
   return `${CLOUD}/${raw.replace(/^\/+/, '')}`;
 }
 function addObjectImage(el,data){
@@ -1272,7 +1295,11 @@ function openBuilding(o){
       doorScreen.classList.remove('doorPlay');
     }
 
-    if(o.place==='habitat'){
+    if(o.place==='welcomeBoard'){
+      const welcome=$('welcomeInfoScreen');
+      if(welcome)welcome.classList.remove('hidden');
+      showToast('🪧 Welcome Board opened');
+    }else if(o.place==='habitat'){
       const panel=$('petPanel');
       if(panel)panel.classList.remove('hidden');
       const reloadBtn=$('reloadPetsBtn');
@@ -1282,6 +1309,14 @@ function openBuilding(o){
       const shop=$('shopScreen');
       if(shop)shop.classList.remove('hidden');
       showToast('🐾 Pet Shop opened');
+    }else if(o.place==='hookWaaambulance'){
+      const hook=$('hookScreen');
+      if(hook)hook.classList.remove('hidden');
+      showToast('🎣 Hook-a-Waaambulance opened');
+    }else if(o.place==='questStarter'){
+      const qs=$('questStartScreen');
+      if(qs)qs.classList.remove('hidden');
+      showToast('🗺️ Quest Starter opened');
     }
 
     o.opening=false;
@@ -1294,6 +1329,9 @@ function enterNearbyBuilding(){
   if(!$('startScreen').classList.contains('hidden'))return false;
   if(!$('doorScreen').classList.contains('hidden'))return false;
   if(!$('shopScreen').classList.contains('hidden'))return false;
+  if($('welcomeInfoScreen')&&!$('welcomeInfoScreen').classList.contains('hidden'))return false;
+  if($('hookScreen')&&!$('hookScreen').classList.contains('hidden'))return false;
+  if($('questStartScreen')&&!$('questStartScreen').classList.contains('hidden'))return false;
   openBuilding(nearbyBuilding);
   return true;
 }
@@ -1662,7 +1700,7 @@ function focusEditTarget(layer){
   $('adminStatus') && ($('adminStatus').textContent='Editing '+(names[layer]||layer)+'. Only these settings are shown. Drag on the game or use the sliders.');
 }
 
-let selectedPlace='petShop';
+let selectedPlace='welcomeBoard';
 function clampNum(v,min,max){v=Number(v);if(!Number.isFinite(v))v=min;return Math.max(min,Math.min(max,v));}
 function visiblePlaceObject(place){return objects.find(o=>o.kind==='building'&&o.place===place&&!o.vanished)||null;}
 
@@ -1950,7 +1988,7 @@ function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image 
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
   btn.onpointerdown=e=>{e.preventDefault();down();};
@@ -1962,13 +2000,26 @@ function holdButton(id,down,up){
 holdButton('touchLeft',()=>keys.left=true,()=>keys.left=false);
 holdButton('touchRight',()=>keys.right=true,()=>keys.right=false);
 ['touchJump','touchJump2'].forEach(id=>{const btn=$(id); if(btn){btn.onpointerdown=e=>{e.preventDefault();jump();};btn.ontouchstart=e=>{e.preventDefault();jump();};}});
-if($('closeShopBtn'))$('closeShopBtn').onclick=()=>{
-  $('shopScreen').classList.add('hidden');
+function closePlaceOverlay(id){
+  const el=$(id);
+  if(el)el.classList.add('hidden');
   if(playing&&!ended&&$('startScreen').classList.contains('hidden')&&!document.body.classList.contains('editMode')){
     paused=false;
     $('pauseBtn').textContent='Pause';
   }
-};
+}
+if($('closeShopBtn'))$('closeShopBtn').onclick=()=>closePlaceOverlay('shopScreen');
+if($('closeWelcomeBtn'))$('closeWelcomeBtn').onclick=()=>closePlaceOverlay('welcomeInfoScreen');
+if($('closeHookBtn'))$('closeHookBtn').onclick=()=>closePlaceOverlay('hookScreen');
+if($('closeQuestStarterBtn'))$('closeQuestStarterBtn').onclick=()=>closePlaceOverlay('questStartScreen');
+document.querySelectorAll('[data-quest-level]').forEach(btn=>{
+  btn.onclick=()=>{
+    closePlaceOverlay('questStartScreen');
+    const idx=Math.max(0,Math.min(levels.length-1,Number(btn.dataset.questLevel)||0));
+    levelIndex=idx;
+    startLevel();
+  };
+});
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
 function beginSelectedPlaceDrag(e){
