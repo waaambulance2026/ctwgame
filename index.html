@@ -654,7 +654,103 @@ function updateSpriteFacing(input=0){
   applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
-const levels=[{name:'Level 1: Swamp Monster',quest:'Swamp Monster',goal:2500,tokens:[['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']],hazards:[['🟫','Mud splat',0,'v1781797065/monster_mud.png'],['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],['🧦','Wet sock',0,'v1781797065/wet_sock.png'],['🦴','Bog bone',0,'v1781797065/bog_bone.png']]},{name:'Level 2: Wrong Moon',quest:'Wrong Moon',goal:3000,tokens:[['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],['⭐','Wrong star',100,'v1781638223/wrong_star.png'],['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']],hazards:[['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],['🗯️','Moon argument',0,'v1781638223/moon_argument.png']]}]
+const PLACE_IMAGES={
+  door:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png',
+  petShop:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/pet_shop.png',
+  habitat:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/habitat.png'
+};
+const levels=[
+  {
+    name:'Level 1: Tutorial Town',
+    quest:'Tutorial Town',
+    goal:2300,
+
+    tokens:[
+      ['🪙','Practice coin',40,''],
+      ['💙','Care token',60,''],
+      ['🎟️','Hook ticket',80,''],
+      ['🏠','Habitat badge',100,'']
+    ],
+
+    hazards:[
+      ['🟫','Tiny puddle',0,''],
+      ['🚧','Training cone',0,''],
+      ['⚠️','Oops sign',0,'']
+    ],
+
+    plan:[
+      {at:80,kind:'sign',data:['🪧','Tutorial board',0,''],message:'Tutorial: use left and right to move.'},
+      {at:260,kind:'token',tokenIndex:0,message:'Collect this token by touching it properly.'},
+
+      {at:450,kind:'sign',data:['⬆️','Jump lesson',0,''],message:'Press SPACE, W, Arrow Up, or the jump button to jump.'},
+      {at:650,kind:'hazard',hazardIndex:0,message:'Jump over this or stomp it from above.'},
+
+      {at:850,kind:'task',data:['🔎','Practice clue',120,''],message:'This is a task/clue object. Some objects give instructions or jobs.'},
+
+      {at:1040,kind:'task',data:['🐾','Pet Shop',0,PLACE_IMAGES.petShop],message:'Pet Shop: stop here to open the pet shop later.'},
+      {at:1260,kind:'task',data:['🎣','Hook-a-Waaambulance',0,PLACE_IMAGES.door],message:'Hook-a-Waaambulance: stop here to play the hook game later.'},
+      {at:1480,kind:'task',data:['🏡','Habitat',0,PLACE_IMAGES.habitat],message:'Habitat: stop here to visit pet homes later.'},
+      {at:1700,kind:'task',data:['🗺️','Quest Selector',0,PLACE_IMAGES.door],message:'Quest Selector: stop here to choose the next quest later.'},
+
+      {at:1940,kind:'sign',data:['🏁','Finish lesson',0,''],message:'Tutorial done. Go to the flag to start Wrong Moon next.'},
+      {at:2140,kind:'finish'}
+    ]
+  },
+
+  {
+    name:'Level 2: Wrong Moon',
+    quest:'Wrong Moon',
+    goal:3000,
+
+    tokens:[
+      ['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],
+      ['⭐','Wrong star',100,'v1781638223/wrong_star.png'],
+      ['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],
+      ['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']
+    ],
+
+    hazards:[
+      ['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],
+      ['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],
+      ['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],
+      ['🗯️','Moon argument',0,'v1781638223/moon_argument.png']
+    ],
+
+    plan:[
+      {at:80,kind:'sign',data:['🪧','Wrong Moon board',0,''],message:'Wrong Moon Quest: collect sky evidence and avoid moon drama.'},
+      {at:260,kind:'token',tokenIndex:0},
+      {at:470,kind:'hazard',hazardIndex:0},
+      {at:700,kind:'token',tokenIndex:1},
+      {at:930,kind:'task',data:['🔎','Check moon clue',150,''],message:'Moon clue checked. Something is definitely wrong.'},
+      {at:1160,kind:'hazard',hazardIndex:1},
+      {at:1420,kind:'token',tokenIndex:2},
+      {at:1700,kind:'hazard',hazardIndex:2},
+      {at:2000,kind:'task',data:['✅','Confirm sky evidence',250,''],message:'Sky evidence confirmed. Head to the finish.'},
+      {at:2300,kind:'token',tokenIndex:3},
+      {at:2650,kind:'finish'}
+    ]
+  },
+
+  {
+    name:'Level 3: Swamp Monster',
+    quest:'Swamp Monster',
+    goal:2500,
+
+    tokens:[
+      ['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],
+      ['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],
+      ['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],
+      ['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']
+    ],
+
+    hazards:[
+      ['🟫','Mud splat',0,'v1781797065/monster_mud.png'],
+      ['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],
+      ['🧦','Wet sock',0,'v1781797065/wet_sock.png'],
+      ['🦴','Bog bone',0,'v1781797065/bog_bone.png']
+    ]
+  }
+];
 
 /* EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
    This turns the level from random collecting into a planned path.
