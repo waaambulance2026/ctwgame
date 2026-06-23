@@ -4,6 +4,32 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Ax + Pura Waaambulance Quests</title>
+<!-- ============================================================
+SIMPLE EDITOR NOTES - SAFE AREAS TO CHANGE
+1) EDIT SECTION 17: SPRITE PATHS
+   Change character animation image links here only. Keep {n} for 001, 002, 003.
+
+2) EDIT SECTION 20: LEVEL DATA
+   This is where you add levels, buildings, tokens, hazards and distances.
+   building = big place the player can enter.
+   task     = small clue/sign style object.
+   token    = collectible.
+   hazard   = bad object.
+   finish   = end flag.
+
+3) PLACE_IMAGES
+   Put direct Cloudinary image links here. They must start with:
+   https://res.cloudinary.com/dpwlfmhia/image/upload/...
+
+4) Pet Shop and Habitat
+   These are now buildings, not tiny task icons. Walking into them plays a full-screen
+   door animation. Habitat opens the existing PetBot panel. Pet Shop opens a shop
+   screen ready to wire into the PetBot shop API.
+
+5) Do not edit random code lower down unless you are fixing a specific function.
+   Search the EDIT SECTION name first.
+============================================================ -->
+
 <!-- Level 1 object upgrade: image items, vanish-on-collect, Mario-style stomp hazards, level-building checklist support. -->
 <!-- ============================================================
 SAFE REVERTED FIX BUILD
@@ -43,6 +69,70 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
 #worldObjects{position:absolute;inset:0;z-index:var(--zObjects);pointer-events:none}.obj{position:absolute;display:grid;place-items:center;width:clamp(46px,5.1vw,68px);height:clamp(46px,5.1vw,68px);border-radius:20px;font-size:clamp(23px,2.8vw,33px);transform:translate(-50%,-50%);border:3px solid rgba(255,255,255,.62);box-shadow:0 12px 20px rgba(0,0,0,.22)}.token{background:linear-gradient(180deg,#fff8ff,#f4c8ee);border-color:var(--pink)}.hazard{background:linear-gradient(180deg,#fff0bf,#ff8585);border-color:#ff5c5c}.finish{background:linear-gradient(180deg,#eafcff,#76C7D8);border-color:#fff}.obj img{display:block;max-width:100%;max-height:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}.obj.hasImage{background:rgba(255,255,255,.66)}.obj.emojiFallback{font-size:clamp(23px,2.8vw,33px)}.obj.collected{transform:translate(-50%,-50%) translateY(-54px) scale(.18);opacity:0;transition:transform .18s ease-out,opacity .18s ease-out}.obj.stomped{transform:translate(-50%,-50%) translateY(18px) scaleY(.18);opacity:.12;transition:transform .2s ease-out,opacity .2s ease-out}.obj.damaged{transform:translate(-50%,-50%) translateX(-36px) rotate(-16deg) scale(.35);opacity:0;transition:transform .2s ease-out,opacity .2s ease-out}.task{background:linear-gradient(180deg,#e9fbff,#b8f4ff);border-color:#76C7D8}.sign{background:linear-gradient(180deg,#fff7bd,#F5C542);border-color:#fff}
+
+/* EDIT SECTION 05B: BIG BUILDINGS + FULL SCREEN DOOR
+   Use kind:'building' in the level plan for places like Pet Shop and Habitat.
+   These should be buildings in the world, not tiny task icons.
+*/
+.building{
+  width:clamp(190px,24vw,360px)!important;
+  height:clamp(140px,19vw,280px)!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  border-radius:0!important;
+  overflow:visible!important;
+}
+.building img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  filter:drop-shadow(0 18px 20px rgba(0,0,0,.30));
+}
+.building:hover{transform:translate(-50%,-50%) scale(1.04)!important}
+
+.doorStop{pointer-events:auto;cursor:pointer}
+
+.doorModal{
+  width:min(520px,calc(100vw - 28px));
+  text-align:center;
+  padding:20px;
+}
+.doorModal h1{
+  margin:0 0 12px;
+  font-size:clamp(28px,5vw,46px);
+  color:white;
+  text-shadow:0 4px 12px rgba(0,0,0,.45);
+}
+#doorBigImg{
+  width:min(360px,70vw);
+  max-height:70vh;
+  object-fit:contain;
+  filter:drop-shadow(0 20px 30px rgba(0,0,0,.45));
+  transform-origin:center bottom;
+}
+#doorScreen.doorPlay #doorBigImg{animation:bigDoorOpen .75s ease-in-out forwards}
+@keyframes bigDoorOpen{
+  0%{transform:scale(1);opacity:1}
+  45%{transform:scale(1.08);opacity:1}
+  100%{transform:scale(.82) translateY(-40px);opacity:0}
+}
+.shopGrid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin:12px 0;
+}
+.shopCard{
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.22);
+  border-radius:16px;
+  padding:12px;
+}
+.shopCard strong{display:block;font-size:18px;margin-bottom:4px}
+.shopCard span{font-size:13px;opacity:.9}
+@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:190px!important;height:145px!important}}
+
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
 .builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
@@ -168,7 +258,7 @@ body.night .platform{
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
     <div id="tab-sprites" class="tabBody"><p class="tabHint">Sprite paths: use {n} for 001, 002, 003 etc. Missing sprites now show a yellow warning instead of silently disappearing.</p><h3>Ax</h3><label>Ax idle URL pattern</label><input id="axIdleUrl"><label>Ax walk URL pattern</label><input id="axWalkUrl"><label>Ax jump URL pattern</label><input id="axJumpUrl"><h3>Pura</h3><label>Pura idle URL pattern</label><input id="puraIdleUrl"><label>Pura walk URL pattern</label><input id="puraWalkUrl"><label>Pura jump URL pattern</label><input id="puraJumpUrl"><h3>Owl</h3><label>Owl idle URL pattern</label><input id="owlIdleUrl"><label>Owl walk URL pattern</label><input id="owlWalkUrl"><label>Owl jump URL pattern</label><input id="owlJumpUrl"><h3>Unicorn</h3><label>Unicorn idle URL pattern</label><input id="unicornIdleUrl"><label>Unicorn walk URL pattern</label><input id="unicornWalkUrl"><label>Unicorn jump URL pattern</label><input id="unicornJumpUrl"><div class="calButtons"><button id="applySpriteUrlsBtn" class="good">Apply sprite URLs</button><button id="resetSpriteUrlsBtn" class="warn">Reset sprite URLs</button></div><div class="statusBox" id="spriteStatus">Sprite URL patterns ready.</div></div>
-    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Browser save is off. Sprite paths use one SPRITE_PATTERNS block. Unicorn baseline fix applied. Pura walk uses exact 4-frame links.</div></div>
+    <div id="tab-save" class="tabBody"><p class="tabHint">Browser save is disabled. Shared save stores layout only. Sprite paths now come from the single SPRITE_PATTERNS block in index.html.</p><label>Admin key</label><input id="adminKey" type="password" placeholder="CTW_GAME_ADMIN_KEY"><label>Level name</label><input id="levelName" value="level_main"><div class="calButtons"><button id="saveCloudBtn" class="good">Save shared level</button><button id="loadCloudBtn">Load shared level</button><button id="resetSettingsBtn" class="bad">Reset safe layout</button><button id="closeBuilderBtn">Close editor</button></div><textarea id="settingsBox" readonly></textarea><div class="statusBox" id="adminStatus">Ready. Buildings enabled. Pet Shop and Habitat use full-screen door opening. Habitat opens PetBot panel.</div></div>
   </aside>
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
@@ -188,6 +278,8 @@ body.night .platform{
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
   <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
+  <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
+  <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Next it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>🎟️ Special</strong><span>Event and Hook-a-Waaambulance prizes will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
 <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
@@ -687,9 +779,9 @@ const levels=[
 
       {at:850,kind:'task',data:['🔎','Practice clue',120,''],message:'This is a task/clue object. Some objects give instructions or jobs.'},
 
-      {at:1040,kind:'task',data:['🐾','Pet Shop',0,PLACE_IMAGES.petShop],message:'Pet Shop: stop here to open the pet shop later.'},
+      {at:1040,kind:'building',place:'petShop',data:['','Pet Shop',0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
       {at:1260,kind:'task',data:['🎣','Hook-a-Waaambulance',0,PLACE_IMAGES.door],message:'Hook-a-Waaambulance: stop here to play the hook game later.'},
-      {at:1480,kind:'task',data:['🏡','Habitat',0,PLACE_IMAGES.habitat],message:'Habitat: stop here to visit pet homes later.'},
+      {at:1480,kind:'building',place:'habitat',data:['','Habitat',0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
       {at:1700,kind:'task',data:['🗺️','Quest Selector',0,PLACE_IMAGES.door],message:'Quest Selector: stop here to choose the next quest later.'},
 
       {at:1940,kind:'sign',data:['🏁','Finish lesson',0,''],message:'Tutorial done. Go to the flag to start Wrong Moon next.'},
@@ -756,7 +848,7 @@ const levels=[
    This turns the level from random collecting into a planned path.
    Add more entries here to build a proper level:
    at = distance along the level
-   kind = sign, task, token, hazard, finish
+   kind = building, sign, task, token, hazard, finish
    tokenIndex/hazardIndex choose from the level tokens/hazards list above
 */
 function levelPlan(){
@@ -790,14 +882,52 @@ function makePlannedObject(entry){
   const data=pickPlannedData(entry);
   const x=innerWidth+260;
   const isFinish=kind==='finish';
-  const visualKind=(kind==='sign'||kind==='task')?kind:(isFinish?'finish':kind);
+
+  // SIMPLE EDITOR NOTE:
+  // building = big place image on the map, like Pet Shop or Habitat.
+  // task/sign/token/hazard stay as smaller game objects.
+  const visualKind=(kind==='sign'||kind==='task'||kind==='building')?kind:(isFinish?'finish':kind);
+
   const el=document.createElement('div');
   el.className='obj '+visualKind;
   addObjectImage(el,data);
   $('worldObjects').appendChild(el);
-  const lift=kind==='hazard'?cssNumber('--hazardLift',58):(kind==='sign'?150:(kind==='task'?132:cssNumber('--tokenLift',126)));
+
+  const lift=kind==='hazard'
+    ? cssNumber('--hazardLift',58)
+    : kind==='sign'
+      ? 150
+      : kind==='task'
+        ? 132
+        : kind==='building'
+          ? 118
+          : cssNumber('--tokenLift',126);
+
   const y=innerHeight-floorPx()-(isFinish?130:lift);
-  objects.push({el,x,y,kind:visualKind,label:data[1],points:Number(data[2])||Number(entry.points)||0,hit:false,vanished:false,message:entry.message||''});
+
+  const obj={
+    el,
+    x,
+    y,
+    kind:visualKind,
+    place:entry.place||'',
+    label:data[1],
+    points:Number(data[2])||Number(entry.points)||0,
+    hit:false,
+    vanished:false,
+    message:entry.message||''
+  };
+
+  if(kind==='building'){
+    el.classList.add('doorStop');
+    el.title='Enter '+obj.label;
+    el.addEventListener('pointerdown',ev=>{
+      ev.preventDefault();
+      openBuilding(obj);
+    });
+  }
+
+  objects.push(obj);
 }
 function spawnLevelPlanObjects(){
   const plan=levelPlan();
@@ -897,6 +1027,50 @@ function vanishObject(o,cls='collected',delay=220){
   o.el.classList.add(cls);
   setTimeout(()=>{try{o.el.remove()}catch(e){}},delay);
 }
+function openBuilding(o){
+  if(o.hit||o.vanished)return;
+  o.hit=true;
+
+  const wasPaused=paused;
+  paused=true;
+  showToast(o.message||`Opening ${o.label}...`);
+
+  const doorScreen=$('doorScreen');
+  const doorTitle=$('doorTitle');
+  const doorImg=$('doorBigImg');
+
+  if(doorTitle)doorTitle.textContent=o.message||`Opening ${o.label}...`;
+  if(doorImg)doorImg.src=PLACE_IMAGES.door;
+
+  if(doorScreen){
+    doorScreen.classList.remove('hidden');
+    doorScreen.classList.remove('doorPlay');
+    void doorScreen.offsetWidth;
+    doorScreen.classList.add('doorPlay');
+  }
+
+  setTimeout(()=>{
+    if(doorScreen){
+      doorScreen.classList.add('hidden');
+      doorScreen.classList.remove('doorPlay');
+    }
+
+    if(o.place==='habitat'){
+      const panel=$('petPanel');
+      if(panel)panel.classList.remove('hidden');
+      const reloadBtn=$('reloadPetsBtn');
+      if(reloadBtn)reloadBtn.click();
+      showToast('🏡 Habitat opened from PetBot');
+    }else if(o.place==='petShop'){
+      const shop=$('shopScreen');
+      if(shop)shop.classList.remove('hidden');
+      showToast('🐾 Pet Shop opened');
+    }
+
+    paused=wasPaused;
+  },900);
+}
+
 function canStomp(o){
   if(o.kind!=='hazard'||player.grounded||player.vy>=0)return false;
   const pr=getShrunkRect($('player'),.08,.10);
@@ -934,6 +1108,8 @@ function collide(o){
     score+=o.points||0;
     showToast(o.message||`${o.label} done!`);
     vanishObject(o,'collected',260);
+  }else if(o.kind==='building'){
+    openBuilding(o);
   }else{
     o.hit=true;
     score+=500;
@@ -1001,11 +1177,10 @@ function animateOne(elId,char,action,now,state){
   }
 }
 function animateSprites(now){
-  // MAIN + TEAM ANIMATION FIX:
-  // Main walks only when the player presses left/right.
-  // Followers copy the main action, so Pura does not swap back to idle while Ax is walking.
-  // Background scrolling by itself does not force anyone to walk.
-  const inputMoving=!!(keys.left||keys.right);
+  // SIMPLE EDITOR NOTE:
+  // Walking animation is based on movementInput(), so keyboard and screen buttons both count.
+  const input=movementInput();
+  const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&input!==0;
   const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
@@ -1025,12 +1200,13 @@ function playerHitRectFor(kind){
   const el=$('player');
   // Tighter player box stops items collecting just because the outer sprite container is nearby.
   if(kind==='token'||kind==='task'||kind==='sign')return getShrunkRect(el,.34,.24);
+  if(kind==='building')return getShrunkRect(el,.30,.18);
   if(kind==='hazard')return getShrunkRect(el,.28,.18);
   return getShrunkRect(el,.22,.16);
 }
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-  const shrink=(o.kind==='token'||o.kind==='task'||o.kind==='sign')?.22:(o.kind==='hazard'?.12:.08);
+  const shrink=(o.kind==='token'||o.kind==='task'||o.kind==='sign')?.22:(o.kind==='building'?.18:(o.kind==='hazard'?.12:.08));
   return {left:r.left+r.width*shrink,right:r.right-r.width*shrink,top:r.top+r.height*shrink,bottom:r.bottom-r.height*shrink};
 }
 function shouldHitObject(o){
@@ -1350,7 +1526,19 @@ function usePet(){if(!currentPetImage){$('petStatus').textContent='No pet image 
 function bumpVisual(which){const p=currentPet;if(!p){$('petStatus').textContent='Load a pet first.';return}if(which==='feed')p.hunger=pct(p.hunger)+8;if(which==='play')p.happy=pct(p.happy)+8;if(which==='rest')p.energy=pct(p.energy)+8;if(which==='heal'){p.hunger=pct(p.hunger)+3;p.happy=pct(p.happy)+3;p.energy=pct(p.energy)+3}setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);$('petStatus').textContent='Visual '+which+' animation only. PetBot is still read-only from this game.'}
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=()=>{document.body.classList.toggle('night');$('modeBtn').textContent=document.body.classList.contains('night')?'Day ☀️':'Night 🌙'};$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});$('touchLeft').ontouchstart=()=>keys.left=true;$('touchLeft').ontouchend=()=>keys.left=false;$('touchRight').ontouchstart=()=>keys.right=true;$('touchRight').ontouchend=()=>keys.right=false;$('touchJump').ontouchstart=jump;$('touchJump2').ontouchstart=jump;
+addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+function holdButton(id,down,up){
+  const btn=$(id); if(!btn)return;
+  btn.onpointerdown=e=>{e.preventDefault();down();};
+  btn.onpointerup=e=>{e.preventDefault();up();};
+  btn.onpointercancel=up; btn.onpointerleave=up;
+  btn.ontouchstart=e=>{e.preventDefault();down();};
+  btn.ontouchend=e=>{e.preventDefault();up();};
+}
+holdButton('touchLeft',()=>keys.left=true,()=>keys.left=false);
+holdButton('touchRight',()=>keys.right=true,()=>keys.right=false);
+['touchJump','touchJump2'].forEach(id=>{const btn=$(id); if(btn){btn.onpointerdown=e=>{e.preventDefault();jump();};btn.ontouchstart=e=>{e.preventDefault();jump();};}});
+if($('closeShopBtn'))$('closeShopBtn').onclick=()=>$('shopScreen').classList.add('hidden');
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
 function beginLayerDrag(layer,e){
