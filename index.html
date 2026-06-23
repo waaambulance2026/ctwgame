@@ -142,7 +142,7 @@ body.night #game{background:#12113b} body.night .sky{background-image:url('https
 /* EDIT SECTION 05C: SIMPLE BUILDING / PLACE EDITING
    Buildings can now be dragged in Build/Edit mode. Use Places / Buildings in the editor.
 */
-body.editMode #buildingObjects{pointer-events:auto!important}
+body.editMode #buildingObjects{pointer-events:auto!important;z-index:95!important}
 body.editMode .building{pointer-events:auto!important;cursor:grab;outline:3px dashed rgba(245,197,66,.95);outline-offset:4px}
 body.editMode .building:active{cursor:grabbing}
 body.editMode .building.selectedPlaceTarget{outline:4px dashed rgba(118,199,216,.98)!important;outline-offset:7px!important}
@@ -269,7 +269,7 @@ body.night .platform{
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick a building, then drag the building on the game. Drag left/right to change where it appears in the level. Drag up/down to place its feet on the ground.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="100" max="3400" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick Pet Shop or Habitat, then drag anywhere on the game canvas or on the building box. Left/right changes where it appears. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="100" max="3400" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
@@ -975,10 +975,6 @@ function makePlannedObject(entry){
 
   objects.push(obj);
 }
-function plannedAt(entry){
-  if(entry&&entry.kind==='building'&&entry.place&&PLACE_LAYOUT[entry.place])return Number(PLACE_LAYOUT[entry.place].at||entry.at||0);
-  return Number((entry&&entry.at)||0);
-}
 function spawnLevelPlanObjects(){
   const plan=levelPlan();
   plan.forEach((entry,i)=>{
@@ -1422,7 +1418,6 @@ function syncPlaceControls(){
   $('calPlaceW').value=clampNum(l.width,110,420);$('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceY').value=clampNum(l.yOffset,-120,180);$('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZ').value=clampNum(l.z,0,80);$('calPlaceZVal').textContent=$('calPlaceZ').value;
-  if($('calZBuildings')){$('calZBuildings').value=$('calPlaceZ').value;$('calZBuildingsVal').textContent=$('calPlaceZ').value;setVar('zBuildings',$('calPlaceZ').value,'');}
   document.querySelectorAll('.building').forEach(el=>el.classList.toggle('selectedPlaceTarget',el.dataset.place===selectedPlace));
 }
 function readPlaceControls(){
@@ -1439,7 +1434,6 @@ function readPlaceControls(){
   $('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZVal').textContent=$('calPlaceZ').value;
-  if($('calZBuildings')){$('calZBuildings').value=$('calPlaceZ').value;$('calZBuildingsVal').textContent=$('calPlaceZ').value;setVar('zBuildings',$('calPlaceZ').value,'');}
   objects.forEach(applyBuildingLayout);
   exportSettings();
 }
@@ -1650,9 +1644,37 @@ holdButton('touchRight',()=>keys.right=true,()=>keys.right=false);
 if($('closeShopBtn'))$('closeShopBtn').onclick=()=>$('shopScreen').classList.add('hidden');
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
+function beginSelectedPlaceDrag(e){
+  if(!document.body.classList.contains('editMode'))return;
+  selectedPlace=($('placeSelect')&&$('placeSelect').value)||selectedPlace||'petShop';
+  if($('placeSelect'))$('placeSelect').value=selectedPlace;
+  focusEditTarget('places');
+  syncPlaceControls();
+
+  // EASY DRAG FIX:
+  // When Places / buildings is selected, drag works even if you grab the blue/yellow
+  // edit box, the transparent edge, or empty game space beside the building.
+  // It moves the currently selected building instead of trying to drag the ground.
+  const obj=visiblePlaceObject(selectedPlace);
+  const l={...buildingLayout(selectedPlace)};
+  drag={
+    layer:'place',
+    place:selectedPlace,
+    obj,
+    sx:e.clientX,
+    sy:e.clientY,
+    startLayout:l,
+    startX:obj?obj.x:e.clientX,
+    startY:obj?obj.y:e.clientY
+  };
+  try{($('game')||document.body).setPointerCapture(e.pointerId)}catch(err){}
+  e.preventDefault();
+  e.stopPropagation();
+}
 function beginLayerDrag(layer,e){
   if(!document.body.classList.contains('editMode'))return;
   if(!layer)return;
+  if(layer==='places'||layer==='place'){beginSelectedPlaceDrag(e);return;}
   focusEditTarget(layer);
   drag={layer,sx:e.clientX,sy:e.clientY,start:readSettings()};
   try{(e.currentTarget||$('game')).setPointerCapture(e.pointerId)}catch(err){}
