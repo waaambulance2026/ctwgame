@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Waaambulance PetBot - clean easy edit</title>
+<title>Waaambulance PetBot - ONE FILE FIXED</title>
 <style>
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
@@ -14,8 +14,8 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);color:var(--ink)}
 button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit}
 .app{position:relative;width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;padding:0}
-.stage{position:relative;width:min(82vw,calc(90dvh * 0.75));height:min(90dvh,calc(82vw * 1.333));max-width:650px;max-height:867px;filter:drop-shadow(0 18px 38px rgba(0,0,0,.18)) drop-shadow(0 0 22px rgba(243,90,173,.20)) drop-shadow(0 0 18px rgba(22,184,234,.16));transition:transform .18s ease,width .18s ease,height .18s ease}
-body.editorOpen .stage{transform:translateX(-170px) scale(.94)}
+.stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));transition:transform .18s ease,width .18s ease,height .18s ease}
+.stage{transform:none} /* editor never shrinks or moves the toy */
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none}
 .lcdScreen{position:absolute;inset:7.5% 7.5% 11.5% 7.5%;border-radius:8%/11%;overflow:hidden;background:linear-gradient(180deg,#bdcf88,#95a967);box-shadow:inset 0 0 24px rgba(0,0,0,.20),inset 0 0 0 3px rgba(35,49,23,.30)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.055) 1px,transparent 1px);background-size:8px 8px;opacity:.58;pointer-events:none;z-index:3}
@@ -37,17 +37,17 @@ body.editorOpen .stage{transform:translateX(-170px) scale(.94)}
 .hot:focus-visible{outline:0}
 .hot.press{transform:scale(.94)}
 .hot span{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;place-items:center;border-radius:999px;background:rgba(22,184,234,.85);color:white;font-size:12px;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.55);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,.18);pointer-events:none}
-body.guide .hot{background:rgba(22,184,234,.10);outline:2px dashed rgba(255,255,255,.80);outline-offset:-2px}
+body.guide .hot{background:transparent;outline:0}
 body.guide .hot span{display:grid}
 .editTab{position:fixed;z-index:80;left:10px;top:10px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 8px 20px rgba(0,0,0,.13);padding:8px 12px;font-weight:1000;color:#3b2940}
-.editor{position:fixed;z-index:90;right:10px;top:10px;bottom:10px;width:min(330px,calc(100vw - 20px));overflow:auto;padding:14px;border-radius:18px;background:rgba(255,255,255,.95);box-shadow:0 16px 42px rgba(0,0,0,.20);display:none}
+.editor{position:fixed;z-index:90;right:12px;top:12px;width:min(315px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:12px;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 16px 42px rgba(0,0,0,.20);display:none}
 body.editorOpen .editor{display:block}
-.editor h2{margin:0 0 7px;font-size:18px}
-.editor p{margin:0 0 10px;font-size:13px;line-height:1.25}
+.editor h2{margin:0 0 6px;font-size:16px}
+.editor p{margin:0 0 8px;font-size:12px;line-height:1.25}
 .editor label{display:block;margin:10px 0 4px;font-size:12px;font-weight:1000}
 .editor input[type="range"]{width:100%}
 .editor select,.editor textarea{width:100%;border:1px solid #ddd;border-radius:10px;padding:8px;font:inherit}
-.editor textarea{height:150px;font-family:ui-monospace,Consolas,monospace;font-size:11px;white-space:pre}
+.editor textarea{height:110px;font-family:ui-monospace,Consolas,monospace;font-size:11px;white-space:pre}
 .row{display:grid;grid-template-columns:1fr 62px;gap:8px;align-items:center}
 .btn{background:linear-gradient(180deg,#fff,#f8edf6);border:1px solid #efcae4;border-radius:12px;padding:8px 10px;font-weight:1000;margin:4px 4px 4px 0}
 .btn.primary{background:linear-gradient(180deg,#fff,#e9f8ff);border-color:#bfeaff}
@@ -56,7 +56,7 @@ body.editorOpen .editor{display:block}
 .legend div{font-size:12px;background:#f7fbff;border:1px solid #d7eef8;border-radius:10px;padding:6px}
 details{margin-top:10px}
 summary{font-weight:1000;cursor:pointer}
-@media(max-width:900px){body.editorOpen .stage{transform:scale(.78) translateY(-8%)}.editor{left:10px;right:10px;top:auto;height:46dvh;width:auto}}
+@media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:42dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px;padding:4px 5px 0}.lcdMessage{font-size:7px;left:7px;right:7px}.editTab{font-size:12px;padding:7px 10px}}
 </style>
 </head>
@@ -76,8 +76,8 @@ summary{font-weight:1000;cursor:pointer}
 </div>
 <button class="editTab" id="editToggle">Edit</button>
 <aside class="editor" aria-label="Easy PetBot editor">
-  <h2>Clean PetBot editor</h2>
-  <p>This is now clean by default. The toy buttons stay invisible. Turn on <b>Guide dots</b> only when you want to line them up.</p>
+  <h2>One-file PetBot editor</h2>
+  <p>Use this only to adjust the one file. Close it to see the clean game view.</p>
   <button class="btn primary" id="guideToggle">Guide dots</button>
   <button class="btn" id="colourToggle">Pet colour/LCD</button>
   <button class="btn" id="closeEditor">Close</button>
