@@ -54,15 +54,28 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
 :root{
   --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
   --floorPx:70px; --platformH:30px;
-  --playerX:8vw; --playerW:170px; --playerDrop:1px;
-  --buddyX:14vw; --buddyW:115px; --buddyDrop:13px;
+  --playerX:150px; --playerW:170px; --playerDrop:1px;
+  --buddyX:265px; --buddyW:115px; --buddyDrop:13px;
   --skyY:center; --hillsH:445px; --hillsBottom:82px; --groundH:757px; --groundBottom:-120px;
   --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
   --zSky:0; --zHills:1; --zGround:39; --zPlatform:0; --zBuddy:46; --zPlayer:58; --zBuildings:25; --zObjects:50;
 }
 /* EDIT SECTION 04: PAGE RESET, GAME CANVAS, SKY, HILLS, GROUND, FLOOR AND HUD */
 *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
-#game{position:relative;width:100vw;height:100dvh;min-height:100vh;overflow:hidden;isolation:isolate;touch-action:none;user-select:none;background:#79d9ff}
+#game{
+  position:fixed;
+  left:0;
+  top:0;
+  width:1920px;
+  height:1080px;
+  min-height:0;
+  overflow:hidden;
+  isolation:isolate;
+  touch-action:none;
+  user-select:none;
+  background:#79d9ff;
+  transform-origin:top left;
+}
 .layer{position:absolute;left:0;width:100%;pointer-events:none;background-repeat:repeat-x}.sky{inset:0;z-index:var(--zSky);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');background-size:cover;background-position:center var(--skyY);background-repeat:no-repeat}.hills{z-index:var(--zHills);height:var(--hillsH);bottom:var(--hillsBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.groundDecor{z-index:var(--zGround);height:var(--groundH);bottom:var(--groundBottom);background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');background-size:auto 100%,auto 100%;background-position:0 bottom,0 bottom}.underFloor{position:absolute;left:0;right:0;bottom:0;height:calc(var(--floorPx) - var(--platformH));z-index:2;background:#204884;pointer-events:none}.platform{position:absolute;left:0;right:0;bottom:calc(var(--floorPx) - var(--platformH));height:var(--platformH);z-index:var(--zPlatform);pointer-events:none;background:linear-gradient(to bottom,rgba(255,255,255,.92) 0 6px,rgba(210,130,194,1) 6px 22px,rgba(118,199,216,1) 22px 28px,rgba(32,72,132,1) 28px 100%);box-shadow:0 -6px 0 rgba(255,255,255,.16) inset,0 -18px 45px rgba(0,0,0,.14) inset}
 /* Night mode: keep the SAME hill/ground artwork and sizing as day mode.
    The separate night_hills/night_ground files are different crops, which made the layers look broken. */
@@ -982,7 +995,7 @@ const levels=[
       // No extra random lesson clutter: each board explains the next real stop.
       {at:-1351,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-900,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
+      {at:-950,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
 
       {at:60,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
       {at:88,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
@@ -2239,6 +2252,28 @@ initAutoDayNight();
 // Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
 loadBrowserLayout();
 requestAnimationFrame(loop);
+/* Keeps the whole game the same layout on every screen /
+const DESIGN_W = 1920;
+const DESIGN_H = 1080;
+
+function fitGameToScreen(){
+  const game = document.getElementById('game');
+  if(!game) return;
+
+  const scale = Math.min(
+    window.innerWidth / DESIGN_W,
+    window.innerHeight / DESIGN_H
+  );
+
+  const left = (window.innerWidth - DESIGN_W scale) / 2;
+  const top = (window.innerHeight - DESIGN_H * scale) / 2;
+
+  game.style.transform = translate(${left}px, ${top}px) scale(${scale});
+}
+
+window.addEventListener('resize', fitGameToScreen);
+window.addEventListener('orientationchange', fitGameToScreen);
+fitGameToScreen();
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
 </script>
 </body>
