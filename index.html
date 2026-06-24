@@ -413,7 +413,7 @@ body.night .platform{
   <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
   <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Later it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat items</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>💊 Care extras</strong><span>Healing, rest and training items will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
-  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> walk with Left/Right or A/D. Jump with Space, W or Arrow Up. Glowing buildings open only when you press Enter or tap/click them. Tutorial boards also need Enter or tap.</p><p>Collect tokens, avoid hazards, visit the Pet Shop and Habitat, then use the Quest Starter to choose the next quest.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
+  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> move with Left/Right or A/D. Jump with Space, W or Arrow Up.</p><p><b>Buildings:</b> Pet Shop, Habitat, Hook-a-Waaambulance and Quest Starter open only when you press Enter or tap/click the glowing building.</p><p><b>Goal:</b> collect tokens, avoid or stomp hazards, visit each stop, then use the Quest Starter or head to the finish flag.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
   <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>🎣 Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>🎟️ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>🏆 Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
   <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
@@ -928,28 +928,32 @@ const levels=[
     ],
 
     plan:[
+      // Clean tutorial route: fewer floating lesson icons, clearer stops, buildings stay where you saved them in the editor.
       {at:-1678,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
-      {at:460,kind:'sign',data:['↔️','Movement lesson',0,''],message:'Use Right/D to move forward. Use Left/A to go backwards along the route.'},
-      {at:760,kind:'token',tokenIndex:0,message:'Practice coin collected.'},
-      {at:1050,kind:'sign',data:['⏎','Enter lesson',0,''],message:'When a board or building glows, press Enter or tap/click it. It will not open just from walking near it.'},
-      {at:1350,kind:'task',data:['✅','Interaction practice',100,''],message:'Good. This tutorial stop was completed with Enter/tap.'},
-      {at:1660,kind:'sign',data:['⬆️','Jump lesson',0,''],message:'Jump with Space, W, Arrow Up, or the jump button.'},
-      {at:1980,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
-      {at:2260,kind:'token',tokenIndex:1,message:'Care token collected.'},
-      {at:-520,kind:'sign',data:['🐾','Pet Shop lesson',0,''],message:'Pet Shop: stand near the glowing shop, then press Enter or tap/click it.'},
-      {at:-329,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
-      {at:700,kind:'token',tokenIndex:3,message:'Habitat badge collected.'},
 
-      {at:830,kind:'sign',data:['🏡','Habitat lesson',0,''],message:'Habitat works the same way. Stand near it, then press Enter or tap/click.'},
+      {at:-1180,kind:'sign',data:['🎮','Controls',0,''],message:'Move with Right/D and Left/A. Jump with Space, W or Arrow Up.'},
+      {at:-820,kind:'token',tokenIndex:0,message:'Practice coin collected.'},
+
+      {at:-520,kind:'sign',data:['🐾','Pet Shop',0,''],message:'Pet Shop stop: press Enter or tap/click the glowing shop to open it.'},
+      {at:-329,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+
+      {at:360,kind:'token',tokenIndex:1,message:'Care token collected.'},
+      {at:760,kind:'sign',data:['🏡','Habitat',0,''],message:'Habitat stop: press Enter or tap/click the glowing habitat to open Pet Care.'},
       {at:1023,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:2250,kind:'sign',data:['🎣','Hook lesson',0,''],message:'Hook-a-Waaambulance is its own building now, not inside the Pet Shop.'},
+      {at:1500,kind:'sign',data:['⬆️','Jump',0,''],message:'Jump over hazards, or land on them from above to stomp them.'},
+      {at:1820,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
+      {at:2140,kind:'token',tokenIndex:3,message:'Habitat badge collected.'},
+
+      {at:2250,kind:'sign',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance is its own stop. Press Enter or tap/click the glowing building.'},
       {at:2422,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
       {at:2820,kind:'token',tokenIndex:2,message:'Hook ticket collected.'},
 
-      {at:5450,kind:'sign',data:['🗺️','Quest Starter lesson',0,''],message:'The Quest Starter building lets players pick the next quest.'},
+      {at:3700,kind:'token',tokenIndex:4,message:'Tutorial star collected.'},
+      {at:5050,kind:'sign',data:['🗺️','Quests',0,''],message:'Quest Starter lets players choose Tutorial Town, Wrong Moon or Swamp Monster.'},
       {at:5750,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
-      {at:6350,kind:'sign',data:['🏁','Tutorial finish board',0,''],message:'Tutorial done. Head to the flag or use the Quest Starter to begin Wrong Moon.'},
+
+      {at:6350,kind:'sign',data:['🏁','Finish',0,''],message:'Tutorial done. Head to the flag or use the Quest Starter to begin Wrong Moon.'},
       {at:6900,kind:'finish'}
     ]
   },
@@ -1126,9 +1130,9 @@ function makePlannedObject(entry){
   const lift=kind==='hazard'
     ? cssNumber('--hazardLift',58)
     : kind==='sign'
-      ? 150
+      ? 112
       : kind==='task'
-        ? 132
+        ? 112
         : kind==='building'
           ? 118
           : cssNumber('--tokenLift',126);
