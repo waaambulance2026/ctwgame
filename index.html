@@ -485,6 +485,7 @@ body.night .platform{
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
 // Fixed design canvas. Everything inside #game is positioned against this size, then the whole game is scaled to the real screen.
 const DESIGN_W=1920, DESIGN_H=1080;
+let currentGameScale=1,currentGameLeft=0,currentGameTop=0;
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 // EDITOR SAVED LAYOUT APPLIED 2026-06-24: latest building sizes + image links preserved.
 const DEFAULTS={floorPx:70,platformH:30,playerX:150,playerW:170,playerDrop:1,buddyX:265,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
@@ -1251,7 +1252,7 @@ function spawnLevelPlanObjects(){
   const plan=levelPlan();
   plan.forEach((entry,i)=>{
     const at=plannedAt(entry);
-    const backWindow=entry&&entry.kind==='building'?2600:900;
+    const backWindow=entry&&entry.kind==='building'?2600:(levelIndex===0?2200:900);
     const inWindow=at>=distance-backWindow && at<=distance+1700;
     if(!inWindow||spawnedPlan.has(i))return;
     spawnedPlan.add(i);
@@ -1315,7 +1316,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.')}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^(https?:|data:)/i.test(raw))return raw;
@@ -1641,8 +1642,8 @@ function loop(now=0){
     if(moving){
       const plannedFinishes=levelPlan().filter(e=>e&&e.kind==='finish').map(plannedAt);
       const finishAt=plannedFinishes.length?Math.max(...plannedFinishes):(levels[levelIndex].goal||5000);
-      const playerScreenX=Math.max(80,innerWidth*(cssNumber('--playerX',22)/100)+(player.x||0));
-      const routePad=Math.ceil((((innerWidth+260)-playerScreenX)+360)/Math.max(.1,routeScrollScale('finish')));
+      const playerScreenX=Math.max(80,cssNumber('--playerX',150)+(player.x||0));
+      const routePad=Math.ceil((((DESIGN_W+260)-playerScreenX)+360)/Math.max(.1,routeScrollScale('finish')));
       const maxRouteDistance=Math.max((levels[levelIndex].goal||5000)+900,finishAt+routePad);
       distance=Math.max(0,Math.min(maxRouteDistance,distance+worldMove*.055));
       if(Math.abs(distance-oldDistance)>0.001){
@@ -2225,7 +2226,7 @@ $('game').addEventListener('pointerdown',e=>{
 });
 addEventListener('pointermove',e=>{
   if(!drag)return;
-  const dx=e.clientX-drag.sx,dy=e.clientY-drag.sy,s=drag.start;
+  const dx=(e.clientX-drag.sx)/Math.max(.1,currentGameScale),dy=(e.clientY-drag.sy)/Math.max(.1,currentGameScale),s=drag.start;
   if(drag.layer==='place'){
     const l=PLACE_LAYOUT[drag.place]||buildingLayout(drag.place);
     const newX=drag.startX+dx;
@@ -2239,8 +2240,8 @@ addEventListener('pointermove',e=>{
     syncPlaceControls();
     exportSettings();
   }
-  if(drag.layer==='player'){$('calPlayerX').value=Math.max(8,Math.min(55,s.playerX+dx));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
-  if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(2,Math.min(55,s.buddyX+dx));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
+  if(drag.layer==='player'){$('calPlayerX').value=Math.max(30,Math.min(850,s.playerX+dx));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
+  if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(30,Math.min(850,s.buddyX+dx));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
   if(drag.layer==='hills'){$('calHillB').value=Math.max(-250,Math.min(600,s.hillsBottom-dy))}
   if(drag.layer==='ground'){$('calGroundB').value=Math.max(-350,Math.min(350,s.groundBottom-dy))}
   if(drag.layer==='platform'){$('calFloor').value=Math.max(70,Math.min(240,s.floorPx-dy));}
@@ -2254,14 +2255,29 @@ initAutoDayNight();
 // Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
 loadBrowserLayout();
 requestAnimationFrame(loop);
-// Keeps the whole game the same layout on every screen.
+// Fullscreen fixed-layout scaling.
+// The game is always drawn as 1920x1080, then scaled to COVER the real screen.
+// This removes letterbox gaps while keeping buildings/tutorial blocks in the same route positions.
 function fitGameToScreen(){
   const game = document.getElementById('game');
   if(!game) return;
-  const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
-  const left = (window.innerWidth - DESIGN_W * scale) / 2;
-  const top = (window.innerHeight - DESIGN_H * scale) / 2;
+  const vw = window.innerWidth || document.documentElement.clientWidth || DESIGN_W;
+  const vh = window.innerHeight || document.documentElement.clientHeight || DESIGN_H;
+  const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+  const left = (vw - DESIGN_W * scale) / 2;
+  // Keep the floor visible when a screen is very wide. The HUD is moved back down below.
+  const top = Math.min(0, vh - DESIGN_H * scale);
+  currentGameScale=scale; currentGameLeft=left; currentGameTop=top;
   game.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+
+  // Because the whole game can crop at the top on wide screens, pin the HUD/toast back inside view.
+  const hud = document.querySelector('.hud');
+  if(hud){
+    hud.style.top = `${(10 - top) / scale}px`;
+    hud.style.width = `min(1160px, ${Math.max(760,(vw-18)/scale)}px)`;
+  }
+  const toast=$('toast');
+  if(toast) toast.style.top = `${(86 - top) / scale}px`;
 }
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
