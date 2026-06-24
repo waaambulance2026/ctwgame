@@ -91,7 +91,7 @@ body.night .groundDecor{
 }
 body.night .platform{background:linear-gradient(to bottom,rgba(255,255,255,.82) 0 6px,rgba(168,88,190,1) 6px 22px,rgba(92,95,189,1) 22px 28px,rgba(22,42,95,1) 28px 100%)}
 body.night .underFloor{background:#14275d}
-.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:min(1160px,calc(100vw - 18px));min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
+.hud{position:absolute;z-index:80;top:calc(env(safe-area-inset-top) + 10px);left:50%;transform:translateX(-50%);width:1160px;min-height:58px;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 10px;background:rgba(29,20,44,.78);border:1px solid rgba(255,255,255,.18);border-radius:18px;backdrop-filter:blur(10px);box-shadow:0 10px 26px rgba(0,0,0,.24)}.title{display:flex;flex-direction:column;gap:1px;min-width:250px}.title strong{font-size:clamp(16px,2vw,24px);line-height:1.05}.title span{font-size:12px;opacity:.82}.stats{display:flex;gap:7px;align-items:center;justify-content:flex-end;flex-wrap:wrap}.pill{border:0;border-radius:999px;padding:8px 12px;font-size:14px;line-height:1;font-weight:900;color:#24152e;background:rgba(255,255,255,.88);box-shadow:0 5px 13px rgba(0,0,0,.16)}.gold{background:linear-gradient(180deg,#fff7bd,var(--yellow))}.pink{background:linear-gradient(180deg,#fff1fb,var(--pink))}.blue{background:linear-gradient(180deg,#e9fbff,var(--blue))}.purple{background:linear-gradient(180deg,#fff4ff,#2a1535);color:white}.active{outline:3px solid rgba(245,197,66,.45);background:var(--yellow)}
 /* EDIT SECTION 05: CHARACTERS, MISSING SPRITE WARNING, TOKENS, HAZARDS AND COLLECT EFFECTS */
 .character{position:absolute;bottom:var(--floorPx);display:flex;align-items:flex-end;justify-content:center;transform:translateX(-50%);pointer-events:none}.character img{max-width:100%;max-height:100%;object-fit:contain;object-position:center bottom;transform-origin:center bottom;filter:drop-shadow(0 22px 18px rgba(0,0,0,.34))}.character.spriteMissing::after{content:attr(data-missing);position:absolute;left:50%;bottom:12px;transform:translateX(-50%);min-width:120px;text-align:center;padding:7px 9px;border-radius:999px;background:rgba(245,197,66,.92);color:#21142d;font-size:12px;font-weight:900;box-shadow:0 10px 20px rgba(0,0,0,.25)}body:not(.editMode) .character.spriteMissing::after{content:'sprite missing';font-size:10px;opacity:.82}#player{z-index:var(--zPlayer);left:var(--playerX);width:clamp(130px,var(--playerW),420px);height:clamp(210px,calc(var(--playerW) * 1.62),660px)}#buddy{z-index:var(--zBuddy);left:var(--buddyX);width:clamp(90px,var(--buddyW),420px);height:clamp(150px,calc(var(--buddyW) * 1.62),660px);opacity:.92;display:none}body.teamMode #buddy{display:flex}#shadow,#buddyShadow{position:absolute;bottom:calc(var(--floorPx) - 12px);height:22px;border-radius:50%;background:rgba(0,0,0,.32);filter:blur(8px);transform:translateX(-50%);pointer-events:none}#shadow{z-index:calc(var(--zPlayer) - 1);left:var(--playerX);width:clamp(100px,13vw,205px)}#buddyShadow{z-index:calc(var(--zBuddy) - 1);left:var(--buddyX);width:clamp(70px,9vw,140px);opacity:.75;display:none}body.teamMode #buddyShadow{display:block}
 #buildingObjects{position:absolute;inset:0;z-index:var(--zBuildings);pointer-events:none}
@@ -336,7 +336,7 @@ body:not(.editMode) .obj.lessonBlock.interactNearby{
 
 .overlay{position:absolute;inset:0;z-index:120;display:grid;place-items:center;background:rgba(12,7,20,.38);backdrop-filter:blur(5px)}.overlay.hidden{display:none}.modal{width:min(680px,calc(100vw - 26px));padding:24px;text-align:center;background:rgba(36,24,55,.9);border:1px solid rgba(255,255,255,.22);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.38)}.modal h1{margin:0 0 8px;font-size:clamp(28px,5vw,48px)}.modal p{margin:0 0 16px;line-height:1.45}.modal button{border:0;border-radius:999px;padding:12px 22px;margin:4px;background:var(--yellow);color:#21142d;font-size:18px;font-weight:900}.choiceRow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
 .touch{position:absolute;z-index:90;left:14px;bottom:calc(env(safe-area-inset-bottom) + 14px);display:none;grid-template-columns:60px 60px 60px;gap:8px}.touch button{height:56px;border:0;border-radius:16px;font-size:24px;font-weight:900;color:#21142d;background:rgba(255,255,255,.82)}.touch .wide{grid-column:span 3;background:linear-gradient(180deg,#fff7bd,var(--yellow))}.helpBtn{position:absolute;z-index:90;right:14px;bottom:calc(env(safe-area-inset-bottom) + 14px)}.hitFlash{animation:shake .2s linear}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
-@media(max-width:820px){:root{--floorPx:92px;--platformH:42px;--playerX:30vw;--playerW:190px;--playerDrop:22px;--buddyX:14vw;--buddyW:88px;--buddyDrop:12px;--hillsH:205px;--hillsBottom:108px;--groundH:128px;--groundBottom:-20px;--tokenLift:106px;--hazardLift:50px}.hud{top:calc(env(safe-area-inset-top) + 6px);width:calc(100vw - 10px);min-height:auto;padding:6px 7px;border-radius:14px}.title{min-width:0}.title strong{font-size:15px}.title span{display:none}.stats{gap:4px}.pill{padding:6px 7px;font-size:11px}.instructions{display:none}.touch{display:grid}.helpBtn{bottom:calc(env(safe-area-inset-bottom) + 86px)}.builder,.petPanel{left:8px;right:8px;width:auto;top:calc(env(safe-area-inset-top) + 62px);max-height:66vh}}
+@media(max-width:820px){.instructions{display:none}.touch{display:grid}}
 @media(min-width:821px){.touch{display:none}}
 
 /* Clean selected-only editor + Tamagotchi restore + direction fixes */
@@ -445,8 +445,8 @@ body.night .platform{
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
       <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="7000" value="-1719"><span id="calPlaceAtVal">-1719</span></label><label class="calRow">Width <input type="range" id="calPlaceW" min="80" max="900" value="250"><span id="calPlaceWVal">168px</span></label><label class="calRow">Height <input type="range" id="calPlaceH" min="50" max="700" value="200"><span id="calPlaceHVal">200px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-180" max="180" value="-25"><span id="calPlaceYVal">-25px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
-      <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="8"><span id="calPlayerXVal">8vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="170"><span id="calPlayerWVal">170px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="1"><span id="calDropVal">1px</span></label></div>
-      <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="115"><span id="calBuddyWVal">115px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="13"><span id="calBuddyDropVal">13px</span></label></div>
+      <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="0" max="800" value="150"><span id="calPlayerXVal">150px</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="170"><span id="calPlayerWVal">170px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="1"><span id="calDropVal">1px</span></label></div>
+      <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="0" max="900" value="265"><span id="calBuddyXVal">265px</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="115"><span id="calBuddyWVal">115px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="13"><span id="calBuddyDropVal">13px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="70"><span id="calFloorVal">70px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="30"><span id="calPlatformVal">30px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="445"><span id="calHillHVal">445px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="82"><span id="calHillBVal">82px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="757"><span id="calGroundHVal">757px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-120"><span id="calGroundBVal">-120px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="39"><span id="calZGroundVal">39</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="0"><span id="calZPlatformVal">0</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="46"><span id="calZBuddyVal">46</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="58"><span id="calZPlayerVal">58</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="25"><span id="calZBuildingsVal">25</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
@@ -483,9 +483,11 @@ body.night .platform{
 <script>
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
+// Fixed design canvas. Everything inside #game is positioned against this size, then the whole game is scaled to the real screen.
+const DESIGN_W=1920, DESIGN_H=1080;
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 // EDITOR SAVED LAYOUT APPLIED 2026-06-24: latest building sizes + image links preserved.
-const DEFAULTS={floorPx:70,platformH:30,playerX:8,playerW:170,playerDrop:1,buddyX:14,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
+const DEFAULTS={floorPx:70,platformH:30,playerX:150,playerW:170,playerDrop:1,buddyX:265,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
 const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v6_latest_building_sizes_images_ok';
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
@@ -997,19 +999,19 @@ const levels=[
 
       {at:-950,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
 
-      {at:60,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
+      {at:-350,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
       {at:88,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
-      {at:1400,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
+      {at:1050,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
       {at:1467,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
       {at:1780,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
       {at:1800,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
 
-      {at:2800,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
+      {at:2400,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
       {at:2837,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:4200,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:3800,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
       {at:4212,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
       {at:6600,kind:'finish'}
@@ -1134,10 +1136,10 @@ function routeScrollScale(kind='token'){
   return (0.05/0.055);
 }
 function routeXFromAt(at,kind='token'){
-  return (innerWidth+260)-((distance-Number(at||0))*routeScrollScale(kind));
+  return (DESIGN_W+260)-((distance-Number(at||0))*routeScrollScale(kind));
 }
 function routeAtFromX(x,kind='building'){
-  return Math.round(distance-(((innerWidth+260)-Number(x||0))/routeScrollScale(kind)));
+  return Math.round(distance-(((DESIGN_W+260)-Number(x||0))/routeScrollScale(kind)));
 }
 function buildingScrollScale(){return routeScrollScale('building');}
 function buildingXFromAt(at){return routeXFromAt(at,'building');}
@@ -1165,7 +1167,7 @@ function applyBuildingLayout(o){
   o.el.style.setProperty('width',w+'px','important');
   o.el.style.setProperty('height',h+'px','important');
   o.el.style.zIndex=String(Number(l.z)||48);
-  o.y=innerHeight-floorPx()+(Number(l.yOffset)||0);
+  o.y=DESIGN_H-floorPx()+(Number(l.yOffset)||0);
 }
 function renderObjectNow(o){
   if(!o||!o.el)return;
@@ -1200,8 +1202,8 @@ function makePlannedObject(entry){
           : cssNumber('--tokenLift',126);
 
   const y=kind==='building'
-    ? innerHeight-floorPx()+buildingLayout(entry.place).yOffset
-    : innerHeight-floorPx()-(isFinish?130:lift);
+    ? DESIGN_H-floorPx()+buildingLayout(entry.place).yOffset
+    : DESIGN_H-floorPx()-(isFinish?130:lift);
 
   const obj={
     el,
@@ -1695,7 +1697,7 @@ function loop(now=0){
   animateSprites(now);requestAnimationFrame(loop);
 }
 // EDIT SECTION 23: BUILDER SETTINGS, SAVE/LOAD, CHARACTER CONTROLS AND PETBOT
-const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','vw'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','vw'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZBuildings:['zBuildings',''],calZObjects:['zObjects','']};
+const settingMap={calFloor:['floorPx','px'],calPlatform:['platformH','px'],calPlayerX:['playerX','px'],calPlayerW:['playerW','px'],calDrop:['playerDrop','px'],calBuddyX:['buddyX','px'],calBuddyW:['buddyW','px'],calBuddyDrop:['buddyDrop','px'],calHillH:['hillsH','px'],calHillB:['hillsBottom','px'],calGroundH:['groundH','px'],calGroundB:['groundBottom','px'],calTokenLift:['tokenLift','px'],calHazardLift:['hazardLift','px'],calZSky:['zSky',''],calZHills:['zHills',''],calZGround:['zGround',''],calZPlatform:['zPlatform',''],calZBuddy:['zBuddy',''],calZPlayer:['zPlayer',''],calZBuildings:['zBuildings',''],calZObjects:['zObjects','']};
 function clonePatterns(){return JSON.parse(JSON.stringify(SPRITE_PATTERNS))}
 function safeSpritePatternValue(v){
   v=String(v||'').trim();
@@ -1832,7 +1834,7 @@ function ensurePlaceEditorObject(place,screenX,screenY){
   if(obj){
     const l=buildingLayout(place);
     if(Number.isFinite(Number(screenX))){l.at=clampNum(buildingAtFromX(Number(screenX)),-3000,5000);}
-    if(Number.isFinite(Number(screenY))){l.yOffset=clampNum(Number(screenY)-innerHeight+floorPx(),-120,180);}
+    if(Number.isFinite(Number(screenY))){l.yOffset=clampNum(Number(screenY)-DESIGN_H+floorPx(),-120,180);}
     applyBuildingRoutePosition(obj);
     syncPlaceControls();
   }
@@ -1880,7 +1882,7 @@ function bringSelectedPlaceHere(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
-  const targetX=innerWidth*.58;
+  const targetX=DESIGN_W*.58;
   l.at=clampNum(buildingAtFromX(targetX),-3000,5000);
   l.yOffset=18;
   const obj=visiblePlaceObject(selectedPlace);
@@ -2237,8 +2239,8 @@ addEventListener('pointermove',e=>{
     syncPlaceControls();
     exportSettings();
   }
-  if(drag.layer==='player'){$('calPlayerX').value=Math.max(8,Math.min(55,s.playerX+dx/innerWidth*100));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
-  if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(2,Math.min(55,s.buddyX+dx/innerWidth*100));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
+  if(drag.layer==='player'){$('calPlayerX').value=Math.max(8,Math.min(55,s.playerX+dx));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
+  if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(2,Math.min(55,s.buddyX+dx));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
   if(drag.layer==='hills'){$('calHillB').value=Math.max(-250,Math.min(600,s.hillsBottom-dy))}
   if(drag.layer==='ground'){$('calGroundB').value=Math.max(-350,Math.min(350,s.groundBottom-dy))}
   if(drag.layer==='platform'){$('calFloor').value=Math.max(70,Math.min(240,s.floorPx-dy));}
@@ -2252,25 +2254,15 @@ initAutoDayNight();
 // Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
 loadBrowserLayout();
 requestAnimationFrame(loop);
-/* Keeps the whole game the same layout on every screen /
-const DESIGN_W = 1920;
-const DESIGN_H = 1080;
-
+// Keeps the whole game the same layout on every screen.
 function fitGameToScreen(){
   const game = document.getElementById('game');
   if(!game) return;
-
-  const scale = Math.min(
-    window.innerWidth / DESIGN_W,
-    window.innerHeight / DESIGN_H
-  );
-
-  const left = (window.innerWidth - DESIGN_W scale) / 2;
+  const scale = Math.min(window.innerWidth / DESIGN_W, window.innerHeight / DESIGN_H);
+  const left = (window.innerWidth - DESIGN_W * scale) / 2;
   const top = (window.innerHeight - DESIGN_H * scale) / 2;
-
-  game.style.transform = translate(${left}px, ${top}px) scale(${scale});
+  game.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
 }
-
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
 fitGameToScreen();
