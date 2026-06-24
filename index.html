@@ -89,8 +89,8 @@ body.night .underFloor{background:#14275d}
    These are big entrance buildings. They sit on the floor line and stay above the ground artwork so they do not get buried.
 */
 .building{
-  width:clamp(215px,23vw,340px)!important;
-  height:clamp(155px,18vw,260px)!important;
+  width:var(--buildingW,clamp(215px,23vw,340px))!important;
+  height:var(--buildingH,clamp(155px,18vw,260px))!important;
   background:transparent!important;
   border:0!important;
   box-shadow:none!important;
@@ -154,7 +154,7 @@ body.night .underFloor{background:#14275d}
 }
 .shopCard strong{display:block;font-size:18px;margin-bottom:4px}
 .shopCard span{font-size:13px;opacity:.9}
-@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:190px!important;height:140px!important}}
+@media(max-width:720px){.shopGrid{grid-template-columns:1fr}.building{width:var(--buildingW,190px)!important;height:var(--buildingH,140px)!important}}
 
 
 /* EDIT SECTION 05C: SIMPLE BUILDING / PLACE EDITING
@@ -425,7 +425,7 @@ body.night .platform{
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="7000" value="-1678"><span id="calPlaceAtVal">-1678</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="250"><span id="calPlaceWVal">250px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="-18"><span id="calPlaceYVal">-18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="7000" value="-1678"><span id="calPlaceAtVal">-1678</span></label><label class="calRow">Width <input type="range" id="calPlaceW" min="80" max="900" value="250"><span id="calPlaceWVal">250px</span></label><label class="calRow">Height <input type="range" id="calPlaceH" min="70" max="900" value="188"><span id="calPlaceHVal">188px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="-18"><span id="calPlaceYVal">-18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="8"><span id="calPlayerXVal">8vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="170"><span id="calPlayerWVal">170px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="1"><span id="calDropVal">1px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="115"><span id="calBuddyWVal">115px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="13"><span id="calBuddyDropVal">13px</span></label></div>
       <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="70"><span id="calFloorVal">70px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="30"><span id="calPlatformVal">30px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="445"><span id="calHillHVal">445px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="82"><span id="calHillBVal">82px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="757"><span id="calGroundHVal">757px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-120"><span id="calGroundBVal">-120px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="39"><span id="calZGroundVal">39</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="0"><span id="calZPlatformVal">0</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="46"><span id="calZBuddyVal">46</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="58"><span id="calZPlayerVal">58</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="25"><span id="calZBuildingsVal">25</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
@@ -464,6 +464,7 @@ body.night .platform{
 <script>
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
+const PETBOT_TEST_URL='petbot_test.html'; // temporary standalone Tamagotchi test page
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 // EDITOR SAVED LAYOUT APPLIED 2026-06-24: these are the values saved from Build/Edit.
 const DEFAULTS={floorPx:70,platformH:30,playerX:8,playerW:170,playerDrop:1,buddyX:14,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
@@ -921,11 +922,11 @@ function placeSvg(title,emoji,colourA='#d282c2',colourB='#76C7D8'){
 }
 const PLACE_IMAGES={
   door:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png',
-  welcomeBoard:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782267744/welcome_board.png',
+  welcomeBoard:placeSvg('WELCOME','🪧'),
   petShop:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/pet_shop.png',
   habitat:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174881/habitat.png',
-  hookWaaambulance:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782271198/hook_a_waaambulance.png',
-  questStarter:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782270438/quest_starter.png'
+  hookWaaambulance:placeSvg('HOOK','🎣','#F5C542','#d282c2'),
+  questStarter:placeSvg('QUESTS','🗺️','#76C7D8','#d282c2')
 };
 const PLACE_LABELS={
   welcomeBoard:'Welcome Board',
@@ -941,11 +942,11 @@ const PLACE_LABELS={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
-  welcomeBoard:{at:-1678,width:250,yOffset:-18,z:48},
-  petShop:{at:-329,width:230,yOffset:-68,z:48},
-  habitat:{at:1023,width:230,yOffset:-73,z:48},
-  hookWaaambulance:{at:2422,width:250,yOffset:-26,z:48},
-  questStarter:{at:5750,width:260,yOffset:14,z:48}
+  welcomeBoard:{at:-1678,width:250,height:188,yOffset:-18,z:48},
+  petShop:{at:-329,width:230,height:173,yOffset:-68,z:48},
+  habitat:{at:1023,width:230,height:173,yOffset:-73,z:48},
+  hookWaaambulance:{at:2422,width:250,height:188,yOffset:-26,z:48},
+  questStarter:{at:5750,width:260,height:195,yOffset:14,z:48}
 };
 let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
 
@@ -1138,9 +1139,17 @@ function applyRouteObjectPosition(o){
 function applyBuildingLayout(o){
   if(!o||o.kind!=='building')return;
   const l=buildingLayout(o.place);
-  const w=Math.max(90,Number(l.width)||220);
-  o.el.style.width=w+'px';
-  o.el.style.height='auto';
+  const w=Math.max(60,Number(l.width)||220);
+  const h=Math.max(50,Number(l.height)||Math.round(w*.75));
+
+  // Building size editor fix:
+  // The CSS uses !important for buildings, so normal style.width did not always win.
+  // These important inline values make each selected building resize properly.
+  o.el.style.setProperty('--buildingW',w+'px');
+  o.el.style.setProperty('--buildingH',h+'px');
+  o.el.style.setProperty('width',w+'px','important');
+  o.el.style.setProperty('height',h+'px','important');
+
   o.el.style.zIndex=String(Number(l.z)||48);
   o.y=innerHeight-floorPx()+(Number(l.yOffset)||0);
 }
@@ -1359,11 +1368,8 @@ function openBuilding(o){
       if(welcome)welcome.classList.remove('hidden');
       showToast('🪧 Welcome Board opened');
     }else if(o.place==='habitat'){
-      const panel=$('petPanel');
-      if(panel)panel.classList.remove('hidden');
-      const reloadBtn=$('reloadPetsBtn');
-      if(reloadBtn)reloadBtn.click();
-      showToast('🏡 Habitat opened from PetBot');
+      showToast('🏡 Opening PetBot test page...');
+      window.location.href=PETBOT_TEST_URL;
     }else if(o.place==='petShop'){
       const shop=$('shopScreen');
       if(shop)shop.classList.remove('hidden');
@@ -1559,43 +1565,17 @@ function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
 function rectsOverlap(a,b){return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top}
 function playerHitRectFor(kind){
   const el=$('player');
-
-  // These MUST be decimals, not big numbers.
-  // .40 means shrink by 40% from left/right.
+  // Tighter player box stops items collecting just because the outer sprite container is nearby.
   if(kind==='token')return getShrunkRect(el,.46,.34);
-
-  // Tutorial boxes/signs should only react when Ax is close to the middle,
-  // not when the outside of her sprite container brushes past them.
-  if(kind==='task'||kind==='sign')return getShrunkRect(el,.50,.42);
-
-  // Buildings need a smaller doorway-style interaction area.
-  if(kind==='building')return getShrunkRect(el,.42,.28);
-
+  if(kind==='task'||kind==='sign')return getShrunkRect(el,.40,.30);
+  if(kind==='building')return getShrunkRect(el,.30,.18);
   if(kind==='hazard')return getShrunkRect(el,.28,.18);
-
   return getShrunkRect(el,.22,.16);
 }
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-
-  let shrink=.08;
-
-  if(o.kind==='token')shrink=.34;
-
-  // Make tutorial boxes/signs harder to accidentally trigger.
-  if(o.kind==='task'||o.kind==='sign')shrink=.42;
-
-  // Buildings react around the centre/doorway, not the whole picture.
-  if(o.kind==='building')shrink=.36;
-
-  if(o.kind==='hazard')shrink=.12;
-
-  return {
-    left:r.left+r.width*shrink,
-    right:r.right-r.width*shrink,
-    top:r.top+r.height*shrink,
-    bottom:r.bottom-r.height*shrink
-  };
+  const shrink=o.kind==='token'?.34:((o.kind==='task'||o.kind==='sign')?.28:(o.kind==='building'?.18:(o.kind==='hazard'?.12:.08))); 
+  return {left:r.left+r.width*shrink,right:r.right-r.width*shrink,top:r.top+r.height*shrink,bottom:r.bottom-r.height*shrink};
 }
 function shouldHitObject(o){
   if(o.hit||o.vanished)return false;
@@ -1756,7 +1736,7 @@ function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSel
 function editorRowsFor(layer){return {
   player:['calPlayerX','calDrop','calZPlayer'],
   buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
-  places:['calPlaceAt','calPlaceW','calPlaceY','calPlaceZ','calZBuildings'],
+  places:['calPlaceAt','calPlaceW','calPlaceH','calPlaceY','calPlaceZ','calZBuildings'],
   layers:['calZSky','calZHills','calZGround','calZPlatform','calZBuddy','calZPlayer','calZBuildings','calZObjects'],
   ground:['calGroundH','calGroundB','calZGround'],
   hills:['calHillH','calHillB','calZHills'],
@@ -1819,8 +1799,11 @@ function syncPlaceControls(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
-  $('calPlaceAt').min=-3000;$('calPlaceAt').max=5000;$('calPlaceAt').value=clampNum(l.at,-3000,5000);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
-  $('calPlaceW').value=clampNum(l.width,110,420);$('calPlaceWVal').textContent=$('calPlaceW').value+'px';
+  const w=clampNum(l.width,80,900);
+  const h=clampNum(l.height!==undefined?l.height:Math.round(w*.75),70,900);
+  $('calPlaceAt').min=-3000;$('calPlaceAt').max=7000;$('calPlaceAt').value=clampNum(l.at,-3000,7000);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
+  $('calPlaceW').min=80;$('calPlaceW').max=900;$('calPlaceW').value=w;$('calPlaceWVal').textContent=w+'px';
+  if($('calPlaceH')){$('calPlaceH').min=70;$('calPlaceH').max=900;$('calPlaceH').value=h;$('calPlaceHVal').textContent=h+'px';}
   $('calPlaceY').value=clampNum(l.yOffset,-120,180);$('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZ').value=clampNum(l.z,0,80);$('calPlaceZVal').textContent=$('calPlaceZ').value;
   document.querySelectorAll('.building').forEach(el=>el.classList.toggle('selectedPlaceTarget',el.dataset.place===selectedPlace));
@@ -1830,13 +1813,15 @@ function readPlaceControls(){
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   PLACE_LAYOUT[selectedPlace]={
     ...(PLACE_LAYOUT[selectedPlace]||{}),
-    at:clampNum($('calPlaceAt').value,-3000,5000),
+    at:clampNum($('calPlaceAt').value,-3000,7000),
     width:+$('calPlaceW').value,
+    height:$('calPlaceH')?+$('calPlaceH').value:undefined,
     yOffset:+$('calPlaceY').value,
     z:+$('calPlaceZ').value
   };
   $('calPlaceAtVal').textContent=$('calPlaceAt').value;
   $('calPlaceWVal').textContent=$('calPlaceW').value+'px';
+  if($('calPlaceHVal'))$('calPlaceHVal').textContent=($('calPlaceH')?$('calPlaceH').value:Math.round((+$('calPlaceW').value)*.75))+'px';
   $('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZVal').textContent=$('calPlaceZ').value;
   objects.forEach(o=>{
@@ -1851,7 +1836,7 @@ function bringSelectedPlaceHere(){
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
   const targetX=innerWidth*.58;
-  l.at=clampNum(buildingAtFromX(targetX),-3000,5000);
+  l.at=clampNum(buildingAtFromX(targetX),-3000,7000);
   l.yOffset=18;
   const obj=visiblePlaceObject(selectedPlace);
   if(obj){applyBuildingRoutePosition(obj);}
@@ -1895,11 +1880,9 @@ function closeBuilder(resumeAfter=true){
   builderWasPlaying=false;
 }
 function openPetPanel(){
-  closeBuilder(false);
-  paused=true;
-  $('pauseBtn').textContent='Resume';
-  $('petPanel').classList.remove('hidden');
-  loadPetbotPets(false);
+  // Temporary bridge while the new Waaambulance PetBot/Tamagotchi is being built.
+  // This keeps the main game safe and opens the standalone test page instead.
+  window.location.href=PETBOT_TEST_URL;
 }
 function closePetPanel(){
   $('petPanel').classList.add('hidden');
@@ -1914,7 +1897,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.query
 document.querySelectorAll('[data-select-target]').forEach(b=>b.onclick=()=>focusEditTarget(b.dataset.selectTarget));
 $('editTarget').onchange=()=>focusEditTarget($('editTarget').value);
 Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySettings({});}));
-['calPlaceAt','calPlaceW','calPlaceY','calPlaceZ'].forEach(id=>{if($(id))$(id).addEventListener('input',readPlaceControls);});
+['calPlaceAt','calPlaceW','calPlaceH','calPlaceY','calPlaceZ'].forEach(id=>{if($(id))$(id).addEventListener('input',readPlaceControls);});
 if($('placeSelect'))$('placeSelect').onchange=()=>{selectedPlace=$('placeSelect').value;syncPlaceControls();};
 if($('placeQuick'))$('placeQuick').onchange=()=>{const v=$('placeQuick').value;$('placeQuick').value='';if(v==='bringHere')bringSelectedPlaceHere();if(v==='groundSnap')snapSelectedPlaceToGround();};
 $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=openPetPanel;$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden');openPetPanel()};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
@@ -2197,7 +2180,7 @@ addEventListener('pointermove',e=>{
   if(drag.layer==='place'){
     const l=PLACE_LAYOUT[drag.place]||buildingLayout(drag.place);
     const newX=drag.startX+dx;
-    l.at=clampNum(buildingAtFromX(newX),-3000,5000);
+    l.at=clampNum(buildingAtFromX(newX),-3000,7000);
     l.yOffset=clampNum(drag.startLayout.yOffset+dy,-120,180);
     if(drag.obj){
       // Redraw this one building immediately, using its own route position.
