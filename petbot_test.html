@@ -16,15 +16,15 @@ button{border:0;background:transparent;cursor:pointer;font:inherit}
 .screenBack::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.055) 1px,transparent 1px);background-size:9px 9px;opacity:.62;pointer-events:none;z-index:3}
 .lcdTop{position:relative;z-index:4;display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;padding:6px 8px 0;font-weight:1000;font-size:clamp(11px,1.35vw,17px);line-height:1;color:#1f2518;text-shadow:0 1px rgba(255,255,255,.18)}
 #petName{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.petSprite{position:absolute;z-index:2;left:50%;top:54%;transform:translate(-50%,-50%);width:58%;height:58%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:grayscale(1) contrast(2.25) sepia(.35) saturate(.55) brightness(.72);mix-blend-mode:multiply;opacity:.96}
+.petSprite{position:absolute;z-index:2;left:50%;top:56%;transform:translate(-50%,-50%);width:72%;height:72%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:grayscale(1) contrast(2.85) sepia(.18) saturate(.45) brightness(.82);image-rendering:auto;mix-blend-mode:multiply;opacity:.96}
 .petSprite.fallback{display:grid;place-items:center;font-size:clamp(52px,11vw,118px);font-weight:1000;color:#25331e;filter:none;mix-blend-mode:normal;opacity:.88}
 .petSprite.fallback::before{content:attr(data-fallback)}
 .bars{position:absolute;z-index:4;left:7px;right:7px;bottom:7px;display:grid;grid-template-columns:repeat(4,1fr);gap:5px}
 .bar{height:clamp(7px,1.1vw,12px);border-radius:999px;border:2px solid rgba(35,49,23,.75);background:rgba(35,49,23,.15);overflow:hidden}.bar span{display:block;height:100%;background:#2d421f;width:50%}
-.lcdMessage{position:absolute;z-index:5;left:8px;right:8px;bottom:calc(7px + clamp(7px,1.1vw,12px) + 6px);text-align:center;font-weight:1000;font-size:clamp(9px,1.05vw,13px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#202817;opacity:.92}
+.lcdMessage{position:absolute;z-index:5;left:14px;right:14px;bottom:calc(10px + clamp(7px,1.1vw,12px) + 8px);text-align:center;font-weight:1000;font-size:clamp(10px,1.15vw,14px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#202817;opacity:.96;background:rgba(255,255,255,.10);border-radius:999px;padding:2px 8px}
 /* The toy frame goes ON TOP. The cut-out lets the screen show through. */
 .device{position:absolute;z-index:10;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.flash{position:absolute;z-index:20;left:50%;top:32%;transform:translateX(-50%) scale(.96);padding:8px 13px;border-radius:999px;background:linear-gradient(#fff,#ffe1f2);border:3px solid var(--pink);box-shadow:0 0 18px rgba(243,90,173,.75),0 8px 16px rgba(0,0,0,.14);font-weight:1000;font-size:clamp(12px,1.45vw,18px);opacity:0;pointer-events:none}.flash.show{animation:pop .95s ease}@keyframes pop{0%{opacity:0;transform:translateX(-50%) translateY(10px) scale(.82)}18%,78%{opacity:1;transform:translateX(-50%) translateY(0) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-8px) scale(.94)}}
+.flash{display:none}
 /* Real invisible hotspots over the toy buttons. */
 .hot{position:absolute;z-index:30;background:rgba(255,255,255,.001);border-radius:999px;transition:transform .08s ease}.hot::after{content:"";position:absolute;inset:-6px;border-radius:inherit;opacity:0;transition:.12s;pointer-events:none}.hot:hover::after,.hot:focus-visible::after,.hot.press::after{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 18px rgba(243,90,173,.76),0 0 24px rgba(22,184,234,.62)}.hot:focus-visible{outline:0}.hot.press{transform:scale(.94)}
 .back{left:39.2%;top:10.2%;width:21.8%;height:10.6%;border-radius:18px}.explore{left:19%;top:1.8%;width:62%;height:10.6%;border-radius:24px}.feed{left:15.2%;top:72.1%;width:15.8%;height:10.1%}.heal{left:68.9%;top:72.1%;width:15.8%;height:10.1%}.prev{left:31.2%;top:82.1%;width:9.7%;height:7.2%;border-radius:34%}.next{left:59.2%;top:82.1%;width:9.7%;height:7.2%;border-radius:34%}.play{left:40.1%;top:67.8%;width:20.2%;height:17.3%;border-radius:42%}.rest{left:44.6%;top:84.1%;width:10.9%;height:8.2%;border-radius:42%}.useMain{left:8.5%;top:55.2%;width:11%;height:12.7%;border-radius:22px}.useSide{left:80.4%;top:55.2%;width:11%;height:12.7%;border-radius:22px}.info{left:24.12%;top:35.64%;width:51.38%;height:29.49%;border-radius:7%/10%}
@@ -41,7 +41,6 @@ button{border:0;background:transparent;cursor:pointer;font:inherit}
       <div class="bars"><div class="bar"><span id="hungerBar"></span></div><div class="bar"><span id="happyBar"></span></div><div class="bar"><span id="energyBar"></span></div><div class="bar"><span id="healthBar"></span></div></div>
     </section>
     <img class="device" src="petbot_device.png" alt="Waaambulance PetBot toy frame">
-    <div class="flash" id="flash">Ready!</div>
     <button class="hot explore" data-action="explore" aria-label="Explore"></button>
     <button class="hot back" data-action="back" aria-label="Back to game"></button>
     <button class="hot feed" data-action="feed" aria-label="Feed"></button>
@@ -68,7 +67,7 @@ const $=id=>document.getElementById(id);
 const clamp=v=>Math.max(0,Math.min(100,v));
 function setBar(id,v){$(id).style.width=clamp(v)+'%'}
 function setMessage(t){$('lcdMessage').textContent=t;}
-function flash(t){const f=$('flash');f.textContent=t;f.classList.remove('show');void f.offsetWidth;f.classList.add('show');}
+function flash(t){setMessage(t);}
 function loadPetImage(p){
   const el=$('petSprite');
   el.classList.remove('fallback');
@@ -90,27 +89,28 @@ function render(){
   $('loveScore').textContent=p.love;
   $('petName').textContent=p.name+' · '+p.type;
   setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);setBar('healthBar',p.health);
-  setMessage(p.name+' · LV '+String(p.level).padStart(2,'0'));
+  setMessage('Ready · choose an action');
   loadPetImage(p);
 }
-function changePet(d){idx=(idx+d+pets.length)%pets.length;render();flash('Pet changed 🐾')}
+function changePet(d){idx=(idx+d+pets.length)%pets.length;render();flash('Pet changed')}
 function act(a){const p=pets[idx];
   if(a==='prev')return changePet(-1);
   if(a==='next')return changePet(1);
   if(a==='back'){location.href='index.html';return;}
-  if(a==='feed'){p.hunger=clamp(p.hunger+12);p.energy=clamp(p.energy-3);p.love++;flash('Fed! 🍔')}
-  else if(a==='heal'){p.health=clamp(p.health+12);p.love+=2;flash('Healed! 💊')}
-  else if(a==='play'){p.happy=clamp(p.happy+12);p.energy=clamp(p.energy-6);p.love+=3;flash('Play time! 🎈')}
-  else if(a==='rest'){p.energy=clamp(p.energy+16);p.hunger=clamp(p.hunger-4);flash('Resting 🌙')}
-  else if(a==='explore'){p.happy=clamp(p.happy+6);p.energy=clamp(p.energy-6);p.love+=2;flash('Exploring! 🧭')}
-  else if(a==='useMain'){flash('Use as main ⭐')}
-  else if(a==='useSide'){flash('Use sidekick 🐾')}
+  if(a==='feed'){p.hunger=clamp(p.hunger+12);p.energy=clamp(p.energy-3);p.love++;flash('Fed · hunger up')}
+  else if(a==='heal'){p.health=clamp(p.health+12);p.love+=2;flash('Healed · health up')}
+  else if(a==='play'){p.happy=clamp(p.happy+12);p.energy=clamp(p.energy-6);p.love+=3;flash('Played · happy up')}
+  else if(a==='rest'){p.energy=clamp(p.energy+16);p.hunger=clamp(p.hunger-4);flash('Rested · energy up')}
+  else if(a==='explore'){p.happy=clamp(p.happy+6);p.energy=clamp(p.energy-6);p.love+=2;flash('Exploring')}
+  else if(a==='useMain'){flash('Set as main pet')}
+  else if(a==='useSide'){flash('Set as side pet')}
   else if(a==='info'){flash(p.name+' H'+p.hunger+' 🙂'+p.happy+' ⚡'+p.energy+' 💊'+p.health)}
   render();
+setMessage('Ready · use the toy buttons');
 }
 document.querySelectorAll('[data-action]').forEach(el=>el.addEventListener('click',()=>{el.classList.add('press');setTimeout(()=>el.classList.remove('press'),130);act(el.dataset.action)}));
 document.addEventListener('keydown',e=>{const map={ArrowLeft:'prev',ArrowRight:'next',ArrowUp:'feed',ArrowDown:'rest',' ':'play',Enter:'play',h:'heal',H:'heal',e:'explore',E:'explore',m:'useMain',M:'useMain',s:'useSide',S:'useSide',i:'info',I:'info',Escape:'back'};if(map[e.key]){e.preventDefault();act(map[e.key]);}});
-render();flash('Toy ready ✨');
+render();setMessage('Ready · use the toy buttons');
 </script>
 </body>
 </html>
