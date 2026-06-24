@@ -263,6 +263,48 @@ body:not(.editMode) .building.buildingNearby img{
 .placeEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.placeEditorGrid label{font-size:12px;font-weight:900}.placeEditorGrid select{margin-top:4px}
 .layerHelp{font-size:12px;line-height:1.35;background:rgba(118,199,216,.12);border:1px solid rgba(118,199,216,.42);border-radius:12px;padding:8px;margin:6px 0 8px}
 
+
+
+/* EDIT SECTION 05D: TUTORIAL LESSON BLOCKS
+   These replace messy tiny emoji blocks with clear lesson boards that match nearby buildings. */
+.obj.lessonBlock{
+  width:clamp(150px,15vw,230px)!important;
+  min-height:78px!important;
+  height:auto!important;
+  padding:9px 12px!important;
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:4px!important;
+  border-radius:20px!important;
+  text-align:center!important;
+  font-size:0!important;
+  line-height:1.1!important;
+  color:#24152e!important;
+  border:3px solid rgba(255,255,255,.9)!important;
+  box-shadow:0 10px 20px rgba(0,0,0,.24),0 0 18px rgba(118,199,216,.35)!important;
+}
+.obj.lessonBlock::before{
+  content:attr(data-icon);
+  display:block;
+  font-size:24px;
+  line-height:1;
+}
+.obj.lessonBlock::after{
+  content:attr(data-title);
+  display:block;
+  font-size:13px;
+  font-weight:900;
+  line-height:1.08;
+  max-width:100%;
+}
+.obj.sign.lessonBlock{background:linear-gradient(180deg,#fff7bd,#F5C542)!important;border-color:#fff!important;}
+.obj.task.lessonBlock{background:linear-gradient(180deg,#e9fbff,#b8f4ff)!important;border-color:#76C7D8!important;}
+body:not(.editMode) .obj.lessonBlock.interactNearby{
+  box-shadow:0 0 0 4px rgba(210,130,194,.95),0 0 24px rgba(118,199,216,1),0 0 42px rgba(245,197,66,.7)!important;
+}
+
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
 .toast{position:absolute;z-index:95;left:50%;top:calc(env(safe-area-inset-top) + 86px);bottom:auto;transform:translateX(-50%) translateY(-12px);opacity:0;background:linear-gradient(180deg,#fff7bd,var(--yellow));color:#21142b;padding:10px 16px;border-radius:999px;font-weight:900;text-align:center;max-width:min(88vw,720px);box-shadow:0 14px 28px rgba(0,0,0,.28);transition:.18s}.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}.instructions{position:absolute;z-index:79;right:14px;top:calc(env(safe-area-inset-top) + 82px);max-width:330px;padding:12px 14px;border-radius:18px;background:rgba(29,20,44,.72);border:1px solid rgba(255,255,255,.18);backdrop-filter:blur(9px)}.instructions h2{font-size:17px;margin:0 0 5px}.instructions p{font-size:13px;line-height:1.32;margin:0;opacity:.9}.instructions.hidden{display:none}
 .builder,.petPanel{position:absolute;z-index:100;left:14px;top:calc(env(safe-area-inset-top) + 82px);width:min(430px,calc(100vw - 28px));max-height:calc(100dvh - 112px);overflow:auto;padding:12px;border-radius:18px;background:rgba(24,16,36,.94);border:1px solid rgba(255,255,255,.24);backdrop-filter:blur(12px);box-shadow:0 16px 34px rgba(0,0,0,.36)}.petPanel{left:auto;right:14px;background:rgba(255,246,253,.96);color:#24152e;border-color:rgba(210,130,194,.8)}.builder.hidden,.petPanel.hidden{display:none}.builder h2,.petPanel h2{font-size:17px;margin:0 0 6px}.builder p,.petPanel p{font-size:12px;line-height:1.34;margin:0 0 10px;opacity:.86}.builder select,.builder textarea,.builder input,.petPanel input,.petPanel select{width:100%;border:0;border-radius:10px;padding:8px;margin:5px 0 8px}.petPanel input,.petPanel select{border:1px solid #76C7D8}.calRow{display:grid;grid-template-columns:132px 1fr 62px;gap:8px;align-items:center;margin:8px 0;font-size:12px}.calRow input{width:100%}.calButtons{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.calButtons button,.petPanel button{border:0;border-radius:999px;padding:8px 10px;font-weight:900;color:#21142d;background:rgba(255,255,255,.88)}.calButtons .good,.petPanel .good{background:#22c55e;color:white}.calButtons .warn,.petPanel .warn{background:#F5C542}.calButtons .bad{background:#e11d48;color:white}textarea{min-height:80px;font-family:ui-monospace,SFMono-Regular,Consolas,monospace;font-size:12px}body.editMode .editableTarget{outline:3px dashed rgba(245,197,66,.9);outline-offset:4px}body.editMode .editableTarget{pointer-events:auto!important}body.editMode .character{pointer-events:auto!important}body.editMode .platform{pointer-events:auto!important}body.editMode .layer{pointer-events:auto!important}body.editMode #game{cursor:move}.builder,.petPanel,.hud,.overlay,.touch,.helpBtn{cursor:auto}.dragHint{position:absolute;z-index:105;pointer-events:none;display:none;padding:6px 9px;border-radius:999px;background:rgba(245,197,66,.95);color:#21142d;font-weight:900;font-size:12px}body.editMode .dragHint{display:block}.quickTabs{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}.quickTabs button.active{background:#76C7D8;color:#102033}.tabBody{display:none}.tabBody.active{display:block}.statusBox{background:rgba(7,19,38,.08);border:1px solid rgba(118,199,216,.55);border-radius:10px;padding:8px;font-size:12px;white-space:pre-wrap}.petPreview{height:170px;border:1px dashed #d282c2;border-radius:14px;display:grid;place-items:center;margin:8px 0;overflow:hidden;background:#fff}.petPreview img{max-width:100%;max-height:100%;object-fit:contain}.petPreview.empty{color:#594164}
@@ -413,7 +455,7 @@ body.night .platform{
   <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
   <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Later it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat items</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>💊 Care extras</strong><span>Healing, rest and training items will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
-  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> move with Left/Right or A/D. Jump with Space, W or Arrow Up.</p><p><b>Buildings:</b> Pet Shop, Habitat, Hook-a-Waaambulance and Quest Starter open only when you press Enter or tap/click the glowing building.</p><p><b>Goal:</b> collect tokens, avoid or stomp hazards, visit each stop, then use the Quest Starter or head to the finish flag.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
+  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> move with Right/D and Left/A. Jump with Space, W or Arrow Up.</p><p><b>Tutorial route:</b> Controls → Pet Shop → Habitat → Jump Practice → Hook-a-Waaambulance → Quest Starter → Finish.</p><p><b>Buildings:</b> stand near a glowing building, then press Enter or tap/click it. Yellow boards tell you what the next stop does.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
   <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>🎣 Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>🎟️ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>🏆 Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
   <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
@@ -426,7 +468,7 @@ const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 // EDITOR SAVED LAYOUT APPLIED 2026-06-24: these are the values saved from Build/Edit.
 const DEFAULTS={floorPx:70,platformH:30,playerX:8,playerW:170,playerDrop:1,buddyX:14,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
-const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v3_EDITOR_SAVED_layout';
+const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v4_matched_tutorial_lessons';
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
   const lower=String(k).toLowerCase();
@@ -913,47 +955,49 @@ const levels=[
     quest:'Tutorial Town',
     goal:7200,
 
+    // These items now match the actual tutorial stops instead of being random floating blocks.
     tokens:[
-      ['🪙','Practice coin',40,''],
-      ['💙','Care token',60,''],
-      ['🎟️','Hook ticket',80,''],
-      ['🏠','Habitat badge',100,''],
-      ['⭐','Tutorial star',120,'']
+      ['🕹️','Control star',40,''],
+      ['🛍️','Pet Shop coin',60,''],
+      ['🏡','Habitat badge',80,''],
+      ['🎟️','Hook ticket',100,''],
+      ['⭐','Quest star',120,'']
     ],
 
     hazards:[
-      ['🟫','Tiny puddle',0,''],
-      ['🚧','Training cone',0,''],
-      ['⚠️','Oops sign',0,'']
+      ['🟫','Training puddle',0,''],
+      ['🚧','Jump cone',0,''],
+      ['⚠️','Slow down sign',0,'']
     ],
 
     plan:[
-      // Clean tutorial route: fewer floating lesson icons, clearer stops, buildings stay where you saved them in the editor.
+      // Tutorial Town follows the buildings you placed in the editor.
+      // Lesson boards sit just before the matching building so the route makes sense.
       {at:-1678,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1180,kind:'sign',data:['🎮','Controls',0,''],message:'Move with Right/D and Left/A. Jump with Space, W or Arrow Up.'},
-      {at:-820,kind:'token',tokenIndex:0,message:'Practice coin collected.'},
+      {at:-1120,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Move with Right/D. Go back with Left/A. Jump with Space, W or Arrow Up.'},
+      {at:-820,kind:'token',tokenIndex:0,message:'Control star collected.'},
 
-      {at:-520,kind:'sign',data:['🐾','Pet Shop',0,''],message:'Pet Shop stop: press Enter or tap/click the glowing shop to open it.'},
+      {at:-560,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Next stop: Pet Shop. Stand by the glowing shop and press Enter, or tap/click the building.'},
       {at:-329,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+      {at:20,kind:'token',tokenIndex:1,message:'Pet Shop coin collected.'},
 
-      {at:360,kind:'token',tokenIndex:1,message:'Care token collected.'},
-      {at:760,kind:'sign',data:['🏡','Habitat',0,''],message:'Habitat stop: press Enter or tap/click the glowing habitat to open Pet Care.'},
+      {at:740,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Next stop: Habitat. This opens the Pet Care/Tamagotchi panel.'},
       {at:1023,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
+      {at:1320,kind:'token',tokenIndex:2,message:'Habitat badge collected.'},
 
-      {at:1500,kind:'sign',data:['⬆️','Jump',0,''],message:'Jump over hazards, or land on them from above to stomp them.'},
-      {at:1820,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
-      {at:2140,kind:'token',tokenIndex:3,message:'Habitat badge collected.'},
+      {at:1550,kind:'sign',title:'Jump Practice',data:['⬆️','Jump Practice',0,''],message:'Jump over the cone, or land on it from above to stomp it.'},
+      {at:1780,kind:'hazard',hazardIndex:1,message:'Jump cone: jump over it or stomp it from above.'},
 
-      {at:2250,kind:'sign',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance is its own stop. Press Enter or tap/click the glowing building.'},
+      {at:2150,kind:'sign',title:'Hook-a-Waaambulance',data:['🎣','Hook-a-Waaambulance',0,''],message:'Next stop: Hook-a-Waaambulance. It is its own building, not inside the shop.'},
       {at:2422,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
-      {at:2820,kind:'token',tokenIndex:2,message:'Hook ticket collected.'},
+      {at:2750,kind:'token',tokenIndex:3,message:'Hook ticket collected.'},
 
-      {at:3700,kind:'token',tokenIndex:4,message:'Tutorial star collected.'},
-      {at:5050,kind:'sign',data:['🗺️','Quests',0,''],message:'Quest Starter lets players choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:5450,kind:'sign',title:'Quest Starter',data:['🗺️','Quest Starter',0,''],message:'Final stop: Quest Starter. Use it to choose Tutorial Town, Wrong Moon or Swamp Monster.'},
       {at:5750,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
+      {at:6050,kind:'token',tokenIndex:4,message:'Quest star collected.'},
 
-      {at:6350,kind:'sign',data:['🏁','Finish',0,''],message:'Tutorial done. Head to the flag or use the Quest Starter to begin Wrong Moon.'},
+      {at:6500,kind:'sign',title:'Finish',data:['🏁','Finish',0,''],message:'Tutorial finished. Use the Quest Starter for Wrong Moon, or walk to the flag.'},
       {at:6900,kind:'finish'}
     ]
   },
@@ -1071,8 +1115,9 @@ function buildingPlanEntry(place){
 // Buildings are not fixed screen stickers and they are not token/hazard objects.
 // They are route places, so they keep their own level distance (at) and scroll with the ground.
 function routeScrollScale(kind='token'){
-  // Tokens and hazards move like gameplay objects. Buildings move with ground speed so they feel planted.
-  return kind==='building' ? (0.05/0.055) : (0.10/0.055);
+  // Tutorial objects now use the same route scale as buildings.
+  // This keeps lesson boards, tokens and buildings matched to the same saved route positions.
+  return (0.05/0.055);
 }
 function routeXFromAt(at,kind='token'){
   return (innerWidth+260)-((distance-Number(at||0))*routeScrollScale(kind));
@@ -1130,9 +1175,9 @@ function makePlannedObject(entry){
   const lift=kind==='hazard'
     ? cssNumber('--hazardLift',58)
     : kind==='sign'
-      ? 112
+      ? 76
       : kind==='task'
-        ? 112
+        ? 76
         : kind==='building'
           ? 118
           : cssNumber('--tokenLift',126);
@@ -1170,7 +1215,9 @@ function makePlannedObject(entry){
   }
 
   if(kind==='task'||kind==='sign'){
-    el.classList.add('interactiveStop');
+    el.classList.add('interactiveStop','lessonBlock');
+    el.dataset.icon=(data&&data[0])||'';
+    el.dataset.title=entry.title||data[1]||obj.label||'Lesson';
     el.title='Press Enter or tap '+obj.label;
     el.addEventListener('pointerdown',ev=>{
       if(document.body.classList.contains('editMode'))return;
