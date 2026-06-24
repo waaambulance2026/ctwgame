@@ -53,12 +53,12 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
 /* EDIT SECTION 03: MASTER SIZING VARIABLES - easiest values to change safely */
 :root{
   --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
-  --floorPx:116px; --platformH:48px;
-  --playerX:22vw; --playerW:170px; --playerDrop:26px;
-  --buddyX:14vw; --buddyW:150px; --buddyDrop:16px;
-  --skyY:center; --hillsH:285px; --hillsBottom:128px; --groundH:158px; --groundBottom:-22px;
+  --floorPx:70px; --platformH:48px;
+  --playerX:22vw; --playerW:260px; --playerDrop:26px;
+  --buddyX:14vw; --buddyW:118px; --buddyDrop:16px;
+  --skyY:center; --hillsH:600px; --hillsBottom:40px; --groundH:370px; --groundBottom:-13px;
   --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
-  --zSky:0; --zHills:1; --zGround:3; --zPlatform:12; --zBuddy:30; --zPlayer:30; --zBuildings:48; --zObjects:50;
+  --zSky:0; --zHills:1; --zGround:20; --zPlatform:12; --zBuddy:24; --zPlayer:30; --zBuildings:48; --zObjects:50;
 }
 /* EDIT SECTION 04: PAGE RESET, GAME CANVAS, SKY, HILLS, GROUND, FLOOR AND HUD */
 *{box-sizing:border-box} html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#101022;color:white;font-family:Arial,Helvetica,sans-serif} button,input,select,textarea{font-family:inherit} button{cursor:pointer}
@@ -383,10 +383,10 @@ body.night .platform{
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
       <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
-      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="7500" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
+      <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="8000" value="1040"><span id="calPlaceAtVal">1040</span></label><label class="calRow">Size <input type="range" id="calPlaceW" min="110" max="420" value="230"><span id="calPlaceWVal">230px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-120" max="180" value="18"><span id="calPlaceYVal">18px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="8" max="55" value="22"><span id="calPlayerXVal">22vw</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="260"><span id="calPlayerWVal">260px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="26"><span id="calDropVal">26px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="2" max="55" value="14"><span id="calBuddyXVal">14vw</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="118"><span id="calBuddyWVal">118px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="16"><span id="calBuddyDropVal">16px</span></label></div>
-      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="116"><span id="calFloorVal">116px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="285"><span id="calHillHVal">285px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="128"><span id="calHillBVal">128px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="158"><span id="calGroundHVal">158px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-22"><span id="calGroundBVal">-22px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="3"><span id="calZGroundVal">3</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="30"><span id="calZBuddyVal">30</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
+      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="40" max="240" value="70"><span id="calFloorVal">70px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="48"><span id="calPlatformVal">48px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="600"><span id="calHillHVal">600px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="40"><span id="calHillBVal">40px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="370"><span id="calGroundHVal">370px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-13"><span id="calGroundBVal">-13px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="20"><span id="calZGroundVal">20</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="12"><span id="calZPlatformVal">12</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="24"><span id="calZBuddyVal">24</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="30"><span id="calZPlayerVal">30</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="48"><span id="calZBuildingsVal">48</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
@@ -423,9 +423,9 @@ body.night .platform{
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
 const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
-const DEFAULTS={floorPx:116,platformH:48,playerX:22,playerW:170,playerDrop:26,buddyX:14,buddyW:150,buddyDrop:16,hillsH:285,hillsBottom:128,groundH:158,groundBottom:-22,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:3,zPlatform:12,zBuddy:30,zPlayer:30,zBuildings:48,zObjects:50};
+const DEFAULTS={floorPx:70,platformH:48,playerX:22,playerW:260,playerDrop:26,buddyX:14,buddyW:118,buddyDrop:16,hillsH:600,hillsBottom:40,groundH:370,groundBottom:-13,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:20,zPlatform:12,zBuddy:24,zPlayer:30,zBuildings:48,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
-const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v2_fixed_tutorial_buildings';
+const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v2_good_ground_safe';
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
   const lower=String(k).toLowerCase();
@@ -438,7 +438,8 @@ Object.keys(localStorage).forEach(k=>{
     lower === 'ctw_game_current_clean' ||
     lower.includes('movement_idle_fix') ||
     lower.includes('team_follower') ||
-    lower.includes('team_editor')
+    lower.includes('team_editor') ||
+    lower === 'ctw_game_places_layout_v1_safe'
   ){ localStorage.removeItem(k); }
 });
 
@@ -1730,7 +1731,7 @@ function ensurePlaceEditorObject(place,screenX,screenY){
   }
   if(obj){
     const l=buildingLayout(place);
-    if(Number.isFinite(Number(screenX))){l.at=clampNum(buildingAtFromX(Number(screenX)),-3000,7500);}
+    if(Number.isFinite(Number(screenX))){l.at=clampNum(buildingAtFromX(Number(screenX)),-3000,5000);}
     if(Number.isFinite(Number(screenY))){l.yOffset=clampNum(Number(screenY)-innerHeight+floorPx(),-120,180);}
     applyBuildingRoutePosition(obj);
     syncPlaceControls();
@@ -1741,7 +1742,7 @@ function syncPlaceControls(){
   if(!$('placeSelect'))return;
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
-  $('calPlaceAt').min=-3000;$('calPlaceAt').max=7500;$('calPlaceAt').value=clampNum(l.at,-3000,7500);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
+  $('calPlaceAt').min=-3000;$('calPlaceAt').max=5000;$('calPlaceAt').value=clampNum(l.at,-3000,5000);$('calPlaceAtVal').textContent=$('calPlaceAt').value;
   $('calPlaceW').value=clampNum(l.width,110,420);$('calPlaceWVal').textContent=$('calPlaceW').value+'px';
   $('calPlaceY').value=clampNum(l.yOffset,-120,180);$('calPlaceYVal').textContent=$('calPlaceY').value+'px';
   $('calPlaceZ').value=clampNum(l.z,0,80);$('calPlaceZVal').textContent=$('calPlaceZ').value;
@@ -1752,7 +1753,7 @@ function readPlaceControls(){
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   PLACE_LAYOUT[selectedPlace]={
     ...(PLACE_LAYOUT[selectedPlace]||{}),
-    at:clampNum($('calPlaceAt').value,-3000,7500),
+    at:clampNum($('calPlaceAt').value,-3000,5000),
     width:+$('calPlaceW').value,
     yOffset:+$('calPlaceY').value,
     z:+$('calPlaceZ').value
@@ -1773,7 +1774,7 @@ function bringSelectedPlaceHere(){
   selectedPlace=$('placeSelect').value||selectedPlace||'petShop';
   const l=buildingLayout(selectedPlace);
   const targetX=innerWidth*.58;
-  l.at=clampNum(buildingAtFromX(targetX),-3000,7500);
+  l.at=clampNum(buildingAtFromX(targetX),-3000,5000);
   l.yOffset=18;
   const obj=visiblePlaceObject(selectedPlace);
   if(obj){applyBuildingRoutePosition(obj);}
@@ -2119,7 +2120,7 @@ addEventListener('pointermove',e=>{
   if(drag.layer==='place'){
     const l=PLACE_LAYOUT[drag.place]||buildingLayout(drag.place);
     const newX=drag.startX+dx;
-    l.at=clampNum(buildingAtFromX(newX),-3000,7500);
+    l.at=clampNum(buildingAtFromX(newX),-3000,5000);
     l.yOffset=clampNum(drag.startLayout.yOffset+dy,-120,180);
     if(drag.obj){
       // Redraw this one building immediately, using its own route position.
@@ -2141,8 +2142,8 @@ addEventListener('pointerup',()=>{if(drag&&drag.layer==='place'){saveBrowserLayo
 clearBrowserGameSaves();resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';
 // Auto day/night after layout reset so it is not overwritten.
 initAutoDayNight();
-// Load browser building/layout save only. Do not auto-load old cloud layouts on page start.
-loadBrowserLayout();
+// Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
+if(!loadBrowserLayout()){loadCloud(true);}
 requestAnimationFrame(loop);
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
 </script>
