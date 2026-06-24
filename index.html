@@ -265,44 +265,44 @@ body:not(.editMode) .building.buildingNearby img{
 
 
 
-/* EDIT SECTION 05D: TUTORIAL LESSON BLOCKS
-   These replace messy tiny emoji blocks with clear lesson boards that match nearby buildings. */
+/* EDIT SECTION 05D: TUTORIAL STOP BOARDS
+   These are now small stop markers placed before the matching buildings, not random block clutter. */
 .obj.lessonBlock{
-  width:clamp(150px,15vw,230px)!important;
-  min-height:78px!important;
+  width:clamp(92px,9vw,138px)!important;
+  min-height:50px!important;
   height:auto!important;
-  padding:9px 12px!important;
+  padding:6px 8px!important;
   display:flex!important;
   flex-direction:column!important;
   align-items:center!important;
   justify-content:center!important;
-  gap:4px!important;
-  border-radius:20px!important;
+  gap:2px!important;
+  border-radius:16px!important;
   text-align:center!important;
   font-size:0!important;
-  line-height:1.1!important;
+  line-height:1.05!important;
   color:#24152e!important;
-  border:3px solid rgba(255,255,255,.9)!important;
-  box-shadow:0 10px 20px rgba(0,0,0,.24),0 0 18px rgba(118,199,216,.35)!important;
+  border:3px solid rgba(255,255,255,.92)!important;
+  box-shadow:0 8px 16px rgba(0,0,0,.20),0 0 12px rgba(118,199,216,.35)!important;
 }
 .obj.lessonBlock::before{
   content:attr(data-icon);
   display:block;
-  font-size:24px;
+  font-size:20px;
   line-height:1;
 }
 .obj.lessonBlock::after{
   content:attr(data-title);
   display:block;
-  font-size:13px;
+  font-size:11px;
   font-weight:900;
-  line-height:1.08;
+  line-height:1.04;
   max-width:100%;
 }
 .obj.sign.lessonBlock{background:linear-gradient(180deg,#fff7bd,#F5C542)!important;border-color:#fff!important;}
 .obj.task.lessonBlock{background:linear-gradient(180deg,#e9fbff,#b8f4ff)!important;border-color:#76C7D8!important;}
 body:not(.editMode) .obj.lessonBlock.interactNearby{
-  box-shadow:0 0 0 4px rgba(210,130,194,.95),0 0 24px rgba(118,199,216,1),0 0 42px rgba(245,197,66,.7)!important;
+  box-shadow:0 0 0 3px rgba(210,130,194,.95),0 0 20px rgba(118,199,216,1),0 0 34px rgba(245,197,66,.7)!important;
 }
 
 /* EDIT SECTION 06: MENUS, BUILDER, PET CARE, MOBILE CONTROLS AND TAMAGOTCHI STYLE */
@@ -955,13 +955,13 @@ const levels=[
     quest:'Tutorial Town',
     goal:7200,
 
-    // These items now match the actual tutorial stops instead of being random floating blocks.
+    // Tutorial no longer spams random item blocks. These are kept for later optional rewards.
     tokens:[
-      ['🕹️','Control star',40,''],
-      ['🛍️','Pet Shop coin',60,''],
-      ['🏡','Habitat badge',80,''],
-      ['🎟️','Hook ticket',100,''],
-      ['⭐','Quest star',120,'']
+      ['🕹️','Controls reward',40,''],
+      ['🛍️','Pet Shop reward',60,''],
+      ['🏡','Habitat reward',80,''],
+      ['🎟️','Hook reward',100,''],
+      ['⭐','Quest reward',120,'']
     ],
 
     hazards:[
@@ -971,34 +971,28 @@ const levels=[
     ],
 
     plan:[
-      // Tutorial Town follows the buildings you placed in the editor.
-      // Lesson boards sit just before the matching building so the route makes sense.
+      // Tutorial Town now uses useful stop markers matched to the actual saved building positions.
+      // No extra random lesson clutter: each board explains the next real stop.
       {at:-1678,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1120,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Move with Right/D. Go back with Left/A. Jump with Space, W or Arrow Up.'},
-      {at:-820,kind:'token',tokenIndex:0,message:'Control star collected.'},
+      {at:-760,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
 
-      {at:-560,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Next stop: Pet Shop. Stand by the glowing shop and press Enter, or tap/click the building.'},
+      {at:-520,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
       {at:-329,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
-      {at:20,kind:'token',tokenIndex:1,message:'Pet Shop coin collected.'},
 
-      {at:740,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Next stop: Habitat. This opens the Pet Care/Tamagotchi panel.'},
+      {at:810,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
       {at:1023,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
-      {at:1320,kind:'token',tokenIndex:2,message:'Habitat badge collected.'},
 
-      {at:1550,kind:'sign',title:'Jump Practice',data:['⬆️','Jump Practice',0,''],message:'Jump over the cone, or land on it from above to stomp it.'},
-      {at:1780,kind:'hazard',hazardIndex:1,message:'Jump cone: jump over it or stomp it from above.'},
+      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
+      {at:1760,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
 
-      {at:2150,kind:'sign',title:'Hook-a-Waaambulance',data:['🎣','Hook-a-Waaambulance',0,''],message:'Next stop: Hook-a-Waaambulance. It is its own building, not inside the shop.'},
+      {at:2180,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
       {at:2422,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
-      {at:2750,kind:'token',tokenIndex:3,message:'Hook ticket collected.'},
 
-      {at:5450,kind:'sign',title:'Quest Starter',data:['🗺️','Quest Starter',0,''],message:'Final stop: Quest Starter. Use it to choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:5500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
       {at:5750,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
-      {at:6050,kind:'token',tokenIndex:4,message:'Quest star collected.'},
 
-      {at:6500,kind:'sign',title:'Finish',data:['🏁','Finish',0,''],message:'Tutorial finished. Use the Quest Starter for Wrong Moon, or walk to the flag.'},
-      {at:6900,kind:'finish'}
+      {at:6600,kind:'finish'}
     ]
   },
 
@@ -1594,12 +1588,18 @@ function loop(now=0){
     const oldDistance=distance;
 
     if(moving){
-      distance=Math.max(0,Math.min((levels[levelIndex].goal||5000)+900,distance+worldMove*.055));
+      const plannedFinishes=levelPlan().filter(e=>e&&e.kind==='finish').map(plannedAt);
+      const finishAt=plannedFinishes.length?Math.max(...plannedFinishes):(levels[levelIndex].goal||5000);
+      const playerScreenX=Math.max(80,innerWidth*(cssNumber('--playerX',22)/100)+(player.x||0));
+      const routePad=Math.ceil((((innerWidth+260)-playerScreenX)+360)/Math.max(.1,routeScrollScale('finish')));
+      const maxRouteDistance=Math.max((levels[levelIndex].goal||5000)+900,finishAt+routePad);
+      distance=Math.max(0,Math.min(maxRouteDistance,distance+worldMove*.055));
       if(Math.abs(distance-oldDistance)>0.001){
         spawnTimer+=dt;
         spawnLevelPlanObjects();
         if(!levelPlan().length&&spawnTimer>cssNumber('--spawnGap',1450)){spawnTimer=0;spawn()}
-        if(distance>levels[levelIndex].goal&&!finishMade)makeFinish();
+        if(distance>levels[levelIndex].goal&&!finishMade&&!levelPlan().some(e=>e&&e.kind==='finish'))makeFinish();
+        if(levelPlan().some(e=>e&&e.kind==='finish') && distance>=maxRouteDistance-4 && playing&&!ended){levelComplete();}
       }
     }
 
