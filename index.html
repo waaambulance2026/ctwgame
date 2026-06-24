@@ -1490,8 +1490,8 @@ function collide(o){
 }
 function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){
-  if(keys.left)player.x-=dt*.18;
-  if(keys.right)player.x+=dt*.18;
+  if(keys.left)player.x-=dt*.22;
+  if(keys.right)player.x+=dt*.22;
   player.x=Math.max(-25,Math.min(95,player.x));
   if(!player.grounded){
     player.jump+=player.vy*dt*.08;
