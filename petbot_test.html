@@ -4,216 +4,166 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Waaambulance PetBot Test</title>
-<!-- ============================================================
-PETBOT TEST SECTION START
-Safe standalone test page. Upload as petbot_test.html when testing.
-This does not touch game movement, sprites, ground, buildings or levels.
-============================================================ -->
 <style>
 :root{
-  --red:#ef3f3f;
-  --darkRed:#c9202d;
-  --pink:#ff63b7;
-  --hotPink:#ff2f9b;
-  --softPink:#ffe2f3;
-  --blue:#35c7f4;
-  --deepBlue:#0774d8;
-  --darkBlue:#092a66;
-  --yellow:#ffd957;
-  --cream:#fff9f1;
-  --ink:#201026;
-  --glass:#dff8ff;
-  --shellShadow:rgba(26,12,32,.38);
+  --pink:#f05fb2;
+  --pink2:#ff9bd4;
+  --blue:#28b9e8;
+  --blue2:#8ce9ff;
+  --red:#ef3f43;
+  --red2:#ff666b;
+  --cream:#fffaf3;
+  --ink:#24152e;
+  --navy:#111a2f;
+  --yellow:#ffe66f;
+  --green:#47d990;
+  --shadow:rgba(24,14,35,.35);
 }
 *{box-sizing:border-box}
-html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
-body{
-  background:
-    radial-gradient(circle at 18% 18%,rgba(255,99,183,.55),transparent 22%),
-    radial-gradient(circle at 84% 12%,rgba(53,199,244,.58),transparent 24%),
-    radial-gradient(circle at 52% 100%,rgba(255,217,87,.28),transparent 30%),
-    linear-gradient(135deg,#ffe2f3 0%,#b9edff 48%,#ffe2f3 100%);
-}
-button,select{font-family:inherit} button{cursor:pointer}
-.page{position:fixed;inset:0;width:100vw;height:100dvh;display:grid;place-items:stretch;padding:0;overflow:hidden}
-.petbotShell{
-  width:100vw;height:100dvh;border-radius:0;padding:clamp(8px,1.2vw,18px);position:relative;overflow:hidden;
-  background:
-    linear-gradient(90deg,var(--red) 0 7%,#fff8f1 7% 93%,var(--red) 93% 100%);
-  border:clamp(7px,1vw,13px) solid var(--red);
-  box-shadow:
-    inset 0 0 0 4px rgba(255,255,255,.75),
-    inset 0 -28px 60px rgba(120,13,24,.22),
-    inset 0 28px 36px rgba(255,255,255,.28),
-    0 0 26px rgba(255,99,183,.78),
-    0 0 42px rgba(53,199,244,.72);
-}
-.petbotShell::before{
-  content:"";position:absolute;inset:-18%;pointer-events:none;z-index:0;
-  background:
-    radial-gradient(circle at 16% 20%,rgba(255,255,255,.7),transparent 10%),
-    radial-gradient(circle at 84% 18%,rgba(255,255,255,.5),transparent 12%),
-    linear-gradient(120deg,rgba(255,255,255,.35),transparent 35% 65%,rgba(255,255,255,.2));
-  mix-blend-mode:screen;opacity:.65;
-}
-.petbotShell::after{
-  content:"";position:absolute;inset:10px;border-radius:28px;pointer-events:none;z-index:5;
-  box-shadow:inset 0 0 22px rgba(255,255,255,.75),inset 0 -18px 32px rgba(0,0,0,.08);
-}
-.petbotInner{
-  position:relative;z-index:1;width:100%;height:100%;display:grid;
-  grid-template-columns:clamp(84px,9vw,150px) minmax(0,1fr) clamp(84px,9vw,150px);
-  grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(8px,1vw,14px);align-items:stretch;
-}
-.topBar{grid-column:1/-1;display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:center;padding:0 clamp(70px,8vw,125px)}
-.logo{text-align:center;font-weight:1000;font-size:clamp(28px,3.8vw,58px);line-height:.9;color:var(--red);letter-spacing:-2px;text-shadow:0 3px 0 #fff,0 6px 0 var(--blue),0 12px 18px rgba(0,0,0,.22)}
-.logo span{display:block;color:var(--blue);font-size:.67em;text-shadow:0 3px 0 #fff,0 6px 0 rgba(239,63,63,.7),0 10px 16px rgba(0,0,0,.18)}
-.testBadge{justify-self:start;background:linear-gradient(180deg,#fff6a9,var(--yellow));border:3px solid #fff;border-radius:999px;padding:8px 14px;font-weight:1000;box-shadow:0 7px 0 #c59713,0 9px 18px rgba(0,0,0,.18)}
-.backLink{justify-self:end;text-decoration:none;color:white;background:linear-gradient(180deg,#3b1d48,#1d0d24);border-radius:999px;padding:11px 16px;font-weight:1000;box-shadow:0 7px 0 rgba(0,0,0,.28),0 0 18px rgba(255,99,183,.38)}
-.siren{height:clamp(42px,5.8vh,62px);display:flex;gap:5px;align-items:center;justify-content:center;background:linear-gradient(180deg,#353b46,#10131a);border-radius:13px;padding:6px;box-shadow:inset 0 0 0 4px rgba(255,255,255,.18),0 10px 18px rgba(0,0,0,.25),0 0 16px rgba(53,199,244,.4)}
-.light{width:clamp(38px,4.1vw,60px);height:clamp(26px,3.8vh,42px);border-radius:8px;background:#fff;box-shadow:inset 0 -9px 10px rgba(0,0,0,.22),inset 0 8px 10px rgba(255,255,255,.55),0 0 18px rgba(255,255,255,.5)}
-.light.red{background:#ef3f3f;box-shadow:inset 0 -9px 10px rgba(0,0,0,.2),0 0 20px rgba(239,63,63,.9)}.light.blue{background:#258df3;box-shadow:inset 0 -9px 10px rgba(0,0,0,.2),0 0 20px rgba(53,199,244,.95)}.light.white{background:#f5f7ff}
-.sideRail{display:flex;flex-direction:column;align-items:center;justify-content:space-around;gap:12px;padding:8px 4px;min-height:0}.sideIcon{width:clamp(62px,7.4vw,104px);height:clamp(62px,7.4vw,104px);border-radius:28px;display:grid;place-items:center;background:linear-gradient(180deg,#fff,#dff8ff);border:5px solid var(--blue);font-size:clamp(30px,3.3vw,50px);box-shadow:0 10px 0 #128cc6,0 16px 24px rgba(0,0,0,.2),0 0 18px rgba(53,199,244,.65)}.sideIcon.pink{border-color:var(--pink);background:linear-gradient(180deg,#fff,#ffe4f4);box-shadow:0 10px 0 #d24494,0 16px 24px rgba(0,0,0,.2),0 0 22px rgba(255,99,183,.75)}
-.speaker{width:clamp(50px,5vw,86px);display:grid;gap:8px}.speaker i{display:block;height:8px;border-radius:999px;background:#291521;opacity:.85;box-shadow:0 2px 0 rgba(255,255,255,.35)}
-.dpad{width:clamp(72px,8.5vw,124px);height:clamp(72px,8.5vw,124px);border-radius:34px;background:linear-gradient(180deg,#ff7a8d,#e93042);position:relative;border:5px solid #d91f32;box-shadow:0 11px 0 #a61927,0 19px 25px rgba(0,0,0,.24),0 0 22px rgba(255,99,183,.55)}
-.dpad::before,.dpad::after{content:"";position:absolute;background:#ffd0d8;border-radius:18px}.dpad::before{left:15%;right:15%;top:35%;height:30%}.dpad::after{top:15%;bottom:15%;left:35%;width:30%}
-.heartBtn{width:clamp(62px,7vw,92px);height:clamp(58px,6.2vw,78px);border-radius:34px;background:linear-gradient(180deg,#ff9fd2,#ff4eaa);display:grid;place-items:center;color:white;font-size:clamp(30px,3.2vw,40px);border:5px solid white;box-shadow:0 10px 0 #d24494,0 16px 22px rgba(0,0,0,.18),0 0 22px rgba(255,99,183,.7)}
-.screenWrap{min-width:0;min-height:0;background:linear-gradient(180deg,#24314d,#101827);border:clamp(7px,1vw,12px) solid #111827;border-radius:32px;padding:clamp(7px,1vw,14px);box-shadow:inset 0 0 0 4px rgba(255,255,255,.17),0 18px 30px rgba(0,0,0,.35),0 0 28px rgba(255,99,183,.8),0 0 46px rgba(53,199,244,.72)}
-.petScreen{height:100%;min-height:0;border-radius:22px;overflow:hidden;background:linear-gradient(180deg,#dff8ff,#fff);display:grid;grid-template-rows:auto minmax(0,1fr) auto;position:relative;box-shadow:inset 0 0 0 4px rgba(255,255,255,.7)}
-.petScreen::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.48),transparent 24% 70%,rgba(255,255,255,.22));mix-blend-mode:screen}.screenTop{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:10px;background:linear-gradient(180deg,#f6fcff,#bdefff);border-bottom:4px solid rgba(54,189,242,.45);position:relative;z-index:2}.selector{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.selector button,.selector select{border:0;border-radius:999px;padding:9px 12px;font-weight:1000;background:white;color:#251326;box-shadow:0 5px 0 rgba(13,98,173,.18)}.selector button{background:linear-gradient(180deg,#fff4a4,var(--yellow))}.petName{font-size:clamp(16px,1.6vw,22px);font-weight:1000;color:#0d62ad}.heartScore{display:flex;align-items:center;gap:6px;background:linear-gradient(180deg,#168bdd,#0d62ad);color:white;border-radius:999px;padding:7px 12px;font-weight:1000;font-size:clamp(16px,1.6vw,22px);box-shadow:0 0 16px rgba(53,199,244,.55)}
-.habitatScene{position:relative;display:grid;grid-template-columns:clamp(188px,24vw,285px) minmax(0,1fr);gap:12px;padding:12px;background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,.15)),var(--habitat-bg,linear-gradient(180deg,#c4f3ff,#ffe4f4));overflow:hidden;min-height:0}.habitatScene::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 76%,rgba(255,255,255,.55) 0 13%,transparent 14%),linear-gradient(90deg,rgba(255,255,255,.12),transparent 20% 80%,rgba(255,255,255,.14));pointer-events:none}.statsPanel{position:relative;z-index:2;display:grid;gap:8px;align-content:start;background:linear-gradient(180deg,rgba(13,98,173,.97),rgba(8,67,140,.97));border:4px solid rgba(255,255,255,.85);border-radius:22px;padding:12px;color:white;box-shadow:0 10px 20px rgba(0,0,0,.22),0 0 18px rgba(53,199,244,.5)}.stat{display:grid;grid-template-columns:42px 1fr;gap:8px;align-items:center}.statEmoji{width:40px;height:40px;border-radius:14px;display:grid;place-items:center;background:white;color:#251326;font-size:23px;box-shadow:0 4px 0 rgba(0,0,0,.12)}.stat label{display:block;font-weight:1000;margin-bottom:3px}.bar{height:20px;border-radius:999px;background:rgba(255,255,255,.35);overflow:hidden;border:2px solid rgba(255,255,255,.65)}.bar span{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,#ff74bc,#ffd957);width:50%;transition:.2s}.bar.green span{background:linear-gradient(90deg,#36d67a,#9dffb6)}.bar.blue span{background:linear-gradient(90deg,#36bdf2,#aeefff)}.levelBadge{background:linear-gradient(180deg,#ff85c9,#f052a9);border:3px solid white;border-radius:18px;padding:8px;text-align:center;font-weight:1000;font-size:20px;box-shadow:0 6px 0 rgba(0,0,0,.16)}
-.petStage{position:relative;z-index:2;display:grid;place-items:center;min-height:0}.roomCard{position:absolute;inset:clamp(10px,2vw,22px);border-radius:32px;background:linear-gradient(180deg,rgba(255,255,255,.66),rgba(255,255,255,.18));box-shadow:inset 0 -45px 0 rgba(210,130,194,.18),0 0 24px rgba(255,255,255,.38);border:4px solid rgba(255,255,255,.65)}.petImage{position:relative;z-index:3;max-width:min(43vw,420px);max-height:min(45vh,390px);object-fit:contain;filter:drop-shadow(0 26px 18px rgba(0,0,0,.32));transition:transform .2s ease}.petImage.bounce{animation:bounce .65s ease}.petImage.sleep{animation:sleepy 1.2s ease}.petImage.heal{animation:healPulse .7s ease}.effectBubble{position:absolute;z-index:4;top:28px;right:34px;font-size:54px;opacity:0;transform:translateY(8px) scale(.8);transition:.2s}.effectBubble.show{opacity:1;transform:translateY(0) scale(1)}
-@keyframes bounce{0%,100%{transform:translateY(0)}35%{transform:translateY(-24px) rotate(-3deg)}70%{transform:translateY(0) rotate(3deg)}}@keyframes sleepy{0%,100%{transform:rotate(0)}40%{transform:rotate(-5deg) translateY(10px)}}@keyframes healPulse{0%,100%{filter:drop-shadow(0 26px 18px rgba(0,0,0,.32))}50%{filter:drop-shadow(0 26px 18px rgba(0,0,0,.32)) drop-shadow(0 0 30px rgba(54,214,122,.95)) drop-shadow(0 0 50px rgba(255,99,183,.65))}}
-.actions{display:grid;grid-template-columns:repeat(4,1fr);gap:9px;padding:11px;background:linear-gradient(180deg,#c8efff,#83dcf7);border-top:4px solid rgba(13,98,173,.3);position:relative;z-index:2}.toyBtn{border:0;border-radius:18px;padding:9px 6px;background:linear-gradient(180deg,#fff,#dff8ff);box-shadow:0 7px 0 #168bdd,0 10px 15px rgba(0,0,0,.18),0 0 14px rgba(53,199,244,.45);font-weight:1000;color:#251326;font-size:clamp(13px,1.2vw,16px)}.toyBtn span{display:block;font-size:clamp(24px,2.5vw,32px);line-height:1}.toyBtn.pink{box-shadow:0 7px 0 #d24494,0 10px 15px rgba(0,0,0,.18),0 0 16px rgba(255,99,183,.55);background:linear-gradient(180deg,#fff,#ffe4f4)}.toyBtn.yellow{box-shadow:0 7px 0 #c89512,0 10px 15px rgba(0,0,0,.18),0 0 14px rgba(255,217,87,.6);background:linear-gradient(180deg,#fff9c9,#ffd957)}.toyBtn:active{transform:translateY(5px);box-shadow:0 2px 0 #168bdd}.message{position:absolute;left:50%;bottom:88px;z-index:6;transform:translateX(-50%);background:rgba(37,19,38,.94);color:white;border-radius:999px;padding:10px 16px;font-weight:1000;opacity:0;pointer-events:none;transition:.2s;text-align:center;max-width:90%;box-shadow:0 0 18px rgba(255,99,183,.55)}.message.show{opacity:1;bottom:100px}.pacifier{position:absolute;z-index:4;left:50%;bottom:clamp(-16px,-1.6vh,-6px);transform:translateX(-50%);width:clamp(130px,15vw,230px);height:clamp(58px,7vw,102px);border-radius:999px;background:linear-gradient(180deg,#ff9bd0,#f4419f);border:6px solid rgba(255,255,255,.92);box-shadow:0 12px 0 #cf2679,0 20px 28px rgba(0,0,0,.22),0 0 30px rgba(255,99,183,.8)}.pacifier::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-52%);width:38%;height:58%;border-radius:999px;background:linear-gradient(180deg,#ffccd4,#ff4d74);box-shadow:inset 0 -10px 14px rgba(134,20,46,.22)}.pacifier::after{content:"";position:absolute;left:12%;right:12%;top:52%;height:24%;border-radius:999px;border:7px solid #53172d;border-top:0;opacity:.85}.dataNote{grid-column:1/-1;background:rgba(255,255,255,.75);border:3px dashed rgba(13,98,173,.35);border-radius:20px;padding:8px 12px;font-size:12px;line-height:1.25}.dataNote b{color:#0d62ad}
-@media(max-width:980px){.petbotInner{grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr) auto}.sideRail{display:none}.topBar{padding:0 4px 6px;grid-template-columns:auto 1fr auto}.testBadge{font-size:11px;padding:6px 9px}.backLink{font-size:12px;padding:8px 10px}.screenWrap{border-width:6px;padding:7px}.habitatScene{grid-template-columns:1fr}.statsPanel{grid-template-columns:1fr 1fr}.levelBadge{grid-column:1/-1}.actions{grid-template-columns:repeat(4,1fr)}.petImage{max-height:34vh;max-width:62vw}.petbotShell{background:linear-gradient(180deg,#fff8f1 0 88%,var(--red) 88% 100%)}.dataNote{display:none}.pacifier{display:none}}
-@media(max-width:620px){.petbotShell{padding:6px}.logo{font-size:22px;letter-spacing:-1px}.siren{height:34px}.light{height:22px;width:34px}.topBar{grid-template-columns:1fr auto}.testBadge{display:none}.backLink{font-size:11px}.screenTop{display:grid;grid-template-columns:1fr;gap:6px}.petName,.heartScore{justify-self:center}.statsPanel{grid-template-columns:1fr 1fr;gap:6px;padding:8px}.stat{grid-template-columns:30px 1fr}.statEmoji{width:30px;height:30px;font-size:18px;border-radius:10px}.bar{height:15px}.stat label{font-size:12px}.habitatScene{padding:8px;gap:8px}.actions{grid-template-columns:repeat(2,1fr);gap:7px;padding:8px}.toyBtn{border-radius:15px;padding:8px 4px}.petImage{max-height:28vh;max-width:75vw}.roomCard{inset:7px;border-radius:22px}.screenWrap{border-radius:22px}.petScreen{border-radius:16px}}
-@media(max-height:640px) and (min-width:981px){.topBar{padding-bottom:2px}.logo{font-size:32px}.siren{height:38px}.sideIcon{width:66px;height:66px;font-size:32px}.dpad{width:72px;height:72px}.heartBtn{width:66px;height:56px}.actions{padding:7px}.toyBtn{padding:6px 4px}.toyBtn span{font-size:22px}.statsPanel{gap:5px}.statEmoji{width:34px;height:34px;font-size:20px}.bar{height:16px}.petImage{max-height:34vh}.dataNote{display:none}.pacifier{display:none}}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 0%,#e9fbff 0 25%,#ffd8ee 55%,#f6b6db 100%);color:var(--ink)}
+button,select{font:inherit}
+button{cursor:pointer;border:0}
+.petbotApp{width:100vw;height:100dvh;min-height:100vh;display:grid;place-items:center;overflow:hidden;padding:10px;background:radial-gradient(circle at 50% 42%,rgba(255,255,255,.8),rgba(118,199,216,.22) 38%,rgba(210,130,194,.35) 100%)}
+.device{position:relative;width:100%;height:100%;max-width:1900px;max-height:1060px;border:5px solid rgba(255,255,255,.85);border-radius:34px;background:linear-gradient(145deg,#fffcf6 0 11%,#fff9f2 11% 89%,#fff9f4 89% 100%);box-shadow:0 0 0 8px var(--red),0 0 28px rgba(210,130,194,.95),0 0 56px rgba(118,199,216,.82),inset 0 0 42px rgba(255,255,255,.9);overflow:hidden;display:grid;grid-template-columns:minmax(92px,11vw) 1fr minmax(92px,11vw);grid-template-rows:minmax(108px,15vh) 1fr minmax(44px,6vh)}
+.device:before,.device:after{content:"";position:absolute;top:0;bottom:0;width:13vw;min-width:125px;max-width:230px;background:linear-gradient(90deg,#ee2f36,#ff646a 42%,#ff8a8d 55%,#ee3339);box-shadow:inset 26px 0 28px rgba(255,255,255,.34),inset -22px 0 32px rgba(111,0,0,.22);z-index:0}.device:before{left:0}.device:after{right:0;transform:scaleX(-1)}
+.topBar{grid-column:1/4;position:relative;z-index:2;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;padding:12px min(34px,2vw) 4px;min-height:0}.testBadge{justify-self:start;background:linear-gradient(#fffad6,#ffd83b);padding:11px 18px;border-radius:999px;font-weight:1000;box-shadow:0 6px 0 #c59600,0 14px 18px rgba(0,0,0,.18);font-size:clamp(12px,1.1vw,18px)}.brand{justify-self:center;text-align:center;filter:drop-shadow(0 8px 16px rgba(0,0,0,.18))}.siren{width:clamp(190px,20vw,330px);height:48px;margin:auto;border:7px solid #223044;border-radius:12px;background:#111;display:grid;grid-template-columns:1fr 1fr 1fr 1fr 1fr;gap:6px;padding:6px;box-shadow:inset 0 0 11px #000,0 0 18px rgba(40,185,232,.8)}.lamp{border-radius:8px;box-shadow:inset 0 7px 8px rgba(255,255,255,.45),inset 0 -6px 9px rgba(0,0,0,.22)}.lamp.blue{background:linear-gradient(#54c6ff,#047bd3)}.lamp.red{background:linear-gradient(#ff6367,#e21f2a)}.lamp.white{background:linear-gradient(#fff,#dce5ee)}.brandTitle{line-height:.9;font-weight:1000;letter-spacing:-1px}.brandTitle .waa{display:block;font-size:clamp(32px,3.4vw,62px);color:#20b9e9;text-shadow:3px 3px 0 white,6px 6px 0 rgba(239,63,67,.72)}.brandTitle .pet{display:block;font-size:clamp(38px,4.1vw,74px);color:#ef3f43;text-shadow:3px 3px 0 white,6px 6px 0 rgba(40,185,232,.72)}.backBtn{justify-self:end;background:linear-gradient(#3b1647,#1f0f2a);color:#fff;padding:13px 22px;border-radius:999px;font-weight:1000;box-shadow:0 7px 0 #0b0610,0 12px 18px rgba(0,0,0,.22)}.backBtn:active{transform:translateY(5px);box-shadow:0 2px 0 #0b0610}
+.sideRail{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:space-evenly;padding:18px 8px;min-width:0}.sideButton{width:clamp(70px,7vw,122px);height:clamp(70px,7vw,122px);border-radius:24px;background:linear-gradient(145deg,#fff,#fff5fb);border:5px solid var(--pink);box-shadow:0 11px 0 #cf3182,0 0 22px rgba(240,95,178,.65),inset 0 10px 15px rgba(255,255,255,.9),inset 0 -12px 18px rgba(210,130,194,.18);display:grid;place-items:center;font-size:clamp(25px,3vw,46px);font-weight:1000;color:#3b2149;transition:.08s}.sideButton.blue{border-color:var(--blue);box-shadow:0 11px 0 #0889bd,0 0 22px rgba(40,185,232,.72),inset 0 10px 15px rgba(255,255,255,.9),inset 0 -12px 18px rgba(118,199,216,.22)}.sideButton.red{background:linear-gradient(145deg,#ff8890,#ef3541);border-color:#d31730;box-shadow:0 14px 0 #a70e22,0 0 22px rgba(239,63,67,.72),inset 0 12px 14px rgba(255,255,255,.34);color:white}.sideButton:active,.action:active,.roundNav:active{transform:translateY(7px);box-shadow:0 3px 0 rgba(0,0,0,.35)}.speaker{width:70%;max-width:110px;height:52px;display:grid;gap:7px}.speaker span{display:block;height:7px;border-radius:999px;background:#39212d;box-shadow:inset 0 2px 2px rgba(255,255,255,.24)}.dpad{width:clamp(92px,8vw,148px);height:clamp(92px,8vw,148px);position:relative;border-radius:26px;background:linear-gradient(145deg,#ff7d86,#e91f38);border:5px solid #c9152b;box-shadow:0 17px 0 #9d0d22,0 0 28px rgba(239,63,67,.65),inset 0 11px 16px rgba(255,255,255,.35)}.dpad button{position:absolute;background:rgba(255,255,255,.82);color:#e91f38;font-weight:1000;border-radius:16px;box-shadow:inset 0 -4px 0 rgba(0,0,0,.12)}.dpad .up{left:35%;top:8%;width:30%;height:28%}.dpad .down{left:35%;bottom:8%;width:30%;height:28%}.dpad .left{left:8%;top:35%;width:28%;height:30%}.dpad .right{right:8%;top:35%;width:28%;height:30%}.dpad .centre{left:36%;top:36%;width:28%;height:28%;border-radius:50%;background:#fff}
+.screenWrap{grid-column:2;grid-row:2;position:relative;z-index:3;display:grid;min-width:0;min-height:0;align-items:stretch;padding:0 12px 18px}.screen{position:relative;min-height:0;height:100%;border-radius:34px;background:#13213b;border:12px solid #151629;box-shadow:0 18px 0 #090913,0 0 30px rgba(240,95,178,.9),0 0 60px rgba(40,185,232,.75),inset 0 0 0 5px #3a4b67;overflow:hidden;display:grid;grid-template-rows:auto 1fr auto}.screen:before{content:"";position:absolute;inset:13px;border-radius:22px;pointer-events:none;box-shadow:inset 0 0 0 4px rgba(118,199,216,.85),inset 0 0 34px rgba(255,255,255,.3);z-index:3}.screenTop{position:relative;z-index:4;display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;padding:13px 18px;background:linear-gradient(#d9f7ff,#aceeff);border-bottom:4px solid #55c7e7}.selector{display:flex;gap:8px;align-items:center}.roundNav{width:43px;height:43px;border-radius:50%;background:linear-gradient(#fffca8,#ffd749);font-weight:1000;box-shadow:0 5px 0 #bc9300;color:#3a2846}.petSelect{height:43px;min-width:190px;border:0;border-radius:999px;padding:0 18px;background:#fff;font-weight:1000;color:#24152e;box-shadow:inset 0 -3px 0 rgba(40,185,232,.2)}.petNameTop{text-align:center;font-size:clamp(17px,1.8vw,29px);font-weight:1000;color:#005ca6}.loveScore{justify-self:end;background:linear-gradient(#0e98e9,#005aa8);color:white;padding:8px 16px;border-radius:999px;font-size:clamp(17px,1.6vw,27px);font-weight:1000;box-shadow:0 0 16px rgba(40,185,232,.68)}
+.screenMain{position:relative;z-index:2;min-height:0;background:linear-gradient(180deg,#eafcff 0,#fff3fb 100%);display:grid;grid-template-columns:minmax(205px,18%) 1fr;gap:18px;padding:18px}.statsPanel{border-radius:24px;background:linear-gradient(180deg,#287cca,#075a9f);border:4px solid white;box-shadow:0 8px 16px rgba(0,0,0,.25),inset 0 0 22px rgba(255,255,255,.14);padding:14px;color:white;min-height:0}.levelBadge{background:linear-gradient(90deg,#ff69ba,#f249a8);border:4px solid white;border-radius:18px;text-align:center;font-size:clamp(18px,1.6vw,30px);font-weight:1000;padding:10px;margin-bottom:14px;box-shadow:0 5px 0 rgba(0,0,0,.18)}.stat{display:grid;grid-template-columns:38px 1fr;gap:9px;align-items:center;margin:12px 0}.statIcon{width:38px;height:38px;border-radius:12px;background:#fff;display:grid;place-items:center;font-size:22px;box-shadow:0 3px 0 rgba(0,0,0,.25)}.stat b{display:block;font-size:clamp(13px,1.05vw,18px)}.meter{height:17px;border-radius:999px;border:3px solid rgba(255,255,255,.65);background:rgba(255,255,255,.24);overflow:hidden}.meter span{display:block;height:100%;width:50%;border-radius:999px;background:linear-gradient(90deg,#ff62ba,#ffe16b)}.meter.green span{background:linear-gradient(90deg,#24d77c,#9cffd7)}.meter.blue span{background:linear-gradient(90deg,#2bc3ff,#a7efff)}.habitatStage{position:relative;min-width:0;min-height:0;border-radius:28px;border:5px solid rgba(255,255,255,.85);background:radial-gradient(circle at 24% 70%,rgba(255,255,255,.76) 0 13%,transparent 14%),linear-gradient(180deg,#dff8ff 0,#fdfcff 58%,#ffd8ef 59% 100%);box-shadow:inset 0 -26px 0 rgba(210,130,194,.18),inset 0 0 46px rgba(255,255,255,.85),0 10px 19px rgba(0,0,0,.12);overflow:hidden;display:grid;place-items:center}.habitatStage:before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,255,255,.58),transparent 35%);pointer-events:none}.petImg{position:relative;z-index:2;max-width:min(48vh,42%);max-height:78%;object-fit:contain;filter:drop-shadow(0 18px 18px rgba(0,0,0,.28));transition:.2s}.petImg.bounce{animation:bounce .45s ease}@keyframes bounce{0%,100%{transform:translateY(0) scale(1)}35%{transform:translateY(-18px) scale(1.04)}70%{transform:translateY(4px) scale(.98)}}.effectBubble{position:absolute;z-index:4;right:8%;top:13%;min-width:140px;padding:13px 18px;border-radius:999px;background:linear-gradient(#fff,#ffe9f8);border:4px solid var(--pink);box-shadow:0 0 24px rgba(240,95,178,.7),0 10px 14px rgba(0,0,0,.18);font-weight:1000;text-align:center;opacity:0;transform:translateY(15px) scale(.92);pointer-events:none}.effectBubble.show{animation:pop .95s ease}@keyframes pop{0%{opacity:0;transform:translateY(16px) scale(.8)}20%,75%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(.95)}}
+.actions{position:relative;z-index:4;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:13px 18px 17px;background:linear-gradient(#d8f8ff,#bdeeff);border-top:4px solid #43bfdf}.action{min-height:68px;border-radius:18px;background:linear-gradient(180deg,#fff8ff,#ffeaf8);border-bottom:7px solid #d43b93;box-shadow:0 8px 10px rgba(0,0,0,.14),inset 0 10px 16px rgba(255,255,255,.85);font-size:clamp(13px,1vw,17px);font-weight:1000;color:#24152e;display:grid;place-items:center;gap:1px}.action b{font-size:clamp(19px,1.8vw,31px)}.action.yellow{background:linear-gradient(#fff5a7,#ffe16b);border-bottom-color:#c79700}.action.blue{background:linear-gradient(#f2ffff,#d8faff);border-bottom-color:#0893cf}.action.pink{background:linear-gradient(#fff5fb,#ffd5ef);border-bottom-color:#d43b93}.footer{grid-column:1/4;position:relative;z-index:4;display:flex;align-items:center;justify-content:center;min-height:0;padding:0 16px 10px}.pacifier{position:absolute;bottom:-24px;left:50%;transform:translateX(-50%);width:clamp(190px,19vw,350px);height:92px;border-radius:70px 70px 30px 30px;background:linear-gradient(#ff9bd4,#ef5fb2);border:6px solid white;box-shadow:0 0 28px rgba(240,95,178,.85),0 14px 0 #b12874}.pacifier:before{content:"";position:absolute;left:50%;top:19px;transform:translateX(-50%);width:32%;height:38px;border-radius:20px;background:linear-gradient(#ffbedf,#f26bb8);box-shadow:inset 0 8px 12px rgba(255,255,255,.45)}.pacifier:after{content:"";position:absolute;left:18%;right:18%;bottom:18px;height:20px;border:7px solid #4a203b;border-top:0;border-radius:0 0 50px 50px}.status{position:absolute;left:24px;right:24px;bottom:13px;z-index:1;padding:8px 18px;border-radius:999px;background:rgba(255,255,255,.78);border:3px dashed rgba(40,185,232,.45);font-size:13px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.status strong{color:#005ca6}.realNote{position:absolute;right:18px;bottom:15px;color:#fff;background:rgba(36,21,46,.82);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:1000;z-index:5}
+@media(max-width:1100px){.device{grid-template-columns:72px 1fr 72px;border-radius:22px}.device:before,.device:after{min-width:82px;width:9vw}.sideButton{width:58px;height:58px;border-radius:18px;border-width:4px;font-size:24px}.speaker{height:40px}.dpad{width:66px;height:66px;border-radius:17px}.topBar{min-height:86px;padding:8px 12px 0}.testBadge{padding:8px 11px}.backBtn{padding:10px 12px}.siren{height:36px}.brandTitle .waa{font-size:29px}.brandTitle .pet{font-size:36px}.screenWrap{padding:0 6px 12px}.screen{border-width:8px;border-radius:24px}.screenMain{grid-template-columns:175px 1fr;padding:12px;gap:12px}.actions{gap:7px;padding:9px 12px 13px}.action{min-height:58px}.petImg{max-width:50%;max-height:72%}.status{font-size:11px;left:12px;right:12px}}
+@media(max-width:720px){.petbotApp{padding:0}.device{border-radius:0;border:0;box-shadow:none;grid-template-columns:1fr;grid-template-rows:76px 1fr 32px}.device:before,.device:after,.sideRail,.pacifier,.realNote{display:none}.topBar{grid-column:1;grid-template-columns:auto 1fr auto;gap:8px;padding:6px}.brandTitle .waa{font-size:22px}.brandTitle .pet{font-size:25px}.siren{width:110px;height:27px;border-width:4px;gap:3px;padding:3px}.testBadge{font-size:10px;padding:6px 8px}.backBtn{font-size:12px;padding:8px 10px}.screenWrap{grid-column:1;grid-row:2;padding:6px}.screen{border-width:6px;border-radius:18px}.screenTop{padding:8px;grid-template-columns:1fr auto}.selector{grid-column:1}.petNameTop{display:none}.loveScore{grid-column:2}.petSelect{min-width:120px;width:46vw}.roundNav{width:34px;height:34px}.screenMain{grid-template-columns:1fr;grid-template-rows:auto 1fr;padding:8px;gap:8px}.statsPanel{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:8px}.levelBadge{grid-column:1/-1;padding:5px;margin:0;font-size:14px}.stat{grid-template-columns:1fr;margin:0;gap:4px}.statIcon{width:30px;height:30px;margin:auto;font-size:17px}.stat b{text-align:center;font-size:10px}.meter{height:10px}.habitatStage{min-height:0}.petImg{max-width:48%;max-height:82%}.actions{grid-template-columns:repeat(4,1fr);gap:5px;padding:6px}.action{min-height:48px;border-radius:12px;border-bottom-width:4px;font-size:10px}.action b{font-size:18px}.status{bottom:5px;font-size:10px;padding:5px 8px}}
+@media(max-height:670px) and (min-width:721px){.topBar{min-height:86px}.brandTitle .waa{font-size:30px}.brandTitle .pet{font-size:38px}.siren{height:35px}.screenMain{padding:10px;gap:10px}.actions{padding:8px 12px 10px}.action{min-height:50px}.petImg{max-height:70%}.sideButton{height:68px;width:68px}.dpad{height:80px;width:80px}.speaker{height:38px}.pacifier{height:70px}}
 </style>
 </head>
 <body>
-<main class="page">
-  <section class="petbotShell" aria-label="Waaambulance PetBot test device">
-    <div class="petbotInner">
-      <div class="topBar">
-        <div class="testBadge">TEST PAGE</div>
-        <div>
-          <div class="siren" aria-hidden="true"><i class="light blue"></i><i class="light white"></i><i class="light red"></i><i class="light white"></i><i class="light blue"></i></div>
-          <div class="logo"><span>Waaambulance</span>PetBot</div>
+<div class="petbotApp">
+  <main class="device" aria-label="Waaambulance PetBot test device">
+    <header class="topBar">
+      <span class="testBadge">TEST PAGE</span>
+      <div class="brand" aria-hidden="true"><div class="siren"><span class="lamp blue"></span><span class="lamp white"></span><span class="lamp red"></span><span class="lamp white"></span><span class="lamp blue"></span></div><div class="brandTitle"><span class="waa">Waaambulance</span><span class="pet">PetBot</span></div></div>
+      <button class="backBtn" onclick="location.href='index.html'">← Back to game</button>
+    </header>
+
+    <aside class="sideRail leftRail">
+      <button class="sideButton" data-action="prev" title="Previous pet">🐾</button>
+      <button class="sideButton blue" data-action="useMain" title="Use as main player">🚑</button>
+      <div class="speaker"><span></span><span></span><span></span></div>
+      <button class="sideButton" data-action="play" title="Play / love">♡</button>
+    </aside>
+
+    <section class="screenWrap">
+      <div class="screen">
+        <div class="screenTop">
+          <div class="selector">
+            <button class="roundNav" data-action="prev">←</button>
+            <select id="petSelect" class="petSelect"></select>
+            <button class="roundNav" data-action="next">→</button>
+          </div>
+          <div class="petNameTop" id="petNameTop">Bubbles · Axolotl</div>
+          <div class="loveScore">💗 <span id="loveScore">128</span></div>
         </div>
-        <a class="backLink" href="index.html">← Back to game</a>
+        <div class="screenMain">
+          <aside class="statsPanel">
+            <div class="levelBadge" id="levelBadge">LV. 05</div>
+            <div class="stat"><span class="statIcon">🍔</span><div><b>Hunger</b><div class="meter"><span id="hungerBar"></span></div></div></div>
+            <div class="stat"><span class="statIcon">😊</span><div><b>Happy</b><div class="meter"><span id="happyBar"></span></div></div></div>
+            <div class="stat"><span class="statIcon">⚡</span><div><b>Energy</b><div class="meter blue"><span id="energyBar"></span></div></div></div>
+            <div class="stat"><span class="statIcon">💊</span><div><b>Health</b><div class="meter green"><span id="healthBar"></span></div></div></div>
+          </aside>
+          <div class="habitatStage" id="habitatStage">
+            <img class="petImg" id="petImg" alt="selected pet">
+            <div class="effectBubble" id="effectBubble">Ready!</div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="action yellow" data-action="feed"><b>🍔</b>Feed</button>
+          <button class="action pink" data-action="play"><b>🧸</b>Play</button>
+          <button class="action blue" data-action="rest"><b>🌙</b>Rest</button>
+          <button class="action pink" data-action="heal"><b>💊</b>Heal</button>
+          <button class="action blue" data-action="train"><b>🏋️</b>Train</button>
+          <button class="action yellow" data-action="explore"><b>🧭</b>Explore</button>
+          <button class="action pink" data-action="useMain"><b>⭐</b>Use Main</button>
+          <button class="action blue" data-action="useSide"><b>🐾</b>Use Side</button>
+        </div>
       </div>
+    </section>
 
-      <aside class="sideRail" aria-hidden="true">
-        <div class="sideIcon pink">🐾</div>
-        <div class="sideIcon">🚑</div>
-        <div class="speaker"><i></i><i></i><i></i></div>
-        <div class="heartBtn">♡</div>
-      </aside>
+    <aside class="sideRail rightRail">
+      <button class="sideButton" data-action="heal" title="Heal pet">💗</button>
+      <div class="dpad" aria-label="Pet controls">
+        <button class="up" data-action="feed">▲</button>
+        <button class="down" data-action="rest">▼</button>
+        <button class="left" data-action="prev">◀</button>
+        <button class="right" data-action="next">▶</button>
+        <button class="centre" data-action="play">♥</button>
+      </div>
+      <div class="speaker"><span></span><span></span><span></span></div>
+      <button class="sideButton blue" data-action="rest" title="Rest / care">💧</button>
+    </aside>
 
-      <section class="screenWrap">
-        <div class="petScreen">
-          <div class="screenTop">
-            <div class="selector">
-              <button id="prevPet" type="button">←</button>
-              <select id="petSelect" aria-label="Choose pet"></select>
-              <button id="nextPet" type="button">→</button>
-            </div>
-            <div class="petName" id="petTitle">Pet name</div>
-            <div class="heartScore">💗 <span id="petScore">000</span></div>
-          </div>
-
-          <div class="habitatScene" id="habitatScene">
-            <aside class="statsPanel">
-              <div class="levelBadge">LV. <span id="petLevel">01</span></div>
-              <div class="stat"><div class="statEmoji">🍔</div><div><label>Hunger</label><div class="bar"><span id="hungerBar"></span></div></div></div>
-              <div class="stat"><div class="statEmoji">😊</div><div><label>Happy</label><div class="bar"><span id="happyBar"></span></div></div></div>
-              <div class="stat"><div class="statEmoji">⚡</div><div><label>Energy</label><div class="bar blue"><span id="energyBar"></span></div></div></div>
-              <div class="stat"><div class="statEmoji">💊</div><div><label>Health</label><div class="bar green"><span id="healthBar"></span></div></div></div>
-            </aside>
-            <div class="petStage">
-              <div class="roomCard"></div>
-              <div class="effectBubble" id="effectBubble">✨</div>
-              <img class="petImage" id="petImage" alt="Selected pet">
-              <div class="message" id="message">PetBot ready</div>
-            </div>
-          </div>
-
-          <div class="actions">
-            <button class="toyBtn yellow" data-action="feed"><span>🍔</span>Feed</button>
-            <button class="toyBtn pink" data-action="play"><span>🧸</span>Play</button>
-            <button class="toyBtn" data-action="rest"><span>🌙</span>Rest</button>
-            <button class="toyBtn pink" data-action="heal"><span>💊</span>Heal</button>
-            <button class="toyBtn" data-action="train"><span>🏋️</span>Train</button>
-            <button class="toyBtn yellow" data-action="explore"><span>🧭</span>Explore</button>
-            <button class="toyBtn pink" data-action="main"><span>⭐</span>Use Main</button>
-            <button class="toyBtn" data-action="side"><span>🐾</span>Use Side</button>
-          </div>
-        </div>
-      </section>
-
-      <aside class="sideRail" aria-hidden="true">
-        <div class="sideIcon pink">💗</div>
-        <div class="dpad"></div>
-        <div class="speaker"><i></i><i></i><i></i></div>
-        <div class="sideIcon">💧</div>
-      </aside>
-
-      <div class="dataNote"><b>Safe test build:</b> sample pets only for layout testing. Later this can connect to <b>Sheet 51</b> for pet images and <b>user_habitat_layout</b> for habitat rooms.</div>
-    </div>
-    <div class="pacifier" aria-hidden="true"></div>
-  </section>
-</main>
+    <footer class="footer"><div class="pacifier" aria-hidden="true"></div><div class="status" id="status"><strong>Safe test build:</strong> all toy buttons are real controls. Later this connects to Sheet 51 and user_habitat_layout.</div><div class="realNote">All buttons work</div></footer>
+  </main>
+</div>
 <script>
-// PETBOT TEST SECTION START - sample data first, real sheet/API hooks later.
-const SAMPLE_PETS=[
-  {id:'axolotl_pink',name:'Bubbles',type:'Axolotl',level:5,score:128,hunger:72,happy:84,energy:56,health:92,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797059/ax_idle_001.png',bg:'linear-gradient(180deg,#c8f7ff,#ffd9ef)'},
-  {id:'pura_friend',name:'Pura Pal',type:'Mascot',level:7,score:216,hunger:64,happy:91,energy:70,health:86,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png',bg:'linear-gradient(180deg,#fff4c8,#c9f6ff)'},
-  {id:'owl_soft',name:'Moonbean',type:'Owl',level:3,score:73,hunger:58,happy:66,energy:44,health:80,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782133620/owl_idle_001.png',bg:'linear-gradient(180deg,#d8d2ff,#ecf9ff)'}
+const pets=[
+  {name:'Bubbles',type:'Axolotl',level:5,love:128,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781797059/ax_idle_001.png',hunger:68,happy:80,energy:48,health:90},
+  {name:'Pura',type:'Mascot',level:7,love:211,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798378/pura_idle_001.png',hunger:78,happy:72,energy:65,health:86},
+  {name:'Moonbeam',type:'Unicorn',level:4,love:95,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1781798484/unicorn_idle_001.png',hunger:52,happy:60,energy:82,health:75},
+  {name:'Hoots',type:'Owl',level:3,love:84,img:'https://res.cloudinary.com/dpwlfmhia/image/upload/v1782133620/owl_idle_001.png',hunger:58,happy:63,energy:74,health:80}
 ];
-let currentIndex=0;
+let idx=0;
 const $=id=>document.getElementById(id);
-const clamp=n=>Math.max(0,Math.min(100,Number(n)||0));
-function setBar(id,value){$(id).style.width=clamp(value)+'%'}
-function showMessage(text,emoji='✨'){
-  const msg=$('message'), bubble=$('effectBubble');
-  msg.textContent=text; msg.classList.add('show');
-  bubble.textContent=emoji; bubble.classList.add('show');
-  clearTimeout(showMessage.t); showMessage.t=setTimeout(()=>{msg.classList.remove('show');bubble.classList.remove('show')},1400);
+function clamp(v){return Math.max(0,Math.min(100,v));}
+function render(){
+  const p=pets[idx];
+  $('petSelect').value=String(idx);
+  $('petNameTop').textContent=`${p.name} · ${p.type}`;
+  $('loveScore').textContent=p.love;
+  $('levelBadge').textContent=`LV. ${String(p.level).padStart(2,'0')}`;
+  $('petImg').src=p.img;
+  $('petImg').alt=`${p.name} the ${p.type}`;
+  $('hungerBar').style.width=clamp(p.hunger)+'%';
+  $('happyBar').style.width=clamp(p.happy)+'%';
+  $('energyBar').style.width=clamp(p.energy)+'%';
+  $('healthBar').style.width=clamp(p.health)+'%';
+  $('status').innerHTML=`<strong>${p.name}</strong> is ready. Big toy buttons are real controls in this test build.`;
 }
-function renderPet(){
-  const pet=SAMPLE_PETS[currentIndex];
-  $('petTitle').textContent=pet.name+' · '+pet.type;
-  $('petLevel').textContent=String(pet.level).padStart(2,'0');
-  $('petScore').textContent=pet.score;
-  $('petImage').src=pet.img;
-  $('petImage').alt=pet.name;
-  $('habitatScene').style.setProperty('--habitat-bg',pet.bg);
-  setBar('hungerBar',pet.hunger);setBar('happyBar',pet.happy);setBar('energyBar',pet.energy);setBar('healthBar',pet.health);
-  $('petSelect').value=pet.id;
-  showMessage(pet.name+' is ready','💗');
+function bubble(text){
+  const b=$('effectBubble');
+  b.textContent=text;
+  b.classList.remove('show');
+  void b.offsetWidth;
+  b.classList.add('show');
+  const img=$('petImg');
+  img.classList.remove('bounce');
+  void img.offsetWidth;
+  img.classList.add('bounce');
 }
-function buildSelect(){
-  $('petSelect').innerHTML=SAMPLE_PETS.map(p=>`<option value="${p.id}">${p.name} · ${p.type}</option>`).join('');
-  $('petSelect').onchange=e=>{currentIndex=Math.max(0,SAMPLE_PETS.findIndex(p=>p.id===e.target.value));renderPet()};
+function changePet(delta){idx=(idx+delta+pets.length)%pets.length;render();bubble('Pet changed 🐾');}
+function act(action){
+  const p=pets[idx];
+  const messages={
+    feed:'Fed! 🍔',play:'Play time! 🧸',rest:'Resting... 🌙',heal:'Healed! 💊',train:'Training! 🏋️',explore:'Exploring! 🧭',useMain:'Set as main ⭐',useSide:'Set as sidekick 🐾'
+  };
+  if(action==='prev')return changePet(-1);
+  if(action==='next')return changePet(1);
+  if(action==='feed'){p.hunger=clamp(p.hunger+12);p.energy=clamp(p.energy-3)}
+  if(action==='play'){p.happy=clamp(p.happy+12);p.energy=clamp(p.energy-6);p.love+=3}
+  if(action==='rest'){p.energy=clamp(p.energy+16);p.hunger=clamp(p.hunger-4)}
+  if(action==='heal'){p.health=clamp(p.health+12);p.love+=2}
+  if(action==='train'){p.energy=clamp(p.energy-8);p.happy=clamp(p.happy+4);p.love+=1}
+  if(action==='explore'){p.happy=clamp(p.happy+6);p.energy=clamp(p.energy-6);p.love+=2}
+  render();
+  bubble(messages[action]||'Done!');
 }
-function nudge(stat,amount){const pet=SAMPLE_PETS[currentIndex];pet[stat]=clamp(pet[stat]+amount);renderPet()}
-function animatePet(cls){const img=$('petImage');img.classList.remove('bounce','sleep','heal');void img.offsetWidth;img.classList.add(cls);setTimeout(()=>img.classList.remove(cls),900)}
-function handleAction(action){
-  const pet=SAMPLE_PETS[currentIndex];
-  if(action==='feed'){nudge('hunger',12);animatePet('bounce');showMessage(pet.name+' enjoyed food','🍔')}
-  if(action==='play'){nudge('happy',12);nudge('energy',-5);animatePet('bounce');showMessage(pet.name+' played','🧸')}
-  if(action==='rest'){nudge('energy',16);animatePet('sleep');showMessage(pet.name+' is resting','💤')}
-  if(action==='heal'){nudge('health',14);animatePet('heal');showMessage(pet.name+' feels better','💊')}
-  if(action==='train'){nudge('energy',-7);nudge('happy',6);animatePet('bounce');showMessage(pet.name+' trained','🏋️')}
-  if(action==='explore'){nudge('happy',8);nudge('energy',-8);animatePet('bounce');showMessage(pet.name+' went exploring','🧭')}
-  if(action==='main'){localStorage.setItem('ctw_petbot_test_main_pet',pet.id);showMessage(pet.name+' saved as main pet','⭐')}
-  if(action==='side'){localStorage.setItem('ctw_petbot_test_side_pet',pet.id);showMessage(pet.name+' saved as sidekick','🐾')}
+function init(){
+  pets.forEach((p,i)=>{const opt=document.createElement('option');opt.value=String(i);opt.textContent=`${p.name} · ${p.type}`;$('petSelect').appendChild(opt)});
+  $('petSelect').addEventListener('change',e=>{idx=Number(e.target.value)||0;render();bubble('Pet selected 🐾')});
+  document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>act(btn.dataset.action)));
+  render();
 }
-document.querySelectorAll('[data-action]').forEach(btn=>btn.addEventListener('click',()=>handleAction(btn.dataset.action)));
-$('prevPet').onclick=()=>{currentIndex=(currentIndex-1+SAMPLE_PETS.length)%SAMPLE_PETS.length;renderPet()};
-$('nextPet').onclick=()=>{currentIndex=(currentIndex+1)%SAMPLE_PETS.length;renderPet()};
-buildSelect();renderPet();
-// PETBOT TEST SECTION END
+init();
 </script>
 </body>
 </html>
