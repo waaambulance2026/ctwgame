@@ -1562,13 +1562,13 @@ function playerHitRectFor(kind){
   // Tighter player box stops items collecting just because the outer sprite container is nearby.
   if(kind==='token')return getShrunkRect(el,.46,.34);
   if(kind==='task'||kind==='sign')return getShrunkRect(el,.40,.30);
-  if(kind==='building')return getShrunkRect(el,.30,.18);
+  if(kind==='building')return getShrunkRect(el,.42,.28);
   if(kind==='hazard')return getShrunkRect(el,.28,.18);
   return getShrunkRect(el,.22,.16);
 }
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-  const shrink=o.kind==='token'?.34:((o.kind==='task'||o.kind==='sign')?.28:(o.kind==='building'?.18:(o.kind==='hazard'?.12:.08))); 
+  const shrink=o.kind==='token'?.34:((o.kind==='task'||o.kind==='sign')?.28:(o.kind==='building'?.36:(o.kind==='hazard'?.12:.08))); 
   return {left:r.left+r.width*shrink,right:r.right-r.width*shrink,top:r.top+r.height*shrink,bottom:r.bottom-r.height*shrink};
 }
 function shouldHitObject(o){
