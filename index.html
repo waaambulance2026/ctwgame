@@ -1559,17 +1559,43 @@ function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
 function rectsOverlap(a,b){return a.left<b.right&&a.right>b.left&&a.top<b.bottom&&a.bottom>b.top}
 function playerHitRectFor(kind){
   const el=$('player');
-  // Tighter player box stops items collecting just because the outer sprite container is nearby.
+
+  // These MUST be decimals, not big numbers.
+  // .40 means shrink by 40% from left/right.
   if(kind==='token')return getShrunkRect(el,.46,.34);
-  if(kind==='task'||kind==='sign')return getShrunkRect(el,.40,.30);
+
+  // Tutorial boxes/signs should only react when Ax is close to the middle,
+  // not when the outside of her sprite container brushes past them.
+  if(kind==='task'||kind==='sign')return getShrunkRect(el,.50,.42);
+
+  // Buildings need a smaller doorway-style interaction area.
   if(kind==='building')return getShrunkRect(el,.42,.28);
+
   if(kind==='hazard')return getShrunkRect(el,.28,.18);
+
   return getShrunkRect(el,.22,.16);
 }
 function objectHitRect(o){
   const r=o.el.getBoundingClientRect();
-  const shrink=o.kind==='token'?.34:((o.kind==='task'||o.kind==='sign')?.28:(o.kind==='building'?.36:(o.kind==='hazard'?.12:.08))); 
-  return {left:r.left+r.width*shrink,right:r.right-r.width*shrink,top:r.top+r.height*shrink,bottom:r.bottom-r.height*shrink};
+
+  let shrink=.08;
+
+  if(o.kind==='token')shrink=.34;
+
+  // Make tutorial boxes/signs harder to accidentally trigger.
+  if(o.kind==='task'||o.kind==='sign')shrink=.42;
+
+  // Buildings react around the centre/doorway, not the whole picture.
+  if(o.kind==='building')shrink=.36;
+
+  if(o.kind==='hazard')shrink=.12;
+
+  return {
+    left:r.left+r.width*shrink,
+    right:r.right-r.width*shrink,
+    top:r.top+r.height*shrink,
+    bottom:r.bottom-r.height*shrink
+  };
 }
 function shouldHitObject(o){
   if(o.hit||o.vanished)return false;
