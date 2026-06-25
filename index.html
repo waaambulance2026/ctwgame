@@ -943,32 +943,58 @@ function slotVisualY(characterKey,slotName){
   return Number((cfg.slotY&&cfg.slotY[slotName])||0);
 }
 
+function cleanNum(value, fallback = 0){
+  const n = Number(value);
+  return Number.isFinite(n) ? n : fallback;
+}
+
+function spriteTransform(characterKey, action, frameIndex, direction, slotName, extraScale = 1){
+  const cfg = getActionVisualConfig(characterKey, action, frameIndex);
+
+  const x = cleanNum(cfg.visualX, 0);
+  const y = cleanNum(cfg.visualY, 0) + slotVisualY(characterKey, slotName);
+  const scale = cleanNum(cfg.visualScale, 1) * extraScale;
+
+  return `translate(${x}px, ${y}px) scaleX(${direction}) scale(${scale})`;
+}
+
 function applySpriteTransform(){
   applyCharacterSlotSizes();
-  const mainAction=($('sprite')&&$('sprite').dataset.action)||'idle';
-  const buddyAction=($('buddySprite')&&$('buddySprite').dataset.action)||'idle';
-  const t2Action=($('teamSprite2')&&$('teamSprite2').dataset.action)||'idle';
-  const t3Action=($('teamSprite3')&&$('teamSprite3').dataset.action)||'idle';
-  const mainFrameIndex=Number(($('sprite')&&$('sprite').dataset.frameIndex)||0);
-  const buddyFrameIndex=Number(($('buddySprite')&&$('buddySprite').dataset.frameIndex)||0);
-  const t2FrameIndex=Number(($('teamSprite2')&&$('teamSprite2').dataset.frameIndex)||0);
-  const t3FrameIndex=Number(($('teamSprite3')&&$('teamSprite3').dataset.frameIndex)||0);
-  const mainCfg=getActionVisualConfig(main,mainAction,mainFrameIndex);
-  const buddyCfg=getActionVisualConfig(buddy,buddyAction,buddyFrameIndex);
-  const mainDirection=(Number(mainFlip)||1)*facing;
-  const buddyDirection=(Number(buddyFlip)||1)*facing;
-  const mainY=(mainCfg.visualY||0)+slotVisualY(main,'main');
-  const buddyY=(buddyCfg.visualY||0)+slotVisualY(buddy,'buddy');
-  if($('sprite'))$('sprite').style.transform=`translateY(${mainY}px) scaleX(${mainDirection}) scale(${mainCfg.visualScale||1})`;
-  if($('buddySprite'))$('buddySprite').style.transform=`translateY(${buddyY}px) scaleX(${buddyDirection}) scale(${buddyCfg.visualScale||1})`;
-  const t2=(teamExtra&&teamExtra[0])||'owl', t3=(teamExtra&&teamExtra[1])||'unicorn';
-  const t2Cfg=getActionVisualConfig(t2,t2Action,t2FrameIndex), t3Cfg=getActionVisualConfig(t3,t3Action,t3FrameIndex);
-  const t2Y=(t2Cfg.visualY||0)+slotVisualY(t2,'team');
-  const t3Y=(t3Cfg.visualY||0)+slotVisualY(t3,'team');
-  if($('teamSprite2'))$('teamSprite2').style.transform=`translateY(${t2Y}px) scaleX(${buddyDirection}) scale(${(t2Cfg.visualScale||1)*.92})`;
-  if($('teamSprite3'))$('teamSprite3').style.transform=`translateY(${t3Y}px) scaleX(${buddyDirection}) scale(${(t3Cfg.visualScale||1)*.92})`;
-  if($('shadow'))$('shadow').style.opacity=main==='owl'?'.28':'.72';
-  if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
+
+  const mainAction = ($('sprite') && $('sprite').dataset.action) || 'idle';
+  const buddyAction = ($('buddySprite') && $('buddySprite').dataset.action) || 'idle';
+  const t2Action = ($('teamSprite2') && $('teamSprite2').dataset.action) || 'idle';
+  const t3Action = ($('teamSprite3') && $('teamSprite3').dataset.action) || 'idle';
+
+  const mainFrameIndex = Number(($('sprite') && $('sprite').dataset.frameIndex) || 0);
+  const buddyFrameIndex = Number(($('buddySprite') && $('buddySprite').dataset.frameIndex) || 0);
+  const t2FrameIndex = Number(($('teamSprite2') && $('teamSprite2').dataset.frameIndex) || 0);
+  const t3FrameIndex = Number(($('teamSprite3') && $('teamSprite3').dataset.frameIndex) || 0);
+
+  const mainDirection = (Number(mainFlip) || 1) * facing;
+  const buddyDirection = (Number(buddyFlip) || 1) * facing;
+
+  if($('sprite')){
+    $('sprite').style.transform = spriteTransform(main, mainAction, mainFrameIndex, mainDirection, 'main', 1);
+  }
+
+  if($('buddySprite')){
+    $('buddySprite').style.transform = spriteTransform(buddy, buddyAction, buddyFrameIndex, buddyDirection, 'buddy', 1);
+  }
+
+  const t2 = (teamExtra && teamExtra[0]) || 'owl';
+  const t3 = (teamExtra && teamExtra[1]) || 'unicorn';
+
+  if($('teamSprite2')){
+    $('teamSprite2').style.transform = spriteTransform(t2, t2Action, t2FrameIndex, buddyDirection, 'team', .92);
+  }
+
+  if($('teamSprite3')){
+    $('teamSprite3').style.transform = spriteTransform(t3, t3Action, t3FrameIndex, buddyDirection, 'team', .92);
+  }
+
+  if($('shadow')) $('shadow').style.opacity = main === 'owl' ? '.28' : '.72';
+  if($('buddyShadow')) $('buddyShadow').style.opacity = buddy === 'owl' ? '.25' : '.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
 let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
