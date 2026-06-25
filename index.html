@@ -964,11 +964,11 @@ const PLACE_LABELS={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
-  welcomeBoard:{at:-1351,width:168,height:200,yOffset:-32.199951171875,z:48},
-  petShop:{at:88,width:374,height:262,yOffset:-104.20001220703125,z:48},
-  habitat:{at:1467,width:405,height:253,yOffset:-120,z:48},
-  hookWaaambulance:{at:2837,width:250,height:185,yOffset:-120,z:48},
-  questStarter:{at:4212,width:260,height:200,yOffset:-111.20001220703125,z:48}
+  welcomeBoard:{at:-1763,width:212,height:200,yOffset:-81.93720345222513,z:48},
+  petShop:{at:-268,width:600,height:450,yOffset:-115.06279654777487,z:48},
+  habitat:{at:1098,width:588,height:412,yOffset:-120,z:48},
+  hookWaaambulance:{at:2426,width:331,height:277,yOffset:-120,z:48},
+  questStarter:{at:3793,width:260,height:200,yOffset:-120,z:48}
 };
 let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
 
@@ -996,24 +996,24 @@ const levels=[
     plan:[
       // Tutorial Town now uses useful stop markers matched to the actual saved building positions.
       // No extra random lesson clutter: each board explains the next real stop.
-      {at:-1351,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
+      {at:-1763,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-950,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
+      {at:-1150,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
 
-      {at:-350,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
-      {at:88,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+      {at:-750,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
+      {at:-268,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
-      {at:1050,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
-      {at:1467,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
+      {at:600,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
+      {at:1098,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:1780,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
+      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
       {at:1800,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
 
-      {at:2400,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
-      {at:2837,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
+      {at:2000,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
+      {at:2426,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:3800,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
-      {at:4212,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
+      {at:3250,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:3793,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
       {at:6600,kind:'finish'}
     ]
