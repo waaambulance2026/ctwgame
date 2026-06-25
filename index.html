@@ -2345,23 +2345,32 @@ requestAnimationFrame(loop);
 function fitGameToScreen(){
   const game = document.getElementById('game');
   if(!game) return;
+
   const vw = window.innerWidth || document.documentElement.clientWidth || DESIGN_W;
   const vh = window.innerHeight || document.documentElement.clientHeight || DESIGN_H;
-  const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+
+  // IMPORTANT:
+  // Use CONTAIN, not COVER.
+  // This keeps the full 1920x1080 game visible even when browser is not fullscreen.
+  const scale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+
   const left = (vw - DESIGN_W * scale) / 2;
-  // Keep the floor visible when a screen is very wide. The HUD is moved back down below.
-  const top = Math.min(0, vh - DESIGN_H * scale);
-  currentGameScale=scale; currentGameLeft=left; currentGameTop=top;
+  const top = (vh - DESIGN_H * scale) / 2;
+
+  currentGameScale = scale;
+  currentGameLeft = left;
+  currentGameTop = top;
+
   game.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
 
-  // Because the whole game can crop at the top on wide screens, pin the HUD/toast back inside view.
   const hud = document.querySelector('.hud');
   if(hud){
-    hud.style.top = `${(10 - top) / scale}px`;
-    hud.style.width = `min(1160px, ${Math.max(760,(vw-18)/scale)}px)`;
+    hud.style.top = `10px`;
+    hud.style.width = `min(1160px, calc(100vw - 18px))`;
   }
-  const toast=$('toast');
-  if(toast) toast.style.top = `${(86 - top) / scale}px`;
+
+  const toast = $('toast');
+  if(toast) toast.style.top = `86px`;
 }
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
