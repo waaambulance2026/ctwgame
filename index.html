@@ -2426,13 +2426,22 @@ function fitGameToScreen(){
   const vw = window.innerWidth || document.documentElement.clientWidth || DESIGN_W;
   const vh = window.innerHeight || document.documentElement.clientHeight || DESIGN_H;
 
-  // IMPORTANT:
-  // Use CONTAIN, not COVER.
-  // This keeps the full 1920x1080 game visible even when browser is not fullscreen.
-  const scale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
+  // Full screen cover mode.
+  // This fills the browser screen instead of leaving black bars.
+  const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
 
-  const left = (vw - DESIGN_W * scale) / 2;
-  const top = (vh - DESIGN_H * scale) / 2;
+  const designAspect = DESIGN_W / DESIGN_H;
+  const viewAspect = vw / vh;
+
+  // If the window is narrower than the game, keep the left side visible
+  // so Ax/Pura do not disappear off-screen.
+  const left = viewAspect < designAspect
+    ? 0
+    : (vw - DESIGN_W * scale) / 2;
+
+  // Keep the floor/sprites visible by locking the game to the bottom.
+  // This crops extra sky first, not the ground.
+  const top = vh - DESIGN_H * scale;
 
   currentGameScale = scale;
   currentGameLeft = left;
