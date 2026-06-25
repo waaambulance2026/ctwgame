@@ -533,11 +533,11 @@ const spriteCurrent={sprite:'',buddySprite:''};
 //   {nn} = 01, 02, 03
 //   {i}  = 1, 2, 3
 let SPRITE_PATTERNS={
-  ax:{
-    idle:`${CLOUD}/v1781797059/ax_idle_{n}.png`,
-    walk:`${CLOUD}/v1782126921/ax_walk_{n}.png`,
-    jump:`${CLOUD}/v1781797147/ax_jump_{n}.png`
-  },
+ax:{
+  idle:`${CLOUD}/v1781797059/ax_idle_{n}.png`,
+  walk:`${CLOUD}/v1782412803/ax_walk_{n}.png`,
+  jump:`${CLOUD}/v1781797147/ax_jump_{n}.png`
+},
 
   pura:{
     idle:`${CLOUD}/v1781798378/pura_idle_{n}.png`,
@@ -705,7 +705,7 @@ const ACTION_FRAME_PROBING={};
 // Pura walk is forced to 4 frames because Pura currently has 4 walk images.
 // Unicorn walk is also a clean 4-frame set: 001, 002, 003, 004.
 const ACTION_FRAME_OVERRIDES={
-  ax:{walk:4},
+  ax:{walk:10},
   pura:{walk:4},
   owl:{walk:10},
   unicorn:{walk:4}
