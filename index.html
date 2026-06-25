@@ -57,7 +57,7 @@ Use the document guide beside this file. Search EDIT SECTION to jump around.
   --playerX:150px; --playerW:170px; --playerDrop:1px;
   --buddyX:265px; --buddyW:115px; --buddyDrop:13px;
   --skyY:center; --hillsH:445px; --hillsBottom:82px; --groundH:757px; --groundBottom:-120px;
-  --tokenLift:126px; --hazardLift:58px; --gameSpeed:2.2; --spawnGap:1450;
+  --tokenLift:126px; --hazardLift:58px; --gameSpeed:3.05; --spawnGap:1450;
   --zSky:0; --zHills:1; --zGround:39; --zPlatform:0; --zBuddy:46; --zPlayer:58; --zBuildings:25; --zObjects:50;
 }
 /* EDIT SECTION 04: PAGE RESET, GAME CANVAS, SKY, HILLS, GROUND, FLOOR AND HUD */
@@ -359,7 +359,7 @@ body:not(.editMode) .obj.lessonBlock.interactNearby{
 .tamaScreen{border:5px solid #76C7D8!important;border-radius:24px!important;background:linear-gradient(180deg,#eaffff,#ffffff)!important;min-height:230px!important}
 .petPreview{background:#fff!important;border:3px dashed #d282c2!important}
 .petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
-.character img{transition:transform .08s linear}
+.character img{transition:none!important}
 .character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
 
@@ -490,7 +490,24 @@ const pad2=n=>String(n).padStart(2,'0'), pad3=n=>String(n).padStart(3,'0');
 // EDITOR SAVED LAYOUT APPLIED 2026-06-24: latest building sizes + image links preserved.
 const DEFAULTS={floorPx:70,platformH:30,playerX:150,playerW:170,playerDrop:1,buddyX:265,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50};
 const VERSION='ctw_game_current_saved_layout_v3_team_facing';
-const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v6_latest_building_sizes_images_ok';
+const SAFE_LAYOUT_SAVE_KEY='ctw_game_places_layout_v8_user_exact_settings_20260625';
+// These are the exact layout settings you pasted in chat.
+// Reset safe layout returns to these values.
+const USER_EXACT_LAYOUT_SETTINGS={
+  floorPx:70,platformH:30,playerX:150,playerW:170,playerDrop:1,
+  buddyX:265,buddyW:115,buddyDrop:13,hillsH:445,hillsBottom:82,
+  groundH:757,groundBottom:-120,tokenLift:126,hazardLift:58,
+  zSky:0,zHills:1,zGround:39,zPlatform:0,zBuddy:46,zPlayer:58,zBuildings:25,zObjects:50,
+  main:'ax',buddy:'none',team:false,teamExtra:['none','none'],mainFlip:1,buddyFlip:1,
+  petPlayerW:115,petFlip:-1,
+  placeLayout:{
+    welcomeBoard:{at:-1723,width:168,height:200,yOffset:-24,z:48},
+    petShop:{at:-332,width:374,height:262,yOffset:-100.20001220703125,z:48},
+    habitat:{at:1048,width:405,height:253,yOffset:-120,z:48},
+    hookWaaambulance:{at:2411,width:250,height:185,yOffset:-120,z:48},
+    questStarter:{at:3826,width:260,height:200,yOffset:-119.20001220703125,z:48}
+  }
+};
 // Clear old broken browser saves once. These were made before sprite/facing controls were stable.
 Object.keys(localStorage).forEach(k=>{
   const lower=String(k).toLowerCase();
@@ -674,11 +691,12 @@ function setSpriteFrame(elId,char,action,idx){
   setSpriteMissing(elId,false);
 }
 const SETS={
-  ax:{name:'Ax',frameMs:105,actionMs:{idle:105,walk:95,jump:70}},
-  pura:{name:'Pura',frameMs:115,actionMs:{idle:115,walk:100,jump:70}},
-  owl:{name:'Owl',frameMs:155,actionMs:{idle:155,walk:130,jump:80}},
-  unicorn:{name:'Unicorn',frameMs:125,actionMs:{idle:135,walk:95,jump:78}},
-  pet:{name:'Pet',frameMs:120,actionMs:{idle:120,walk:105,jump:75}}
+  // Lower walk numbers = faster frame change. This removes the slow/draggy walk feel.
+  ax:{name:'Ax',frameMs:95,actionMs:{idle:105,walk:68,jump:66}},
+  pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
+  owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
+  unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
+  pet:{name:'Pet',frameMs:105,actionMs:{idle:115,walk:76,jump:72}}
 };
 // EDIT SECTION 18B: CHARACTER-SIZE LOCK + AUTO FRAME COUNT
 // The game no longer needs you to type frame counts for every character/action.
@@ -927,7 +945,7 @@ function applySpriteTransform(){
   if($('buddyShadow'))$('buddyShadow').style.opacity=buddy==='owl'?'.25':'.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['owl','unicorn'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 let visualWalkUntil=0;
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
@@ -964,11 +982,12 @@ const PLACE_LABELS={
 // yOffset = feet up/down. Smaller number moves up, bigger number moves down.
 // z = layer level. Higher number goes in front.
 const PLACE_LAYOUT_DEFAULT={
-  welcomeBoard:{at:-1763,width:212,height:200,yOffset:-81.93720345222513,z:48},
-  petShop:{at:-268,width:600,height:450,yOffset:-115.06279654777487,z:48},
-  habitat:{at:1098,width:588,height:412,yOffset:-120,z:48},
-  hookWaaambulance:{at:2426,width:331,height:277,yOffset:-120,z:48},
-  questStarter:{at:3793,width:260,height:200,yOffset:-120,z:48}
+  // BAKED FROM YOUR EXACT EDITOR SETTINGS - 2026-06-25
+  welcomeBoard:{at:-1723,width:168,height:200,yOffset:-24,z:48},
+  petShop:{at:-332,width:374,height:262,yOffset:-100.20001220703125,z:48},
+  habitat:{at:1048,width:405,height:253,yOffset:-120,z:48},
+  hookWaaambulance:{at:2411,width:250,height:185,yOffset:-120,z:48},
+  questStarter:{at:3826,width:260,height:200,yOffset:-119.20001220703125,z:48}
 };
 let PLACE_LAYOUT=JSON.parse(JSON.stringify(PLACE_LAYOUT_DEFAULT));
 
@@ -996,26 +1015,26 @@ const levels=[
     plan:[
       // Tutorial Town now uses useful stop markers matched to the actual saved building positions.
       // No extra random lesson clutter: each board explains the next real stop.
-      {at:-1763,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
+      {at:-1723,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1150,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
+      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
 
-      {at:-750,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
-      {at:-268,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
+      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
+      {at:-332,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
-      {at:600,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
-      {at:1098,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
+      {at:730,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
+      {at:1048,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
       {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
-      {at:1800,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
+      {at:1550,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
 
-      {at:2000,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
-      {at:2426,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
+      {at:2100,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
+      {at:2411,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:3250,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
-      {at:3793,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
+      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:3826,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
-      {at:6600,kind:'finish'}
+      {at:6200,kind:'finish'}
     ]
   },
 
@@ -1253,7 +1272,8 @@ function spawnLevelPlanObjects(){
   plan.forEach((entry,i)=>{
     const at=plannedAt(entry);
     const backWindow=entry&&entry.kind==='building'?2600:(levelIndex===0?2200:900);
-    const inWindow=at>=distance-backWindow && at<=distance+1700;
+    const forwardWindow=(levelIndex===0?2200:1700);
+    const inWindow=at>=distance-backWindow && at<=distance+forwardWindow;
     if(!inWindow||spawnedPlan.has(i))return;
     spawnedPlan.add(i);
     if(entry.kind==='building'&&entry.place){
@@ -1342,10 +1362,10 @@ function makeObject(kind,x){
   el.className='obj '+(isFinish?'finish':kind);
   addObjectImage(el,data);
   $('worldObjects').appendChild(el);
-  const y=innerHeight-floorPx()-(isFinish?130:(kind==='hazard'?cssNumber('--hazardLift',58):(cssNumber('--tokenLift',126)+Math.random()*55)));
+  const y=DESIGN_H-floorPx()-(isFinish?130:(kind==='hazard'?cssNumber('--hazardLift',58):(cssNumber('--tokenLift',126)+Math.random()*55)));
   objects.push({el,x,y,kind,label:data[1],points:data[2]||0,hit:false,vanished:false});
 }
-function spawn(){if(finishMade||objects.length>5)return;makeObject(Math.random()<.30?'hazard':'token',innerWidth+260+Math.random()*260)}function makeFinish(){finishMade=true;makeObject('finish',innerWidth+520)}
+function spawn(){if(finishMade||objects.length>5)return;makeObject(Math.random()<.30?'hazard':'token',DESIGN_W+260+Math.random()*260)}function makeFinish(){finishMade=true;makeObject('finish',innerWidth+520)}
 function vanishObject(o,cls='collected',delay=220){
   if(o.vanished)return;
   o.vanished=true;
@@ -1690,7 +1710,7 @@ function loop(now=0){
     objects=objects.filter(o=>{
       if(o.vanished)return false;
       if(Number.isFinite(Number(o.at)))return true;
-      if(o.x<-140||o.x>innerWidth+900){o.el.remove();return false}
+      if(o.x<-140||o.x>DESIGN_W+900){o.el.remove();return false}
       return true;
     });
     updateHud();
@@ -1782,7 +1802,7 @@ function syncCharacterFields(){$('mainSelect').value=main;if($('soloCharacterSel
 function editorRowsFor(layer){return {
   player:['calPlayerX','calDrop','calZPlayer'],
   buddy:['calBuddyX','calBuddyDrop','calZBuddy'],
-  places:['calPlaceAt','calPlaceW','calPlaceY','calPlaceZ','calZBuildings'],
+  places:['calPlaceAt','calPlaceW','calPlaceH','calPlaceY','calPlaceZ','calZBuildings'],
   layers:['calZSky','calZHills','calZGround','calZPlatform','calZBuddy','calZPlayer','calZBuildings','calZObjects'],
   ground:['calGroundH','calGroundB','calZGround'],
   hills:['calHillH','calHillB','calZHills'],
@@ -2249,7 +2269,7 @@ addEventListener('pointermove',e=>{
   $('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px';
 });
 addEventListener('pointerup',()=>{if(drag&&drag.layer==='place'){saveBrowserLayout(readSettings());showToast('Building position saved in browser.');}drag=null});
-clearBrowserGameSaves();resetCorrect();focusEditTarget('player');$('resumeBtn').style.display='none';
+clearBrowserGameSaves();resetCorrect();applySettings(USER_EXACT_LAYOUT_SETTINGS);saveBrowserLayout(USER_EXACT_LAYOUT_SETTINGS);focusEditTarget('player');$('resumeBtn').style.display='none';
 // Auto day/night after layout reset so it is not overwritten.
 initAutoDayNight();
 // Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
