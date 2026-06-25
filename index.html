@@ -711,10 +711,11 @@ const ACTION_FRAME_OVERRIDES={
   unicorn:{walk:4}
 };
 const CHARACTER_CONFIGS={
-  ax:{
+ax:{
   name:'Ax',
   boxW:170,
   visualScale:1,
+  visualX:0,
   visualY:0,
   shadowScale:1,
   slotY:{buddy:16,team:18},
@@ -722,18 +723,19 @@ const CHARACTER_CONFIGS={
   actionVisuals:{
     walk:{
       visualScale:1,
+      visualX:0,
       visualY:0,
       frameVisuals:{
-        1:{visualY:0},
-        2:{visualY:0},
-        3:{visualY:0},
-        4:{visualY:0},
-        5:{visualY:0},
-        6:{visualY:0},
-        7:{visualY:0},
-        8:{visualY:0},
-        9:{visualY:0},
-        10:{visualY:0}
+        1:{visualX:0, visualY:0, visualScale:1},
+        2:{visualX:0, visualY:0, visualScale:1},
+        3:{visualX:0, visualY:0, visualScale:1},
+        4:{visualX:0, visualY:0, visualScale:1},
+        5:{visualX:-14, visualY:0, visualScale:1},
+        6:{visualX:14, visualY:8, visualScale:1},
+        7:{visualX:0, visualY:0, visualScale:1},
+        8:{visualX:0, visualY:0, visualScale:1},
+        9:{visualX:0, visualY:0, visualScale:1},
+        10:{visualX:-12, visualY:0, visualScale:1}
       }
     }
   }
