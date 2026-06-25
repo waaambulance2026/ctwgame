@@ -687,7 +687,7 @@ function setSpriteFrame(elId,char,action,idx){
 }
 const SETS={
   // Lower walk numbers = faster frame change. This removes the slow/draggy walk feel.
-  ax:{name:'Ax',frameMs:95,actionMs:{idle:105,walk:68,jump:66}},
+  ax:{name:'Ax',frameMs:110,actionMs:{idle:120,walk:105,jump:80}},
   pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
   owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
   unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
@@ -711,7 +711,7 @@ const ACTION_FRAME_OVERRIDES={
   unicorn:{walk:4}
 };
 const CHARACTER_CONFIGS={
-  ax:{name:'Ax',boxW:170,visualScale:1,visualY:0,shadowScale:1,slotY:{buddy:16,team:18}},
+  ax:{   name:'Ax',   boxW:170,   visualScale:1,   visualY:0,   shadowScale:1,   slotY:{buddy:16,team:18},    actionVisuals:{     walk:{       visualScale:1,       visualY:0,       frameVisuals:{         1:{visualY:0},         2:{visualY:0},         3:{visualY:0},         4:{visualY:0},         5:{visualY:0},         6:{visualY:0},         7:{visualY:0},         8:{visualY:0},         9:{visualY:0},         10:{visualY:0}       }     }   } },
   pura:{name:'Pura',boxW:150,visualScale:1,visualY:0,shadowScale:.88},
   owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
   unicorn:{
