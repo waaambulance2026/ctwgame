@@ -878,12 +878,18 @@ function ensureActionFrameCount(characterKey,action){
   }
 }
 function getCharacterVisualConfig(characterKey){return CHARACTER_CONFIGS[characterKey]||CHARACTER_CONFIGS.pet}
-function getActionVisualConfig(characterKey,action,frameIndex=0){
-  const cfg=getCharacterVisualConfig(characterKey);
-  const actionCfg=(cfg.actionVisuals&&cfg.actionVisuals[action])||{};
-  const frameNo=(Number(frameIndex)||0)+1;
-  const frameCfg=(actionCfg.frameVisuals&&(actionCfg.frameVisuals[frameNo]||actionCfg.frameVisuals[String(frameNo)]))||{};
-  return {...cfg,...actionCfg,...frameCfg};
+function getActionVisualConfig(characterKey, action, frameIndex = 0){
+  const cfg = getCharacterVisualConfig(characterKey);
+  const actionCfg = (cfg.actionVisuals && cfg.actionVisuals[action]) || {};
+  const frameNo = (Number(frameIndex) || 0) + 1;
+  const frameCfg = (actionCfg.frameVisuals && (actionCfg.frameVisuals[frameNo] || actionCfg.frameVisuals[String(frameNo)])) || {};
+
+  return {
+    ...cfg,
+    ...actionCfg,
+    ...frameCfg,
+    frameNo
+  };
 }
 function characterBoxWidth(characterKey){
   if(characterKey==='pet')return Math.max(45,Math.min(240,Number(petPlayerW)||CHARACTER_CONFIGS.pet.boxW));
