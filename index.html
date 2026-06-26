@@ -602,7 +602,8 @@ body.night .platform{
   font-size:18px;
   display:none;
 }
-body.axFrameDebugOn .axFrameDebug{display:block}
+body.axFrameDebugOn .axFrameDebug{display:block!important}
+body.axFrameDebugOn #axFrameDebug{display:block!important}
 
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
@@ -2523,6 +2524,14 @@ addEventListener('pointermove',e=>{
 });
 addEventListener('pointerup',()=>{if(drag&&drag.layer==='place'){saveBrowserLayout(readSettings());showToast('Building position saved in browser.');}drag=null});
 clearBrowserGameSaves();resetCorrect();applySettings(USER_EXACT_LAYOUT_SETTINGS);saveBrowserLayout(USER_EXACT_LAYOUT_SETTINGS);focusEditTarget('player');$('resumeBtn').style.display='none';
+// AX WALK FRAME DEBUG SWITCH
+// Open the game with ?axframes=1 to show the live Ax frame number.
+if(location.search.includes('axframes=1')){
+  document.body.classList.add('axFrameDebugOn');
+  const axDbg=$('axFrameDebug');
+  if(axDbg) axDbg.textContent='Ax frame debug ON — start walking';
+}
+
 // Auto day/night after layout reset so it is not overwritten.
 initAutoDayNight();
 // Load the browser building/layout save first. Only auto-load cloud if there is no browser save.
