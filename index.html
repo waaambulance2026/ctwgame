@@ -587,6 +587,23 @@ body.night .platform{
   }
 }
 
+
+.axFrameDebug{
+  position:absolute;
+  z-index:999;
+  left:14px;
+  bottom:120px;
+  background:rgba(0,0,0,.72);
+  color:#fff;
+  border:2px solid rgba(245,197,66,.9);
+  border-radius:14px;
+  padding:8px 12px;
+  font-weight:900;
+  font-size:18px;
+  display:none;
+}
+body.axFrameDebugOn .axFrameDebug{display:block}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -630,7 +647,7 @@ body.night .platform{
     </div>
   </aside>
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
-  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="dragHint" id="dragHint">drag selected layer</div>
+  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
   <div class="overlay" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Pet Care</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
@@ -774,6 +791,21 @@ function candidateSpriteUrls(char,action,idx){
   pushSpriteCandidate(out,p&&p[action],shownFrameIndex,total);
   return out.filter(Boolean);
 }
+
+function preloadSpriteAction(char,action){
+  const count=getActionFrameCount(char,action);
+  for(let i=0;i<count;i++){
+    candidateSpriteUrls(char,action,i).forEach(url=>{
+      if(!url)return;
+      const img=new Image();
+      img.src=url;
+    });
+  }
+}
+function preloadAxWalkFrames(){
+  preloadSpriteAction('ax','walk');
+}
+
 function spriteFallbackLabel(char){
   const labels={ax:'AX',pura:'PURA',owl:'OWL',unicorn:'UNICORN',pet:'PET'};
   return labels[char]||String(char||'SPRITE').toUpperCase();
@@ -828,6 +860,10 @@ function setSpriteFrame(elId,char,action,idx){
   const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
   el.dataset.frameIndex=String(shownFrameIndex);
   el.dataset.frameNumber=String(shownFrameIndex+1);
+  const dbg=$('axFrameDebug');
+  if(dbg&&char==='ax'&&action==='walk'){
+    dbg.textContent='Ax frame: '+String(shownFrameIndex+1)+' / '+String(totalForDisplay);
+  }
 
   applySpriteTransform();
   ensureActionFrameCount(char,action);
@@ -854,7 +890,7 @@ function setSpriteFrame(elId,char,action,idx){
 }
 const SETS={
   // Lower walk numbers = faster frame change. This removes the slow/draggy walk feel.
-  ax:{name:'Ax',frameMs:110,actionMs:{idle:120,walk:150,jump:80}},
+  ax:{name:'Ax',frameMs:95,actionMs:{idle:120,walk:95,jump:80}},
   pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
   owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
   unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
@@ -904,10 +940,6 @@ const CHARACTER_CONFIGS={
     visualY:2,
     shadowScale:.88,
     reverseWalk:false,
-    // UNICORN BASELINE FIX:
-    // Walk uses exactly 4 frames. Some PNG frames have different bottom padding,
-    // so each walk frame can have its own Y correction.
-    // Smaller visualY = raised up. Bigger visualY = lower down.
     actionVisuals:{
       idle:{visualScale:1.02,visualY:6},
       walk:{
@@ -1527,6 +1559,7 @@ function setPair(m,b='none',extraA='none',extraB='none'){
   mainFrame=0;buddyFrame=0;lastFrame=0;lastBuddyFrame=0;
   resetIdleAnim();
   ['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');
+  preloadAxWalkFrames();
   setSpriteFrame('sprite',main,'idle',0);
   if(buddy&&buddy!=='none')setSpriteFrame('buddySprite',buddy,'idle',0); else clearCharacterSlot('buddySprite');
   if(teamExtra[0]&&teamExtra[0]!=='none')setSpriteFrame('teamSprite2',teamExtra[0],'idle',0); else clearCharacterSlot('teamSprite2');
@@ -1546,7 +1579,7 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){preloadAxWalkFrames();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^(https?:|data:)/i.test(raw))return raw;
