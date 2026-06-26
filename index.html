@@ -895,7 +895,7 @@ function setSpriteFrame(elId,char,action,idx){
 // Lower numbers = faster frame changes. Higher numbers = slower frame changes.
 // Ax idle now loops continuously, so 145ms gives a visible but not frantic phone-idle animation.
 const SETS={
-  ax:{name:'Ax',frameMs:95,actionMs:{idle:145,walk:95,jump:80}},
+  ax:{name:'Ax',frameMs:95,actionMs:{idle:115,walk:95,jump:80}},
   pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
   owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
   unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
@@ -928,7 +928,7 @@ const CHARACTER_CONFIGS={
     slotY:{buddy:16,team:18},
     actionVisuals:{
       // The new idle PNGs have more empty padding than walk, so idle is scaled up a little.
-      idle:{visualScale:1.12,visualX:0,visualY:0},
+      idle:{visualScale:1,visualX:0,visualY:0},
       walk:{visualScale:1,visualX:0,visualY:0},
       jump:{visualScale:1,visualX:0,visualY:0}
     }
