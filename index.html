@@ -902,6 +902,10 @@ const SETS={
   pet:{name:'Pet',frameMs:105,actionMs:{idle:115,walk:76,jump:72}}
 };
 // EDIT SECTION 18B: FRAME COUNTS + CHARACTER SIZE LOCK
+// This file is matched to the strict normalised Ax pack:
+// ax_idle_001.png to ax_idle_010.png
+// ax_walk_001.png to ax_walk_008.png
+// ax_jump_001.png to ax_jump_010.png
 // Forced counts stop old extra Cloudinary images being used by mistake.
 // Ax current files: idle = 10 frames, walk = 8 frames, jump = 10 frames.
 // If you upload a different number later, change ACTION_FRAME_OVERRIDES below.
@@ -927,7 +931,6 @@ const CHARACTER_CONFIGS={
     shadowScale:1,
     slotY:{buddy:16,team:18},
     actionVisuals:{
-      // The new idle PNGs have more empty padding than walk, so idle is scaled up a little.
       idle:{visualScale:1,visualX:0,visualY:0},
       walk:{visualScale:1,visualX:0,visualY:0},
       jump:{visualScale:1,visualX:0,visualY:0}
