@@ -878,40 +878,29 @@ const ACTION_FRAME_OVERRIDES={
   unicorn:{walk:4}
 };
 const CHARACTER_CONFIGS={
-ax:{
-  name:'Ax',
-  boxW:170,
-  visualScale:1,
-  visualX:0,
-  visualY:0,
-  shadowScale:1,
-  slotY:{buddy:16,team:18},
-
-  actionVisuals:{
-    walk:{
-      visualScale:1,
-      visualX:0,
-      visualY:0,
-      frameVisuals:{
-        1:{visualX:0, visualY:0, visualScale:1},
-        2:{visualX:0, visualY:0, visualScale:1},
-        3:{visualX:0, visualY:0, visualScale:1},
-        4:{visualX:0, visualY:0, visualScale:1},
-        5:{visualX:-14, visualY:0, visualScale:1},
-        6:{visualX:14, visualY:8, visualScale:1},
-        7:{visualX:0, visualY:0, visualScale:1},
-        8:{visualX:0, visualY:0, visualScale:1},
-        9:{visualX:0, visualY:0, visualScale:1},
-        10:{visualX:-12, visualY:0, visualScale:1}
+  ax:{
+    name:'Ax',
+    boxW:170,
+    visualScale:1,
+    visualX:0,
+    visualY:0,
+    shadowScale:1,
+    slotY:{buddy:16,team:18},
+    actionVisuals:{
+      walk:{
+        visualScale:1,
+        visualX:0,
+        visualY:0
       }
     }
-  }
-},
-  owl:{name:'Owl',boxW:130,visualScale:.9,visualY:6,shadowScale:.72},
+  },
+  pura:{name:'Pura',boxW:150,visualScale:1,visualX:0,visualY:0,shadowScale:.88},
+  owl:{name:'Owl',boxW:130,visualScale:.9,visualX:0,visualY:6,shadowScale:.72},
   unicorn:{
     name:'Unicorn',
     boxW:178,
     visualScale:1.00,
+    visualX:0,
     visualY:2,
     shadowScale:.88,
     reverseWalk:false,
@@ -934,7 +923,7 @@ ax:{
       jump:{visualScale:1.00,visualY:10}
     }
   },
-  pet:{name:'Pet',boxW:115,visualScale:1,visualY:0,shadowScale:.9}
+  pet:{name:'Pet',boxW:115,visualScale:1,visualX:0,visualY:0,shadowScale:.9}
 };
 
 function actionFrameKey(characterKey,action){return `${characterKey||'ax'}:${action||'idle'}`}
