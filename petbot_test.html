@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Waaambulance PetBot - ONE FILE FIXED</title>
+<title>Waaambulance PetBot - simpler editor rethink</title>
 <style>
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
@@ -39,11 +39,17 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .hot span{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;place-items:center;border-radius:999px;background:rgba(22,184,234,.85);color:white;font-size:12px;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.55);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,.18);pointer-events:none}
 .hot .resizeHandle{display:none;position:absolute;right:-7px;bottom:-7px;width:18px;height:18px;border-radius:6px;background:#fff;border:2px solid var(--pink);box-shadow:0 3px 10px rgba(0,0,0,.22);touch-action:none;cursor:nwse-resize}
 body.editorOpen .hot{touch-action:none}
+/* RETHINK: edit mode now shows ONE selected button by default. This stops the toy looking covered in labels. */
+body.editorOpen:not(.guide) .hot:not(.selected){display:none}
+body.editorOpen:not(.guide) .hot.selected{background:rgba(243,90,173,.18);outline:3px solid rgba(243,90,173,.95);cursor:move}
+body.editorOpen:not(.guide) .hot.selected span{display:grid}
+body.editorOpen:not(.guide) .hot.selected .resizeHandle{display:block}
 body.editorOpen.guide .hot{background:rgba(22,184,234,.12);outline:2px dashed rgba(22,184,234,.85);cursor:move}
 body.editorOpen.guide .hot.selected{background:rgba(243,90,173,.18);outline:3px solid rgba(243,90,173,.95)}
 body.editorOpen.guide .hot .resizeHandle{display:block}
-body.guide .hot{background:transparent;outline:0}
-body.guide .hot span{display:grid}
+body.editorOpen.guide .hot span{display:grid}
+body.guide:not(.editorOpen) .hot{background:transparent;outline:0}
+body.guide:not(.editorOpen) .hot span{display:grid}
 .editTab{position:fixed;z-index:80;left:10px;top:10px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 8px 20px rgba(0,0,0,.13);padding:8px 12px;font-weight:1000;color:#3b2940}
 .editor{position:fixed;z-index:90;right:12px;top:12px;width:min(315px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:12px;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 16px 42px rgba(0,0,0,.20);display:none}
 body.editorOpen .editor{display:block}
@@ -62,6 +68,12 @@ body.editorOpen .editor{display:block}
 .legend div{font-size:12px;background:#f7fbff;border:1px solid #d7eef8;border-radius:10px;padding:6px}
 details{margin-top:10px}
 summary{font-weight:1000;cursor:pointer}
+.editor .panel{background:#f8fbff;border:1px solid #dceffa;border-radius:14px;padding:10px;margin:10px 0}
+.editor .panel.important{background:#fff7fc;border-color:#f5c8e4}
+.editor .mini{font-size:11px;line-height:1.25;opacity:.82}
+.editor .modeNote{font-weight:1000;color:#5b3451;background:#fff;border:1px solid #f3d7e9;border-radius:12px;padding:8px;margin:8px 0}
+.editor details[open]{background:#fbfdff;border:1px solid #e6f3fb;border-radius:14px;padding:8px}
+.editor details[open] summary{margin-bottom:6px}
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:42dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px;padding:4px 5px 0}.lcdMessage{font-size:7px;left:7px;right:7px}.editTab{font-size:12px;padding:7px 10px}}
 </style>
@@ -82,37 +94,54 @@ summary{font-weight:1000;cursor:pointer}
 </div>
 <button class="editTab" id="editToggle">Edit</button>
 <aside class="editor" aria-label="Easy PetBot editor">
-  <h2>PetBot button layout editor</h2>
-  <p>Move and resize the invisible toy button areas here. Pet preview controls only change the animal inside the screen.</p>
-  <button class="btn primary" id="guideToggle">Guide dots</button>
+  <h2>PetBot editor</h2>
+  <p class="modeNote">New simpler rule: edit one thing at a time. Play mode shows only the toy. Button boxes are invisible unless this editor is open.</p>
+  <button class="btn primary" id="guideToggle">Show all button boxes</button>
   <button class="btn" id="colourToggle">Pet colour/LCD</button>
   <button class="btn" id="closeEditor">Close</button>
-  <h3>Toy button hit-box layout</h3>
-  <p class="hint">Open Guide dots, choose a button, then drag its area on the toy. Drag the small corner square to resize it.</p>
-  <label for="buttonSelect">Edit toy button</label>
-  <select id="buttonSelect"></select>
-  <div class="row"><label for="buttonLeft">Button left/right</label><output id="buttonLeftOut">0%</output></div>
-  <input id="buttonLeft" type="range" min="0" max="100" step="0.1" value="0">
-  <div class="row"><label for="buttonTop">Button up/down</label><output id="buttonTopOut">0%</output></div>
-  <input id="buttonTop" type="range" min="0" max="100" step="0.1" value="0">
-  <div class="row"><label for="buttonWidth">Button width</label><output id="buttonWidthOut">0%</output></div>
-  <input id="buttonWidth" type="range" min="1" max="80" step="0.1" value="1">
-  <div class="row"><label for="buttonHeight">Button height</label><output id="buttonHeightOut">0%</output></div>
-  <input id="buttonHeight" type="range" min="1" max="80" step="0.1" value="1">
-  <h3>Pet preview only</h3>
-  <label for="petSelect">Preview pet only</label>
-  <select id="petSelect"></select>
-  <div class="row"><label for="screenScale">Screen inner size</label><output id="screenScaleOut">85%</output></div>
-  <input id="screenScale" type="range" min="70" max="96" value="85">
-  <div class="row"><label for="petSize">Pet preview size</label><output id="petSizeOut">62%</output></div>
-  <input id="petSize" type="range" min="38" max="90" value="62">
-  <div class="row"><label for="petY">Pet preview up/down</label><output id="petYOut">58%</output></div>
-  <input id="petY" type="range" min="45" max="74" value="58">
-  <p class="hint">Button guide: the numbers match the real toy areas. No word labels appear over the game when Guide dots is off.</p>
-  <div class="legend" id="legend"></div>
+
+  <div class="panel important">
+    <h3>1) Toy button map</h3>
+    <p class="hint">Choose ONE real toy button. Only that box shows. Drag it to move it. Drag the small white corner to resize it.</p>
+    <label for="buttonSelect">Which toy button are you lining up?</label>
+    <select id="buttonSelect"></select>
+    <div class="row"><label for="buttonLeft">Move left/right</label><output id="buttonLeftOut">0%</output></div>
+    <input id="buttonLeft" type="range" min="0" max="100" step="0.1" value="0">
+    <div class="row"><label for="buttonTop">Move up/down</label><output id="buttonTopOut">0%</output></div>
+    <input id="buttonTop" type="range" min="0" max="100" step="0.1" value="0">
+    <div class="row"><label for="buttonWidth">Box width</label><output id="buttonWidthOut">0%</output></div>
+    <input id="buttonWidth" type="range" min="1" max="80" step="0.1" value="1">
+    <div class="row"><label for="buttonHeight">Box height</label><output id="buttonHeightOut">0%</output></div>
+    <input id="buttonHeight" type="range" min="1" max="80" step="0.1" value="1">
+    <p class="mini">This does not move the pet. It only moves the invisible click/tap area on top of the tamagotchi image.</p>
+  </div>
+
   <details>
-    <summary>Advanced copy settings</summary>
-    <p class="hint">Only use this after you have lined things up and want to copy the numbers into your main code.</p>
+    <summary>2) Pet preview inside the screen</summary>
+    <label for="petSelect">Preview pet</label>
+    <select id="petSelect"></select>
+    <div class="row"><label for="petSize">Pet size</label><output id="petSizeOut">62%</output></div>
+    <input id="petSize" type="range" min="38" max="90" value="62">
+    <div class="row"><label for="petY">Pet up/down</label><output id="petYOut">58%</output></div>
+    <input id="petY" type="range" min="45" max="74" value="58">
+    <p class="mini">This only changes the animal image inside the LCD screen.</p>
+  </details>
+
+  <details>
+    <summary>3) LCD screen fit</summary>
+    <div class="row"><label for="screenScale">Screen inner size</label><output id="screenScaleOut">85%</output></div>
+    <input id="screenScale" type="range" min="70" max="96" value="85">
+    <p class="mini">Use this only if the green LCD looks too big or too small inside the toy window.</p>
+  </details>
+
+  <details>
+    <summary>Button guide list</summary>
+    <div class="legend" id="legend"></div>
+  </details>
+
+  <details>
+    <summary>Copy settings</summary>
+    <p class="hint">The copy box now uses real new lines, not visible backslash-n text.</p>
     <textarea id="settingsOut" readonly></textarea>
   </details>
 </aside>
@@ -676,7 +705,7 @@ let LAYOUT = {
   "screenInner": {
     "insetX": 7.5,
     "insetY": 7.5,
-    "bottomExtra": 4.0
+    "bottomExtra": 4
   },
   "pet": {
     "colourMode": "lcd"
@@ -685,26 +714,26 @@ let LAYOUT = {
     "explore": {
       "label": "Explore",
       "short": "1",
-      "left": 23.0,
-      "top": 12.4,
-      "width": 40.0,
-      "height": 6.0,
+      "left": 33.9,
+      "top": 13.8,
+      "width": 32,
+      "height": 2.3,
       "radius": "24px"
     },
     "back": {
       "label": "Back",
       "short": "2",
-      "left": 43.0,
-      "top": 18.1,
-      "width": 10.0,
+      "left": 44.8,
+      "top": 17.9,
+      "width": 10,
       "height": 5.6,
       "radius": "10px"
     },
     "feed": {
       "label": "Feed",
       "short": "3",
-      "left": 16.0,
-      "top": 68.8,
+      "left": 20.4,
+      "top": 70.2,
       "width": 5.8,
       "height": 5.8,
       "radius": "20px"
@@ -712,8 +741,8 @@ let LAYOUT = {
     "heal": {
       "label": "Heal",
       "short": "4",
-      "left": 68.2,
-      "top": 68.8,
+      "left": 72.4,
+      "top": 70.2,
       "width": 5.8,
       "height": 5.8,
       "radius": "20px"
@@ -721,46 +750,46 @@ let LAYOUT = {
     "prev": {
       "label": "Previous pet",
       "short": "5",
-      "left": 29.0,
-      "top": 75.5,
-      "width": 5.0,
-      "height": 5.5,
+      "left": 33.1,
+      "top": 79.1,
+      "width": 3.2,
+      "height": 3.7,
       "radius": "20%"
     },
     "next": {
       "label": "Next pet",
       "short": "6",
-      "left": 59.0,
-      "top": 75.5,
-      "width": 5.0,
-      "height": 5.5,
+      "left": 62.9,
+      "top": 78.7,
+      "width": 2.9,
+      "height": 4.4,
       "radius": "20%"
     },
     "play": {
       "label": "Play",
       "short": "7",
-      "left": 35.7,
-      "top": 80.0,
-      "width": 15.6,
-      "height": 15.5,
+      "left": 45.8,
+      "top": 80.7,
+      "width": 7.7,
+      "height": 5,
       "radius": "20%"
     },
     "rest": {
       "label": "Rest",
       "short": "8",
-      "left": 41.8,
-      "top": 62.0,
-      "width": 16.4,
-      "height": 12.0,
+      "left": 46.2,
+      "top": 66.6,
+      "width": 6.6,
+      "height": 5.4,
       "radius": "10%"
     },
     "info": {
       "label": "Pet info / screen",
       "short": "9",
-      "left": 27.0,
+      "left": 28.5,
       "top": 38.3,
-      "width": 46.0,
-      "height": 21.0,
+      "width": 42.3,
+      "height": 22.8,
       "radius": "7%/10%"
     }
   }
@@ -968,10 +997,10 @@ function setupEditor(){
   });
   $('editToggle').onclick=()=>{
     document.body.classList.toggle('editorOpen');
-    if(document.body.classList.contains('editorOpen')) document.body.classList.add('guide');
+    if(document.body.classList.contains('editorOpen')) document.body.classList.remove('guide');
   };
   $('closeEditor').onclick=()=>{document.body.classList.remove('editorOpen');document.body.classList.remove('guide');};
-  $('guideToggle').onclick=()=>{document.body.classList.toggle('guide');};
+  $('guideToggle').onclick=()=>{document.body.classList.toggle('guide'); $('guideToggle').textContent=document.body.classList.contains('guide')?'Show selected only':'Show all button boxes';};
   $('colourToggle').onclick=()=>{colourMode=colourMode==='lcd'?'colour':'lcd';render();};
   sel.onchange=()=>{idx=Number(sel.value);render();};
   bSel.onchange=()=>selectButton(bSel.value);
@@ -1009,13 +1038,13 @@ function updateSettingsBox(){
   lines.push('');
   lines.push('// Current pet preview size settings:');
   lines.push(JSON.stringify({key:current.key,name:current.name,size:current.size,y:current.y},null,2));
-  if($('settingsOut')) $('settingsOut').value = lines.join('\\n');
+  if($('settingsOut')) $('settingsOut').value = lines.join('\n');
 }
 document.addEventListener('keydown',e=>{
   const map={ArrowLeft:'prev',ArrowRight:'next',ArrowUp:'feed',ArrowDown:'rest',' ':'play',Enter:'play',h:'heal',H:'heal',r:'rest',R:'rest',x:'explore',X:'explore',i:'info',I:'info'};
   if(e.key==='e'||e.key==='E'){
     document.body.classList.toggle('editorOpen');
-    if(document.body.classList.contains('editorOpen')) document.body.classList.add('guide');
+    if(document.body.classList.contains('editorOpen')) document.body.classList.remove('guide');
     return;
   }
   if(e.key==='g'||e.key==='G'){document.body.classList.toggle('guide');return;}
