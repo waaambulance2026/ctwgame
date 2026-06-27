@@ -806,7 +806,10 @@ function preloadSpriteAction(char,action){
   }
 }
 function preloadAxWalkFrames(){
+  // Preload all Ax actions so jump frames are ready before the first jump.
+  preloadSpriteAction('ax','idle');
   preloadSpriteAction('ax','walk');
+  preloadSpriteAction('ax','jump');
 }
 
 function spriteFallbackLabel(char){
@@ -895,7 +898,7 @@ function setSpriteFrame(elId,char,action,idx){
 // Lower numbers = faster frame changes. Higher numbers = slower frame changes.
 // Ax idle now loops continuously, so 145ms gives a visible but not frantic phone-idle animation.
 const SETS={
-  ax:{name:'Ax',frameMs:95,actionMs:{idle:115,walk:95,jump:80}},
+  ax:{name:'Ax',frameMs:95,actionMs:{idle:115,walk:95,jump:92}},
   pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
   owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
   unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
@@ -1193,7 +1196,7 @@ function applySpriteTransform(){
   if($('buddyShadow')) $('buddyShadow').style.opacity = buddy === 'owl' ? '.25' : '.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true,jumpStartedAt:0,jumpAnimUntil:0};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 let visualWalkUntil=0;
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
@@ -1585,7 +1588,29 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){preloadAxWalkFrames();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){if(!playing||paused||ended||document.body.classList.contains('editMode'))return;if(player.grounded){player.grounded=false;player.vy=16.5;showToast('WEE-WOO jump')}}function objectImageUrl(data){
+function startGame(c,b,extraA,extraB){preloadAxWalkFrames();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true,jumpStartedAt:0,jumpAnimUntil:0};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){
+  if(!playing||paused||ended||document.body.classList.contains('editMode'))return;
+  if(player.grounded){
+    player.grounded=false;
+    player.vy=16.5;
+
+    // JUMP SPRITE FIX:
+    // The physics jump is short, so the 10 image jump animation was being cut off
+    // before the later frames could show. Keep the jump sprite sequence alive for
+    // a full short animation, even after Ax touches the floor.
+    player.jumpStartedAt=performance.now();
+    player.jumpAnimUntil=player.jumpStartedAt+920;
+
+    // Restart the visible sprite animation from frame 001 every jump.
+    if(idleAnim&&idleAnim.sprite){
+      idleAnim.sprite.action='';
+      idleAnim.sprite.frame=0;
+      idleAnim.sprite.last=0;
+    }
+
+    showToast('WEE-WOO jump');
+  }
+}function objectImageUrl(data){
   const raw=String((data&&data[3])||'').trim();
   if(!raw)return '';
   if(/^(https?:|data:)/i.test(raw))return raw;
@@ -1836,7 +1861,10 @@ function animateOne(elId,char,action,now,state){
   if(now-(state.last||0)>frameMs){
     const frame=state.frame||0;
     setSpriteFrame(elId,char,action,frame);
-    state.frame=(frame+1)%totalFrames;
+    // Jump should play through once and hold the final recovery frame, not loop back
+    // to frame 001 before Ax has finished the landing/recovery.
+    if(action==='jump') state.frame=Math.min(frame+1,totalFrames-1);
+    else state.frame=(frame+1)%totalFrames;
     state.last=now;
   }
 }
@@ -1845,7 +1873,12 @@ function animateSprites(now){
   // Walking animation is based on movementInput(), so keyboard and screen buttons both count.
   const input=movementInput();
   const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&(input!==0 || now<visualWalkUntil);
-  const mainAct=player.grounded?(inputMoving?'walk':'idle'):'jump';
+
+  // JUMP SPRITE FIX:
+  // Use jump frames while physically airborne OR while the short landing/recovery
+  // sprite hold is still active. This lets frames 001-010 actually play.
+  const jumpVisualActive=!!(player&&player.jumpAnimUntil&&now<player.jumpAnimUntil);
+  const mainAct=(jumpVisualActive||!player.grounded)?'jump':(inputMoving?'walk':'idle');
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
   animateOne('sprite',main,mainAct,now,idleAnim.sprite);
