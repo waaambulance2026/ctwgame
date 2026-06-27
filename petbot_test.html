@@ -37,12 +37,18 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .hot:focus-visible{outline:0}
 .hot.press{transform:scale(.94)}
 .hot span{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;place-items:center;border-radius:999px;background:rgba(22,184,234,.85);color:white;font-size:12px;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.55);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,.18);pointer-events:none}
+.hot .resizeHandle{display:none;position:absolute;right:-7px;bottom:-7px;width:18px;height:18px;border-radius:6px;background:#fff;border:2px solid var(--pink);box-shadow:0 3px 10px rgba(0,0,0,.22);touch-action:none;cursor:nwse-resize}
+body.editorOpen .hot{touch-action:none}
+body.editorOpen.guide .hot{background:rgba(22,184,234,.12);outline:2px dashed rgba(22,184,234,.85);cursor:move}
+body.editorOpen.guide .hot.selected{background:rgba(243,90,173,.18);outline:3px solid rgba(243,90,173,.95)}
+body.editorOpen.guide .hot .resizeHandle{display:block}
 body.guide .hot{background:transparent;outline:0}
 body.guide .hot span{display:grid}
 .editTab{position:fixed;z-index:80;left:10px;top:10px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 8px 20px rgba(0,0,0,.13);padding:8px 12px;font-weight:1000;color:#3b2940}
 .editor{position:fixed;z-index:90;right:12px;top:12px;width:min(315px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:12px;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 16px 42px rgba(0,0,0,.20);display:none}
 body.editorOpen .editor{display:block}
 .editor h2{margin:0 0 6px;font-size:16px}
+.editor h3{margin:12px 0 4px;font-size:14px}
 .editor p{margin:0 0 8px;font-size:12px;line-height:1.25}
 .editor label{display:block;margin:10px 0 4px;font-size:12px;font-weight:1000}
 .editor input[type="range"]{width:100%}
@@ -76,20 +82,33 @@ summary{font-weight:1000;cursor:pointer}
 </div>
 <button class="editTab" id="editToggle">Edit</button>
 <aside class="editor" aria-label="Easy PetBot editor">
-  <h2>One-file PetBot editor</h2>
-  <p>Use this only to adjust the one file. Close it to see the clean game view.</p>
+  <h2>PetBot button layout editor</h2>
+  <p>Move and resize the invisible toy button areas here. Pet preview controls only change the animal inside the screen.</p>
   <button class="btn primary" id="guideToggle">Guide dots</button>
   <button class="btn" id="colourToggle">Pet colour/LCD</button>
   <button class="btn" id="closeEditor">Close</button>
-  <label for="petSelect">Preview pet</label>
+  <h3>Toy button hit-box layout</h3>
+  <p class="hint">Open Guide dots, choose a button, then drag its area on the toy. Drag the small corner square to resize it.</p>
+  <label for="buttonSelect">Edit toy button</label>
+  <select id="buttonSelect"></select>
+  <div class="row"><label for="buttonLeft">Button left/right</label><output id="buttonLeftOut">0%</output></div>
+  <input id="buttonLeft" type="range" min="0" max="100" step="0.1" value="0">
+  <div class="row"><label for="buttonTop">Button up/down</label><output id="buttonTopOut">0%</output></div>
+  <input id="buttonTop" type="range" min="0" max="100" step="0.1" value="0">
+  <div class="row"><label for="buttonWidth">Button width</label><output id="buttonWidthOut">0%</output></div>
+  <input id="buttonWidth" type="range" min="1" max="80" step="0.1" value="1">
+  <div class="row"><label for="buttonHeight">Button height</label><output id="buttonHeightOut">0%</output></div>
+  <input id="buttonHeight" type="range" min="1" max="80" step="0.1" value="1">
+  <h3>Pet preview only</h3>
+  <label for="petSelect">Preview pet only</label>
   <select id="petSelect"></select>
   <div class="row"><label for="screenScale">Screen inner size</label><output id="screenScaleOut">85%</output></div>
   <input id="screenScale" type="range" min="70" max="96" value="85">
-  <div class="row"><label for="petSize">Pet size</label><output id="petSizeOut">62%</output></div>
+  <div class="row"><label for="petSize">Pet preview size</label><output id="petSizeOut">62%</output></div>
   <input id="petSize" type="range" min="38" max="90" value="62">
-  <div class="row"><label for="petY">Pet up/down</label><output id="petYOut">58%</output></div>
+  <div class="row"><label for="petY">Pet preview up/down</label><output id="petYOut">58%</output></div>
   <input id="petY" type="range" min="45" max="74" value="58">
-  <p class="hint">Button guide: the numbers match the real toy areas. No word labels appear over the game.</p>
+  <p class="hint">Button guide: the numbers match the real toy areas. No word labels appear over the game when Guide dots is off.</p>
   <div class="legend" id="legend"></div>
   <details>
     <summary>Advanced copy settings</summary>
@@ -749,9 +768,12 @@ let LAYOUT = {
 /******************** END EASY EDIT SECTION ********************/
 
 let idx=0;
+let selectedButtonAction=Object.keys(LAYOUT.buttons)[0] || '';
+let dragState=null;
 let colourMode=LAYOUT.pet.colourMode || 'lcd';
 const $=id=>document.getElementById(id);
 const clamp=v=>Math.max(0,Math.min(100,v));
+const clampTo=(v,min,max)=>Math.max(min,Math.min(max,v));
 function pct(n){return Number(n).toFixed(2).replace(/\.00$/,'')+'%'}
 function setBar(id,v){$(id).style.width=clamp(v)+'%'}
 function setMessage(t){$('lcdMessage').textContent=t;}
@@ -769,6 +791,18 @@ function applyLayout(){
   renderButtons();
   updateSettingsBox();
 }
+function styleHot(el,b){
+  el.style.left=pct(b.left);
+  el.style.top=pct(b.top);
+  el.style.width=pct(b.width);
+  el.style.height=pct(b.height);
+  el.style.borderRadius=b.radius||'999px';
+}
+function styleCurrentHot(action){
+  const el=document.querySelector('.hot[data-action="'+action+'"]');
+  const b=LAYOUT.buttons[action];
+  if(el && b) styleHot(el,b);
+}
 function renderButtons(){
   const stage=$('stage');
   stage.querySelectorAll('.hot').forEach(e=>e.remove());
@@ -779,18 +813,101 @@ function renderButtons(){
     el.dataset.action=action;
     el.title=(b.short?b.short+' · ':'')+(b.label||action);
     el.setAttribute('aria-label',b.label||action);
-    el.style.left=pct(b.left);
-    el.style.top=pct(b.top);
-    el.style.width=pct(b.width);
-    el.style.height=pct(b.height);
-    el.style.borderRadius=b.radius||'999px';
+    styleHot(el,b);
     const sp=document.createElement('span');
     sp.textContent=b.short||'';
     el.appendChild(sp);
-    el.addEventListener('click',()=>{el.classList.add('press');setTimeout(()=>el.classList.remove('press'),130);act(action)});
+    const handle=document.createElement('i');
+    handle.className='resizeHandle';
+    handle.setAttribute('aria-hidden','true');
+    el.appendChild(handle);
+    el.addEventListener('pointerdown',e=>startButtonDrag(e,action));
+    el.addEventListener('click',e=>{
+      if(document.body.classList.contains('editorOpen')){
+        e.preventDefault();
+        e.stopPropagation();
+        selectButton(action);
+        return;
+      }
+      el.classList.add('press');setTimeout(()=>el.classList.remove('press'),130);act(action);
+    });
     stage.appendChild(el);
   });
+  updateSelectedButtonUi();
 }
+function selectButton(action){
+  if(!LAYOUT.buttons[action]) return;
+  selectedButtonAction=action;
+  if($('buttonSelect')) $('buttonSelect').value=action;
+  updateSelectedButtonUi();
+}
+function updateSelectedButtonUi(){
+  const b=LAYOUT.buttons[selectedButtonAction];
+  document.querySelectorAll('.hot').forEach(el=>el.classList.toggle('selected',el.dataset.action===selectedButtonAction));
+  if(!b || !$('buttonLeft')) return;
+  const fields=[
+    ['buttonLeft','buttonLeftOut','left'],
+    ['buttonTop','buttonTopOut','top'],
+    ['buttonWidth','buttonWidthOut','width'],
+    ['buttonHeight','buttonHeightOut','height']
+  ];
+  fields.forEach(([inputId,outId,prop])=>{
+    const input=$(inputId), out=$(outId);
+    if(input) input.value=b[prop];
+    if(out) out.textContent=Number(b[prop]).toFixed(1).replace(/\.0$/,'')+'%';
+  });
+}
+function setSelectedButtonProp(prop,value){
+  const b=LAYOUT.buttons[selectedButtonAction];
+  if(!b) return;
+  if(prop==='left') b.left=Number(clampTo(value,0,100-b.width).toFixed(1));
+  if(prop==='top') b.top=Number(clampTo(value,0,100-b.height).toFixed(1));
+  if(prop==='width') b.width=Number(clampTo(value,1,100-b.left).toFixed(1));
+  if(prop==='height') b.height=Number(clampTo(value,1,100-b.top).toFixed(1));
+  styleCurrentHot(selectedButtonAction);
+  updateSelectedButtonUi();
+  updateSettingsBox();
+}
+function startButtonDrag(e,action){
+  if(!document.body.classList.contains('editorOpen')) return;
+  e.preventDefault();
+  e.stopPropagation();
+  selectButton(action);
+  const b=LAYOUT.buttons[action];
+  const rect=$('stage').getBoundingClientRect();
+  dragState={
+    action,
+    mode:e.target.classList.contains('resizeHandle')?'resize':'move',
+    pointerId:e.pointerId,
+    startX:e.clientX,
+    startY:e.clientY,
+    startLeft:b.left,
+    startTop:b.top,
+    startWidth:b.width,
+    startHeight:b.height,
+    stageW:rect.width,
+    stageH:rect.height
+  };
+  e.currentTarget.setPointerCapture(e.pointerId);
+}
+function onButtonDragMove(e){
+  if(!dragState) return;
+  e.preventDefault();
+  const b=LAYOUT.buttons[dragState.action];
+  const dx=((e.clientX-dragState.startX)/dragState.stageW)*100;
+  const dy=((e.clientY-dragState.startY)/dragState.stageH)*100;
+  if(dragState.mode==='resize'){
+    b.width=Number(clampTo(dragState.startWidth+dx,1,100-b.left).toFixed(1));
+    b.height=Number(clampTo(dragState.startHeight+dy,1,100-b.top).toFixed(1));
+  }else{
+    b.left=Number(clampTo(dragState.startLeft+dx,0,100-b.width).toFixed(1));
+    b.top=Number(clampTo(dragState.startTop+dy,0,100-b.height).toFixed(1));
+  }
+  styleCurrentHot(dragState.action);
+  updateSelectedButtonUi();
+  updateSettingsBox();
+}
+function stopButtonDrag(){dragState=null;}
 function loadPetImage(p){
   const el=$('petSprite');
   el.classList.remove('fallback','lcd','colour');
@@ -842,11 +959,33 @@ function buildLegend(){
 function setupEditor(){
   const sel=$('petSelect');
   PETS.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.textContent=p.name+' · '+p.category;sel.appendChild(o);});
-  $('editToggle').onclick=()=>{document.body.classList.toggle('editorOpen');};
+  const bSel=$('buttonSelect');
+  Object.entries(LAYOUT.buttons).forEach(([action,b])=>{
+    const o=document.createElement('option');
+    o.value=action;
+    o.textContent=(b.short?b.short+' · ':'')+(b.label||action);
+    bSel.appendChild(o);
+  });
+  $('editToggle').onclick=()=>{
+    document.body.classList.toggle('editorOpen');
+    if(document.body.classList.contains('editorOpen')) document.body.classList.add('guide');
+  };
   $('closeEditor').onclick=()=>{document.body.classList.remove('editorOpen');document.body.classList.remove('guide');};
   $('guideToggle').onclick=()=>{document.body.classList.toggle('guide');};
   $('colourToggle').onclick=()=>{colourMode=colourMode==='lcd'?'colour':'lcd';render();};
   sel.onchange=()=>{idx=Number(sel.value);render();};
+  bSel.onchange=()=>selectButton(bSel.value);
+  [
+    ['buttonLeft','left'],
+    ['buttonTop','top'],
+    ['buttonWidth','width'],
+    ['buttonHeight','height']
+  ].forEach(([inputId,prop])=>{
+    $(inputId).oninput=e=>setSelectedButtonProp(prop,Number(e.target.value));
+  });
+  document.addEventListener('pointermove',onButtonDragMove);
+  document.addEventListener('pointerup',stopButtonDrag);
+  document.addEventListener('pointercancel',stopButtonDrag);
   $('screenScale').oninput=e=>{
     const v=Number(e.target.value); $('screenScaleOut').textContent=v+'%';
     const spare=(100-v)/2;
@@ -858,6 +997,7 @@ function setupEditor(){
   $('petSize').oninput=e=>{const p=PETS[idx]; p.size=Number(e.target.value); document.documentElement.style.setProperty('--pet-size',p.size+'%'); $('petSizeOut').textContent=p.size+'%'; updateSettingsBox();};
   $('petY').oninput=e=>{const p=PETS[idx]; p.y=Number(e.target.value); document.documentElement.style.setProperty('--pet-y',p.y+'%'); $('petYOut').textContent=p.y+'%'; updateSettingsBox();};
   buildLegend();
+  selectButton(selectedButtonAction);
 }
 function updateSettingsBox(){
   const current=PETS[idx]||{};
@@ -865,13 +1005,19 @@ function updateSettingsBox(){
   lines.push('/* Copy these changed bits back into your HTML only when you are happy. */');
   lines.push('LAYOUT.screenInner = '+JSON.stringify(LAYOUT.screenInner,null,2)+';');
   lines.push('');
-  lines.push('// Current pet size settings:');
+  lines.push('LAYOUT.buttons = '+JSON.stringify(LAYOUT.buttons,null,2)+';');
+  lines.push('');
+  lines.push('// Current pet preview size settings:');
   lines.push(JSON.stringify({key:current.key,name:current.name,size:current.size,y:current.y},null,2));
   if($('settingsOut')) $('settingsOut').value = lines.join('\\n');
 }
 document.addEventListener('keydown',e=>{
   const map={ArrowLeft:'prev',ArrowRight:'next',ArrowUp:'feed',ArrowDown:'rest',' ':'play',Enter:'play',h:'heal',H:'heal',r:'rest',R:'rest',x:'explore',X:'explore',i:'info',I:'info'};
-  if(e.key==='e'||e.key==='E'){document.body.classList.toggle('editorOpen');return;}
+  if(e.key==='e'||e.key==='E'){
+    document.body.classList.toggle('editorOpen');
+    if(document.body.classList.contains('editorOpen')) document.body.classList.add('guide');
+    return;
+  }
   if(e.key==='g'||e.key==='G'){document.body.classList.toggle('guide');return;}
   if(map[e.key]){e.preventDefault();act(map[e.key]);}
 });
