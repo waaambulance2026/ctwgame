@@ -607,6 +607,57 @@ body.night .platform{
 body.axFrameDebugOn .axFrameDebug{display:block!important}
 body.axFrameDebugOn #axFrameDebug{display:block!important}
 
+
+
+/* UX PATCH: clearer editor groups, stronger missing-sprite fallback, readable debug and pet bars */
+.editorGroupHeader{
+  grid-column:1/-1;
+  margin:8px 0 2px;
+  padding:7px 9px;
+  border-radius:12px;
+  background:rgba(118,199,216,.16);
+  border:1px solid rgba(118,199,216,.42);
+  color:#F5C542;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.03em;
+  text-transform:uppercase;
+}
+body.editMode .targetPick{min-height:42px}
+.character.spriteMissing::before{
+  content:'';
+  position:absolute;
+  left:50%;
+  bottom:0;
+  width:88%;
+  height:92%;
+  transform:translateX(-50%);
+  border:4px dashed rgba(118,199,216,.95);
+  border-radius:24px;
+  box-shadow:0 0 0 3px rgba(245,197,66,.65),0 0 24px rgba(210,130,194,.8);
+  pointer-events:none;
+}
+.axFrameDebug{
+  max-width:min(560px,calc(100vw - 28px));
+  white-space:pre-line;
+  line-height:1.25;
+  font-size:13px!important;
+}
+#hungerBar{background:linear-gradient(90deg,#ef4444,#F5C542)!important}
+#happyBar{background:linear-gradient(90deg,#d282c2,#22c55e)!important}
+#energyBar{background:linear-gradient(90deg,#76C7D8,#3b82f6)!important}
+.bar{position:relative;height:16px!important}
+.bar span{min-width:0;transition:width .18s ease-out}
+.layerStackHint{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:12px;
+  padding:8px;
+  margin:6px 0 8px;
+  font-size:11px;
+  line-height:1.35;
+}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -620,16 +671,16 @@ body.axFrameDebugOn #axFrameDebug{display:block!important}
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
     <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save. Editor pauses play; Close resumes walking.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
-    <div class="builderHelp"><b>How to edit:</b> 1) choose Layout / Characters / Sprites / Save. 2) click a big button below or click the thing on the game. 3) drag it or use the sliders. 4) save shared when it looks right. Character size is automatic by character, not by main/side slot.</div>
-    <div class="quickTabs"><button data-tab="layout" class="active">Layout</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
+    <div class="builderHelp"><b>How to edit:</b> choose Environment for sky/ground/floor, Objects for buildings/items, Characters for who is playing, Sprites for image paths, then Save. Dragging snaps to an 8px grid so buildings line up more cleanly.</div>
+    <div class="quickTabs"><button data-tab="layout" class="active">Environment / Objects</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
       <p class="tabHint">Use the big buttons first. The selected item gets a blue dashed outline.</p>
-      <div class="editPickGrid"><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="layers">Layer levels</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
+      <div class="editPickGrid"><div class="editorGroupHeader">Environment</div><button class="targetPick" data-select-target="sky">Sky</button><button class="targetPick" data-select-target="hills">Hills background</button><button class="targetPick" data-select-target="ground">Ground artwork</button><button class="targetPick" data-select-target="platform">Invisible floor line</button><button class="targetPick" data-select-target="layers">Layer levels</button><div class="editorGroupHeader">Game Objects</div><button class="targetPick active" data-select-target="player">Main character</button><button class="targetPick" data-select-target="buddy">Side character</button><button class="targetPick" data-select-target="places">Places / buildings</button><button class="targetPick" data-select-target="objects">Pickups / hazards</button></div>
       <label>Selected part</label><select id="editTarget"><option value="player">Main character</option><option value="buddy">Side character</option><option value="places">Places / buildings</option><option value="layers">Layer levels</option><option value="hills">Hills layer</option><option value="ground">Ground artwork</option><option value="platform">Invisible floor line</option><option value="sky">Sky layer</option><option value="objects">Pickups / hazards</option></select>
       <div class="editSection section-places"><h3>Places / buildings</h3><p class="tabHint">Pick the place you want, then click/drag anywhere on the game canvas to place it. Left/right changes where it appears in the route. Up/down changes the feet position.</p><div class="placeEditorGrid"><label>Building<select id="placeSelect"><option value="welcomeBoard">Welcome Board</option><option value="petShop">Pet Shop</option><option value="habitat">Habitat</option><option value="hookWaaambulance">Hook-a-Waaambulance</option><option value="questStarter">Quest Starter</option></select></label><label>Quick action<select id="placeQuick"><option value="">Choose...</option><option value="bringHere">Bring selected building here</option><option value="groundSnap">Snap feet to ground</option></select></label></div><label class="calRow">Level position <input type="range" id="calPlaceAt" min="-3000" max="7000" value="-1719"><span id="calPlaceAtVal">-1719</span></label><label class="calRow">Width <input type="range" id="calPlaceW" min="80" max="900" value="250"><span id="calPlaceWVal">168px</span></label><label class="calRow">Height <input type="range" id="calPlaceH" min="50" max="700" value="200"><span id="calPlaceHVal">200px</span></label><label class="calRow">Feet up/down <input type="range" id="calPlaceY" min="-180" max="180" value="-25"><span id="calPlaceYVal">-25px</span></label><label class="calRow">Building layer <input type="range" id="calPlaceZ" min="0" max="80" value="48"><span id="calPlaceZVal">48</span></label></div>
       <div class="editSection section-player"><h3>Main character</h3><label class="calRow">X position <input type="range" id="calPlayerX" min="0" max="800" value="150"><span id="calPlayerXVal">150px</span></label><label class="calRow">Auto character size <input type="range" id="calPlayerW" min="110" max="450" value="170"><span id="calPlayerWVal">170px</span></label><label class="calRow">Feet up/down <input type="range" id="calDrop" min="-45" max="110" value="1"><span id="calDropVal">1px</span></label></div>
       <div class="editSection section-buddy"><h3>Side character</h3><label class="calRow">X position <input type="range" id="calBuddyX" min="0" max="900" value="265"><span id="calBuddyXVal">265px</span></label><label class="calRow">Auto character size <input type="range" id="calBuddyW" min="70" max="300" value="115"><span id="calBuddyWVal">115px</span></label><label class="calRow">Feet up/down <input type="range" id="calBuddyDrop" min="-45" max="110" value="13"><span id="calBuddyDropVal">13px</span></label></div>
-      <div class="editSection section-layers"><h3>World layers</h3><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="70"><span id="calFloorVal">70px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="30"><span id="calPlatformVal">30px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="445"><span id="calHillHVal">445px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="82"><span id="calHillBVal">82px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="757"><span id="calGroundHVal">757px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-120"><span id="calGroundBVal">-120px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="39"><span id="calZGroundVal">39</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="0"><span id="calZPlatformVal">0</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="46"><span id="calZBuddyVal">46</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="58"><span id="calZPlayerVal">58</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="25"><span id="calZBuildingsVal">25</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
+      <div class="editSection section-layers"><h3>World layers</h3><div class="layerStackHint">Layer order: bigger z number = closer to the front. Keep Sky lowest, then Hills, Ground, Buildings, Items, Characters.</div><label class="calRow">Floor line <input type="range" id="calFloor" min="70" max="240" value="70"><span id="calFloorVal">70px</span></label><label class="calRow">Invisible floor height <input type="range" id="calPlatform" min="30" max="110" value="30"><span id="calPlatformVal">30px</span></label><label class="calRow">Hill height <input type="range" id="calHillH" min="80" max="1000" value="445"><span id="calHillHVal">445px</span></label><label class="calRow">Hill bottom <input type="range" id="calHillB" min="-250" max="600" value="82"><span id="calHillBVal">82px</span></label><label class="calRow">Ground height <input type="range" id="calGroundH" min="40" max="1000" value="757"><span id="calGroundHVal">757px</span></label><label class="calRow">Ground bottom <input type="range" id="calGroundB" min="-350" max="350" value="-120"><span id="calGroundBVal">-120px</span></label><h3>Layer levels / front-back order</h3><label class="calRow">Sky z <input type="range" id="calZSky" min="0" max="80" value="0"><span id="calZSkyVal">0</span></label><label class="calRow">Hills z <input type="range" id="calZHills" min="0" max="80" value="1"><span id="calZHillsVal">1</span></label><label class="calRow">Ground z <input type="range" id="calZGround" min="0" max="80" value="39"><span id="calZGroundVal">39</span></label><label class="calRow">Invisible floor z <input type="range" id="calZPlatform" min="0" max="80" value="0"><span id="calZPlatformVal">0</span></label><label class="calRow">Side char z <input type="range" id="calZBuddy" min="0" max="80" value="46"><span id="calZBuddyVal">46</span></label><label class="calRow">Main char z <input type="range" id="calZPlayer" min="0" max="80" value="58"><span id="calZPlayerVal">58</span></label><label class="calRow">Buildings z <input type="range" id="calZBuildings" min="0" max="80" value="25"><span id="calZBuildingsVal">25</span></label><label class="calRow">Items z <input type="range" id="calZObjects" min="0" max="80" value="50"><span id="calZObjectsVal">50</span></label></div>
       <div class="editSection section-objects"><h3>Pickups and hazards</h3><label class="calRow">Token height <input type="range" id="calTokenLift" min="20" max="520" value="126"><span id="calTokenLiftVal">126px</span></label><label class="calRow">Hazard height <input type="range" id="calHazardLift" min="0" max="300" value="58"><span id="calHazardLiftVal">58px</span></label><label class="calRow" style="display:none">Layer front/back <input type="range" id="calZ" min="0" max="70" value="30"><span id="calZVal">30</span></label></div>
     </div>
     <div id="tab-chars" class="tabBody"><p class="tabHint">Choose the visible characters and fix their facing without touching code.</p><label>Main character</label><select id="mainSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Main facing</label><select id="mainFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><label>Side character / team follower</label><select id="buddySelect"><option value="none">No side character</option><option value="pura">Pura</option><option value="ax">Ax</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select><label>Side character facing</label><select id="buddyFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select><p class="tabHint">Tip: if a character looks like it is moonwalking, flip that character here and press Apply characters.</p><div class="calButtons"><button class="good" id="applyCharsBtn">Apply characters</button><button class="warn" id="soloBtn">Make Solo Quest</button><button class="warn" id="teamBtn">Make Team Quest</button></div></div>
@@ -799,17 +850,27 @@ function preloadSpriteAction(char,action){
   const count=getActionFrameCount(char,action);
   for(let i=0;i<count;i++){
     candidateSpriteUrls(char,action,i).forEach(url=>{
-      if(!url)return;
+      if(!url||spriteBroken.has(url))return;
       const img=new Image();
+      img.decoding='async';
       img.src=url;
     });
   }
 }
+function preloadAllGameSprites(){
+  ['ax','pura','owl','unicorn'].forEach(char=>{
+    ['idle','walk','jump'].forEach(action=>preloadSpriteAction(char,action));
+  });
+  if(currentPetImage){
+    const img=new Image();
+    img.decoding='async';
+    img.src=currentPetImage;
+  }
+}
 function preloadAxWalkFrames(){
-  // Preload all Ax actions so jump frames are ready before the first jump.
-  preloadSpriteAction('ax','idle');
-  preloadSpriteAction('ax','walk');
-  preloadSpriteAction('ax','jump');
+  // Kept as an old function name so older calls still work.
+  // It now preloads every character/action, not only Ax walk.
+  preloadAllGameSprites();
 }
 
 function spriteFallbackLabel(char){
@@ -855,6 +916,20 @@ function setSpriteImage(elId,url){
   spriteCurrent[elId]=url;
   return true;
 }
+function updateSpriteDebug(elId,char,action,frameIndex,totalFrames,url,status){
+  const dbg=$('axFrameDebug');
+  if(!dbg)return;
+  if(char!=='ax'&&elId!=='sprite')return;
+  const frameNo=Number(frameIndex||0)+1;
+  dbg.textContent=[
+    `Character: ${characterName(char)}`,
+    `Action: ${action||'idle'}`,
+    `Frame: ${pad3(frameNo)} / ${String(totalFrames||1).padStart(3,'0')}`,
+    `Loaded: ${status||'trying'}`,
+    `URL: ${url||'none'}`
+  ].join('\n');
+}
+
 function setSpriteFrame(elId,char,action,idx){
   const el=$(elId);
   if(!el)return;
@@ -866,17 +941,13 @@ function setSpriteFrame(elId,char,action,idx){
   const shownFrameIndex=displayFrameIndex(char,action,idx,totalForDisplay);
   el.dataset.frameIndex=String(shownFrameIndex);
   el.dataset.frameNumber=String(shownFrameIndex+1);
-  const dbg=$('axFrameDebug');
-  if(dbg&&char==='ax'){
-    dbg.textContent='Ax '+String(action||'idle')+' frame: '+String(shownFrameIndex+1)+' / '+String(totalForDisplay);
-  }
-
   applySpriteTransform();
   ensureActionFrameCount(char,action);
 
   const urls=candidateSpriteUrls(char,action,idx).filter(Boolean);
   const url=urls.find(u=>!spriteBroken.has(u))||urls[0]||'';
-  if(!url){useFallbackSprite(elId,char,action);return;}
+  updateSpriteDebug(elId,char,action,shownFrameIndex,totalForDisplay,url,spriteBroken.has(url)?'broken':'trying');
+  if(!url){useFallbackSprite(elId,char,action);updateSpriteDebug(elId,char,action,shownFrameIndex,totalForDisplay,'','missing pattern');return;}
 
   // WALK ANIMATION FIX:
   // Do not wait for a hidden tester image before swapping frames.
@@ -887,8 +958,9 @@ function setSpriteFrame(elId,char,action,idx){
       spriteBroken.add(url);
       if(spriteCurrent[elId]===url)spriteCurrent[elId]='';
       useFallbackSprite(elId,char,action);
+      updateSpriteDebug(elId,char,action,shownFrameIndex,totalForDisplay,url,'FAILED');
     };
-    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);};
+    el.onload=()=>{spriteCurrent[elId]=url;setSpriteMissing(elId,false);updateSpriteDebug(elId,char,action,shownFrameIndex,totalForDisplay,url,'yes');};
     el.src=url;
     spriteCurrent[elId]=url;
   }
@@ -898,7 +970,7 @@ function setSpriteFrame(elId,char,action,idx){
 // Lower numbers = faster frame changes. Higher numbers = slower frame changes.
 // Ax idle now loops continuously, so 145ms gives a visible but not frantic phone-idle animation.
 const SETS={
-  ax:{name:'Ax',frameMs:95,actionMs:{idle:115,walk:95,jump:92}},
+  ax:{name:'Ax',frameMs:95,actionMs:{idle:115,walk:95,jump:80}},
   pura:{name:'Pura',frameMs:100,actionMs:{idle:115,walk:72,jump:66}},
   owl:{name:'Owl',frameMs:115,actionMs:{idle:135,walk:82,jump:72}},
   unicorn:{name:'Unicorn',frameMs:105,actionMs:{idle:125,walk:72,jump:72}},
@@ -907,10 +979,10 @@ const SETS={
 // EDIT SECTION 18B: FRAME COUNTS + CHARACTER SIZE LOCK
 // This file is matched to the strict normalised Ax pack:
 // ax_idle_001.png to ax_idle_010.png
-// ax_walk_001.png to ax_walk_008.png
+// ax_walk_001.png to ax_walk_010.png
 // ax_jump_001.png to ax_jump_010.png
 // Forced counts stop old extra Cloudinary images being used by mistake.
-// Ax current files: idle = 10 frames, walk = 8 frames, jump = 10 frames.
+// Ax current files: idle = 10 frames, walk = 10 frames, jump = 10 frames.
 // If you upload a different number later, change ACTION_FRAME_OVERRIDES below.
 const FRAME_PROBE_MAX=60;
 const FRAME_PROBE_STOP_AFTER_MISSES=2;
@@ -1196,7 +1268,7 @@ function applySpriteTransform(){
   if($('buddyShadow')) $('buddyShadow').style.opacity = buddy === 'owl' ? '.25' : '.65';
 }
 // EDIT SECTION 19: GAME STATE - selected characters, score, lives, movement and pet variables
-let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true,jumpStartedAt:0,jumpAnimUntil:0};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
+let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true,jumpPrepUntil:0,jumpStartedAt:0,jumpLandUntil:0,jumpRecoveryUntil:0};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 let visualWalkUntil=0;
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
@@ -1588,20 +1660,18 @@ function startTeamQuest(){
 }
 
 // EDIT SECTION 21: IMAGE ITEMS, COLLECT-DISAPPEAR AND MARIO-STYLE STOMP LOGIC
-function startGame(c,b,extraA,extraB){preloadAxWalkFrames();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true,jumpStartedAt:0,jumpAnimUntil:0};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){
+function startGame(c,b,extraA,extraB){preloadAxWalkFrames();closeBuilder();closePetPanel();setPair(c,b,extraA,extraB);$('startScreen').classList.add('hidden');score=0;lives=3;levelIndex=0;startLevel()}function startLevel(){distance=0;finishMade=false;ended=false;paused=false;spawnTimer=0;spawnedPlan=new Set();player={x:0,jump:0,vy:0,grounded:true,jumpPrepUntil:0,jumpStartedAt:0,jumpLandUntil:0,jumpRecoveryUntil:0};objects.forEach(o=>o.el.remove());objects=[];groundX=0;hillX=0;playing=true;$('pauseBtn').textContent='Pause';$('levelScreen').classList.add('hidden');$('endScreen').classList.add('hidden');updateHud();showToast(levels[levelIndex].quest+' quest started.');spawnLevelPlanObjects();}function jump(){
   if(!playing||paused||ended||document.body.classList.contains('editMode'))return;
-  if(player.grounded){
-    player.grounded=false;
-    player.vy=16.5;
+  const now=performance.now();
+  // Jump animation timing fix:
+  // Show the crouch/prep frames first, then start the physics jump a tiny moment later.
+  // This stops frame 002/003 appearing while Ax is already in the air.
+  if(player.grounded && !player.jumpPrepUntil && !(player.jumpRecoveryUntil&&now<player.jumpRecoveryUntil)){
+    player.jumpStartedAt=now;
+    player.jumpPrepUntil=now+115;
+    player.jumpLandUntil=0;
+    player.jumpRecoveryUntil=0;
 
-    // JUMP SPRITE FIX:
-    // The physics jump is short, so the 10 image jump animation was being cut off
-    // before the later frames could show. Keep the jump sprite sequence alive for
-    // a full short animation, even after Ax touches the floor.
-    player.jumpStartedAt=performance.now();
-    player.jumpAnimUntil=player.jumpStartedAt+920;
-
-    // Restart the visible sprite animation from frame 001 every jump.
     if(idleAnim&&idleAnim.sprite){
       idleAnim.sprite.action='';
       idleAnim.sprite.frame=0;
@@ -1810,14 +1880,33 @@ function collide(o){
 }
 function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
 function updatePlayer(dt){
+  const now=performance.now();
+
+  // Start the actual jump after the short crouch/prep frames have shown.
+  if(player.grounded && player.jumpPrepUntil && now>=player.jumpPrepUntil){
+    player.grounded=false;
+    player.jumpPrepUntil=0;
+    player.vy=16.5;
+  }
+
   if(keys.left)player.x-=dt*.22;
   if(keys.right)player.x+=dt*.22;
   player.x=Math.max(-25,Math.min(95,player.x));
+
   if(!player.grounded){
     player.jump+=player.vy*dt*.08;
     player.vy-=dt*.055;
-    if(player.jump<=0){player.jump=0;player.vy=0;player.grounded=true}
+    if(player.jump<=0){
+      player.jump=0;
+      player.vy=0;
+      player.grounded=true;
+      player.jumpPrepUntil=0;
+      // Keep only a short landing/recovery sprite phase so Ax does not slide along the floor in jump frames.
+      player.jumpLandUntil=now+130;
+      player.jumpRecoveryUntil=now+220;
+    }
   }
+
   $('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;
   const mainShadow=(getCharacterVisualConfig(main).shadowScale||1)*(player.grounded?1:.72);
   $('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${mainShadow})`;
@@ -1861,33 +1950,76 @@ function animateOne(elId,char,action,now,state){
   if(now-(state.last||0)>frameMs){
     const frame=state.frame||0;
     setSpriteFrame(elId,char,action,frame);
-    // Jump should play through once and hold the final recovery frame, not loop back
-    // to frame 001 before Ax has finished the landing/recovery.
-    if(action==='jump') state.frame=Math.min(frame+1,totalFrames-1);
-    else state.frame=(frame+1)%totalFrames;
+    state.frame=(frame+1)%totalFrames;
     state.last=now;
   }
 }
+function jumpVisualActive(now){
+  if(!player)return false;
+  const start=player.jumpStartedAt||0;
+  const sequenceActive=start && (now-start)<960;
+  return !!(
+    (player.jumpPrepUntil&&now<player.jumpPrepUntil) ||
+    !player.grounded ||
+    (player.jumpLandUntil&&now<player.jumpLandUntil) ||
+    (player.jumpRecoveryUntil&&now<player.jumpRecoveryUntil) ||
+    sequenceActive
+  );
+}
+
+function jumpFrameFromPlayer(now,totalFrames){
+  const total=Math.max(1,Number(totalFrames)||1);
+  const start=player.jumpStartedAt||now;
+  const elapsed=Math.max(0,now-start);
+
+  if(total<10){
+    const progress=Math.max(0,Math.min(1,elapsed/880));
+    return Math.min(total-1,Math.floor(progress*total));
+  }
+
+  // Fixed game-sprite order for the uploaded Ax jump set:
+  // 001 ready, 002 crouch, 003 deep crouch, 004 takeoff, 005 rise,
+  // 006 apex, 007 fall, 008 landing, 009 squash, 010 recover.
+  const marks=[0,60,120,190,280,380,500,620,745,865];
+  let frame=0;
+  for(let i=0;i<marks.length;i++){
+    if(elapsed>=marks[i])frame=i;
+  }
+  return Math.min(total-1,frame);
+}
+
+function animateJumpOne(elId,char,now,state){
+  const totalFrames=getActionFrameCount(char,'jump');
+  state=state||{playing:false,next:0,frame:0,last:0,action:''};
+  if(state.action!=='jump'){
+    state.action='jump';
+    state.frame=0;
+    state.last=0;
+  }
+  const frame=jumpFrameFromPlayer(now,totalFrames);
+  setSpriteFrame(elId,char,'jump',frame);
+  state.frame=frame;
+  state.last=now;
+}
+
 function animateSprites(now){
   // SIMPLE EDITOR NOTE:
   // Walking animation is based on movementInput(), so keyboard and screen buttons both count.
   const input=movementInput();
   const inputMoving=playing&&!paused&&!document.body.classList.contains('editMode')&&(input!==0 || now<visualWalkUntil);
-
-  // JUMP SPRITE FIX:
-  // Use jump frames while physically airborne OR while the short landing/recovery
-  // sprite hold is still active. This lets frames 001-010 actually play.
-  const jumpVisualActive=!!(player&&player.jumpAnimUntil&&now<player.jumpAnimUntil);
-  const mainAct=(jumpVisualActive||!player.grounded)?'jump':(inputMoving?'walk':'idle');
+  const mainAct=jumpVisualActive(now)?'jump':(inputMoving?'walk':'idle');
   const followerAct=mainAct==='jump'?'idle':mainAct;
 
-  animateOne('sprite',main,mainAct,now,idleAnim.sprite);
+  if(mainAct==='jump') animateJumpOne('sprite',main,now,idleAnim.sprite);
+  else animateOne('sprite',main,mainAct,now,idleAnim.sprite);
+
   if(team){
     if(buddy&&buddy!=='none')animateOne('buddySprite',buddy,followerAct,now,idleAnim.buddySprite);
     if(teamExtra[0]&&teamExtra[0]!=='none')animateOne('teamSprite2',teamExtra[0],followerAct,now,idleAnim.teamSprite2);
     if(teamExtra[1]&&teamExtra[1]!=='none')animateOne('teamSprite3',teamExtra[1],followerAct,now,idleAnim.teamSprite3);
   }
 }
+
 function getShrunkRect(el,shrinkX=.08,shrinkY=.10){
   const r=el.getBoundingClientRect();
   return {left:r.left+r.width*shrinkX,right:r.right-r.width*shrinkX,top:r.top+r.height*shrinkY,bottom:r.bottom-r.height*.04};
@@ -2318,7 +2450,7 @@ function normalisePets(raw){
   return pets.filter(p=>p.name);
 }
 function normaliseOnePet(p){p=p||{};return {name:p.name||p.pet_name||p.displayName||p.display_name||p.nickname||'',code:p.code||p.pet_code||p.petId||p.pet_id||p.id||'',pet:p.pet||p.species||p.type||p.animal||p.category||'',level:p.level||p.pet_level||'',xp:p.xp||'',hunger:p.hunger??p.pet_hunger??p.hunger_percent??0,happy:p.happy??p.happiness??p.pet_happiness??p.happiness_percent??0,energy:p.energy??p.pet_energy??p.energy_percent??0}}
-function setBar(id,val){$(id).style.width=pct(val)+'%'}
+function setBar(id,val){const el=$(id); if(!el)return; const v=pct(val); el.style.width=v+'%'; el.setAttribute('aria-valuenow',String(v)); el.title=v+'%';}
 async function fetchJsonWithTimeout(url,ms=16000){
   const ctrl=new AbortController(); const timer=setTimeout(()=>ctrl.abort(),ms);
   try{
@@ -2474,6 +2606,10 @@ document.querySelectorAll('[data-quest-level]').forEach(btn=>{
     startLevel();
   };
 });
+const EDIT_SNAP=8;
+function snapVal(v,step=EDIT_SNAP){return Math.round(Number(v||0)/step)*step;}
+function clampSnap(v,min,max,step=EDIT_SNAP){return Math.max(min,Math.min(max,snapVal(v,step)));}
+
 let drag=null;
 // EDIT SECTION 25: DRAGGING, BUTTONS, KEYBOARD, TOUCH CONTROLS AND STARTUP
 function beginSelectedPlaceDrag(e){
@@ -2550,11 +2686,11 @@ addEventListener('pointermove',e=>{
     syncPlaceControls();
     exportSettings();
   }
-  if(drag.layer==='player'){$('calPlayerX').value=Math.max(30,Math.min(850,s.playerX+dx));$('calDrop').value=Math.max(-45,Math.min(110,s.playerDrop-dy))}
-  if(drag.layer==='buddy'){$('calBuddyX').value=Math.max(30,Math.min(850,s.buddyX+dx));$('calBuddyDrop').value=Math.max(-45,Math.min(110,s.buddyDrop-dy))}
-  if(drag.layer==='hills'){$('calHillB').value=Math.max(-250,Math.min(600,s.hillsBottom-dy))}
-  if(drag.layer==='ground'){$('calGroundB').value=Math.max(-350,Math.min(350,s.groundBottom-dy))}
-  if(drag.layer==='platform'){$('calFloor').value=Math.max(70,Math.min(240,s.floorPx-dy));}
+  if(drag.layer==='player'){$('calPlayerX').value=clampSnap(s.playerX+dx,30,850);$('calDrop').value=clampSnap(s.playerDrop-dy,-45,110)}
+  if(drag.layer==='buddy'){$('calBuddyX').value=clampSnap(s.buddyX+dx,30,850);$('calBuddyDrop').value=clampSnap(s.buddyDrop-dy,-45,110)}
+  if(drag.layer==='hills'){$('calHillB').value=clampSnap(s.hillsBottom-dy,-250,600)}
+  if(drag.layer==='ground'){$('calGroundB').value=clampSnap(s.groundBottom-dy,-350,350)}
+  if(drag.layer==='platform'){$('calFloor').value=clampSnap(s.floorPx-dy,70,240);}
   if(drag.layer!=='place')applySettings({});
   $('dragHint').style.left=e.clientX+12+'px';$('dragHint').style.top=e.clientY+12+'px';
 });
