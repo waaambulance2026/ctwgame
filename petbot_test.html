@@ -51,6 +51,16 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .hot span{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;place-items:center;border-radius:999px;background:rgba(22,184,234,.88);color:white;font-size:12px;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.55);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,.18);pointer-events:none}
 body.guide .hot{background:rgba(22,184,234,.10);outline:2px dashed rgba(22,184,234,.75)}
 body.guide .hot span{display:grid}
+
+body.editorOpen .hot{cursor:move}
+body.editorOpen .hot.selectedHot{background:rgba(243,90,173,.16);outline:3px solid rgba(243,90,173,.85)}
+body.editorOpen .hot.selectedHot::before{content:"";position:absolute;right:-7px;bottom:-7px;width:15px;height:15px;border-radius:5px;background:#fff;border:3px solid #f35aad;box-shadow:0 2px 8px rgba(0,0,0,.22);pointer-events:none}
+body.editorOpen .hot::after{opacity:1;box-shadow:0 0 0 1.5px rgba(22,184,234,.55)}
+body[data-edit-tab="screen"].editorOpen .screenHole{z-index:40;pointer-events:auto;cursor:move;background:rgba(22,184,234,.10);outline:3px dashed rgba(22,184,234,.90)}
+body[data-edit-tab="screen"].editorOpen .screenHole::after{content:"";position:absolute;right:0;bottom:0;width:18px;height:18px;border-radius:6px;background:#fff;border:3px solid #16b8ea;box-shadow:0 2px 8px rgba(0,0,0,.22);z-index:60}
+body[data-edit-tab="screen"].editorOpen .lcdScreen{pointer-events:none}
+.dragHint{font-size:12px;background:#fff8fb;border:1px solid #f2cde3;border-radius:10px;padding:7px;margin:6px 0}
+
 .editTab{position:fixed;z-index:80;left:10px;top:10px;border-radius:999px;background:rgba(255,255,255,.88);box-shadow:0 8px 20px rgba(0,0,0,.13);padding:8px 12px;font-weight:1000;color:#3b2940}
 .editor{position:fixed;z-index:90;right:12px;top:12px;width:min(330px,calc(100vw - 24px));max-height:calc(100dvh - 24px);overflow:auto;padding:12px;border-radius:18px;background:rgba(255,255,255,.96);box-shadow:0 16px 42px rgba(0,0,0,.20);display:none}
 body.editorOpen .editor{display:block}
@@ -82,7 +92,7 @@ body.editorOpen .editor{display:block}
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-02" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-screenfit-drag-01" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
@@ -99,6 +109,7 @@ body.editorOpen .editor{display:block}
   <section class="setupPanel active" id="panel-buttons">
     <h3>Toy click zones</h3>
     <p>These do not move the visible toy buttons. They only change the invisible places you can press.</p>
+    <div class="dragHint">Drag a highlighted click zone to move it. Drag its small bottom-right square to resize it.</div>
     <label for="buttonSelect">Button zone</label>
     <select id="buttonSelect"></select>
     <label>Left/right <span id="btnLeftVal"></span></label><input id="btnLeft" type="range" min="0" max="100" step="0.1">
@@ -108,6 +119,8 @@ body.editorOpen .editor{display:block}
   </section>
   <section class="setupPanel" id="panel-screen">
     <h3>LCD screen fit</h3>
+    <div class="dragHint">Drag the blue LCD box on the toy. Drag the bottom-right corner to resize it. Use the button below to snap it back to the cut-out screen.</div>
+    <button class="btn primary" id="autoFitScreenBtn">Auto-fit current shell screen</button>
     <label>Screen left/right <span id="screenLeftVal"></span></label><input id="screenLeft" type="range" min="0" max="60" step="0.1">
     <label>Screen up/down <span id="screenTopVal"></span></label><input id="screenTop" type="range" min="10" max="70" step="0.1">
     <label>Screen width <span id="screenWidthVal"></span></label><input id="screenWidth" type="range" min="20" max="80" step="0.1">
@@ -680,7 +693,7 @@ const PETS = [
 
 let LAYOUT = {
   screenHole: { left:24.13, top:35.64, width:51.29, height:29.42 },
-  screenInner: { insetX:7.5, insetY:7.5, bottomExtra:4 },
+  screenInner: { insetX:1.2, insetY:1.2, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
     explore: { label:'Explore / select', short:'1', left:33.9, top:13.8, width:32, height:2.3, radius:'24px' },
@@ -695,7 +708,7 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-tamagotchi-v1';
+const STORE_KEY = 'waaambulance-petbot-tamagotchi-v2-screenfit-drag';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -931,7 +944,7 @@ function handleAction(action){
   if(action==='rest') return quickRest();
 }
 
-function applyLayout(){
+function applyScreenVars(){
   const root=document.documentElement, s=LAYOUT.screenHole;
   root.style.setProperty('--screen-left', pct(s.left));
   root.style.setProperty('--screen-top', pct(s.top));
@@ -940,7 +953,11 @@ function applyLayout(){
   const insetX=LAYOUT.screenInner.insetX, insetY=LAYOUT.screenInner.insetY;
   const bottom=(LAYOUT.screenInner.bottomExtra||0)+insetY;
   $('lcdScreen').style.inset=`${insetY}% ${insetX}% ${bottom}% ${insetX}%`;
-  renderButtons(); updateSettingsBox();
+}
+function applyLayout(){
+  applyScreenVars();
+  renderButtons();
+  updateSettingsBox();
 }
 function styleHot(el,b){
   el.style.left=pct(b.left); el.style.top=pct(b.top); el.style.width=pct(b.width); el.style.height=pct(b.height); el.style.borderRadius=b.radius||'999px';
@@ -948,9 +965,19 @@ function styleHot(el,b){
 function renderButtons(){
   const stage=$('stage'); stage.querySelectorAll('.hot').forEach(e=>e.remove());
   Object.entries(LAYOUT.buttons).forEach(([action,b])=>{
-    const el=document.createElement('button'); el.type='button'; el.className='hot'; el.dataset.action=action; el.title=(b.short?b.short+' · ':'')+(b.label||action); el.setAttribute('aria-label',b.label||action); styleHot(el,b);
+    const el=document.createElement('button');
+    el.type='button';
+    el.className='hot' + (action===selectedButton ? ' selectedHot' : '');
+    el.dataset.action=action;
+    el.title=(b.short?b.short+' · ':'')+(b.label||action);
+    el.setAttribute('aria-label',b.label||action);
+    styleHot(el,b);
     const sp=document.createElement('span'); sp.textContent=b.short||''; el.appendChild(sp);
-    el.addEventListener('click',()=>handleAction(action));
+    el.addEventListener('pointerdown',e=>startButtonDrag(e,action,el));
+    el.addEventListener('click',e=>{
+      if(document.body.classList.contains('editorOpen')){ e.preventDefault(); e.stopPropagation(); return; }
+      handleAction(action);
+    });
     stage.appendChild(el);
   });
 }
@@ -960,22 +987,98 @@ function updateSettingsBox(){
 const LAYOUT = ${JSON.stringify(LAYOUT,null,2)};`;
 }
 
+
+function stagePctDelta(dx,dy){
+  const r=$('stage').getBoundingClientRect();
+  return {x:dx/r.width*100, y:dy/r.height*100};
+}
+function startButtonDrag(e,action,el){
+  if(!document.body.classList.contains('editorOpen')) return;
+  e.preventDefault(); e.stopPropagation();
+  selectedButton=action;
+  document.body.dataset.editTab='buttons';
+  selectedTab='buttons';
+  document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b.dataset.tab==='buttons'));
+  document.querySelectorAll('.setupPanel').forEach(p=>p.classList.toggle('active',p.id==='panel-buttons'));
+  renderButtons();
+  el=document.querySelector(`.hot[data-action="${action}"]`) || el;
+  const b=LAYOUT.buttons[action];
+  const rect=el.getBoundingClientRect();
+  const resizing=(e.clientX>rect.right-20 && e.clientY>rect.bottom-20);
+  const start={x:e.clientX,y:e.clientY,left:b.left,top:b.top,width:b.width,height:b.height};
+  function move(ev){
+    const d=stagePctDelta(ev.clientX-start.x, ev.clientY-start.y);
+    if(resizing){
+      b.width=clamp(start.width+d.x,1,75);
+      b.height=clamp(start.height+d.y,1,55);
+    }else{
+      b.left=clamp(start.left+d.x,0,100-b.width);
+      b.top=clamp(start.top+d.y,0,100-b.height);
+    }
+    styleHot(el,b);
+    syncEditor(true);
+    updateSettingsBox();
+  }
+  function up(){
+    window.removeEventListener('pointermove',move);
+    window.removeEventListener('pointerup',up);
+    save();
+    renderButtons();
+  }
+  window.addEventListener('pointermove',move);
+  window.addEventListener('pointerup',up,{once:true});
+}
+function startScreenDrag(e){
+  if(!document.body.classList.contains('editorOpen') || selectedTab!=='screen') return;
+  e.preventDefault(); e.stopPropagation();
+  const s=LAYOUT.screenHole;
+  const rect=$('screenHole').getBoundingClientRect();
+  const resizing=(e.clientX>rect.right-24 && e.clientY>rect.bottom-24);
+  const start={x:e.clientX,y:e.clientY,left:s.left,top:s.top,width:s.width,height:s.height};
+  function move(ev){
+    const d=stagePctDelta(ev.clientX-start.x, ev.clientY-start.y);
+    if(resizing){
+      s.width=clamp(start.width+d.x,20,80);
+      s.height=clamp(start.height+d.y,10,55);
+    }else{
+      s.left=clamp(start.left+d.x,0,100-s.width);
+      s.top=clamp(start.top+d.y,0,100-s.height);
+    }
+    applyScreenVars();
+    syncEditor(true);
+    updateSettingsBox();
+  }
+  function up(){
+    window.removeEventListener('pointermove',move);
+    window.removeEventListener('pointerup',up);
+    save();
+  }
+  window.addEventListener('pointermove',move);
+  window.addEventListener('pointerup',up,{once:true});
+}
+
 function setupEditor(){
   $('editTab').addEventListener('click',()=>document.body.classList.toggle('editorOpen'));
   $('guideBtn').addEventListener('click',()=>{document.body.classList.toggle('guide'); $('guideBtn').textContent=document.body.classList.contains('guide')?'Hide click zones':'Show click zones';});
   $('playModeBtn').addEventListener('click',()=>{document.body.classList.remove('editorOpen','guide');});
+  document.body.dataset.editTab = selectedTab;
   document.querySelectorAll('.tabBtn').forEach(btn=>btn.addEventListener('click',()=>{
-    selectedTab=btn.dataset.tab; document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b===btn));
+    selectedTab=btn.dataset.tab;
+    document.body.dataset.editTab = selectedTab;
+    document.querySelectorAll('.tabBtn').forEach(b=>b.classList.toggle('active',b===btn));
     document.querySelectorAll('.setupPanel').forEach(p=>p.classList.toggle('active',p.id==='panel-'+selectedTab));
+    renderButtons();
   }));
   const bsel=$('buttonSelect'); Object.entries(LAYOUT.buttons).forEach(([k,b])=>{ const o=document.createElement('option'); o.value=k; o.textContent=(b.short?b.short+' · ':'')+b.label; bsel.appendChild(o); }); bsel.value=selectedButton;
-  bsel.addEventListener('change',()=>{selectedButton=bsel.value; syncEditor();});
+  bsel.addEventListener('change',()=>{selectedButton=bsel.value; renderButtons(); syncEditor();});
   for(const [id,prop] of [['btnLeft','left'],['btnTop','top'],['btnWidth','width'],['btnHeight','height']]){
     $(id).addEventListener('input',e=>{LAYOUT.buttons[selectedButton][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();});
   }
   const screenControls=[['screenLeft','screenHole','left'],['screenTop','screenHole','top'],['screenWidth','screenHole','width'],['screenHeight','screenHole','height']];
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
+  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:24.13,top:35.64,width:51.38,height:29.49}; LAYOUT.screenInner={insetX:1.2,insetY:1.2,bottomExtra:0}; applyLayout(); syncEditor(true); save();});
+  $('screenHole').addEventListener('pointerdown',startScreenDrag);
   const psel=$('petSelect'); state.pets.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.name+' · '+p.type; psel.appendChild(o); });
   psel.addEventListener('change',e=>{state.petIndex=Number(e.target.value); render(); save();});
   $('petSize').addEventListener('input',e=>{currentPet().size=Number(e.target.value); render(); save();});
