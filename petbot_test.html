@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi</title>
+<title>CTW PetBot Tamagotchi - Stage 2</title>
 <style>
 :root{
   --ink:#16223f;
@@ -17,21 +17,37 @@
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 38%,#dff7ff 100%);font-family:Verdana,Arial,sans-serif;color:var(--ink);touch-action:manipulation;user-select:none}
 body{display:grid;place-items:center}
 #app{position:fixed;inset:0;display:grid;place-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
-.device{position:relative;width:min(94vw,calc(98vh * 0.6667));aspect-ratio:2/3;filter:drop-shadow(0 18px 30px var(--shadow));background:url('petbot_device.png') center/contain no-repeat}
-.lcd{position:absolute;left:20.6%;top:39.2%;width:58%;height:27%;border-radius:6%/10%;overflow:hidden;background:linear-gradient(180deg,var(--lcd),var(--lcd2));box-shadow:inset 0 0 0 2px rgba(21,34,63,.35),inset 0 0 22px rgba(255,255,255,.9);display:flex;flex-direction:column;isolation:isolate}
+.device{position:relative;width:min(94vw,calc(98vh * 0.6667));aspect-ratio:2/3;filter:drop-shadow(0 18px 30px var(--shadow));background:none}
+.device::after{content:"";position:absolute;inset:0;background:url('petbot_device.png') center/contain no-repeat;z-index:12;pointer-events:none}
+.lcd{position:absolute;z-index:2;left:20.6%;top:39.2%;width:58%;height:27%;border-radius:6%/10%;overflow:hidden;background:linear-gradient(180deg,var(--lcd),var(--lcd2));box-shadow:inset 0 0 0 2px rgba(21,34,63,.35),inset 0 0 22px rgba(255,255,255,.9);display:flex;flex-direction:column;isolation:isolate}
 .lcd:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 18%,transparent 82%,rgba(255,255,255,.20)),repeating-linear-gradient(0deg,rgba(0,0,0,.055) 0 1px,transparent 1px 4px);opacity:.45;pointer-events:none;z-index:5}
 .top{height:18%;min-height:19px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;padding:2px 6px;font-weight:900;font-size:clamp(8px,1.02vw,13px);background:rgba(255,255,255,.25);letter-spacing:.02em;position:relative;z-index:6}.top span:nth-child(2){white-space:nowrap}.top span:last-child{text-align:right}
 .body{position:relative;flex:1;min-height:0;padding:5px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:4}.hint{font-size:clamp(6px,.72vw,10px);font-weight:800;opacity:.7;text-align:center;line-height:1.1;margin-top:2px}.small{font-size:clamp(7px,.78vw,10px);font-weight:800;opacity:.8}.bigText{font-size:clamp(11px,1.45vw,20px);font-weight:1000;text-align:center;line-height:1.12}.row{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap}
 .choiceList{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;justify-content:center}.choice{display:grid;grid-template-columns:auto 1fr;gap:5px;align-items:center;padding:5px 7px;border:1.5px solid rgba(22,34,63,.35);background:rgba(255,255,255,.24);border-radius:9px;font-weight:1000;font-size:clamp(9px,1.08vw,14px);line-height:1.05}.choice.active{background:rgba(255,255,255,.67);outline:2px solid rgba(22,34,63,.42)}.choice small{display:block;font-size:.72em;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .passwordCard{width:94%;max-width:260px;background:rgba(255,255,255,.35);border:1.5px solid rgba(22,34,63,.35);border-radius:12px;padding:7px;text-align:center;font-weight:1000}.passwordCard input{width:94%;margin:5px auto;display:block;border:1.5px solid rgba(22,34,63,.5);border-radius:9px;padding:6px 5px;text-align:center;font-weight:1000;background:rgba(255,255,255,.88);color:#111;font-size:16px;user-select:text}.screenBtn{border:1.5px solid rgba(22,34,63,.35);border-radius:999px;background:rgba(255,255,255,.88);font-weight:1000;padding:5px 12px;color:var(--ink)}.error{color:#9b1a56;font-size:clamp(7px,.8vw,11px);min-height:1.15em;font-weight:900}.loader{width:34px;height:34px;border-radius:50%;border:4px solid rgba(22,34,63,.16);border-top-color:rgba(22,34,63,.8);animation:spin .8s linear infinite;margin:3px auto}@keyframes spin{to{transform:rotate(360deg)}}
-.petStage{position:absolute;inset:15% 4% 38% 4%;overflow:hidden}.petImg{position:absolute;left:50%;top:50%;width:76%;height:76%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 7px 6px rgba(35,37,62,.20))}.petEmoji{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,70px)}.petName{position:absolute;left:4px;right:4px;bottom:29%;text-align:center;font-size:clamp(10px,1.25vw,16px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats{position:absolute;left:7px;right:7px;bottom:5px;display:grid;gap:2px}.stat{display:grid;grid-template-columns:16px 1fr 24px;gap:3px;align-items:center;font-size:clamp(6px,.72vw,9px);font-weight:900}.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(22,34,63,.25);overflow:hidden}.bar i{display:block;height:100%;width:50%;border-radius:999px;background:rgba(22,34,63,.55)}.bar.h i{background:#ff7899}.bar.j i{background:#ffbd59}.bar.e i{background:#6ddf9e}.bar.hp i{background:#75c7ff}.details{position:absolute;left:4px;right:4px;bottom:24%;font-size:clamp(7px,.82vw,11px);font-weight:900;text-align:center;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.msg{font-size:clamp(8px,.82vw,12px);font-weight:900;text-align:center;opacity:.8;margin-top:2px}.menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}.menuItem{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.24);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(8px,.9vw,12px);min-height:36px;display:flex;flex-direction:column;justify-content:center}.menuItem.active{background:rgba(255,255,255,.70);outline:2px solid rgba(22,34,63,.35)}.menuItem b{font-size:1.25em}.panelList{width:100%;height:100%;overflow:auto;padding-right:2px;font-size:clamp(7px,.85vw,11px);font-weight:900}.panelItem{border:1px solid rgba(22,34,63,.24);border-radius:8px;background:rgba(255,255,255,.28);padding:4px;margin:3px 0}.debug{position:fixed;left:8px;bottom:8px;right:8px;max-height:26vh;overflow:auto;background:rgba(255,255,255,.88);border:1px solid rgba(22,34,63,.25);border-radius:10px;padding:8px;font:12px/1.25 monospace;display:none;user-select:text}.hit{position:absolute;border:0;background:transparent;outline:none;z-index:20;cursor:pointer;color:transparent;-webkit-tap-highlight-color:transparent}.hit:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:2px;border-radius:999px}.hit.exit{left:43%;top:15%;width:14%;height:10.5%;border-radius:50%}.hit.prev{left:13.6%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}.hit.select{left:38%;top:70.8%;width:24%;height:16.2%;border-radius:50%}.hit.next{left:70.2%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
+.petStage{position:absolute;inset:15% 4% 38% 4%;overflow:hidden}.petImg{position:absolute;left:50%;top:50%;width:76%;height:76%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 7px 6px rgba(35,37,62,.20))}.petEmoji{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,70px)}.petName{position:absolute;left:4px;right:4px;bottom:29%;text-align:center;font-size:clamp(10px,1.25vw,16px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats{position:absolute;left:7px;right:7px;bottom:5px;display:grid;gap:2px}.stat{display:grid;grid-template-columns:16px 1fr 24px;gap:3px;align-items:center;font-size:clamp(6px,.72vw,9px);font-weight:900}.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(22,34,63,.25);overflow:hidden}.bar i{display:block;height:100%;width:50%;border-radius:999px;background:rgba(22,34,63,.55)}.bar.h i{background:#ff7899}.bar.j i{background:#ffbd59}.bar.e i{background:#6ddf9e}.bar.hp i{background:#75c7ff}.details{position:absolute;left:4px;right:4px;bottom:24%;font-size:clamp(7px,.82vw,11px);font-weight:900;text-align:center;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.msg{font-size:clamp(8px,.82vw,12px);font-weight:900;text-align:center;opacity:.8;margin-top:2px}.menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}.menuItem{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.24);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(8px,.9vw,12px);min-height:36px;display:flex;flex-direction:column;justify-content:center}.menuItem.active{background:rgba(255,255,255,.70);outline:2px solid rgba(22,34,63,.35)}.menuItem b{font-size:1.25em}.panelList{width:100%;height:100%;overflow:auto;padding-right:2px;font-size:clamp(7px,.85vw,11px);font-weight:900}.panelItem{border:1px solid rgba(22,34,63,.24);border-radius:8px;background:rgba(255,255,255,.28);padding:4px;margin:3px 0}.debug{position:fixed;left:8px;bottom:8px;right:8px;max-height:26vh;overflow:auto;background:rgba(255,255,255,.88);border:1px solid rgba(22,34,63,.25);border-radius:10px;padding:8px;font:12px/1.25 monospace;display:none;user-select:text}.hit{position:absolute;border:0;background:transparent;outline:none;z-index:30;cursor:pointer;color:transparent;-webkit-tap-highlight-color:transparent}.hit:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:2px;border-radius:999px}.hit.siren{left:31%;top:6.5%;width:38%;height:12%;border-radius:18px}.hit.exit{left:43%;top:15%;width:14%;height:10.5%;border-radius:50%}.hit.prev{left:13.6%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}.hit.select{left:38%;top:70.8%;width:24%;height:16.2%;border-radius:50%}.hit.next{left:70.2%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
 @media (max-width:520px){.device{width:min(99vw,calc(99vh * .6667))}.body{padding:3px 5px}.choice{padding:4px 6px}.stats{gap:1px}.stat{grid-template-columns:14px 1fr 21px}.bar{height:5px}.menuGrid{gap:3px}.menuItem{padding:4px 3px;min-height:30px}}
+
+/* Stage 2 polish: the toy shell sits above the LCD, no written button instructions. */
+.hint{display:none!important}
+.top{height:16%;min-height:17px;padding:2px 6px;font-size:clamp(7px,.88vw,11px)}
+.body.petBody{justify-content:flex-start;padding:3px 7px 5px;gap:1px}
+.petBody .petStage{position:relative;inset:auto;width:100%;flex:1 1 auto;min-height:58px;max-height:92px;overflow:visible;margin-top:0}
+.petBody .petName{position:static;width:100%;font-size:clamp(10px,1.18vw,15px);line-height:1.05;margin-top:1px;text-align:center;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.petBody .details{position:static;width:100%;font-size:clamp(6px,.75vw,9px);line-height:1.05;text-align:center;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 1px}
+.petBody .stats{position:static;width:100%;display:grid;gap:1px;margin-top:1px}
+.petBody .stat{grid-template-columns:13px 1fr 20px;font-size:clamp(5px,.65vw,8px);gap:2px}
+.petBody .bar{height:5px}
+.menuGrid{gap:5px}.menuItem{min-height:39px}
+.passwordCard{margin-top:4px}.passwordCard input{font-size:15px}
+
 </style>
 </head>
 <body>
 <div id="app">
   <div class="device" aria-label="CTW Tamagotchi PetBot">
     <div class="lcd" id="lcd"></div>
+    <button class="hit siren" id="btnSiren" aria-label="Full screen"></button>
     <button class="hit exit" id="btnExit" aria-label="Back to game"></button>
     <button class="hit prev" id="btnPrev" aria-label="Previous"></button>
     <button class="hit select" id="btnSelect" aria-label="Select"></button>
@@ -94,13 +110,13 @@ function render(){
   notifyParent();
 }
 function renderLogin(){
-  return top('WHO IS PLAYING?',`${state.loginIndex+1}/${PLAYER_LIST.length}`)+`<div class="body"><div class="choiceList">${PLAYER_LIST.map((p,i)=>`<div class="choice ${i===state.loginIndex?'active':''}" data-player-index="${i}"><span>${p.test?'🧪':'👤'}</span><div>${esc(p.label)}<small>${esc(p.display)}</small></div></div>`).join('')}</div><div class="hint">pink/blue hearts choose · dummy OK</div></div>`;
+  return top('WHO IS PLAYING?',`${state.loginIndex+1}/${PLAYER_LIST.length}`)+`<div class="body"><div class="choiceList">${PLAYER_LIST.map((p,i)=>`<div class="choice ${i===state.loginIndex?'active':''}" data-player-index="${i}"><span>${p.test?'🧪':'👤'}</span><div>${esc(p.label)}<small>${esc(p.display)}</small></div></div>`).join('')}</div></div>`;
 }
 function renderPassword(){
   const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
-  return top('PASSWORD','')+`<div class="body"><div class="passwordCard"><div>${esc(p.label)} password</div><input id="passInput" type="password" autocomplete="off" inputmode="text" value="${esc(state.password)}" placeholder="type password"><div class="error">${esc(state.error)}</div></div><div class="hint">Type password · press dummy/pacifier to enter</div></div>`;
+  return top('PASSWORD','')+`<div class="body"><div class="passwordCard"><div>${esc(p.label)} password</div><input id="passInput" type="password" autocomplete="off" inputmode="text" value="${esc(state.password)}" placeholder="type password"><div class="error">${esc(state.error)}</div></div></div>`;
 }
-function renderLoading(){return top('LOADING','')+`<div class="body"><div class="loader"></div><div class="bigText">${esc(state.message||'Loading pets')}</div><div class="hint">Only this player’s pets will be shown</div></div>`;}
+function renderLoading(){return top('LOADING','')+`<div class="body"><div class="loader"></div><div class="bigText">${esc(state.message||'Loading pets')}</div></div>`;}
 function currentPet(){return state.pets[state.petIndex]||null;}
 function renderPet(){
   const p=currentPet();
@@ -118,17 +134,17 @@ function petImage(p){
 }
 function emojiFor(s){s=String(s||'').toLowerCase();if(s.includes('raven')||s.includes('crow'))return'🐦‍⬛';if(s.includes('owl'))return'🦉';if(s.includes('dragon'))return'🐉';if(s.includes('unicorn'))return'🦄';if(s.includes('cat'))return'🐈';if(s.includes('dog'))return'🐕';if(s.includes('frog'))return'🐸';if(s.includes('axolotl'))return'🦎';return'🐾';}
 function stat(icon,cls,v){return `<div class="stat"><span>${icon}</span><div class="bar ${cls}"><i style="width:${bar(v)}"></i></div><span>${clamp(Math.round(n(v,0)),0,100)}</span></div>`;}
-function renderMenu(){return top('MAIN MENU','')+`<div class="body"><div class="menuGrid">${MENU.map((m,i)=>`<div class="menuItem ${i===state.menuIndex?'active':''}" data-menu-index="${i}"><b>${m.icon}</b>${esc(m.label)}</div>`).join('')}</div><div class="hint">hearts choose · dummy/pacifier select</div></div>`;}
+function renderMenu(){return top('MAIN MENU','')+`<div class="body"><div class="menuGrid">${MENU.map((m,i)=>`<div class="menuItem ${i===state.menuIndex?'active':''}" data-menu-index="${i}"><b>${m.icon}</b>${esc(m.label)}</div>`).join('')}</div></div>`;}
 function renderStats(){
   const p=currentPet()||{};
   const rows=[['Owner',state.player?.display||''],['User ID',state.player?.userId||''],['Pet ID',p.userPetId||p.code||''],['Species',p.pet||''],['Category',p.category||''],['Level',p.level||1],['XP',p.xp||0],['Health',p.health||0],['Hunger',p.hunger||0],['Happy',p.happiness||0],['Energy',p.energy||0]];
-  return top('STATS','')+`<div class="body"><div class="panelList">${rows.map(r=>`<div class="panelItem"><b>${esc(r[0])}:</b> ${esc(r[1])}</div>`).join('')}</div><div class="hint">red cross back</div></div>`;
+  return top('STATS','')+`<div class="body"><div class="panelList">${rows.map(r=>`<div class="panelItem"><b>${esc(r[0])}:</b> ${esc(r[1])}</div>`).join('')}</div></div>`;
 }
 function renderSimplePanel(title,msg,items){
   const list=Array.isArray(items)?items:[];
-  return top(title,'')+`<div class="body"><div class="panelList">${list.length?list.slice(0,20).map(item=>`<div class="panelItem">${esc(rowLabel(item))}</div>`).join(''):`<div class="panelItem">${esc(msg)}</div>`}</div><div class="hint">red cross back</div></div>`;
+  return top(title,'')+`<div class="body"><div class="panelList">${list.length?list.slice(0,20).map(item=>`<div class="panelItem">${esc(rowLabel(item))}</div>`).join(''):`<div class="panelItem">${esc(msg)}</div>`}</div></div>`;
 }
-function renderError(msg){return top('ERROR','')+`<div class="body"><div class="bigText">${esc(msg||state.lastError||'Something went wrong')}</div><div class="hint">red cross = choose again · dummy = retry</div></div>`;}
+function renderError(msg){return top('ERROR','')+`<div class="body"><div class="bigText">${esc(msg||state.lastError||'Something went wrong')}</div></div>`;}
 function rowLabel(r){if(!r||typeof r!=='object')return String(r||'');return pick(r,['item_name','name','label','title','quest_name','trait_name','skill_name','effect_name','description'],'Row');}
 function wireRenderedControls(){
   document.querySelectorAll('[data-player-index]').forEach(el=>el.addEventListener('click',()=>{state.loginIndex=Number(el.dataset.playerIndex)||0;choosePlayer();}));
@@ -147,12 +163,32 @@ function submitPassword(){
   if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
   startPlayer(p);
 }
+function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v2_'+String(userId||'none');}
+function readCachedPets(userId){
+  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>10*60*1000)return null;return pack.pets;}catch(e){return null;}
+}
+function writeCachedPets(userId,pets){
+  try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30)}));}catch(e){}
+}
 async function startPlayer(player){
   state.player={...player,password:undefined};state.pets=[];state.petIndex=0;state.menuIndex=0;state.screen='loading';state.message='Loading '+player.label+' pets';render();
   try{
-    const pets=player.test?TEST_PETS.map(p=>({...p})):await loadUserPets(player.userId);
+    if(player.test){
+      const pets=TEST_PETS.map(p=>({...p}));
+      state.pets=pets.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded test pets';render();return;
+    }
+    const cached=readCachedPets(player.userId);
+    if(cached&&cached.length){
+      state.pets=cached.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded cached pets';render();
+      loadUserPets(player.userId).then(fresh=>{
+        if(!fresh||!fresh.length||!state.player||state.player.userId!==player.userId)return;
+        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;state.petIndex=Math.min(state.petIndex,ready.length-1);state.screen='menu';state.message='Updated '+ready.length+' pets';render();
+      }).catch(e=>log('background refresh failed',e.message||e));
+      return;
+    }
+    const pets=await loadUserPets(player.userId);
     if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
-    state.pets=pets.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();
+    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();
   }catch(err){state.lastError=err.message||String(err);state.screen='error';render();}
 }
 function withDefaults(p,i){return {hunger:100,happiness:100,energy:100,health:100,level:1,xp:0,size:76,x:50,y:50,emoji:emojiFor(p.pet||p.category||p.name),...p};}
@@ -184,8 +220,7 @@ async function fetchPetsViaProxy(userId){
   const data=await fetchJson(url,14000);
   const rootUser=clean(pick(data,['user_id','discord_user_id','discord_id','requested_user_id','player_id'],''));
   let arr=findArray(data,['pets','owned_pets','user_pets','rows','data','items','results']);
-  // If the Apps Script confirms the root user_id, stamp returned rows with that ID so they can pass the safety filter.
-  if(rootUser===String(userId)) arr=arr.map(r=>({user_id:userId,...(r||{})}));
+  // Never stamp catalogue rows as owned. Rows must contain the selected user ID themselves.
   return arr.map(r=>normalisePet(r,userId));
 }
 function findArray(data,names){
@@ -196,13 +231,19 @@ function findArray(data,names){
   return [];
 }
 async function enrichPets(pets,userId){
-  const out=[];
-  for(const pet of pets){
+  const visualRows=[];
+  const tabs=['Sheet51','user_pet_images','pet_action_images'];
+  const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
+  results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))visualRows.push(...r.value);});
+  return (pets||[]).map(pet=>{
     const p={...pet};
-    try{const visual=await findVisualForPet(p,userId);if(visual)applyVisual(p,visual);}catch(e){log('visual failed',e.message||e);}
-    out.push(p);
-  }
-  return out;
+    try{
+      const owned=visualRows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
+      const generic=owned||visualRows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
+      if(generic)applyVisual(p,generic);
+    }catch(e){log('visual failed',e.message||e);}
+    return p;
+  });
 }
 function applyVisual(p,row){
   const url=cleanImageUrl(pick(row,['image_url','url','cloudinary_image_url','image','pet_image','sprite_url','public_url','cloudinary_public_id'],''));
@@ -353,6 +394,7 @@ $('btnPrev').addEventListener('click',e=>{e.preventDefault();handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();handleNext();});
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault();sendParent('waa-petbot-toggle-fullscreen');});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});
