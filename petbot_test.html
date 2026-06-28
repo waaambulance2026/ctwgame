@@ -103,6 +103,10 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:45dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px}.bottomMsg{font-size:7px}.editTab{font-size:12px;padding:7px 10px}}
+
+.embedBackBtn{display:none;position:fixed;z-index:9999;left:12px;top:12px;border:2px solid rgba(255,255,255,.92);border-radius:999px;padding:10px 13px;background:linear-gradient(180deg,#fff,#f8edf6);box-shadow:0 8px 22px rgba(0,0,0,.22);font-weight:1000;color:#25172e;font-size:14px}
+html.embed .embedBackBtn{display:block}
+
 </style>
 </head>
 <body class="colorScreen">
@@ -115,6 +119,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
     <img class="device" src="/petbot_device.png?v=20260628-measured-screen-01" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
+<button class="embedBackBtn" id="embedBackBtn" type="button">← Back to game</button>
 <button class="editTab" id="editTab">Edit</button>
 <aside class="editor" id="editor" aria-label="PetBot setup editor">
   <h2>PetBot Tamagotchi setup</h2>
@@ -1193,6 +1198,17 @@ const DEFAULT_DISCORD_USER_ID = '1214671839205396481';
 const CLOUDINARY_CLOUD = 'dpwlfmhia';
 const qs = new URLSearchParams(location.search);
 if(qs.get('embed')==='1') document.documentElement.classList.add('embed');
+const embedBackBtn = document.getElementById('embedBackBtn');
+if(embedBackBtn){
+  embedBackBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    try{
+      if(window.parent && window.parent !== window){
+        window.parent.postMessage({type:'waa-petbot-close'}, location.origin);
+      }
+    }catch(err){}
+  });
+}
 const LIVE_USER_ID = qs.get('user_id') || localStorage.getItem('waa-petbot-user-id') || DEFAULT_DISCORD_USER_ID;
 
 // Full PetBot workbook registry checked from the spreadsheet Index tab.
