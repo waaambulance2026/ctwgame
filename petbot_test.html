@@ -17,9 +17,9 @@
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);color:var(--ink)}
 button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit}
 .app{position:relative;width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;padding:0}
-.stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18))}
+.stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));touch-action:none;user-select:none}
 .device{position:absolute;z-index:10;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease}
+.screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:"Courier New",monospace;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
 #lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:4px 6px;text-shadow:0 1px rgba(255,255,255,.18)}
@@ -47,7 +47,7 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .infoGrid{width:100%;height:100%;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-content:center}
 .infoCard{border:1.5px solid rgba(35,49,23,.45);border-radius:7px;padding:3px 4px;font-size:clamp(7px,.70vw,11px);font-weight:1000;background:rgba(255,255,255,.09)}
 .actionFlash{width:100%;height:100%;display:grid;place-items:center;text-align:center;font-weight:1000;font-size:clamp(9px,.85vw,15px);padding:8px}
-.hot{position:absolute;z-index:30;background:rgba(255,255,255,.001);border-radius:999px;transition:transform .08s ease}
+.hot{position:absolute;z-index:30;background:rgba(255,255,255,.001);border-radius:999px;transition:transform .08s ease;touch-action:none}
 .hot::after{content:"";position:absolute;inset:-5px;border-radius:inherit;opacity:0;transition:.12s;pointer-events:none}
 .hot:hover::after,.hot:focus-visible::after,.hot.press::after{opacity:1;box-shadow:0 0 0 2px rgba(255,255,255,.55),0 0 14px rgba(243,90,173,.76),0 0 20px rgba(22,184,234,.62)}
 .hot:focus-visible{outline:0}
@@ -55,6 +55,11 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .hot span{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:22px;height:22px;place-items:center;border-radius:999px;background:rgba(22,184,234,.88);color:white;font-size:12px;font-weight:1000;text-shadow:0 1px 2px rgba(0,0,0,.55);border:2px solid white;box-shadow:0 3px 10px rgba(0,0,0,.18);pointer-events:none}
 body.guide .hot{background:rgba(22,184,234,.10);outline:2px dashed rgba(22,184,234,.75)}
 body.guide .hot span{display:grid}
+.hot.shape-heart{clip-path:polygon(50% 10%,61% 0,78% 0,92% 11%,96% 28%,94% 44%,88% 58%,74% 72%,50% 96%,26% 72%,12% 58%,6% 44%,4% 28%,8% 11%,22% 0,39% 0)}
+.hot.shape-circle{border-radius:50%!important}
+body.guide .hot.shape-heart, body.editorOpen .hot.shape-heart{background:rgba(22,184,234,.12)}
+body.editorOpen .hot.selectedHot.shape-heart{background:rgba(243,90,173,.16)}
+
 
 body.editorOpen .hot{cursor:move}
 body.editorOpen .hot.selectedHot{background:rgba(243,90,173,.16);outline:3px solid rgba(243,90,173,.85)}
@@ -98,11 +103,11 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
 <body class="colorScreen">
 <div class="app">
   <main class="stage" id="stage" aria-label="Waaambulance PetBot toy">
-    <section class="screenHole" aria-label="PetBot LCD screen">
+    <section class="screenHole" id="screenHole" aria-label="PetBot LCD screen">
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-simple3-01" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-simple3-02" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
@@ -119,7 +124,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
   <section class="setupPanel active" id="panel-buttons">
     <h3>Only 3 press areas</h3>
     <p>These are just the invisible press areas. Move only these if needed.</p>
-    <div class="dragHint">If you are unsure, press Reset 3 buttons and leave these alone.</div>
+    <div class="dragHint">Drag the blue shape itself to move it. Drag the little white square to resize it.</div>
     <button class="btn primary" id="reset3Btn">Reset 3 buttons</button>
     <label for="buttonSelect">Button zone</label>
     <select id="buttonSelect"></select>
@@ -130,7 +135,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
   </section>
   <section class="setupPanel" id="panel-screen">
     <h3>LCD screen fit</h3>
-    <div class="dragHint">Drag the blue LCD box on the toy. Drag the bottom-right corner to resize it. Use the button below to snap it back to the cut-out screen.</div>
+    <div class="dragHint">Drag the blue LCD box to move it. Drag the little white square in the corner to resize it.</div>
     <button class="btn primary" id="autoFitScreenBtn">Auto-fit current shell screen</button>
     <p><b>Screen style:</b> colour screen only.</p>
     <label>Screen left/right <span id="screenLeftVal"></span></label><input id="screenLeft" type="range" min="0" max="60" step="0.1">
@@ -140,7 +145,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
     <label>Inner LCD padding <span id="screenInsetVal"></span></label><input id="screenInset" type="range" min="0" max="15" step="0.1">
   </section>
 
-  <h3>Button map</h3>
+  <h3>3 button map</h3>
   <div class="legend">
     <div>A = previous</div><div>B = select/menu</div>
     <div>C = next</div><div>Hold A = back</div>
@@ -695,17 +700,17 @@ const PETS = [
 ];
 
 let LAYOUT = {
-  screenHole: { left:24.8, top:36.2, width:50.4, height:26.2 },
-  screenInner: { insetX:2.0, insetY:2.0, bottomExtra:0.2 },
+  screenHole: { left:25.3, top:37.0, width:48.9, height:23.8 },
+  screenInner: { insetX:1.6, insetY:1.6, bottomExtra:0.0 },
   content: { petSize:58, petY:52 },
   buttons: {
-    prev:   { label:'A · Previous / hold back', short:'A', left:15.7, top:70.8, width:11.6, height:9.5, radius:'30%' },
-    select: { label:'B · Select / menu', short:'B', left:39.1, top:73.7, width:21.8, height:12.7, radius:'34%' },
-    next:   { label:'C · Next', short:'C', left:72.8, top:70.8, width:11.6, height:9.5, radius:'30%' }
+    prev:   { label:'A · Previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
+    select: { label:'B · Select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
+    next:   { label:'C · Next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-simple-3button-v2-locked';
+const STORE_KEY = 'waaambulance-petbot-simple-3button-v3-dragshapes';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -953,7 +958,13 @@ function applyLayout(){
   updateSettingsBox();
 }
 function styleHot(el,b){
-  el.style.left=pct(b.left); el.style.top=pct(b.top); el.style.width=pct(b.width); el.style.height=pct(b.height); el.style.borderRadius=b.radius||'999px';
+  el.style.left=pct(b.left);
+  el.style.top=pct(b.top);
+  el.style.width=pct(b.width);
+  el.style.height=pct(b.height);
+  el.style.borderRadius=(b.shape==='circle' ? '50%' : (b.radius||'999px'));
+  el.classList.toggle('shape-heart', b.shape==='heart');
+  el.classList.toggle('shape-circle', b.shape==='circle');
 }
 function renderButtons(){
   const stage=$('stage'); stage.querySelectorAll('.hot').forEach(e=>e.remove());
@@ -1008,8 +1019,9 @@ function startButtonDrag(e,action,el){
   el=document.querySelector(`.hot[data-action="${action}"]`) || el;
   const b=LAYOUT.buttons[action];
   const rect=el.getBoundingClientRect();
-  const resizing=(e.clientX>rect.right-20 && e.clientY>rect.bottom-20);
+  const resizing=(e.clientX>rect.right-26 && e.clientY>rect.bottom-26);
   const start={x:e.clientX,y:e.clientY,left:b.left,top:b.top,width:b.width,height:b.height};
+  try{ el.setPointerCapture(e.pointerId); }catch(err){}
   function move(ev){
     const d=stagePctDelta(ev.clientX-start.x, ev.clientY-start.y);
     if(resizing){
@@ -1037,8 +1049,9 @@ function startScreenDrag(e){
   e.preventDefault(); e.stopPropagation();
   const s=LAYOUT.screenHole;
   const rect=$('screenHole').getBoundingClientRect();
-  const resizing=(e.clientX>rect.right-24 && e.clientY>rect.bottom-24);
+  const resizing=(e.clientX>rect.right-28 && e.clientY>rect.bottom-28);
   const start={x:e.clientX,y:e.clientY,left:s.left,top:s.top,width:s.width,height:s.height};
+  try{ $('screenHole').setPointerCapture(e.pointerId); }catch(err){}
   function move(ev){
     const d=stagePctDelta(ev.clientX-start.x, ev.clientY-start.y);
     if(resizing){
@@ -1105,9 +1118,9 @@ function useThreeButtonLayout(){
 
 function resetThreeButtons(){
   LAYOUT.buttons = {
-    prev:   { label:'A · Previous / hold back', short:'A', left:15.7, top:70.8, width:11.6, height:9.5, radius:'30%' },
-    select: { label:'B · Select / menu', short:'B', left:39.1, top:73.7, width:21.8, height:12.7, radius:'34%' },
-    next:   { label:'C · Next', short:'C', left:72.8, top:70.8, width:11.6, height:9.5, radius:'30%' }
+    prev:   { label:'A · Previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
+    select: { label:'B · Select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
+    next:   { label:'C · Next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
   };
   selectedButton='select';
   const sel=$('buttonSelect'); if(sel){ sel.innerHTML=''; Object.entries(LAYOUT.buttons).forEach(([k,b])=>{ const o=document.createElement('option'); o.value=k; o.textContent=(b.short?b.short+' · ':'')+b.label; sel.appendChild(o); }); }
@@ -1134,7 +1147,7 @@ function setupEditor(){
   const screenControls=[['screenLeft','screenHole','left'],['screenTop','screenHole','top'],['screenWidth','screenHole','width'],['screenHeight','screenHole','height']];
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
-  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:24.8,top:36.2,width:50.4,height:26.2}; LAYOUT.screenInner={insetX:2.0,insetY:2.0,bottomExtra:0.2}; applyLayout(); syncEditor(true); save();});
+  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:25.3,top:37.0,width:48.9,height:23.8}; LAYOUT.screenInner={insetX:1.6,insetY:1.6,bottomExtra:0.0}; applyLayout(); syncEditor(true); save();});
   if($('reset3Btn')) $('reset3Btn').addEventListener('click',resetThreeButtons);
   $('screenHole').addEventListener('pointerdown',startScreenDrag);
   syncEditor();
