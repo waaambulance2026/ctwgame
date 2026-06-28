@@ -102,13 +102,13 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-colourfit-02" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-simple3-01" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
 <aside class="editor" id="editor" aria-label="PetBot setup editor">
   <h2>PetBot Tamagotchi setup</h2>
-  <p>This version treats the ambulance as a fixed toy controller. The LCD is the app. The buttons are invisible click zones.</p>
+  <p>Simple 3-button Tamagotchi mode. A = left heart, B = pacifier/select, C = right heart. The LCD is a colour app screen.</p>
   <button class="btn primary" id="playModeBtn">Play mode</button>
   <button class="btn" id="guideBtn">Show click zones</button>
   <div class="tabs">
@@ -119,9 +119,8 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
   <section class="setupPanel active" id="panel-buttons">
     <h3>Toy click zones</h3>
     <p>These do not move the visible toy buttons. They only change the invisible places you can press.</p>
-    <div class="dragHint">Drag a highlighted click zone to move it. Drag its small bottom-right square to resize it.</div>
-    <button class="btn primary" id="snapButtonsBtn">Snap buttons to visible shell</button>
-    <button class="btn" id="threeButtonBtn">Use simple 3-button layout</button>
+    <div class="dragHint">Only edit these 3 invisible press areas: A left heart, B pacifier, C right heart.</div>
+    <button class="btn primary" id="reset3Btn">Reset 3 buttons</button>
     <label for="buttonSelect">Button zone</label>
     <select id="buttonSelect"></select>
     <label>Left/right <span id="btnLeftVal"></span></label><input id="btnLeft" type="range" min="0" max="100" step="0.1">
@@ -133,7 +132,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
     <h3>LCD screen fit</h3>
     <div class="dragHint">Drag the blue LCD box on the toy. Drag the bottom-right corner to resize it. Use the button below to snap it back to the cut-out screen.</div>
     <button class="btn primary" id="autoFitScreenBtn">Auto-fit current shell screen</button>
-    <label>Screen style</label><select id="screenTheme"><option value="color">Colour screen</option><option value="green">Retro green LCD</option></select>
+    <p><b>Screen style:</b> colour screen only.</p>
     <label>Screen left/right <span id="screenLeftVal"></span></label><input id="screenLeft" type="range" min="0" max="60" step="0.1">
     <label>Screen up/down <span id="screenTopVal"></span></label><input id="screenTop" type="range" min="10" max="70" step="0.1">
     <label>Screen width <span id="screenWidthVal"></span></label><input id="screenWidth" type="range" min="20" max="80" step="0.1">
@@ -149,11 +148,8 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
   </section>
   <h3>Button map</h3>
   <div class="legend">
-    <div>1 Explore / select</div><div>2 Back</div>
-    <div>3 Feed</div><div>4 Heal</div>
-    <div>5 Previous</div><div>6 Next</div>
-    <div>7 Play</div><div>8 Rest</div>
-    <div>9 Menu / stats</div>
+    <div>A = previous</div><div>B = select/menu</div>
+    <div>C = next</div><div>Hold A = back</div>
   </div>
   <details>
     <summary><b>Copy settings</b></summary>
@@ -709,19 +705,13 @@ let LAYOUT = {
   screenInner: { insetX:2.2, insetY:2.2, bottomExtra:0.4 },
   content: { petSize:58, petY:52 },
   buttons: {
-    explore: { label:'Explore', short:'1', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' },
-    back:    { label:'Back', short:'2', left:45.0, top:15.7, width:9.2, height:8.2, radius:'16%' },
-    feed:    { label:'Feed', short:'3', left:14.2, top:71.0, width:13.5, height:11.0, radius:'30%' },
-    heal:    { label:'Heal', short:'4', left:71.8, top:71.0, width:13.5, height:11.0, radius:'30%' },
-    prev:    { label:'Previous', short:'5', left:10.8, top:56.5, width:9.8, height:10.8, radius:'28%' },
-    next:    { label:'Next', short:'6', left:79.4, top:56.5, width:9.8, height:10.8, radius:'28%' },
-    play:    { label:'Play / select', short:'7', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
-    rest:    { label:'Rest', short:'8', left:38.4, top:81.8, width:23.2, height:6.8, radius:'35%' },
-    info:    { label:'Menu / pet info', short:'9', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' }
+    prev:   { label:'A · Previous / hold back', short:'A', left:14.0, top:70.6, width:14.0, height:11.5, radius:'32%' },
+    select: { label:'B · Select / menu', short:'B', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    next:   { label:'C · Next', short:'C', left:71.9, top:70.6, width:14.0, height:11.5, radius:'32%' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-tamagotchi-v3-colour-shell';
+const STORE_KEY = 'waaambulance-petbot-simple-3button-v1';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -771,7 +761,7 @@ let state = {
   flash:null,
   pets:[]
 };
-let selectedButton = 'info';
+let selectedButton = 'select';
 let selectedTab = 'buttons';
 
 function petDefaults(p,i){
@@ -854,17 +844,17 @@ function renderMenu(){
   const items=MENU.slice(start,start+6);
   return topBar('MAIN MENU', (state.menuIndex+1)+'/'+MENU.length) + `<div class="screenBody"><div class="menuGrid">` +
     items.map((m,i)=>`<div class="menuItem ${start+i===state.menuIndex?'selected':''}"><span class="ico">${m.icon}</span><span>${m.label}</span></div>`).join('') +
-    `</div></div><div class="bottomMsg">5/6 move · 1 or 9 select · 2 back</div>`;
+    `</div></div><div class="bottomMsg">A/C move · B select · hold A back</div>`;
 }
 function renderFeed(){
   const f=FOOD[state.feedIndex];
-  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>1/3 use · 5/6 browse</div></div></div></div><div class="bottomMsg">${state.message}</div>`;
+  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>B use · A/C browse</div></div></div></div><div class="bottomMsg">${state.message}</div>`;
 }
 function renderTrain(){
   const p=currentPet();
   return topBar('TRAINING', (state.trainIndex+1)+'/'+SKILLS.length) + `<div class="screenBody"><div class="choiceList">` +
     SKILLS.map((s,i)=>`<div class="choice ${i===state.trainIndex?'selected':''}"><span>${s.icon} ${s.label}</span><span>Lv ${p.training[s.key]||0}</span></div>`).join('') +
-    `</div></div><div class="bottomMsg">Costs energy + hunger · 1 trains</div>`;
+    `</div></div><div class="bottomMsg">B trains · hold A back</div>`;
 }
 function renderInfo(){
   const p=currentPet();
@@ -872,10 +862,10 @@ function renderInfo(){
     <div class="infoCard">Level<br>${p.level}</div><div class="infoCard">XP<br>${p.xp}</div>
     <div class="infoCard">Coins<br>${p.coins}</div><div class="infoCard">Love<br>${p.love}</div>
     <div class="infoCard">Hunger<br>${p.hunger}</div><div class="infoCard">Energy<br>${p.energy}</div>
-  </div></div><div class="bottomMsg">2 back · 5/6 switch pet</div>`;
+  </div></div><div class="bottomMsg">hold A back · A/C switch pet</div>`;
 }
 function renderPlaceholder(title, icon, msg){
-  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="actionFlash"><div><div style="font-size:2.6em;filter:grayscale(1) contrast(2)">${icon}</div><div>${msg}</div></div></div></div><div class="bottomMsg">2 back · this can connect to Discord data later</div>`;
+  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="actionFlash"><div><div style="font-size:2.6em;filter:grayscale(1) contrast(2)">${icon}</div><div>${msg}</div></div></div></div><div class="bottomMsg">hold A back · connect this to Discord data later</div>`;
 }
 function renderFlash(){
   return topBar('PETBOT') + `<div class="screenBody"><div class="actionFlash">${state.flash?.msg || state.message}</div></div>${barsHTML(currentPet())}`;
@@ -950,12 +940,7 @@ function handleAction(action){
   if(action==='prev') return move(-1);
   if(action==='next') return move(1);
   if(action==='back') return back();
-  if(action==='info') return state.mode==='home' ? setMode('menu','Main menu') : selectCurrent();
-  if(action==='explore') return state.mode==='menu'||state.mode==='feed'||state.mode==='train'?selectCurrent():quickExplore();
-  if(action==='feed') return state.mode==='feed'?useFood():setMode('feed','Choose food');
-  if(action==='heal') return quickHeal();
-  if(action==='play') return quickPlay();
-  if(action==='rest') return quickRest();
+  if(action==='select') return selectCurrent();
 }
 
 function applyScreenVars(){
@@ -987,9 +972,20 @@ function renderButtons(){
     el.setAttribute('aria-label',b.label||action);
     styleHot(el,b);
     const sp=document.createElement('span'); sp.textContent=b.short||''; el.appendChild(sp);
-    el.addEventListener('pointerdown',e=>startButtonDrag(e,action,el));
+    el.addEventListener('pointerdown',e=>{
+      if(document.body.classList.contains('editorOpen')) return startButtonDrag(e,action,el);
+      el.dataset.downAt=String(Date.now());
+      el.dataset.longHandled='0';
+      if(action==='prev'){
+        clearTimeout(el._holdTimer);
+        el._holdTimer=setTimeout(()=>{ el.dataset.longHandled='1'; handleAction('back'); },650);
+      }
+    });
+    el.addEventListener('pointerup',()=>clearTimeout(el._holdTimer));
+    el.addEventListener('pointerleave',()=>clearTimeout(el._holdTimer));
     el.addEventListener('click',e=>{
       if(document.body.classList.contains('editorOpen')){ e.preventDefault(); e.stopPropagation(); return; }
+      if(el.dataset.longHandled==='1'){ e.preventDefault(); return; }
       handleAction(action);
     });
     stage.appendChild(el);
@@ -1112,6 +1108,18 @@ function useThreeButtonLayout(){
   save();
 }
 
+
+function resetThreeButtons(){
+  LAYOUT.buttons = {
+    prev:   { label:'A · Previous / hold back', short:'A', left:14.0, top:70.6, width:14.0, height:11.5, radius:'32%' },
+    select: { label:'B · Select / menu', short:'B', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    next:   { label:'C · Next', short:'C', left:71.9, top:70.6, width:14.0, height:11.5, radius:'32%' }
+  };
+  selectedButton='select';
+  const sel=$('buttonSelect'); if(sel){ sel.innerHTML=''; Object.entries(LAYOUT.buttons).forEach(([k,b])=>{ const o=document.createElement('option'); o.value=k; o.textContent=(b.short?b.short+' · ':'')+b.label; sel.appendChild(o); }); }
+  applyLayout(); syncEditor(true); save();
+}
+
 function setupEditor(){
   $('editTab').addEventListener('click',()=>document.body.classList.toggle('editorOpen'));
   $('guideBtn').addEventListener('click',()=>{document.body.classList.toggle('guide'); $('guideBtn').textContent=document.body.classList.contains('guide')?'Hide click zones':'Show click zones';});
@@ -1133,9 +1141,7 @@ function setupEditor(){
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
   $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:24.55,top:36.1,width:50.9,height:26.8}; LAYOUT.screenInner={insetX:2.2,insetY:2.2,bottomExtra:0.4}; applyLayout(); syncEditor(true); save();});
-  $('screenTheme').addEventListener('change',e=>{state.screenTheme=e.target.value; applyTheme(); save();});
-  $('snapButtonsBtn').addEventListener('click',snapVisibleShellButtons);
-  $('threeButtonBtn').addEventListener('click',useThreeButtonLayout);
+  if($('reset3Btn')) $('reset3Btn').addEventListener('click',resetThreeButtons);
   $('screenHole').addEventListener('pointerdown',startScreenDrag);
   const psel=$('petSelect'); state.pets.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.name+' · '+p.type; psel.appendChild(o); });
   psel.addEventListener('change',e=>{state.petIndex=Number(e.target.value); render(); save();});
@@ -1145,8 +1151,9 @@ function setupEditor(){
 }
 function syncEditor(setValues=true){
   if(!$('buttonSelect')) return;
+  if(!LAYOUT.buttons[selectedButton]) selectedButton='select';
   const b=LAYOUT.buttons[selectedButton];
-  if(setValues){ $('buttonSelect').value=selectedButton; $('btnLeft').value=b.left; $('btnTop').value=b.top; $('btnWidth').value=b.width; $('btnHeight').value=b.height; $('screenLeft').value=LAYOUT.screenHole.left; $('screenTop').value=LAYOUT.screenHole.top; $('screenWidth').value=LAYOUT.screenHole.width; $('screenHeight').value=LAYOUT.screenHole.height; $('screenInset').value=LAYOUT.screenInner.insetX; $('screenTheme').value=state.screenTheme||'color'; $('petSelect').value=state.petIndex; $('petSize').value=currentPet().size||LAYOUT.content.petSize; $('petY').value=currentPet().y||LAYOUT.content.petY; }
+  if(setValues){ $('buttonSelect').value=selectedButton; $('btnLeft').value=b.left; $('btnTop').value=b.top; $('btnWidth').value=b.width; $('btnHeight').value=b.height; $('screenLeft').value=LAYOUT.screenHole.left; $('screenTop').value=LAYOUT.screenHole.top; $('screenWidth').value=LAYOUT.screenHole.width; $('screenHeight').value=LAYOUT.screenHole.height; $('screenInset').value=LAYOUT.screenInner.insetX; $('petSelect').value=state.petIndex; $('petSize').value=currentPet().size||LAYOUT.content.petSize; $('petY').value=currentPet().y||LAYOUT.content.petY; }
   $('btnLeftVal').textContent=pct(b.left); $('btnTopVal').textContent=pct(b.top); $('btnWidthVal').textContent=pct(b.width); $('btnHeightVal').textContent=pct(b.height);
   $('screenLeftVal').textContent=pct(LAYOUT.screenHole.left); $('screenTopVal').textContent=pct(LAYOUT.screenHole.top); $('screenWidthVal').textContent=pct(LAYOUT.screenHole.width); $('screenHeightVal').textContent=pct(LAYOUT.screenHole.height); $('screenInsetVal').textContent=pct(LAYOUT.screenInner.insetX);
   $('petSizeVal').textContent=pct(currentPet().size||LAYOUT.content.petSize); $('petYVal').textContent=pct(currentPet().y||LAYOUT.content.petY);
@@ -1156,7 +1163,7 @@ function syncEditor(setValues=true){
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') handleAction('prev');
   else if(e.key==='ArrowRight') handleAction('next');
-  else if(e.key==='Enter' || e.key===' ') { e.preventDefault(); handleAction('info'); }
+  else if(e.key==='Enter' || e.key===' ') { e.preventDefault(); handleAction('select'); }
   else if(e.key==='Escape') handleAction('back');
   else if(e.key==='f') handleAction('feed');
   else if(e.key==='p') handleAction('play');
