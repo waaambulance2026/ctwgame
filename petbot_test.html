@@ -20,14 +20,14 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));touch-action:none;user-select:none}
 .device{position:absolute;z-index:10;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
-.lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:"Courier New",monospace;color:var(--lcd-text)}
+.lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:Arial,Helvetica,sans-serif;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
 #lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:6px 9px;text-shadow:0 1px rgba(255,255,255,.22)}
 .lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-weight:1000;font-size:clamp(9px,.88vw,13px);line-height:1;min-height:16px;z-index:6}
 .lcdTop b{font-weight:1000}
 .lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
-.bottomMsg{font-weight:1000;font-size:clamp(8px,.78vw,12px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;background:rgba(255,255,255,.55);border-radius:999px;padding:3px 8px;margin:0 2px 4px;color:#0f1825;max-width:100%}
+.bottomMsg{font-weight:1000;font-size:clamp(9px,.86vw,13px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;background:rgba(255,255,255,.55);border-radius:999px;padding:3px 8px;margin:0 2px 4px;color:#0f1825;max-width:100%}
 .petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:62%;height:62%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
 .petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
 .statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 2px 3px}
@@ -117,7 +117,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 <button class="editTab" id="editTab">Edit</button>
 <aside class="editor" id="editor" aria-label="PetBot setup editor">
   <h2>PetBot Tamagotchi setup</h2>
-  <p>Simple version. Only 3 buttons matter: A = left heart, B = pacifier, C = right heart.</p>
+  <p>Simple version. Only 3 buttons matter: left heart = back/previous, pacifier = OK/menu, right heart = next.</p>
   <button class="btn primary" id="playModeBtn">Play mode</button>
   <button class="btn" id="guideBtn">Show 3 button zones</button>
   <div class="tabs">
@@ -151,8 +151,8 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 
   <h3>3 button map</h3>
   <div class="legend">
-    <div>A = previous</div><div>B = select/menu</div>
-    <div>C = next</div><div>Hold A = back</div>
+    <div>left heart = ◀</div><div>pacifier = ● OK</div>
+    <div>right heart = ▶</div><div>hold left heart = back</div>
   </div>
   <details>
     <summary><b>Copy settings</b></summary>
@@ -708,9 +708,9 @@ let LAYOUT = {
   screenInner: { insetX:0.4, insetY:0.4, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
-    prev:   { label:'A · Previous / hold back', short:'A', left:19.628730949147428, top:70.68646446355817, width:12.3, height:6, radius:'30%', shape:'heart' },
-    select: { label:'B · Select / menu', short:'B', left:45.27735023389165, top:72.51712690508526, width:9.265746189829486, height:7.341436547457371, radius:'50%', shape:'circle' },
-    next:   { label:'C · Next', short:'C', left:68.3931844474624, top:71.29005583220159, width:12.3, height:6, radius:'30%', shape:'heart' }
+    prev:   { label:'Left heart · previous / hold back', short:'A', left:19.628730949147428, top:70.68646446355817, width:12.3, height:6, radius:'30%', shape:'heart' },
+    select: { label:'Pacifier · select / menu', short:'B', left:45.27735023389165, top:72.51712690508526, width:9.265746189829486, height:7.341436547457371, radius:'50%', shape:'circle' },
+    next:   { label:'Right heart · next', short:'C', left:68.3931844474624, top:71.29005583220159, width:12.3, height:6, radius:'30%', shape:'heart' }
   }
 };
 
@@ -759,7 +759,7 @@ let state = {
   menuIndex:0,
   feedIndex:0,
   trainIndex:0,
-  message:'A ◀   B menu   C ▶',
+  message:'◀  MENU  ▶',
   screenTheme:'color',
   flash:null,
   pets:[]
@@ -845,17 +845,17 @@ function renderHome(){
 function renderMenu(){
   const m=MENU[state.menuIndex];
   return topBar('MENU', (state.menuIndex+1)+'/'+MENU.length) +
-    `<div class="screenBody"><div class="menuGrid"><div class="menuItem selected"><span class="ico">${m.icon}</span><span>${m.label}</span></div></div></div><div class="bottomMsg">A/C choose · B ok</div>`;
+    `<div class="screenBody"><div class="menuGrid"><div class="menuItem selected"><span class="ico">${m.icon}</span><span>${m.label}</span></div></div></div><div class="bottomMsg">◀ / ▶ choose  ·  ● OK</div>`;
 }
 function renderFeed(){
   const f=FOOD[state.feedIndex];
-  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>B use · A/C browse</div></div></div></div><div class="bottomMsg">${state.message}</div>`;
+  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>◀ / ▶ browse  ·  ● use</div></div></div></div><div class="bottomMsg">${state.message}</div>`;
 }
 function renderTrain(){
   const p=currentPet();
   return topBar('TRAINING', (state.trainIndex+1)+'/'+SKILLS.length) + `<div class="screenBody"><div class="choiceList">` +
     SKILLS.map((s,i)=>`<div class="choice ${i===state.trainIndex?'selected':''}"><span>${s.icon} ${s.label}</span><span>Lv ${p.training[s.key]||0}</span></div>`).join('') +
-    `</div></div><div class="bottomMsg">B trains · hold A back</div>`;
+    `</div></div><div class="bottomMsg">● train  ·  hold ◀ back</div>`;
 }
 function renderInfo(){
   const p=currentPet();
@@ -863,10 +863,10 @@ function renderInfo(){
     <div class="infoCard">Level<br>${p.level}</div><div class="infoCard">XP<br>${p.xp}</div>
     <div class="infoCard">Coins<br>${p.coins}</div><div class="infoCard">Love<br>${p.love}</div>
     <div class="infoCard">Hunger<br>${p.hunger}</div><div class="infoCard">Energy<br>${p.energy}</div>
-  </div></div><div class="bottomMsg">hold A back · A/C switch pet</div>`;
+  </div></div><div class="bottomMsg">hold ◀ back  ·  ◀ / ▶ pet</div>`;
 }
 function renderPlaceholder(title, icon, msg){
-  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">${icon}</div><div class="bigStatusText">Coming soon</div></div></div></div><div class="bottomMsg">hold A = back</div>`;
+  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">${icon}</div><div class="bigStatusText">Coming soon</div></div></div></div><div class="bottomMsg">hold ◀ = back</div>`;
 }
 function renderFlash(){
   return topBar('PETBOT') + `<div class="screenBody"><div class="actionFlash">${state.flash?.msg || state.message}</div></div>${barsHTML(currentPet())}`;
@@ -897,7 +897,7 @@ function selectCurrent(){
 }
 function back(){
   if(state.mode==='home') return flash('PetBot is already home');
-  if(state.mode==='menu') return setMode('home','A ◀   B menu   C ▶');
+  if(state.mode==='menu') return setMode('home','◀  MENU  ▶');
   return setMode('menu','Choose an action');
 }
 function move(dir){
@@ -1120,9 +1120,9 @@ function useThreeButtonLayout(){
 
 function resetThreeButtons(){
   LAYOUT.buttons = {
-    prev:   { label:'A · Previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
-    select: { label:'B · Select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
-    next:   { label:'C · Next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
+    prev:   { label:'Left heart · previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
+    select: { label:'Pacifier · select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
+    next:   { label:'Right heart · next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
   };
   selectedButton='select';
   const sel=$('buttonSelect'); if(sel){ sel.innerHTML=''; Object.entries(LAYOUT.buttons).forEach(([k,b])=>{ const o=document.createElement('option'); o.value=k; o.textContent=(b.short?b.short+' · ':'')+b.label; sel.appendChild(o); }); }
