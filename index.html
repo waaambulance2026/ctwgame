@@ -658,6 +658,55 @@ body.editMode .targetPick{min-height:42px}
   line-height:1.35;
 }
 
+
+
+/* PETBOT APP IFRAME OVERLAY
+   This shows the separate petbot_test.html Tamagotchi app inside index.html.
+   Keep petbot_test.html and petbot_device.png in the repo root. */
+.petbotAppOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  display:none;
+  background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);
+}
+.petbotAppOverlay.show{display:block;}
+.petbotAppTopbar{
+  position:absolute;
+  z-index:2;
+  left:calc(env(safe-area-inset-left) + 12px);
+  right:calc(env(safe-area-inset-right) + 12px);
+  top:calc(env(safe-area-inset-top) + 10px);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  pointer-events:none;
+}
+.petbotAppTitle,
+.petbotAppClose{
+  pointer-events:auto;
+  border:0;
+  border-radius:999px;
+  padding:10px 14px;
+  font-weight:900;
+  box-shadow:0 8px 22px rgba(0,0,0,.18);
+}
+.petbotAppTitle{background:rgba(255,255,255,.9);color:#24152e;}
+.petbotAppClose{background:#F5C542;color:#21142d;}
+.petbotAppFrame{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  background:transparent;
+}
+@media(max-width:820px){
+  .petbotAppTitle{display:none;}
+  .petbotAppClose{padding:12px 16px;font-size:16px;}
+}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -666,7 +715,7 @@ body.editMode .targetPick{min-height:42px}
 <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
 <div id="game">
   <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div id="buildingObjects"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
-  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Pet Care</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
+  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Pet Care</button><button class="pill purple" id="petbotAppBtn">PetBot App</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
   <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p><b>Move:</b> A/D or arrow keys. <b>Jump:</b> Space, W or ↑. <b>Enter:</b> stand near a glowing building and press Enter. Menu opens Solo/Team, Pet Care and Admin Builder.</p></aside>
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
@@ -700,6 +749,16 @@ body.editMode .targetPick{min-height:42px}
       <div class="statusBox petStatusLine" id="petStatus">PetBot ready.</div>
     </div>
   </aside>
+
+  <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
+  <div class="petbotAppOverlay" id="petbotAppOverlay" aria-hidden="true">
+    <iframe class="petbotAppFrame" id="petbotAppFrame" title="Waaambulance PetBot Tamagotchi" data-src="/petbot_test.html?v=15"></iframe>
+    <div class="petbotAppTopbar">
+      <div class="petbotAppTitle">🐾 PetBot Tamagotchi</div>
+      <button class="petbotAppClose" id="closePetbotAppBtn" type="button">Close</button>
+    </div>
+  </div>
+
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
   <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
@@ -2775,6 +2834,45 @@ function fitGameToScreen(){
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
 fitGameToScreen();
+
+
+// PETBOT APP OVERLAY HOOK
+// Keeps the Tamagotchi app separate in petbot_test.html but shows it inside index.html.
+(function(){
+  function byId(id){ return document.getElementById(id); }
+  const openBtn = byId('petbotAppBtn');
+  const overlay = byId('petbotAppOverlay');
+  const frame = byId('petbotAppFrame');
+  const closeBtn = byId('closePetbotAppBtn');
+  if(!openBtn || !overlay || !frame || !closeBtn) return;
+
+  function openPetbotApp(){
+    if(!frame.src){ frame.src = frame.dataset.src || '/petbot_test.html'; }
+    overlay.classList.add('show');
+    overlay.setAttribute('aria-hidden','false');
+    if(typeof paused !== 'undefined') paused = true;
+  }
+
+  function closePetbotApp(){
+    overlay.classList.remove('show');
+    overlay.setAttribute('aria-hidden','true');
+  }
+
+  openBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    openPetbotApp();
+  });
+  closeBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    closePetbotApp();
+  });
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape' && overlay.classList.contains('show')) closePetbotApp();
+  });
+})();
+
 // EDIT SECTION 23: JAVASCRIPT ENDS HERE
 </script>
 </body>
