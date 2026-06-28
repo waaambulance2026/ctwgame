@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 10</title>
+<title>CTW PetBot Tamagotchi - Stage 11</title>
 <style>
 :root{
   --ink:#16223f;
@@ -200,6 +200,27 @@ body.questPlaying .top,body.questPlaying .body{display:none!important;}
 
 @media (max-width:520px){.petBody .petStage{max-height:82px!important}.petBody .stat{grid-template-columns:15px 1fr 24px!important;font-size:clamp(7px,.9vw,10px)!important}.petBody .bar{height:7px!important}.habitatFrame,.hookPond{min-height:82px}.hookPrize{font-size:24px}}
 
+
+/* Stage 11: cleaner real-data screens. No fake shop items, no accidental item use by tapping cards. */
+.panelHead{font-size:clamp(7px,.82vw,10px)!important;line-height:1.05!important;min-height:0!important;padding:0!important;margin:0!important;opacity:.78!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.panelActionMsg{font-size:clamp(7px,.82vw,10px)!important;line-height:1.05!important;min-height:12px!important;max-height:18px!important;overflow:hidden!important;text-align:center!important;font-weight:900!important}
+.panelHelp{display:none!important}
+.panelCard{cursor:pointer!important}
+.habitatFrame.stage11Simple{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.habitatPet.stage11Pet{left:50%!important;bottom:7%!important;width:24%!important;height:36%!important;z-index:80!important;opacity:.98!important}
+.habitatLabel{position:absolute;left:6px;right:6px;bottom:4px;z-index:120;background:rgba(255,255,255,.62);border-radius:7px;padding:2px 4px;font-size:clamp(7px,.78vw,10px);font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center center!important}
+.hookFloatPrize{width:16%!important;height:20%!important;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))!important}
+.hookLine{top:-2%!important;height:55%!important}
+.hookLine:after{font-size:20px!important;bottom:-18px!important}
+.hookPrizeImage{top:46%!important;width:30%!important;height:36%!important}
+.hookResult{font-size:clamp(6px,.72vw,9px)!important;bottom:2px!important;padding:2px 3px!important;background:rgba(255,255,255,.72)!important}
+.petBody .petStage{min-height:58px!important;max-height:86px!important;flex:1 1 52%!important;overflow:hidden!important}
+.petBody .petImg{max-width:68%!important;max-height:68%!important}
+.petBody .stats{gap:2px!important;margin-top:1px!important}
+.petBody .stat{padding:2px 4px!important;font-size:clamp(6px,.75vw,9px)!important;grid-template-columns:15px 1fr 22px!important}
+.petBody .bar{height:6px!important}
+
 </style>
 </head>
 <body>
@@ -321,15 +342,14 @@ function renderPanel(title){
   const kind=String(state.panelKind||title).toLowerCase().replace(/[^a-z]/g,'');
   const isLoading=state.panelLoading&&state.panelKind===kind;
   const items=Array.isArray(state.panelItems)?state.panelItems:[];
-  const msg=isLoading?'Loading '+title+'...':(state.panelMessage||('No '+title+' rows found yet.'));
+  const msg=(isLoading&&!items.length)?('Loading '+title+'...'):(state.panelMessage||('No '+title+' rows found yet.'));
   const pageSize=4;
   const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
   const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
   const pageItems=items.slice(startIndex,startIndex+pageSize);
   const gridClass='panelGrid '+(kind==='shop'?'shopGrid':kind==='inventory'?'invGrid':kind==='habitat'?'habitatGrid':(kind==='hook'||kind==='hookawaa')?'hookGrid':'');
   const cardClass='panelCard '+(kind==='shop'?'shopCard':kind==='inventory'?'invCard':kind==='habitat'?'habitatCard':(kind==='hook'||kind==='hookawaa')?'hookCard':'');
-  const actionHint=kind==='shop'?'Select buys highlighted item':kind==='inventory'?'Select uses highlighted item':(kind==='hook'||kind==='hookawaa')?'Select plays Hook-a-Waaambulance':kind==='habitat'?'Select views/equips highlighted habitat item':'Select';
-  return top(title,items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="${gridClass}">${pageItems.length?pageItems.map((it,j)=>{const realIndex=startIndex+j;return `<div class="${cardClass} ${realIndex===idx?'active':''}" data-panel-index="${realIndex}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`}).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div><div class="panelHelp">${esc(actionHint)}</div></div>`;
+  return top(title,items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="${gridClass}">${pageItems.length?pageItems.map((it,j)=>{const realIndex=startIndex+j;return `<div class="${cardClass} ${realIndex===idx?'active':''}" data-panel-index="${realIndex}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`}).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
 }
 
 function itemImage(it){
@@ -378,51 +398,24 @@ function addLayerFromField(layers,row,keyMap,fieldNames,cls,defaults){
   return true;
 }
 function buildHabitatLayers(items,pet){
-  const rows=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean);
-  const usefulRows=rows.filter(r=>!rowLooksLikeCareItem(r));
-  const keyMap=buildHabitatKeyMap(usefulRows);
+  const rows=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean).filter(r=>!rowLooksLikeCareItem(r));
+  const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
   const layers=[];
-
-  // 1) Wide user_habitats_layout rows: columns like background_key, decor_1, decor_2, pet_image_url, etc.
-  for(const row of usefulRows){
-    addLayerFromField(layers,row,keyMap,['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url'],'background',{x:0,y:0,w:100,h:100,z:1});
-    addLayerFromField(layers,row,keyMap,['background_image_url','background_url','bg_image_url','background_key','bg_key'],'background',{x:0,y:0,w:100,h:100,z:1});
-    addLayerFromField(layers,row,keyMap,['base_image_url','floor_image_url','base_url','base_key'],'base',{x:50,y:82,w:100,h:36,z:5});
-    addLayerFromField(layers,row,keyMap,['decor_1_image_url','decor1_image_url','decor_1_url','decor1_url','decor_1','decor1','decor_key_1'],'decor',{x:28,y:58,w:30,h:34,z:20});
-    addLayerFromField(layers,row,keyMap,['decor_2_image_url','decor2_image_url','decor_2_url','decor2_url','decor_2','decor2','decor_key_2'],'decor',{x:72,y:58,w:30,h:34,z:22});
-    addLayerFromField(layers,row,keyMap,['decor_3_image_url','decor3_image_url','decor_3_url','decor3_url','decor_3','decor3','decor_key_3'],'decor',{x:50,y:42,w:28,h:30,z:24});
-    addLayerFromField(layers,row,keyMap,['special_image_url','special_url','special_key','special'],'decor',{x:50,y:32,w:24,h:26,z:30});
-    addLayerFromField(layers,row,keyMap,['pet_image_url','active_pet_image_url','pet_url'],'petLayer',{x:52,y:67,w:28,h:42,z:80});
+  const compositeFields=['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url'];
+  const compositeRow=rows.find(r=>cleanImageUrl(pick(r,compositeFields,'')));
+  if(compositeRow){
+    layers.push(makeHabitatLayer('background',cleanImageUrl(pick(compositeRow,compositeFields,'')),0,0,100,100,1));
+    return layers.filter(Boolean);
   }
-
-  // 2) Row-per-layer layout, usually from user_habitats_layout or Sheet51.
-  const imageRows=usefulRows.filter(r=>itemImage(r));
-  if(!layers.length){
-    const bg=imageRows.find(r=>/background|room|wall|floor|full|loadout|preview/.test(habitatSlot(r)+' '+String(itemTitle(r)).toLowerCase())) || imageRows[0] || null;
-    if(bg)layers.push(makeHabitatLayer('background',itemImage(bg),0,0,100,100,1));
-  }
-  for(const r of imageRows){
-    const url=itemImage(r);
-    if(!url)continue;
-    const slot=habitatSlot(r);
-    const title=String(itemTitle(r)).toLowerCase();
-    if(/background|room|wall|floor|full|loadout|preview/.test(slot+' '+title))continue;
-    const x=clamp(n(pick(r,['overlay_x','x','x_pos','display_x','layout_x'],'50'),50),0,100);
-    const y=clamp(n(pick(r,['overlay_y','y','y_pos','display_y','layout_y'],'62'),62),0,100);
-    const w=clamp(n(pick(r,['overlay_width','width','w','display_width','size'],'26'),26),6,90);
-    const h=clamp(n(pick(r,['overlay_height','height','h','display_height'],'26'),26),6,90);
-    const z=n(pick(r,['z','z_index','layer','habitat_z_index'],'20'),20);
-    layers.push(makeHabitatLayer(/pet/.test(slot+' '+title)?'petLayer':'decor',url,x,y,w,h,z));
-  }
-
-  // 3) Always show the selected pet if no pet layer already came from the sheet.
-  if(!layers.some(l=>l&&l.cls==='petLayer')){
-    const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
-    if(petUrl)layers.push(makeHabitatLayer('petLayer',petUrl,52,68,28,42,80));
-  }
-  // de-dupe by url/class/position
-  const seen=new Set();
-  return layers.filter(Boolean).filter(l=>{const k=[l.cls,l.url,l.x,l.y,l.w,l.h].join('|');if(seen.has(k))return false;seen.add(k);return true;});
+  const backgroundFields=['background_image_url','habitat_background_url','background_url','bg_image_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image'];
+  const bgRow=rows.find(r=>{
+    const hay=String(habitatSlot(r)+' '+itemTitle(r)+' '+Object.keys(r||{}).join(' ')).toLowerCase();
+    return /background|room|habitat|loadout/.test(hay) && cleanImageUrl(pick(r,backgroundFields,''));
+  }) || rows.find(r=>cleanImageUrl(pick(r,backgroundFields,'')));
+  const bgUrl=bgRow?cleanImageUrl(pick(bgRow,backgroundFields,'')):'';
+  if(bgUrl)layers.push(makeHabitatLayer('background',bgUrl,0,0,100,100,1));
+  if(petUrl)layers.push(makeHabitatLayer('petLayer',petUrl,50,70,24,34,80));
+  return layers.filter(Boolean);
 }
 function habitatLayerHtml(layer){
   if(!layer||!layer.url)return'';
@@ -434,8 +427,9 @@ function renderHabitatPanel(){
   const pet=currentPet()||{};
   const layers=buildHabitatLayers(items,pet);
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg)}<br><small>Looking for user_habitats_layout / habitat loadout image.</small></div>` : '';
-  return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg)}<br><small>user_habitats_layout did not return a usable image yet.</small></div>` : '';
+  const label = layers.length ? `<div class="habitatLabel">${esc(pet.name||'Habitat')}</div>` : '';
+  return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}${label}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
   const url=itemImage(it);
@@ -484,7 +478,7 @@ function wireRenderedControls(){
   document.querySelectorAll('[data-player-index]').forEach(el=>el.addEventListener('click',()=>{state.loginIndex=Number(el.dataset.playerIndex)||0;choosePlayer();}));
   document.querySelectorAll('[data-menu-index]').forEach(el=>el.addEventListener('click',()=>{state.menuIndex=Number(el.dataset.menuIndex)||0;activateMenu();}));
   document.querySelectorAll('[data-game-index]').forEach(el=>el.addEventListener('click',()=>{state.gameIndex=Number(el.dataset.gameIndex)||0;activateGameMenu();}));
-  document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;handleSelect();}));
+  document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;state.panelActionMsg='';render();}));
   const input=$('passInput');
   if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
 }
@@ -704,6 +698,41 @@ function parseGviz(text){
   return rows.filter(r=>Object.values(r).some(v=>clean(v)!==''));
 }
 
+
+function isRealShopRow(row){
+  const title=norm(pick(row,['item_name','shop_name','name','label','title'],''));
+  if(!title)return false;
+  if(['caresnack','happytoy','restblanket','smallhealkit'].includes(title))return false;
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  if(/hook_waaambulance|hook-a-waa|prize pool/.test(s))return false;
+  return true;
+}
+function isHookPrizeRow(row){
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  return /hook_waaambulance/.test(s) || !!clean(pick(row,['hook_key','collection_key','hook_name'],''));
+}
+function normaliseHookRow(row){
+  const r=normaliseStoreRow(row);
+  r.item_id=pick(row,['hook_key','reward_item_key','item_id','item_key','key','id'],r.item_id||'');
+  r.item_name=pick(row,['name','reward_item_name','hook_name','title','item_name'],r.item_name||'Hook prize');
+  r.price=pick(row,['play_cost','cost'],r.price||'');
+  r.category=pick(row,['rarity','collection_name','category'],r.category||'');
+  r.image_url=pick(row,['image_url','image','url','cloudinary_image_url'],r.image_url||'');
+  return r;
+}
+function weightedPrize(pool){
+  const arr=(pool||[]).filter(Boolean);
+  if(!arr.length)return null;
+  const total=arr.reduce((sum,it)=>sum+Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0)),0);
+  if(total<=0)return arr[Math.floor(Math.random()*arr.length)];
+  let roll=Math.random()*total;
+  for(const it of arr){
+    roll-=Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0));
+    if(roll<=0)return it;
+  }
+  return arr[arr.length-1];
+}
+
 async function loadPanelData(kind){
   const userId=state.player?.userId||'';
   const p=currentPet()||{};
@@ -719,60 +748,32 @@ async function loadPanelData(kind){
     return rows.filter(r=>strictUserMatch(r,userId)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
   }
   if(kind==='shop'){
-    rows=await loadRowsFromProxyAndSheets(['view_shop','care_item_menu','shop'],['shop','pet_shop','shop_items','items','pet_items','care_items','food_items','toy_items','habitat_shop'],userId,p);
-    const shop=rows.filter(r=>shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
-    return shop.length ? shop : fallbackShopItems(p);
+    rows=await loadRowsFromProxyAndSheets(['view_shop'],['shop','pet_shop','shop_items','habitat_shop'],userId,p);
+    const shop=rows.filter(r=>isRealShopRow(r)&&shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    return shop;
   }
   if(kind==='habitat'){
-    rows=await loadRowsFromProxyAndSheets(['view_habitat','habitat'],['user_habitats_layout','user_habitats_layouts','user_habitat_loadout','user_habitat_layouts','user_habitat_inventory','habitat_layouts','habitat_shop','Sheet51'],userId,p);
+    rows=await loadRowsFromProxyAndSheets(['view_habitat'],['user_habitats_layout','user_habitat_loadout','user_habitat_layouts'],userId,p);
     const userRows=rows.filter(r=>strictUserMatch(r,userId));
     const petRows=userRows.filter(r=>matchPet(r,p));
-    const catalogRows=rows.filter(r=>!hasOtherUser(r,userId));
-    const chosen=[...(petRows.length?petRows:userRows),...catalogRows];
+    const chosen=(petRows.length?petRows:userRows);
     const base=dedupeRows(chosen).map(normaliseHabitatRow).filter(x=>!rowLooksLikeCareItem(x.raw||x) && (itemTitle(x)!=='Item' || itemImage(x) || habitatKey(x.raw||x)));
     base.sort((a,b)=>(itemImage(b)?1:0)-(itemImage(a)?1:0));
     return base.length?base:[{item_name:'No habitat loadout image found yet',item_type:'habitat'}];
   }
   if(kind==='hook'){
-    rows=await loadRowsFromProxyAndSheets(['view_hook_prizes','get_hook_waaambulance'],['hook_waaambulance','hook_waaambulance_prizes'],userId,p);
-    const prizes=rows.map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
-    return prizes.length?prizes:[{item_id:'hook_ticket',item_name:'Hook-a-Waaambulance ticket',price:15,rarity:'common'},{item_id:'hook_seed_mix',item_name:'Bird seed prize',price:15,rarity:'common'},{item_id:'hook_siren_toy',item_name:'Siren toy prize',price:15,rarity:'rare'}];
+    rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
+    const prizes=rows.filter(isHookPrizeRow).map(normaliseHookRow).filter(x=>itemTitle(x)!=='Item' && (itemImage(x)||x.item_id));
+    return prizes;
   }
   return [];
 }
-function fallbackShopItems(p){
-  const species=String(p.pet||p.species||p.code||'pet').toLowerCase();
-  const cat=String(p.category||'').toLowerCase();
-  const base=[
-    {item_id:'care_snack',item_name:'Care snack',price:10,item_type:'food'},
-    {item_id:'happy_toy',item_name:'Happy toy',price:18,item_type:'toy'},
-    {item_id:'rest_blanket',item_name:'Rest blanket',price:22,item_type:'comfort'},
-    {item_id:'small_heal',item_name:'Small heal kit',price:25,item_type:'medicine'}
-  ];
-  if(cat.includes('bird')||species.includes('raven')||species.includes('owl')) base.unshift(
-    {item_id:'bird_seed_mix',item_name:'Bird seed mix',price:10,item_type:'food'},
-    {item_id:'shiny_trinket',item_name:'Shiny trinket',price:16,item_type:'toy'},
-    {item_id:'perch_upgrade',item_name:'Perch upgrade',price:40,item_type:'habitat'}
-  );
-  else if(cat.includes('reptile')||species.includes('chameleon')||species.includes('snake')||species.includes('gecko')) base.unshift(
-    {item_id:'cricket_box',item_name:'Cricket box',price:12,item_type:'food'},
-    {item_id:'heat_lamp',item_name:'Heat lamp',price:35,item_type:'habitat'}
-  );
-  else if(cat.includes('aquatic')||species.includes('axolotl')||species.includes('fish')) base.unshift(
-    {item_id:'axolotl_pellets',item_name:'Axolotl pellets',price:12,item_type:'food'},
-    {item_id:'kelp_hideout',item_name:'Kelp hideout',price:35,item_type:'habitat'}
-  );
-  else if(cat.includes('mythical')||species.includes('dragon')||species.includes('unicorn')) base.unshift(
-    {item_id:'magic_snack',item_name:'Magic snack',price:15,item_type:'food'},
-    {item_id:'sparkle_toy',item_name:'Sparkle toy',price:28,item_type:'toy'}
-  );
-  return dedupeRows(base);
-}
+function fallbackShopItems(p){ return []; }
 async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   const all=[];
   for(const mode of modes){
     try{
-      const q=new URLSearchParams({mode,user_id:String(userId||''),pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage9'});
+      const q=new URLSearchParams({mode,user_id:String(userId||''),pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage11'});
       const data=await fetchJson('/api/petbot?'+q.toString(),12000);
       all.push(...findArray(data,['inventory','shop','items','rows','data','results','prizes','catalogue','catalog']));
     }catch(e){log('panel proxy '+mode+' failed',e.message||e);}
@@ -867,7 +868,7 @@ function openDataPanel(kind){
   state.screen=kind;state.panelKind=kind;state.panelLoading=true;state.panelItems=[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage='Loading '+kind+'...';if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}render();
   loadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
-    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');render();
+    state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');render();
   }).catch(err=>{
     if(state.panelKind!==kind)return;
     state.panelItems=[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
@@ -906,11 +907,11 @@ async function useSelectedItem(item){
 }
 async function playHook(item){
   const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
-  const prize=pool[Math.floor(Math.random()*Math.max(1,pool.length))] || item || {item_name:'Mystery Waaambulance prize',price:15};
+  const prize=weightedPrize(pool) || item || {item_name:'Mystery Waaambulance prize',price:15};
   state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
   await new Promise(r=>setTimeout(r,520));
   try{
-    const data=await postPetbotAction({mode:'play_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize)});
+    const data=await postPetbotAction({mode:'play_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});
     state.panelActionMsg=data.message||data.prize_name||('You hooked '+itemTitle(prize));
   }catch(e){
     state.panelActionMsg='You hooked '+itemTitle(prize)+' · saving is not enabled yet';
