@@ -8,9 +8,9 @@
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
   --screen-left:24.55%; --screen-top:36.1%; --screen-width:50.9%; --screen-height:26.8%;
-  --lcd-bg:linear-gradient(180deg,#cfe9ff,#9fcfff 55%,#84b7fb);
-  --lcd-text:#13213b;
-  --lcd-grid:rgba(18,33,59,.08);
+  --lcd-bg:linear-gradient(180deg,#f7fbff,#cfe9ff 58%,#a9d2ff);
+  --lcd-text:#0f1825;
+  --lcd-grid:rgba(16,33,59,.045);
   --lcd-shadow:rgba(12,28,63,.20);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -22,30 +22,30 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:"Courier New",monospace;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
-#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:4px 6px;text-shadow:0 1px rgba(255,255,255,.18)}
-.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:4px;align-items:center;font-weight:1000;font-size:clamp(7px,.70vw,11px);line-height:1;min-height:12px;z-index:6}
+#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:6px 9px;text-shadow:0 1px rgba(255,255,255,.22)}
+.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-weight:1000;font-size:clamp(9px,.85vw,13px);line-height:1.05;min-height:15px;z-index:6}
 .lcdTop b{font-weight:1000}
 .lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
-.bottomMsg{font-weight:1000;font-size:clamp(6px,.62vw,10px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.13);border-radius:999px;padding:2px 7px;margin:0 2px 3px}
+.bottomMsg{font-weight:1000;font-size:clamp(8px,.78vw,12px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.35);border-radius:999px;padding:3px 8px;margin:0 2px 4px;color:#0f1825}
 .petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:58%;height:58%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
 .petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
-.statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:0 2px 3px}
-.bar{height:clamp(5px,.60vw,8px);border-radius:999px;border:1.5px solid rgba(35,49,23,.75);background:rgba(35,49,23,.15);overflow:hidden}
+.statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 2px 3px}
+.bar{height:clamp(7px,.70vw,10px);border-radius:999px;border:1.5px solid rgba(35,49,23,.75);background:rgba(35,49,23,.15);overflow:hidden}
 .bar span{display:block;height:100%;background:linear-gradient(90deg,#ff7cb7,#7acbff);width:50%}
 .menuGrid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px 2px 2px}
-.menuItem{border:1.5px solid rgba(35,49,23,.55);border-radius:7px;background:rgba(255,255,255,.10);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:3px;padding:2px 4px;font-weight:1000;font-size:clamp(6px,.64vw,10px)}
+.menuItem{border:1.5px solid rgba(20,34,63,.35);border-radius:9px;background:rgba(255,255,255,.28);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:4px;padding:4px 6px;font-weight:1000;font-size:clamp(8px,.80vw,12px)}
 .menuItem.selected{background:rgba(35,49,23,.20);outline:2px solid rgba(35,49,23,.60)}
 .ico{font-size:clamp(11px,1.5vw,18px);line-height:1;}
 .listScreen{width:100%;height:100%;display:grid;grid-template-columns:38% 1fr;gap:6px;align-items:center;padding:4px}
 .bigIcon{height:100%;display:grid;place-items:center;border:1.5px solid rgba(35,49,23,.35);border-radius:8px;background:rgba(255,255,255,.20);font-size:clamp(32px,5vw,70px)}
-.listText{min-width:0;font-weight:1000;font-size:clamp(7px,.70vw,12px);line-height:1.1}
+.listText{min-width:0;font-weight:1000;font-size:clamp(9px,.82vw,13px);line-height:1.12}
 .listText .name{font-size:clamp(9px,.85vw,14px);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .choiceList{width:100%;height:100%;padding:3px 4px;display:flex;flex-direction:column;gap:3px;justify-content:center}
-.choice{border:1.5px solid rgba(35,49,23,.42);border-radius:6px;padding:2px 5px;font-weight:1000;font-size:clamp(7px,.70vw,11px);display:flex;justify-content:space-between;gap:6px;background:rgba(255,255,255,.08)}
+.choice{border:1.5px solid rgba(35,49,23,.42);border-radius:7px;padding:3px 6px;font-weight:1000;font-size:clamp(8px,.78vw,12px);display:flex;justify-content:space-between;gap:6px;background:rgba(255,255,255,.08)}
 .choice.selected{background:rgba(35,49,23,.20);outline:2px solid rgba(35,49,23,.60)}
 .infoGrid{width:100%;height:100%;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-content:center}
-.infoCard{border:1.5px solid rgba(35,49,23,.45);border-radius:7px;padding:3px 4px;font-size:clamp(7px,.70vw,11px);font-weight:1000;background:rgba(255,255,255,.09)}
+.infoCard{border:1.5px solid rgba(35,49,23,.45);border-radius:8px;padding:4px 5px;font-size:clamp(8px,.78vw,12px);font-weight:1000;background:rgba(255,255,255,.09)}
 .actionFlash{width:100%;height:100%;display:grid;place-items:center;text-align:center;font-weight:1000;font-size:clamp(9px,.85vw,15px);padding:8px}
 .hot{position:absolute;z-index:30;background:rgba(255,255,255,.001);border-radius:999px;transition:transform .08s ease;touch-action:none}
 .hot::after{content:"";position:absolute;inset:-5px;border-radius:inherit;opacity:0;transition:.12s;pointer-events:none}
@@ -94,7 +94,7 @@ body.editorOpen .editor{display:block}
 body[data-edit-tab="screen"].editorOpen .screenHole{pointer-events:auto;cursor:move;box-shadow:0 0 0 3px rgba(89,190,255,.95),0 0 0 8px rgba(89,190,255,.18);background:rgba(89,190,255,.08)}
 body[data-edit-tab="screen"].editorOpen .screenHole::after{content:"";position:absolute;right:2px;bottom:2px;width:16px;height:16px;border-radius:4px;background:#fff;border:3px solid #5bc0ff;box-shadow:0 2px 8px rgba(0,0,0,.22)}
 body.greenScreen{--lcd-bg:linear-gradient(180deg,#bdcf88,#95a967);--lcd-text:#172111;--lcd-grid:rgba(0,0,0,.055);--lcd-shadow:rgba(0,0,0,.20)}
-body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--lcd-text:#10213b;--lcd-grid:rgba(16,33,59,.08);--lcd-shadow:rgba(12,28,63,.20)}
+body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--lcd-text:#0f1825;--lcd-grid:rgba(16,33,59,.045);--lcd-shadow:rgba(12,28,63,.16)}
 
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:45dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px}.bottomMsg{font-size:7px}.editTab{font-size:12px;padding:7px 10px}}
@@ -107,7 +107,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-simple3-02" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-readable-01" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
@@ -700,17 +700,17 @@ const PETS = [
 ];
 
 let LAYOUT = {
-  screenHole: { left:25.3, top:37.0, width:48.9, height:23.8 },
-  screenInner: { insetX:1.6, insetY:1.6, bottomExtra:0.0 },
+  screenHole: { left:23.368507620341028, top:38.44861928474423, width:53.728730949147426, height:28.628730949147428 },
+  screenInner: { insetX:1.6, insetY:1.6, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
-    prev:   { label:'A · Previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
-    select: { label:'B · Select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
-    next:   { label:'C · Next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
+    prev:   { label:'A · Previous / hold back', short:'A', left:19.628730949147428, top:70.68646446355817, width:12.3, height:6, radius:'30%', shape:'heart' },
+    select: { label:'B · Select / menu', short:'B', left:45.27735023389165, top:72.51712690508526, width:9.265746189829486, height:7.341436547457371, radius:'50%', shape:'circle' },
+    next:   { label:'C · Next', short:'C', left:68.3931844474624, top:71.29005583220159, width:12.3, height:6, radius:'30%', shape:'heart' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-simple-3button-v3-dragshapes';
+const STORE_KEY = 'waaambulance-petbot-simple-3button-v4-readable';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -755,7 +755,7 @@ let state = {
   menuIndex:0,
   feedIndex:0,
   trainIndex:0,
-  message:'Ready · use the toy buttons',
+  message:'A ◀   B menu   C ▶',
   screenTheme:'color',
   flash:null,
   pets:[]
@@ -836,14 +836,14 @@ function barsHTML(p){
 }
 function renderHome(){
   const p=currentPet();
-  return topBar(p.name + ' · ' + p.type) + `<div class="screenBody">${petImgHTML(p)}</div><div class="bottomMsg">${state.message}</div>${barsHTML(p)}`;
+  return topBar(p.name, (state.petIndex+1)+'/'+state.pets.length) + `<div class="screenBody">${petImgHTML(p)}</div><div class="bottomMsg">${state.message}</div>${barsHTML(p)}`;
 }
 function renderMenu(){
   const start=Math.floor(state.menuIndex/6)*6;
   const items=MENU.slice(start,start+6);
   return topBar('MAIN MENU', (state.menuIndex+1)+'/'+MENU.length) + `<div class="screenBody"><div class="menuGrid">` +
     items.map((m,i)=>`<div class="menuItem ${start+i===state.menuIndex?'selected':''}"><span class="ico">${m.icon}</span><span>${m.label}</span></div>`).join('') +
-    `</div></div><div class="bottomMsg">A/C move · B select · hold A back</div>`;
+    `</div></div><div class="bottomMsg">A/C move · B ok</div>`;
 }
 function renderFeed(){
   const f=FOOD[state.feedIndex];
@@ -895,7 +895,7 @@ function selectCurrent(){
 }
 function back(){
   if(state.mode==='home') return flash('PetBot is already home');
-  if(state.mode==='menu') return setMode('home','Ready · use the toy buttons');
+  if(state.mode==='menu') return setMode('home','A ◀   B menu   C ▶');
   return setMode('menu','Choose an action');
 }
 function move(dir){
@@ -1147,7 +1147,7 @@ function setupEditor(){
   const screenControls=[['screenLeft','screenHole','left'],['screenTop','screenHole','top'],['screenWidth','screenHole','width'],['screenHeight','screenHole','height']];
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
-  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:25.3,top:37.0,width:48.9,height:23.8}; LAYOUT.screenInner={insetX:1.6,insetY:1.6,bottomExtra:0.0}; applyLayout(); syncEditor(true); save();});
+  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:23.368507620341028,top:38.44861928474423,width:53.728730949147426,height:28.628730949147428}; LAYOUT.screenInner={insetX:1.6,insetY:1.6,bottomExtra:0}; applyLayout(); syncEditor(true); save();});
   if($('reset3Btn')) $('reset3Btn').addEventListener('click',resetThreeButtons);
   $('screenHole').addEventListener('pointerdown',startScreenDrag);
   syncEditor();
