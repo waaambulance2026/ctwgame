@@ -74,7 +74,7 @@ body{display:grid;place-items:center}
 @media (max-width:520px){.petBody .petStage{min-height:68px!important}.petBody .stat{grid-template-columns:14px 1fr 21px!important;padding:3px!important;font-size:clamp(7px,.9vw,11px)!important}.petBody .bar{height:7px!important}.menuGrid.main4 .menuItem{min-height:42px}}
 
 
-/* Stage 5: make the pet screen readable and keep games/shop inside the Tamagotchi. */
+/* Stage 6: remove placeholder mini-game. Games now launch the real Waaambulance platform game. */
 .lcd{left:21.2%!important;top:39.4%!important;width:57.6%!important;height:27.1%!important;border-radius:7%/11%!important}
 .top{height:13%!important;min-height:14px!important;padding:1px 14px!important}
 .top span:nth-child(2){font-size:clamp(9px,1.15vw,14px)!important;font-weight:1000!important}
@@ -102,6 +102,14 @@ body{display:grid;place-items:center}
   .petBody .bar{height:8px!important}
 }
 
+
+/* Stage 6 readability polish */
+.petPic{transform:scale(1.18);}
+.statGrid{gap:5px!important;}
+.statCard{min-height:22px!important;padding:3px 5px!important;font-size:10px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(22,34,63,.18)!important;}
+.statCard b{font-size:10px!important;}
+.statFill{height:7px!important;border-radius:999px!important;}
+.panelHead{font-size:11px!important;}
 </style>
 </head>
 <body>
@@ -140,7 +148,7 @@ const MENU=[
 const GAME_MENU=[
   {key:'solo',label:'Solo Quest',icon:'🚑',action:'questSolo'},
   {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
-  {key:'platform',label:'Platform Game',icon:'🎮',action:'questPlatform'},
+  {key:'platform',label:'Open Platform Game',icon:'🎮',action:'questPlatform'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
 const $=id=>document.getElementById(id);
@@ -223,7 +231,7 @@ function renderPanel(title){
   return top(title,'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="${gridClass}">${items.length?items.slice(0,18).map((it,i)=>`<div class="${cardClass}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small></span><span class="priceTag">${esc(priceForItem(it))}</span></div>`).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
 }
 function renderGames(){
-  return top('GAMES','')+`<div class="body"><div class="panelHead">Choose a quest/game</div><div class="panelGrid">${GAME_MENU.map((g,i)=>`<div class="panelCard ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
+  return top('GAMES','')+`<div class="body"><div class="panelHead">Choose a real Waaambulance game</div><div class="panelGrid">${GAME_MENU.map((g,i)=>`<div class="panelCard ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
 }
 function renderQuestGame(){
   const p=currentPet()||{};
@@ -584,10 +592,25 @@ function activateMenu(){
 function activateGameMenu(){
   const item=GAME_MENU[state.gameIndex]||GAME_MENU[0];
   if(item.action==='back'){state.screen='menu';render();return;}
-  if(item.action==='questSolo'||item.action==='questTeam'||item.action==='questPlatform'){
-    state.quest={mode:item.label,x:42,jump:false,score:0,started:true};
-    state.screen='questGame';
+  if(item.action==='questSolo'){
+    state.message='Starting Solo Quest...';
+    state.screen='loading';
     render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSolo'}),80);
+    return;
+  }
+  if(item.action==='questTeam'){
+    state.message='Starting Team Quest...';
+    state.screen='loading';
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startTeam'}),80);
+    return;
+  }
+  if(item.action==='questPlatform'){
+    state.message='Starting the real Waaambulance platform game...';
+    state.screen='loading';
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSolo'}),80);
     return;
   }
   state.screen='menu';render();
@@ -625,7 +648,7 @@ $('btnPrev').addEventListener('click',e=>{e.preventDefault();handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();handleNext();});
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:state.quest.mode==='Team Quest'?'startTeam':'startSolo'});}else{sendParent('waa-petbot-toggle-fullscreen');}});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); sendParent('waa-petbot-toggle-fullscreen');});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});
