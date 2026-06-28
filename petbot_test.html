@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 4</title>
+<title>CTW PetBot Tamagotchi - Stage 5</title>
 <style>
 :root{
   --ink:#16223f;
@@ -73,6 +73,35 @@ body{display:grid;place-items:center}
 .panelCard small{display:block;font-size:.82em;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:520px){.petBody .petStage{min-height:68px!important}.petBody .stat{grid-template-columns:14px 1fr 21px!important;padding:3px!important;font-size:clamp(7px,.9vw,11px)!important}.petBody .bar{height:7px!important}.menuGrid.main4 .menuItem{min-height:42px}}
 
+
+/* Stage 5: make the pet screen readable and keep games/shop inside the Tamagotchi. */
+.lcd{left:21.2%!important;top:39.4%!important;width:57.6%!important;height:27.1%!important;border-radius:7%/11%!important}
+.top{height:13%!important;min-height:14px!important;padding:1px 14px!important}
+.top span:nth-child(2){font-size:clamp(9px,1.15vw,14px)!important;font-weight:1000!important}
+.body.petBody{padding:1px 12px 7px!important;gap:1px!important}
+.petBody .petStage{min-height:100px!important;max-height:150px!important;flex:1 1 72%!important;overflow:visible!important}
+.petBody .petImg{width:128%!important;height:128%!important;max-width:150%!important;max-height:150%!important}
+.petBody .petEmoji{font-size:clamp(54px,8vw,95px)!important}
+.petBody .details{font-size:clamp(7px,.84vw,10px)!important;margin-top:0!important;margin-bottom:2px!important}
+.petBody .stats{grid-template-columns:1fr 1fr!important;gap:5px!important;margin-top:auto!important}
+.petBody .stat{grid-template-columns:20px 1fr 30px!important;padding:5px 6px!important;border-radius:10px!important;background:rgba(255,255,255,.62)!important;font-size:clamp(9px,1.02vw,13px)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.28),0 1px 4px rgba(22,34,63,.12)!important}
+.petBody .bar{height:10px!important;background:rgba(255,255,255,.84)!important}
+.panelGrid.shopGrid,.panelGrid.invGrid{grid-template-columns:1fr!important;gap:4px!important}
+.panelCard.shopCard,.panelCard.invCard{min-height:32px!important;text-align:left!important;display:grid!important;grid-template-columns:auto 1fr auto!important;gap:5px!important;align-items:center!important;padding:5px 6px!important}
+.panelCard .priceTag{font-weight:1000;white-space:nowrap}
+.questGame{width:100%;height:100%;display:flex;flex-direction:column;gap:3px;align-items:stretch;justify-content:space-between}
+.questStage{position:relative;flex:1;min-height:82px;border:1.5px solid rgba(22,34,63,.25);border-radius:10px;overflow:hidden;background:linear-gradient(#bcecff 0 55%,#75c77e 56% 74%,#8a5a3b 75% 100%)}
+.questPet{position:absolute;bottom:22%;left:42%;width:44px;height:44px;background:center/contain no-repeat;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25));transition:left .16s linear,bottom .16s ease;display:flex;align-items:center;justify-content:center;font-size:34px}
+.questPet.jump{bottom:48%}
+.questObstacle{position:absolute;right:8%;bottom:23%;width:18px;height:28px;border-radius:7px 7px 3px 3px;background:#ff7b9e;box-shadow:inset 0 0 0 2px rgba(22,34,63,.16)}
+.questHud{font-size:clamp(8px,.9vw,12px);font-weight:1000;text-align:center;display:flex;justify-content:space-between;gap:4px}
+.questControls{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:clamp(7px,.8vw,10px);font-weight:900;text-align:center;opacity:.75}
+@media (max-width:520px){
+  .petBody .petStage{min-height:82px!important}
+  .petBody .stat{grid-template-columns:17px 1fr 25px!important;padding:4px!important;font-size:clamp(8px,1vw,11px)!important}
+  .petBody .bar{height:8px!important}
+}
+
 </style>
 </head>
 <body>
@@ -109,9 +138,9 @@ const MENU=[
   {key:'inventory',label:'Inventory',icon:'🎒'}
 ];
 const GAME_MENU=[
-  {key:'solo',label:'Solo Quest',icon:'🚑',action:'startSolo'},
-  {key:'team',label:'Team Quest',icon:'👥',action:'startTeam'},
-  {key:'platform',label:'Platform Game',icon:'🎮',action:'startSolo'},
+  {key:'solo',label:'Solo Quest',icon:'🚑',action:'questSolo'},
+  {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
+  {key:'platform',label:'Platform Game',icon:'🎮',action:'questPlatform'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
 const $=id=>document.getElementById(id);
@@ -121,7 +150,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelMessage:'',message:'Choose player',loading:false,lastError:''};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false}};
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -137,6 +166,7 @@ function render(){
   else if(state.screen==='stats') html=renderStats();
   else if(state.screen==='inventory') html=renderPanel('INVENTORY');
   else if(state.screen==='games') html=renderGames();
+  else if(state.screen==='questGame') html=renderQuestGame();
   else if(state.screen==='shop') html=renderPanel('SHOP');
   else if(state.screen==='habitat') html=renderSimplePanel('HABITAT','Habitat room comes next.', currentPet()?.habitat||[]);
   else if(state.screen==='quests') html=renderSimplePanel('QUESTS','Quest history comes after pets/stats are correct.', currentPet()?.quests||[]);
@@ -166,7 +196,7 @@ function renderPet(){
 }
 function petImage(p){
   if(p.url){
-    const size=clamp(n(p.size,104),58,115); const x=clamp(n(p.x,50),10,90); const y=clamp(n(p.y,49),14,78); const flip=p.flip===-1?' scaleX(-1)':'';
+    const size=clamp(n(p.size,128),84,150); const x=clamp(n(p.x,50),8,92); const y=clamp(n(p.y,48),12,82); const flip=p.flip===-1?' scaleX(-1)':'';
     return `<div class="petImg" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
   }
   return `<div class="petEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
@@ -184,14 +214,36 @@ function renderSimplePanel(title,msg,items){
   return top(title,'')+`<div class="body"><div class="panelList">${list.length?list.slice(0,20).map(item=>`<div class="panelItem">${esc(rowLabel(item))}</div>`).join(''):`<div class="panelItem">${esc(msg)}</div>`}</div></div>`;
 }
 function renderPanel(title){
-  const isLoading=state.panelLoading&&state.panelKind===title.toLowerCase();
+  const kind=title.toLowerCase();
+  const isLoading=state.panelLoading&&state.panelKind===kind;
   const items=Array.isArray(state.panelItems)?state.panelItems:[];
-  const msg=isLoading?'Loading '+title.toLowerCase()+'...':(state.panelMessage||('No '+title.toLowerCase()+' rows found yet.'));
-  return top(title,'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelGrid">${items.length?items.slice(0,16).map((it,i)=>`<div class="panelCard"><span>${esc(itemTitle(it))}</span><small>${esc(itemSub(it))}</small></div>`).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
+  const msg=isLoading?'Loading '+kind+'...':(state.panelMessage||('No '+kind+' rows found yet.'));
+  const gridClass=kind==='shop'?'panelGrid shopGrid':(kind==='inventory'?'panelGrid invGrid':'panelGrid');
+  const cardClass=kind==='shop'?'panelCard shopCard':(kind==='inventory'?'panelCard invCard':'panelCard');
+  return top(title,'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="${gridClass}">${items.length?items.slice(0,18).map((it,i)=>`<div class="${cardClass}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small></span><span class="priceTag">${esc(priceForItem(it))}</span></div>`).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
 }
 function renderGames(){
   return top('GAMES','')+`<div class="body"><div class="panelHead">Choose a quest/game</div><div class="panelGrid">${GAME_MENU.map((g,i)=>`<div class="panelCard ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
 }
+function renderQuestGame(){
+  const p=currentPet()||{};
+  const img=(p.url?`background-image:url('${esc(p.url)}')`:``);
+  const petEmoji=esc(p.emoji||emojiFor(p.pet||p.category));
+  return top(state.quest.mode||'Quest','')+`<div class="body"><div class="questGame"><div class="questHud"><span>${esc(p.name||'Pet')}</span><span>Score ${state.quest.score||0}</span></div><div class="questStage"><div class="questPet ${state.quest.jump?'jump':''}" style="left:${state.quest.x||42}%;${img}">${p.url?'':petEmoji}</div><div class="questObstacle"></div></div><div class="questControls"><span>◀ / ▶ move</span><span>● jump</span></div></div></div>`;
+}
+function iconForItem(it){
+  const s=String(itemTitle(it)+' '+itemSub(it)).toLowerCase();
+  if(s.includes('seed')||s.includes('food')||s.includes('snack')||s.includes('pellet')||s.includes('cricket'))return'🍔';
+  if(s.includes('toy')||s.includes('ball')||s.includes('play')||s.includes('trinket'))return'🧸';
+  if(s.includes('heal')||s.includes('med')||s.includes('cure')||s.includes('potion'))return'💊';
+  if(s.includes('habitat')||s.includes('perch')||s.includes('blanket')||s.includes('lamp')||s.includes('cave'))return'🏡';
+  return'📦';
+}
+function priceForItem(it){
+  const price=pick(it,['shop_price','price','cost','coins','pet_coins'],'');
+  return price ? '🪙 '+price : '';
+}
+
 function itemTitle(it){return pick(it,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name'],'Item');}
 function itemSub(it){
   const qty=pick(it,['quantity','qty','count','amount'],'');
@@ -436,10 +488,39 @@ async function loadPanelData(kind){
     return rows.filter(r=>strictUserMatch(r,userId)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
   }
   if(kind==='shop'){
-    rows=await loadRowsFromProxyAndSheets(['view_shop','care_item_menu'],['shop','pet_shop','items','care_items','habitat_shop'],userId,p);
-    return rows.filter(r=>shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    rows=await loadRowsFromProxyAndSheets(['view_shop','care_item_menu'],['shop','pet_shop','shop_items','items','pet_items','care_items','food_items','toy_items','habitat_shop','hook_waaambulance'],userId,p);
+    const shop=rows.filter(r=>shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    return shop.length ? shop : fallbackShopItems(p);
   }
   return [];
+}
+function fallbackShopItems(p){
+  const species=String(p.pet||p.species||p.code||'pet').toLowerCase();
+  const cat=String(p.category||'').toLowerCase();
+  const base=[
+    {item_id:'care_snack',item_name:'Care snack',price:10,item_type:'food'},
+    {item_id:'happy_toy',item_name:'Happy toy',price:18,item_type:'toy'},
+    {item_id:'rest_blanket',item_name:'Rest blanket',price:22,item_type:'comfort'},
+    {item_id:'small_heal',item_name:'Small heal kit',price:25,item_type:'medicine'}
+  ];
+  if(cat.includes('bird')||species.includes('raven')||species.includes('owl')) base.unshift(
+    {item_id:'bird_seed_mix',item_name:'Bird seed mix',price:10,item_type:'food'},
+    {item_id:'shiny_trinket',item_name:'Shiny trinket',price:16,item_type:'toy'},
+    {item_id:'perch_upgrade',item_name:'Perch upgrade',price:40,item_type:'habitat'}
+  );
+  else if(cat.includes('reptile')||species.includes('chameleon')||species.includes('snake')||species.includes('gecko')) base.unshift(
+    {item_id:'cricket_box',item_name:'Cricket box',price:12,item_type:'food'},
+    {item_id:'heat_lamp',item_name:'Heat lamp',price:35,item_type:'habitat'}
+  );
+  else if(cat.includes('aquatic')||species.includes('axolotl')||species.includes('fish')) base.unshift(
+    {item_id:'axolotl_pellets',item_name:'Axolotl pellets',price:12,item_type:'food'},
+    {item_id:'kelp_hideout',item_name:'Kelp hideout',price:35,item_type:'habitat'}
+  );
+  else if(cat.includes('mythical')||species.includes('dragon')||species.includes('unicorn')) base.unshift(
+    {item_id:'magic_snack',item_name:'Magic snack',price:15,item_type:'food'},
+    {item_id:'sparkle_toy',item_name:'Sparkle toy',price:28,item_type:'toy'}
+  );
+  return dedupeRows(base);
 }
 async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   const all=[];
@@ -473,12 +554,14 @@ function handlePrev(){
   if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
+  if(state.screen==='questGame'){state.quest.x=clamp((state.quest.x||42)-11,4,78);state.quest.score=(state.quest.score||0)+1;render();return;}
 }
 function handleNext(){
   if(state.screen==='login'){state.loginIndex=(state.loginIndex+1)%PLAYER_LIST.length;render();return;}
   if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
+  if(state.screen==='questGame'){state.quest.x=clamp((state.quest.x||42)+11,4,78);state.quest.score=(state.quest.score||0)+1;render();return;}
 }
 function handleSelect(){
   if(state.screen==='login')return choosePlayer();
@@ -487,6 +570,7 @@ function handleSelect(){
   if(state.screen==='pet'){state.screen='menu';render();return;}
   if(state.screen==='menu')return activateMenu();
   if(state.screen==='games')return activateGameMenu();
+  if(state.screen==='questGame')return questJump();
   if(['stats','inventory','habitat','quests','shop'].includes(state.screen)){state.screen='menu';render();}
 }
 function activateMenu(){
@@ -500,7 +584,12 @@ function activateMenu(){
 function activateGameMenu(){
   const item=GAME_MENU[state.gameIndex]||GAME_MENU[0];
   if(item.action==='back'){state.screen='menu';render();return;}
-  if(item.action==='startSolo'||item.action==='startTeam'){sendParent('waa-petbot-game-action',{action:item.action});return;}
+  if(item.action==='questSolo'||item.action==='questTeam'||item.action==='questPlatform'){
+    state.quest={mode:item.label,x:42,jump:false,score:0,started:true};
+    state.screen='questGame';
+    render();
+    return;
+  }
   state.screen='menu';render();
 }
 function openDataPanel(kind){
@@ -513,11 +602,17 @@ function openDataPanel(kind){
     state.panelItems=[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
   });
 }
+function questJump(){
+  if(state.screen!=='questGame')return;
+  state.quest.jump=true;state.quest.score=(state.quest.score||0)+5;render();
+  setTimeout(()=>{if(state.screen==='questGame'){state.quest.jump=false;render();}},280);
+}
 function handleBack(){
   if(state.screen==='password'){state.screen='login';state.password='';state.error='';render();return;}
   if(state.screen==='login'){sendParent('waa-petbot-close');return;}
   if(state.screen==='pet'){state.screen='menu';render();return;}
   if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
+  if(state.screen==='questGame'){state.screen='games';render();return;}
   if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
   state.screen='menu';render();
 }
@@ -530,7 +625,7 @@ $('btnPrev').addEventListener('click',e=>{e.preventDefault();handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();handleNext();});
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault();sendParent('waa-petbot-toggle-fullscreen');});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:state.quest.mode==='Team Quest'?'startTeam':'startSolo'});}else{sendParent('waa-petbot-toggle-fullscreen');}});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});
