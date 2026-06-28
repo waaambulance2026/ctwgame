@@ -27,7 +27,7 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .lcdTop b{font-weight:1000}
 .lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
-.bottomMsg{font-weight:1000;font-size:clamp(9px,.86vw,13px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:clip;background:rgba(255,255,255,.55);border-radius:999px;padding:3px 8px;margin:0 2px 4px;color:#0f1825;max-width:100%}
+.bottomMsg{display:none}
 .petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:62%;height:62%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
 .petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
 .statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 2px 3px}
@@ -151,7 +151,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 
   <h3>3 button map</h3>
   <div class="legend">
-    <div>left heart = ◀</div><div>pacifier = ● OK</div>
+    <div>left heart = ◀</div><div>pacifier = </div>
     <div>right heart = ▶</div><div>hold left heart = back</div>
   </div>
   <details>
@@ -714,7 +714,7 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-screen-measured-v1';
+const STORE_KEY = 'waaambulance-petbot-no-lcd-help-v1';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -840,22 +840,22 @@ function barsHTML(p){
 }
 function renderHome(){
   const p=currentPet();
-  return topBar(p.name, (state.petIndex+1)+'/'+state.pets.length) + `<div class="screenBody">${petImgHTML(p)}</div><div class="bottomMsg">${state.message}</div>${barsHTML(p)}`;
+  return topBar(p.name, (state.petIndex+1)+'/'+state.pets.length) + `<div class="screenBody">${petImgHTML(p)}</div><div class="bottomMsg"></div>${barsHTML(p)}`;
 }
 function renderMenu(){
   const m=MENU[state.menuIndex];
   return topBar('MENU', (state.menuIndex+1)+'/'+MENU.length) +
-    `<div class="screenBody"><div class="menuGrid"><div class="menuItem selected"><span class="ico">${m.icon}</span><span>${m.label}</span></div></div></div><div class="bottomMsg">◀ / ▶ choose  ·  ● OK</div>`;
+    `<div class="screenBody"><div class="menuGrid"><div class="menuItem selected"><span class="ico">${m.icon}</span><span>${m.label}</span></div></div></div><div class="bottomMsg"></div>`;
 }
 function renderFeed(){
   const f=FOOD[state.feedIndex];
-  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>◀ / ▶ browse  ·  ● use</div></div></div></div><div class="bottomMsg">${state.message}</div>`;
+  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>◀ / ▶ browse  ·  ● use</div></div></div></div><div class="bottomMsg"></div>`;
 }
 function renderTrain(){
   const p=currentPet();
   return topBar('TRAINING', (state.trainIndex+1)+'/'+SKILLS.length) + `<div class="screenBody"><div class="choiceList">` +
     SKILLS.map((s,i)=>`<div class="choice ${i===state.trainIndex?'selected':''}"><span>${s.icon} ${s.label}</span><span>Lv ${p.training[s.key]||0}</span></div>`).join('') +
-    `</div></div><div class="bottomMsg">● train  ·  hold ◀ back</div>`;
+    `</div></div><div class="bottomMsg"></div>`;
 }
 function renderInfo(){
   const p=currentPet();
@@ -863,7 +863,7 @@ function renderInfo(){
     <div class="infoCard">Level<br>${p.level}</div><div class="infoCard">XP<br>${p.xp}</div>
     <div class="infoCard">Coins<br>${p.coins}</div><div class="infoCard">Love<br>${p.love}</div>
     <div class="infoCard">Hunger<br>${p.hunger}</div><div class="infoCard">Energy<br>${p.energy}</div>
-  </div></div><div class="bottomMsg">hold ◀ back  ·  ◀ / ▶ pet</div>`;
+  </div></div><div class="bottomMsg">  ·  ◀ / ▶ pet</div>`;
 }
 function renderPlaceholder(title, icon, msg){
   return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">${icon}</div><div class="bigStatusText">Coming soon</div></div></div></div><div class="bottomMsg">hold ◀ = back</div>`;
