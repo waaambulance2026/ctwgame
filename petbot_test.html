@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Waaambulance PetBot - Tamagotchi App</title>
+<title>Waaambulance PetBot - Sheet Connected Tamagotchi</title>
 <style>
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
@@ -22,11 +22,11 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:Arial,Helvetica,sans-serif;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
-#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:18px 24px 14px;text-shadow:0 1px rgba(255,255,255,.22)}
-.lcdTop{display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;font-weight:1000;font-size:clamp(10px,.95vw,14px);line-height:1.1;min-height:18px;z-index:6;margin:0 22px 5px;text-align:center}
+#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:6px 9px;text-shadow:0 1px rgba(255,255,255,.22)}
+.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-weight:1000;font-size:clamp(9px,.88vw,13px);line-height:1;min-height:16px;z-index:6}
 .lcdTop b{font-weight:1000}
-.lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.lcdTop span:first-child,.lcdTop span:last-child{display:none}
-.screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center;overflow:hidden}
+.lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
 .bottomMsg{display:none}
 .petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:62%;height:62%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
 .petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
@@ -714,13 +714,13 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-safe-lcd-text-v1';
+const STORE_KEY = 'waaambulance-petbot-sheet-connected-v1';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
 const bar = n => clamp(Math.round(n),0,100) + '%';
 
-const FOOD = [
+let FOOD = [
   {key:'milk', name:'Milk', icon:'🥛', hunger:12, happy:1, energy:2},
   {key:'bagel', name:'Bagel', icon:'🥯', hunger:16, happy:2, energy:1},
   {key:'sandwich', name:'Sandwich', icon:'🥪', hunger:22, happy:3, energy:2},
@@ -922,19 +922,19 @@ function openMenuItem(key){
 function useFood(){
   const p=currentPet(), f=FOOD[state.feedIndex];
   adjustPet({hunger:f.hunger, happy:f.happy, energy:f.energy, love:1});
-  flash(p.name + ' ate ' + f.name + '!','home');
+  flash(responseText('feed', p, p.name + ' ate ' + f.name + '!'),'home');
 }
 function doTrain(){
   const p=currentPet(), s=SKILLS[state.trainIndex];
   if(p.energy < 12) return flash(p.name + ' is too tired to train','train');
   if(p.hunger < 10) return flash(p.name + ' is too hungry to train','train');
   p.energy=clamp(p.energy-12,0,100); p.hunger=clamp(p.hunger-8,0,100); p.happy=clamp(p.happy+2,0,100); p.xp += 12; p.love += 2; p.training[s.key]=(p.training[s.key]||0)+1;
-  if(p.xp >= p.level*40){ p.xp=0; p.level++; flash(p.name + ' trained ' + s.label + ' and levelled up!','home'); }
-  else flash(p.name + ' trained ' + s.label + '!','train');
+  if(p.xp >= p.level*40){ p.xp=0; p.level++; flash(responseText('train',p,p.name + ' levelled up!'),'home'); }
+  else flash(responseText('train',p,p.name + ' trained ' + s.label + '!'),'train');
 }
-function quickPlay(){ const p=currentPet(); if(p.energy<8)return flash(p.name+' is too tired to play'); adjustPet({happy:12, energy:-8, hunger:-3, love:2, xp:5}); flash(p.name + ' played a game!'); }
-function quickRest(){ const p=currentPet(); adjustPet({energy:22, health:4, hunger:-4}); flash(p.name + ' had a rest'); }
-function quickHeal(){ const p=currentPet(); adjustPet({health:18, energy:-4, love:1}); flash(p.name + ' feels better'); }
+function quickPlay(){ const p=currentPet(); if(p.energy<8)return flash(responseText('play',p,p.name+' is too tired')); adjustPet({happy:12, energy:-8, hunger:-3, love:2, xp:5}); flash(responseText('play',p,p.name + ' played!')); }
+function quickRest(){ const p=currentPet(); adjustPet({energy:22, health:4, hunger:-4}); flash(responseText('rest',p,p.name + ' rested')); }
+function quickHeal(){ const p=currentPet(); adjustPet({health:18, energy:-4, love:1}); flash(responseText('heal',p,p.name + ' feels better')); }
 function quickExplore(){ const p=currentPet(); if(p.energy<10)return flash(p.name+' needs rest before exploring'); p.energy-=10; p.hunger=clamp(p.hunger-5,0,100); p.happy=clamp(p.happy+5,0,100); p.coins=(p.coins||0)+3; p.xp=(p.xp||0)+8; flash(p.name+' explored and found 3 coins!'); }
 function handleAction(action){
   const btn=document.querySelector(`.hot[data-action="${action}"]`); if(btn){btn.classList.add('press'); setTimeout(()=>btn.classList.remove('press'),130);}
@@ -1164,6 +1164,253 @@ function syncEditor(setValues=true){
   updateSettingsBox();
 }
 
+
+// EDIT: LIVE PETBOT SHEET CONNECTION
+// Spreadsheet supplied by Ryan: https://docs.google.com/spreadsheets/d/1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA/edit
+// This first uses your Cloudflare API routes (/api/petbot and /api/sheet51). If those fail, it tries the public Google Sheet tabs directly.
+const PETBOT_SHEET_ID = '1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
+const DEFAULT_DISCORD_USER_ID = '1214671839205396481';
+const CLOUDINARY_CLOUD = 'dpwlfmhia';
+const qs = new URLSearchParams(location.search);
+const LIVE_USER_ID = qs.get('user_id') || localStorage.getItem('waa-petbot-user-id') || DEFAULT_DISCORD_USER_ID;
+
+// Full PetBot workbook registry checked from the spreadsheet Index tab.
+// The app does NOT pull all of these on every load because that would be slow.
+// Required sheets are loaded first; all sheets can be tested with ?check_sheets=1.
+const PETBOT_SHEET_TABS = {
+  core:['user_profile','user_pets','pets','pet_menu','level_config','action_xp','user_view_state'],
+  userPetState:['pet_relationships','user_pet_traits','user_pet_skills','user_pet_skill_lessons','user_pet_effects','user_pet_coins','pet_money_transfers'],
+  inventory:['user_inventory','item_audit_logs','item_catalog','collectible_catalog','collectible_responses'],
+  careResponses:['adopt_responses','feed_responses','play_responses','rest_responses','medicine_responses','shop_responses','inventory_responses','coin_responses','train_responses'],
+  images:['user_pet_images','user_pet_skill_images','pet_action_images','Sheet51'],
+  habitat:['habitat_catalog','habitat_layout_catalog','habitat_shop_catalog','user_habitat_inventory','user_habitat_layouts','user_habitat_layouts_test','pet_layer_catalog','user_pet_habitat_loadout'],
+  quests:['mini_quests','mini_quest_actions','user_mini_quest_logs','pet_explorations'],
+  events:['active_world_events','world_event_participants','user_event_completions','world_events','world_event_options','event_prompts','event_wildcards','event_posts','event_choices','event_final','event_images'],
+  hook:['hook_waaambulance_collection','hook_waaambulance_logs','hook_waaambulance','hook_care_prize_logs'],
+  misc:['gift_logs','Sheet26','Sheet38','Sheet39']
+};
+const PETBOT_ALL_SHEETS = [...new Set(Object.values(PETBOT_SHEET_TABS).flat())];
+const PETBOT_REQUIRED_SHEETS = [
+  'user_pets','pets','item_catalog','user_inventory',
+  'feed_responses','play_responses','rest_responses','medicine_responses','train_responses',
+  'pet_action_images','user_pet_images','user_pet_skill_images','Sheet51'
+];
+let PETBOT_RESPONSE_ROWS = {};
+let PETBOT_DIAGNOSTIC = {};
+
+
+function pick(obj, names, fallback=''){
+  if(!obj) return fallback;
+  for(const n of names){
+    if(obj[n] !== undefined && obj[n] !== null && String(obj[n]).trim() !== '') return obj[n];
+  }
+  const keys = Object.keys(obj);
+  for(const n of names){
+    const found = keys.find(k => k.toLowerCase().replace(/[^a-z0-9]/g,'') === n.toLowerCase().replace(/[^a-z0-9]/g,''));
+    if(found && obj[found] !== undefined && obj[found] !== null && String(obj[found]).trim() !== '') return obj[found];
+  }
+  return fallback;
+}
+function numVal(v, fallback=0){
+  const n = Number(String(v ?? '').replace(/[^0-9.-]/g,''));
+  return Number.isFinite(n) ? n : fallback;
+}
+async function fetchJson(url, ms=14000){
+  const ctrl = new AbortController();
+  const t = setTimeout(()=>ctrl.abort(), ms);
+  try{
+    const res = await fetch(url, {signal:ctrl.signal, cache:'no-store'});
+    const txt = await res.text();
+    if(!res.ok) throw new Error(res.status + ' ' + txt.slice(0,180));
+    try{return JSON.parse(txt)}catch(e){return {response:txt}}
+  } finally { clearTimeout(t); }
+}
+function normalisePets(payload){
+  const arrays = [];
+  if(Array.isArray(payload)) arrays.push(payload);
+  if(payload && typeof payload === 'object'){
+    for(const key of ['pets','owned_pets','ownedPets','rows','data','items','results']) if(Array.isArray(payload[key])) arrays.push(payload[key]);
+    if(payload.result) for(const key of ['pets','rows','data','items']) if(Array.isArray(payload.result[key])) arrays.push(payload.result[key]);
+  }
+  let rows = arrays.find(a=>a && a.length) || [];
+  if(!rows.length && payload && typeof payload.response === 'string'){
+    rows = payload.response.split(/\n+/).map(line=>{
+      const clean=line.replace(/^[-*•\s]+/,'').trim();
+      const m=clean.match(/^([^|,:(]+)(?:\s*[|,:(-]\s*([^|,)]+))?/);
+      return m ? {name:m[1].trim(), pet:(m[2]||'pet').trim()} : null;
+    }).filter(Boolean);
+  }
+  return rows.map((r,i)=>normalisePet(r,i)).filter(p=>p.name || p.code || p.pet);
+}
+function normalisePet(r,i=0){
+  const name = String(pick(r,['name','pet_name','display_name','nickname','owned_pet_name','custom_name'],'')).trim() || String(pick(r,['pet','species','type','pet_type'],'Pet')).trim();
+  const pet = String(pick(r,['pet','species','type','pet_type','base_pet','animal','category'],'pet')).trim();
+  const code = String(pick(r,['code','pet_code','owned_pet_code','id','pet_id','key'], name || ('pet_'+i))).trim();
+  return {
+    key: code || name || ('pet_'+i),
+    code,
+    name,
+    pet,
+    type: String(pick(r,['category','type','pet_category','species'], pet || 'Pet')).trim() || 'Pet',
+    category: String(pick(r,['category','type','pet_category'], 'pets')).toLowerCase(),
+    url: cleanImageUrl(pick(r,['image_url','cloudinary_image_url','url','image','pet_image','sprite_url','cloudinary_public_id'],'')),
+    fallback:'🐾',
+    size: numVal(pick(r,['screen_size','size','overlay_width','player_width','width'],58),58),
+    y: numVal(pick(r,['screen_y','y','offset_y','overlay_y'],52),52),
+    love: numVal(pick(r,['love','bond','affection','points'],0),0),
+    hunger: numVal(pick(r,['hunger','food','fed'],65),65),
+    happy: numVal(pick(r,['happy','happiness','mood'],70),70),
+    energy: numVal(pick(r,['energy','rest'],72),72),
+    health: numVal(pick(r,['health','hp'],82),82),
+    level: numVal(pick(r,['level','lvl'],1),1),
+    xp: numVal(pick(r,['xp','experience'],0),0),
+    coins: numVal(pick(r,['coins','money','balance'],0),0),
+    raw:r
+  };
+}
+function cleanImageUrl(v){
+  v = String(v || '').trim();
+  if(!v) return '';
+  if(v.startsWith('http://') || v.startsWith('https://')) return v;
+  if(v.includes('res.cloudinary.com')) return v.startsWith('http') ? v : 'https://' + v.replace(/^\/+/,'');
+  if(v.includes('/')) return `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${v.replace(/^\/+/,'')}`;
+  return `https://res.cloudinary.com/${CLOUDINARY_CLOUD}/image/upload/${v}`;
+}
+async function fetchSheetRows(sheetName, query='select *'){
+  const url = `https://docs.google.com/spreadsheets/d/${PETBOT_SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(sheetName)}&tq=${encodeURIComponent(query)}&t=${Date.now()}`;
+  const txt = await fetch(url, {cache:'no-store'}).then(r=>r.text());
+  const json = JSON.parse(txt.replace(/^.*?google\.visualization\.Query\.setResponse\(/s,'').replace(/\);?\s*$/,''));
+  if(json.status === 'error') throw new Error((json.errors||[]).map(e=>e.detailed_message||e.message).join('; ') || 'Sheet query failed');
+  const cols = (json.table.cols||[]).map((c,i)=>String(c.label || c.id || ('col_'+i)).trim() || ('col_'+i));
+  return (json.table.rows||[]).map(row=>{
+    const o={};
+    (row.c||[]).forEach((cell,i)=>{ o[cols[i]] = cell ? (cell.f ?? cell.v ?? '') : ''; });
+    return o;
+  });
+}
+function rowMatchesPet(row, pet){
+  const hay = Object.values(row||{}).map(v=>String(v).toLowerCase()).join(' | ');
+  const keys = [pet.code, pet.name, pet.pet, pet.key].filter(Boolean).map(s=>String(s).toLowerCase());
+  return keys.some(k => k && hay.includes(k));
+}
+async function findImageForPet(pet, userId){
+  // 1) Preferred existing Cloudflare route used by the main index pet panel.
+  try{
+    const q = new URLSearchParams({user_id:userId, pet_code:pet.code||'', pet_name:pet.name||'', pet:pet.pet||'', action:'main', v:'51'});
+    const d = await fetchJson('/api/sheet51?' + q, 9000);
+    const img = cleanImageUrl(pick(d,['image_url','url','cloudinary_image_url','cloudinary_public_id'],''));
+    if(img) return {url:img, meta:d};
+  }catch(e){}
+  // 2) Direct public sheet fallback. This is read-only and only works while the sheet is shared/public enough to read.
+  for(const sheetName of ['user_pet_images','pet_action_images','user_pet_skill_images','Sheet51','pets']){
+    try{
+      const rows = await fetchSheetRows(sheetName);
+      const row = rows.find(r=>rowMatchesPet(r, pet));
+      if(row){
+        const img = cleanImageUrl(pick(row,['image_url','url','cloudinary_image_url','cloudinary_public_id','image','pet_image','sprite_url'],''));
+        if(img) return {url:img, meta:row};
+      }
+    }catch(e){}
+  }
+  return {url:pet.url||'', meta:null};
+}
+
+async function loadResponseSheets(){
+  const map = {
+    feed:'feed_responses', play:'play_responses', rest:'rest_responses',
+    heal:'medicine_responses', train:'train_responses', adopt:'adopt_responses',
+    shop:'shop_responses', inventory:'inventory_responses', coin:'coin_responses'
+  };
+  const loaded = {};
+  for(const [action, sheet] of Object.entries(map)){
+    try{ loaded[action] = await fetchSheetRows(sheet); }
+    catch(e){ loaded[action] = []; console.warn('Could not load response sheet', sheet, e); }
+  }
+  PETBOT_RESPONSE_ROWS = loaded;
+}
+function responseText(action, pet, fallback){
+  const rows = PETBOT_RESPONSE_ROWS[action] || [];
+  if(!rows.length) return fallback;
+  const matching = rows.filter(r=>rowMatchesPet(r, pet));
+  const pool = matching.length ? matching : rows;
+  const row = pool[Math.floor(Math.random()*pool.length)] || {};
+  return String(pick(row,['response','message','text','line','copy','result','description'], fallback)).trim() || fallback;
+}
+async function checkAllPetbotSheets(){
+  const out = {};
+  for(const sheetName of PETBOT_ALL_SHEETS){
+    try{
+      const sample = await fetchSheetRows(sheetName, 'select * limit 2');
+      out[sheetName] = {ok:true, sampleRows:sample.length, columns:Object.keys(sample[0]||{})};
+    }catch(e){
+      out[sheetName] = {ok:false, error:String(e.message||e)};
+    }
+  }
+  PETBOT_DIAGNOSTIC = out;
+  window.PETBOT_DIAGNOSTIC = out;
+  console.table(Object.entries(out).map(([sheet,r])=>({sheet, ok:r.ok, sampleRows:r.sampleRows||0, columns:(r.columns||[]).join(', '), error:r.error||''})));
+  return out;
+}
+
+async function loadCareItemsFromSheet(){
+  try{
+    const rows = await fetchSheetRows('item_catalog');
+    const foods = rows.filter(r=>{
+      const txt = Object.values(r).join(' ').toLowerCase();
+      return txt.includes('food') || txt.includes('feed') || txt.includes('treat') || txt.includes('meal');
+    }).slice(0,24).map((r,i)=>({
+      key:String(pick(r,['item_key','key','id','code'],'food_'+i)),
+      name:String(pick(r,['item_name','name','label','title'],'Food')),
+      icon:String(pick(r,['emoji','icon'],'🍽')),
+      hunger:numVal(pick(r,['hunger','food_value','feed','value'],12),12),
+      happy:numVal(pick(r,['happy','happiness','mood'],2),2),
+      energy:numVal(pick(r,['energy'],0),0)
+    }));
+    if(foods.length) FOOD = foods;
+  }catch(e){}
+}
+async function loadOwnedPetsFromApi(userId){
+  const d = await fetchJson(`/api/petbot?mode=view_pets&user_id=${encodeURIComponent(userId)}&per_page=50&v=tamagotchi`, 14000);
+  if(d && d.found === false && d.response) throw new Error(d.response);
+  return normalisePets(d);
+}
+async function loadOwnedPetsFromSheet(userId){
+  const rows = await fetchSheetRows('user_pets');
+  const filtered = rows.filter(r=>{
+    const uid = String(pick(r,['user_id','discord_user_id','discord_id','owner_id','member_id'],''));
+    return !uid || uid === String(userId);
+  });
+  return (filtered.length ? filtered : rows).map(normalisePet).filter(p=>p.name || p.code || p.pet);
+}
+async function loadLivePetbot(){
+  const userId = LIVE_USER_ID;
+  state.message = 'Loading PetBot';
+  render();
+  try{
+    await loadCareItemsFromSheet();
+    await loadResponseSheets();
+    if(qs.get('check_sheets')==='1') checkAllPetbotSheets();
+    let pets = [];
+    try{ pets = await loadOwnedPetsFromApi(userId); }
+    catch(apiErr){ pets = await loadOwnedPetsFromSheet(userId); }
+    if(!pets.length) throw new Error('No owned pets found for ' + userId);
+    const withImages = [];
+    for(const p of pets){
+      const img = await findImageForPet(p, userId);
+      withImages.push(petDefaults({...p, url:img.url || p.url, imageMeta:img.meta}, withImages.length));
+    }
+    state.pets = withImages;
+    state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
+    state.message = 'PetBot loaded';
+    save();
+    render();
+  }catch(e){
+    state.message = 'Sheet offline';
+    console.warn('PetBot sheet load failed:', e);
+    render();
+  }
+}
+
 document.addEventListener('keydown',e=>{
   if(e.key==='ArrowLeft') handleAction('prev');
   else if(e.key==='ArrowRight') handleAction('next');
@@ -1176,7 +1423,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='t') setMode('train','Choose training');
 });
 
-load(); applyLayout(); render(); setupEditor();
+load(); applyLayout(); render(); setupEditor(); loadLivePetbot();
 </script>
 </body>
 </html>
