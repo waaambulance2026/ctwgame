@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 2</title>
+<title>CTW PetBot Tamagotchi - Stage 3</title>
 <style>
 :root{
   --ink:#16223f;
@@ -40,6 +40,21 @@ body{display:grid;place-items:center}
 .petBody .bar{height:5px}
 .menuGrid{gap:5px}.menuItem{min-height:39px}
 .passwordCard{margin-top:4px}.passwordCard input{font-size:15px}
+
+/* Stage 3 pet screen polish: keep text away from shell edges, show name/level in header, stats in 2x2 blocks. */
+.lcd{left:21.8%;top:39.9%;width:56.4%;height:25.9%;}
+.top{grid-template-columns:1fr;height:15%;min-height:16px;padding:2px 12px;background:rgba(255,255,255,.18);}
+.top span:first-child,.top span:last-child{display:none!important}
+.top span:nth-child(2){display:block;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(8px,1vw,12px);}
+.body.petBody{padding:2px 8px 5px;gap:1px;justify-content:flex-start}
+.petBody .petStage{width:100%;flex:1 1 auto;min-height:48px;max-height:88px;margin:0;overflow:visible}
+.petBody .petName{display:none!important}
+.petBody .details{font-size:clamp(6px,.72vw,9px);line-height:1.05;margin:0 0 2px;text-align:center;opacity:.78}
+.petBody .stats{display:grid!important;grid-template-columns:1fr 1fr;gap:2px 3px;width:100%;margin-top:auto;position:static}
+.petBody .stat{display:grid;grid-template-columns:12px 1fr 18px;align-items:center;gap:2px;padding:2px 3px;border-radius:7px;background:rgba(255,255,255,.23);box-shadow:inset 0 0 0 1px rgba(22,34,63,.12);font-size:clamp(5px,.62vw,8px);line-height:1}
+.petBody .bar{height:5px}
+.petBody .petImg{max-width:92%;max-height:92%}
+@media (max-width:520px){.lcd{left:21.8%;top:39.9%;width:56.4%;height:25.9%}.top{padding:1px 10px}.petBody .stats{gap:2px}.petBody .stat{grid-template-columns:11px 1fr 16px;padding:2px}.petBody .bar{height:4px}}
 
 </style>
 </head>
@@ -123,7 +138,10 @@ function renderPet(){
   if(!p)return renderError('No pets loaded.');
   const count=Math.max(1,state.pets.length);
   const img=petImage(p);
-  return top('PETS',`${state.petIndex+1}/${count}`)+`<div class="body petBody"><div class="petStage">${img}</div><div class="petName">${esc(p.name||p.nickname||p.pet||'Pet')}</div><div class="details">${esc(p.pet||p.species||'pet')} · Lv ${esc(p.level||1)} · XP ${esc(p.xp||0)}</div><div class="stats">${stat('🍔','h',p.hunger)}${stat('😊','j',p.happiness)}${stat('⚡','e',p.energy)}${stat('➕','hp',p.health)}</div></div>`;
+  const petName=p.name||p.nickname||p.pet||'Pet';
+  const title=`${petName} · Lv ${p.level||1}`;
+  const sub=`${p.pet||p.species||'pet'} · XP ${p.xp||0} · ${state.petIndex+1}/${count}`;
+  return top(title,'')+`<div class="body petBody"><div class="petStage">${img}</div><div class="petName">${esc(petName)}</div><div class="details">${esc(sub)}</div><div class="stats">${stat('🍔','h',p.hunger)}${stat('😊','j',p.happiness)}${stat('⚡','e',p.energy)}${stat('➕','hp',p.health)}</div></div>`;
 }
 function petImage(p){
   if(p.url){
@@ -163,9 +181,9 @@ function submitPassword(){
   if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
   startPlayer(p);
 }
-function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v2_'+String(userId||'none');}
+function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v3_'+String(userId||'none');}
 function readCachedPets(userId){
-  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>10*60*1000)return null;return pack.pets;}catch(e){return null;}
+  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>60*60*1000)return null;return pack.pets;}catch(e){return null;}
 }
 function writeCachedPets(userId,pets){
   try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30)}));}catch(e){}
@@ -186,12 +204,27 @@ async function startPlayer(player){
       }).catch(e=>log('background refresh failed',e.message||e));
       return;
     }
-    const pets=await loadUserPets(player.userId);
+    const pets=await loadUserPetsFast(player.userId);
     if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
     const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();
+    enrichPets(ready,player.userId).then(enriched=>{
+      if(!enriched||!enriched.length||!state.player||state.player.userId!==player.userId)return;
+      const updated=enriched.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,updated);state.pets=updated;state.petIndex=Math.min(state.petIndex,updated.length-1);render();
+    }).catch(e=>log('background visual enrich failed',e.message||e));
   }catch(err){state.lastError=err.message||String(err);state.screen='error';render();}
 }
 function withDefaults(p,i){return {hunger:100,happiness:100,energy:100,health:100,level:1,xp:0,size:76,x:50,y:50,emoji:emojiFor(p.pet||p.category||p.name),...p};}
+async function loadUserPetsFast(userId){
+  // Fast path: get owned pets and stats first, then images/layout can enrich in the background.
+  let proxyPets=[];
+  try{
+    const sheetRows=await fetchSheetRows('user_pets');
+    const direct=dedupePets(sheetRows.filter(r=>strictUserMatch(r,userId)).map(r=>normalisePet(r,userId)));
+    if(direct.length)return direct;
+  }catch(e){log('fast direct user_pets failed',e.message||e);}
+  try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('fast proxy failed',e.message||e);}
+  return dedupePets(proxyPets.filter(p=>strictUserMatch(p.raw||p,userId)).map(p=>p.raw?p:normalisePet(p,userId)));
+}
 async function loadUserPets(userId){
   let proxyPets=[];
   // Try direct user_pets first because that is where your real Discord-owned pet names/stats live.
@@ -216,7 +249,7 @@ function mergePetLists(primary,secondary){
   return out;
 }
 async function fetchPetsViaProxy(userId){
-  const url='/api/petbot?'+new URLSearchParams({mode:'view_pets',user_id:String(userId),per_page:'100',v:'stable-tama-1'});
+  const url='/api/petbot?'+new URLSearchParams({mode:'view_pets',user_id:String(userId),per_page:'100',v:'stable-tama-2'});
   const data=await fetchJson(url,14000);
   const rootUser=clean(pick(data,['user_id','discord_user_id','discord_id','requested_user_id','player_id'],''));
   let arr=findArray(data,['pets','owned_pets','user_pets','rows','data','items','results']);
