@@ -23,8 +23,8 @@ body{display:grid;place-items:center}
 .top{height:18%;min-height:19px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;padding:2px 6px;font-weight:900;font-size:clamp(8px,1.02vw,13px);background:rgba(255,255,255,.25);letter-spacing:.02em;position:relative;z-index:6}.top span:nth-child(2){white-space:nowrap}.top span:last-child{text-align:right}
 .body{position:relative;flex:1;min-height:0;padding:5px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:4}.hint{font-size:clamp(6px,.72vw,10px);font-weight:800;opacity:.7;text-align:center;line-height:1.1;margin-top:2px}.small{font-size:clamp(7px,.78vw,10px);font-weight:800;opacity:.8}.bigText{font-size:clamp(11px,1.45vw,20px);font-weight:1000;text-align:center;line-height:1.12}.row{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap}
 .choiceList{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;justify-content:center}.choice{display:grid;grid-template-columns:auto 1fr;gap:5px;align-items:center;padding:5px 7px;border:1.5px solid rgba(22,34,63,.35);background:rgba(255,255,255,.24);border-radius:9px;font-weight:1000;font-size:clamp(9px,1.08vw,14px);line-height:1.05}.choice.active{background:rgba(255,255,255,.67);outline:2px solid rgba(22,34,63,.42)}.choice small{display:block;font-size:.72em;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
-.passwordCard{width:94%;max-width:260px;background:rgba(255,255,255,.35);border:1.5px solid rgba(22,34,63,.35);border-radius:12px;padding:7px;text-align:center;font-weight:1000}.passwordCard input{width:94%;margin:5px auto;display:block;border:1.5px solid rgba(22,34,63,.5);border-radius:9px;padding:6px 5px;text-align:center;font-weight:1000;background:rgba(255,255,255,.88);color:#111;font-size:16px;user-select:text}.passwordCard button,.screenBtn{border:1.5px solid rgba(22,34,63,.35);border-radius:999px;background:rgba(255,255,255,.88);font-weight:1000;padding:5px 12px;color:var(--ink)}.error{color:#9b1a56;font-size:clamp(7px,.8vw,11px);min-height:1.15em;font-weight:900}.loader{width:34px;height:34px;border-radius:50%;border:4px solid rgba(22,34,63,.16);border-top-color:rgba(22,34,63,.8);animation:spin .8s linear infinite;margin:3px auto}@keyframes spin{to{transform:rotate(360deg)}}
-.petStage{position:absolute;inset:18% 2% 34% 2%;overflow:hidden}.petImg{position:absolute;left:50%;top:52%;width:58%;height:58%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 7px 6px rgba(35,37,62,.20))}.petEmoji{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,70px)}.petName{position:absolute;left:4px;right:4px;bottom:31%;text-align:center;font-size:clamp(9px,1.1vw,15px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats{position:absolute;left:7px;right:7px;bottom:5px;display:grid;gap:2px}.stat{display:grid;grid-template-columns:16px 1fr 24px;gap:3px;align-items:center;font-size:clamp(6px,.72vw,9px);font-weight:900}.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(22,34,63,.25);overflow:hidden}.bar i{display:block;height:100%;width:50%;border-radius:999px;background:rgba(22,34,63,.55)}.bar.h i{background:#ff7899}.bar.j i{background:#ffbd59}.bar.e i{background:#6ddf9e}.bar.hp i{background:#75c7ff}.details{font-size:clamp(7px,.82vw,11px);font-weight:900;text-align:center;opacity:.82;margin-top:1px}.msg{font-size:clamp(8px,.82vw,12px);font-weight:900;text-align:center;opacity:.8;margin-top:2px}.menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}.menuItem{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.24);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(8px,.9vw,12px);min-height:36px;display:flex;flex-direction:column;justify-content:center}.menuItem.active{background:rgba(255,255,255,.70);outline:2px solid rgba(22,34,63,.35)}.menuItem b{font-size:1.25em}.panelList{width:100%;height:100%;overflow:auto;padding-right:2px;font-size:clamp(7px,.85vw,11px);font-weight:900}.panelItem{border:1px solid rgba(22,34,63,.24);border-radius:8px;background:rgba(255,255,255,.28);padding:4px;margin:3px 0}.debug{position:fixed;left:8px;bottom:8px;right:8px;max-height:26vh;overflow:auto;background:rgba(255,255,255,.88);border:1px solid rgba(22,34,63,.25);border-radius:10px;padding:8px;font:12px/1.25 monospace;display:none;user-select:text}.hit{position:absolute;border:0;background:transparent;outline:none;z-index:20;cursor:pointer;color:transparent;-webkit-tap-highlight-color:transparent}.hit:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:2px;border-radius:999px}.hit.exit{left:43%;top:15%;width:14%;height:10.5%;border-radius:50%}.hit.prev{left:13.6%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}.hit.select{left:38%;top:70.8%;width:24%;height:16.2%;border-radius:50%}.hit.next{left:70.2%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
+.passwordCard{width:94%;max-width:260px;background:rgba(255,255,255,.35);border:1.5px solid rgba(22,34,63,.35);border-radius:12px;padding:7px;text-align:center;font-weight:1000}.passwordCard input{width:94%;margin:5px auto;display:block;border:1.5px solid rgba(22,34,63,.5);border-radius:9px;padding:6px 5px;text-align:center;font-weight:1000;background:rgba(255,255,255,.88);color:#111;font-size:16px;user-select:text}.screenBtn{border:1.5px solid rgba(22,34,63,.35);border-radius:999px;background:rgba(255,255,255,.88);font-weight:1000;padding:5px 12px;color:var(--ink)}.error{color:#9b1a56;font-size:clamp(7px,.8vw,11px);min-height:1.15em;font-weight:900}.loader{width:34px;height:34px;border-radius:50%;border:4px solid rgba(22,34,63,.16);border-top-color:rgba(22,34,63,.8);animation:spin .8s linear infinite;margin:3px auto}@keyframes spin{to{transform:rotate(360deg)}}
+.petStage{position:absolute;inset:15% 4% 38% 4%;overflow:hidden}.petImg{position:absolute;left:50%;top:50%;width:76%;height:76%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 7px 6px rgba(35,37,62,.20))}.petEmoji{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,70px)}.petName{position:absolute;left:4px;right:4px;bottom:29%;text-align:center;font-size:clamp(10px,1.25vw,16px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stats{position:absolute;left:7px;right:7px;bottom:5px;display:grid;gap:2px}.stat{display:grid;grid-template-columns:16px 1fr 24px;gap:3px;align-items:center;font-size:clamp(6px,.72vw,9px);font-weight:900}.bar{height:6px;border-radius:999px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(22,34,63,.25);overflow:hidden}.bar i{display:block;height:100%;width:50%;border-radius:999px;background:rgba(22,34,63,.55)}.bar.h i{background:#ff7899}.bar.j i{background:#ffbd59}.bar.e i{background:#6ddf9e}.bar.hp i{background:#75c7ff}.details{position:absolute;left:4px;right:4px;bottom:24%;font-size:clamp(7px,.82vw,11px);font-weight:900;text-align:center;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.msg{font-size:clamp(8px,.82vw,12px);font-weight:900;text-align:center;opacity:.8;margin-top:2px}.menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}.menuItem{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.24);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(8px,.9vw,12px);min-height:36px;display:flex;flex-direction:column;justify-content:center}.menuItem.active{background:rgba(255,255,255,.70);outline:2px solid rgba(22,34,63,.35)}.menuItem b{font-size:1.25em}.panelList{width:100%;height:100%;overflow:auto;padding-right:2px;font-size:clamp(7px,.85vw,11px);font-weight:900}.panelItem{border:1px solid rgba(22,34,63,.24);border-radius:8px;background:rgba(255,255,255,.28);padding:4px;margin:3px 0}.debug{position:fixed;left:8px;bottom:8px;right:8px;max-height:26vh;overflow:auto;background:rgba(255,255,255,.88);border:1px solid rgba(22,34,63,.25);border-radius:10px;padding:8px;font:12px/1.25 monospace;display:none;user-select:text}.hit{position:absolute;border:0;background:transparent;outline:none;z-index:20;cursor:pointer;color:transparent;-webkit-tap-highlight-color:transparent}.hit:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:2px;border-radius:999px}.hit.exit{left:43%;top:15%;width:14%;height:10.5%;border-radius:50%}.hit.prev{left:13.6%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}.hit.select{left:38%;top:70.8%;width:24%;height:16.2%;border-radius:50%}.hit.next{left:70.2%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
 @media (max-width:520px){.device{width:min(99vw,calc(99vh * .6667))}.body{padding:3px 5px}.choice{padding:4px 6px}.stats{gap:1px}.stat{grid-template-columns:14px 1fr 21px}.bar{height:5px}.menuGrid{gap:3px}.menuItem{padding:4px 3px;min-height:30px}}
 </style>
 </head>
@@ -55,11 +55,11 @@ const TEST_PETS=[
   {name:'Test Dragon',pet:'dragon',category:'mythical',code:'test_dragon_1',level:5,xp:600,hunger:65,happiness:90,energy:60,health:88,emoji:'🐉'}
 ];
 const MENU=[
-  {key:'stats',label:'Stats',icon:'♡'},
+  {key:'pets',label:'Pets',icon:'🐾'},
+  {key:'games',label:'Games',icon:'🎮'},
+  {key:'shop',label:'Shop',icon:'🛍️'},
   {key:'inventory',label:'Inventory',icon:'🎒'},
-  {key:'habitat',label:'Habitat',icon:'🏡'},
-  {key:'quests',label:'Quests',icon:'⭐'},
-  {key:'switch',label:'Switch',icon:'👤'},
+  {key:'switch',label:'Switch User',icon:'👤'},
   {key:'game',label:'Game',icon:'🚑'}
 ];
 const $=id=>document.getElementById(id);
@@ -84,6 +84,8 @@ function render(){
   else if(state.screen==='menu') html=renderMenu();
   else if(state.screen==='stats') html=renderStats();
   else if(state.screen==='inventory') html=renderSimplePanel('INVENTORY','Inventory will load after pet display is stable.', currentPet()?.inventory||[]);
+  else if(state.screen==='games') html=renderSimplePanel('GAMES','Games will connect after pets and stats are fully stable.', []);
+  else if(state.screen==='shop') html=renderSimplePanel('SHOP','Shop will connect after pet display is stable.', []);
   else if(state.screen==='habitat') html=renderSimplePanel('HABITAT','Sheet51 layout is used for pet image/position first. Full habitat room comes next.', currentPet()?.habitat||[]);
   else if(state.screen==='quests') html=renderSimplePanel('QUESTS','Quest history comes after pets/stats are correct.', currentPet()?.quests||[]);
   else if(state.screen==='error') html=renderError();
@@ -96,7 +98,7 @@ function renderLogin(){
 }
 function renderPassword(){
   const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
-  return top('PASSWORD','')+`<div class="body"><div class="passwordCard"><div>${esc(p.label)} password</div><input id="passInput" type="password" autocomplete="off" inputmode="text" value="${esc(state.password)}" placeholder="type password"><button id="passBtn" type="button">Enter</button><div class="error">${esc(state.error)}</div></div><div class="hint">This is temporary until Discord auto-login</div></div>`;
+  return top('PASSWORD','')+`<div class="body"><div class="passwordCard"><div>${esc(p.label)} password</div><input id="passInput" type="password" autocomplete="off" inputmode="text" value="${esc(state.password)}" placeholder="type password"><div class="error">${esc(state.error)}</div></div><div class="hint">Type password · press dummy/pacifier to enter</div></div>`;
 }
 function renderLoading(){return top('LOADING','')+`<div class="body"><div class="loader"></div><div class="bigText">${esc(state.message||'Loading pets')}</div><div class="hint">Only this player’s pets will be shown</div></div>`;}
 function currentPet(){return state.pets[state.petIndex]||null;}
@@ -105,18 +107,18 @@ function renderPet(){
   if(!p)return renderError('No pets loaded.');
   const count=Math.max(1,state.pets.length);
   const img=petImage(p);
-  return top('PETBOT',`${state.petIndex+1}/${count}`)+`<div class="body"><div class="petStage">${img}</div><div class="petName">${esc(p.name||p.pet||'Pet')}</div><div class="details">${esc(p.pet||'pet')} · Lv ${esc(p.level||1)} · XP ${esc(p.xp||0)}</div><div class="stats">${stat('🍔','h',p.hunger)}${stat('😊','j',p.happiness)}${stat('⚡','e',p.energy)}${stat('➕','hp',p.health)}</div></div>`;
+  return top('PETS',`${state.petIndex+1}/${count}`)+`<div class="body petBody"><div class="petStage">${img}</div><div class="petName">${esc(p.name||p.nickname||p.pet||'Pet')}</div><div class="details">${esc(p.pet||p.species||'pet')} · Lv ${esc(p.level||1)} · XP ${esc(p.xp||0)}</div><div class="stats">${stat('🍔','h',p.hunger)}${stat('😊','j',p.happiness)}${stat('⚡','e',p.energy)}${stat('➕','hp',p.health)}</div></div>`;
 }
 function petImage(p){
   if(p.url){
-    const size=clamp(n(p.size,58),24,72); const x=clamp(n(p.x,50),15,85); const y=clamp(n(p.y,50),18,76); const flip=p.flip===-1?' scaleX(-1)':'';
+    const size=clamp(n(p.size,76),36,84); const x=clamp(n(p.x,50),15,85); const y=clamp(n(p.y,50),18,76); const flip=p.flip===-1?' scaleX(-1)':'';
     return `<div class="petImg" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
   }
   return `<div class="petEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
 }
 function emojiFor(s){s=String(s||'').toLowerCase();if(s.includes('raven')||s.includes('crow'))return'🐦‍⬛';if(s.includes('owl'))return'🦉';if(s.includes('dragon'))return'🐉';if(s.includes('unicorn'))return'🦄';if(s.includes('cat'))return'🐈';if(s.includes('dog'))return'🐕';if(s.includes('frog'))return'🐸';if(s.includes('axolotl'))return'🦎';return'🐾';}
 function stat(icon,cls,v){return `<div class="stat"><span>${icon}</span><div class="bar ${cls}"><i style="width:${bar(v)}"></i></div><span>${clamp(Math.round(n(v,0)),0,100)}</span></div>`;}
-function renderMenu(){return top('MENU','')+`<div class="body"><div class="menuGrid">${MENU.map((m,i)=>`<div class="menuItem ${i===state.menuIndex?'active':''}"><b>${m.icon}</b>${esc(m.label)}</div>`).join('')}</div><div class="hint">hearts choose · dummy select</div></div>`;}
+function renderMenu(){return top('MAIN MENU','')+`<div class="body"><div class="menuGrid">${MENU.map((m,i)=>`<div class="menuItem ${i===state.menuIndex?'active':''}" data-menu-index="${i}"><b>${m.icon}</b>${esc(m.label)}</div>`).join('')}</div><div class="hint">hearts choose · dummy/pacifier select</div></div>`;}
 function renderStats(){
   const p=currentPet()||{};
   const rows=[['Owner',state.player?.display||''],['User ID',state.player?.userId||''],['Pet ID',p.userPetId||p.code||''],['Species',p.pet||''],['Category',p.category||''],['Level',p.level||1],['XP',p.xp||0],['Health',p.health||0],['Hunger',p.hunger||0],['Happy',p.happiness||0],['Energy',p.energy||0]];
@@ -130,9 +132,9 @@ function renderError(msg){return top('ERROR','')+`<div class="body"><div class="
 function rowLabel(r){if(!r||typeof r!=='object')return String(r||'');return pick(r,['item_name','name','label','title','quest_name','trait_name','skill_name','effect_name','description'],'Row');}
 function wireRenderedControls(){
   document.querySelectorAll('[data-player-index]').forEach(el=>el.addEventListener('click',()=>{state.loginIndex=Number(el.dataset.playerIndex)||0;choosePlayer();}));
-  const input=$('passInput'), btn=$('passBtn');
+  document.querySelectorAll('[data-menu-index]').forEach(el=>el.addEventListener('click',()=>{state.menuIndex=Number(el.dataset.menuIndex)||0;activateMenu();}));
+  const input=$('passInput');
   if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
-  if(btn)btn.addEventListener('click',submitPassword);
 }
 function choosePlayer(){
   const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
@@ -150,20 +152,32 @@ async function startPlayer(player){
   try{
     const pets=player.test?TEST_PETS.map(p=>({...p})):await loadUserPets(player.userId);
     if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
-    state.pets=pets.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.screen='pet';state.message='Loaded '+pets.length+' pets';render();
+    state.pets=pets.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();
   }catch(err){state.lastError=err.message||String(err);state.screen='error';render();}
 }
-function withDefaults(p,i){return {hunger:100,happiness:100,energy:100,health:100,level:1,xp:0,size:58,x:50,y:52,emoji:emojiFor(p.pet||p.category||p.name),...p};}
+function withDefaults(p,i){return {hunger:100,happiness:100,energy:100,health:100,level:1,xp:0,size:76,x:50,y:50,emoji:emojiFor(p.pet||p.category||p.name),...p};}
 async function loadUserPets(userId){
-  let rows=[];
-  // Try Apps Script proxy first. If it returns catalogue/all pets, strict filtering removes them.
-  try{rows=rows.concat(await fetchPetsViaProxy(userId));}catch(e){log('proxy failed',e.message||e);}
-  let strict=dedupePets(rows.filter(p=>strictUserMatch(p.raw||p,userId)).map(p=>p.raw?p:normalisePet(p,userId)));
-  if(strict.length) return await enrichPets(strict,userId);
-  // Direct sheet fallback is used to avoid showing the whole catalogue.
-  const sheetRows=await fetchSheetRows('user_pets');
-  strict=dedupePets(sheetRows.filter(r=>strictUserMatch(r,userId)).map(r=>normalisePet(r,userId)));
+  let proxyPets=[];
+  // Try direct user_pets first because that is where your real Discord-owned pet names/stats live.
+  try{
+    const sheetRows=await fetchSheetRows('user_pets');
+    const direct=dedupePets(sheetRows.filter(r=>strictUserMatch(r,userId)).map(r=>normalisePet(r,userId)));
+    if(direct.length){
+      try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('proxy failed after direct',e.message||e);}
+      return await enrichPets(mergePetLists(direct,proxyPets),userId);
+    }
+  }catch(e){log('direct user_pets failed',e.message||e);}
+  // Fallback to Apps Script proxy, but still strict-filter to the selected user.
+  try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('proxy failed',e.message||e);}
+  const strict=dedupePets(proxyPets.filter(p=>strictUserMatch(p.raw||p,userId)).map(p=>p.raw?p:normalisePet(p,userId)));
   return await enrichPets(strict,userId);
+}
+function mergePetLists(primary,secondary){
+  const out=[]; const byKey=new Map();
+  function keyFor(p){return norm(p.userPetId||p.code||p.name||p.pet||'');}
+  for(const p of primary||[]){const k=keyFor(p);if(k&&!byKey.has(k)){byKey.set(k,{...p});out.push(byKey.get(k));}}
+  for(const p of secondary||[]){const k=keyFor(p);if(k&&byKey.has(k)){Object.assign(byKey.get(k),{...p,name:byKey.get(k).name||p.name});}else if(k){const v={...p};byKey.set(k,v);out.push(v);}}
+  return out;
 }
 async function fetchPetsViaProxy(userId){
   const url='/api/petbot?'+new URLSearchParams({mode:'view_pets',user_id:String(userId),per_page:'100',v:'stable-tama-1'});
@@ -198,7 +212,7 @@ function applyVisual(p,row){
   const y=pick(row,['overlay_y','y','y_pos','screen_y','display_y'],''); if(y!==''&&y!=null)p.y=screenPos(y,p.y);
   const f=String(pick(row,['flip','facing','direction','scale_x'],'')).toLowerCase(); if(f.includes('-1')||f.includes('left')||f.includes('flip'))p.flip=-1;
 }
-function screenSize(v,f=58){let x=n(v,f);if(x>160)x=x/5;else if(x>100)x=x*.55;return clamp(x,24,72);}
+function screenSize(v,f=76){let x=n(v,f);if(x>160)x=x/5;else if(x>100)x=x*.55;return clamp(x,36,84);}
 function screenPos(v,f=50){let x=n(v,f);if(x>100)x=50;return clamp(x,15,85);}
 async function findVisualForPet(p,userId){
   // Existing Cloudflare lookup first.
@@ -221,16 +235,25 @@ async function findVisualForPet(p,userId){
 }
 function cleanImageUrl(v){v=clean(v).replace(/^['"]|['"]$/g,'');if(!v)return'';if(/^https?:\/\//i.test(v))return v;if(v.includes('res.cloudinary.com'))return 'https://'+v.replace(/^\/+/,'');return CLOUD+v.replace(/^\/+/,'');}
 function normalisePet(row,userId){
+  // Rows may arrive as normal objects or raw array rows from Apps Script.
+  if(Array.isArray(row)){
+    row={
+      user_id:row[0], owner_display:row[1], user_pet_id:row[2], pet_code:row[3], pet:row[4], category:row[5],
+      pet_name:row[6], level:row[7], xp:row[8], hunger:row[9], happiness:row[10], energy:row[11], health:row[12],
+      adopted_at:row[13], updated_at:row[14]
+    };
+  }
   const vals=Object.values(row||{}).map(clean);
   const indexLooks=vals[0]===String(userId)||vals.includes(String(userId));
   const fromIndex={};
-  if(indexLooks&&vals.length>=9){Object.assign(fromIndex,{userId:vals[0],userPetId:vals[2],code:vals[3],pet:vals[4],category:vals[5],name:vals[6],level:vals[7],xp:vals[8],hunger:vals[9],happiness:vals[10],energy:vals[11],health:vals[12]});}
+  if(indexLooks&&vals.length>=9){Object.assign(fromIndex,{userId:vals[0],owner:vals[1],userPetId:vals[2],code:vals[3],pet:vals[4],category:vals[5],name:vals[6],level:vals[7],xp:vals[8],hunger:vals[9],happiness:vals[10],energy:vals[11],health:vals[12]});}
   const userPetId=pick(row,['user_pet_id','owned_pet_id','pet_instance_id','instance_id','id'],fromIndex.userPetId||'');
   const code=pick(row,['pet_code','code','pet_key','pet_id'],fromIndex.code||userPetId||'');
   const pet=pick(row,['pet','species','animal','pet_type','type','base_pet','pet_key'],fromIndex.pet||code||'');
-  let name=pick(row,['nickname','pet_nickname','custom_name','given_name','pet_display_name','display_pet_name'],fromIndex.name||'');
-  if(!name)name=pick(row,['pet_name','name'],fromIndex.name||pet||code||'Pet');
-  return {raw:row,userId:pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],fromIndex.userId||userId||''),userPetId,code,pet,category:pick(row,['category','pet_category','class'],fromIndex.category||''),name,level:n(pick(row,['level','lvl'],fromIndex.level||1),1),xp:n(pick(row,['xp','experience','exp'],fromIndex.xp||0),0),hunger:n(pick(row,['hunger','food','feed'],fromIndex.hunger||100),100),happiness:n(pick(row,['happiness','happy','mood'],fromIndex.happiness||100),100),energy:n(pick(row,['energy','stamina'],fromIndex.energy||100),100),health:n(pick(row,['health','hp'],fromIndex.health||100),100)};
+  let name=pick(row,['nickname','pet_nickname','custom_name','given_name','pet_display_name','display_pet_name','display_name','pet_given_name','petName','name_given'],fromIndex.name||'');
+  if(!name)name=pick(row,['pet_name','name','Name'],fromIndex.name||'');
+  if(!name||norm(name)===norm(pet)||norm(name)===norm(code)) name=fromIndex.name||name||pet||code||'Pet';
+  return {raw:row,userId:pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],fromIndex.userId||userId||''),owner:pick(row,['owner_display','display_name','username','user_name'],fromIndex.owner||''),userPetId,code,pet,category:pick(row,['category','pet_category','class'],fromIndex.category||''),name,level:n(pick(row,['level','lvl'],fromIndex.level||1),1),xp:n(pick(row,['xp','experience','exp'],fromIndex.xp||0),0),hunger:n(pick(row,['hunger','food','feed'],fromIndex.hunger||100),100),happiness:n(pick(row,['happiness','happy','mood'],fromIndex.happiness||100),100),energy:n(pick(row,['energy','stamina'],fromIndex.energy||100),100),health:n(pick(row,['health','hp'],fromIndex.health||100),100)};
 }
 function pick(row,names,fallback=''){
   if(!row||typeof row!=='object')return fallback;
@@ -263,10 +286,16 @@ async function fetchJson(url,timeoutMs){
   const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),timeoutMs||12000);
   try{const res=await fetch(url,{headers:{accept:'application/json,text/plain,*/*'},cache:'no-store',signal:ctrl.signal});const text=await res.text();if(!res.ok)throw new Error('HTTP '+res.status+' '+text.slice(0,120));try{return JSON.parse(text);}catch(e){return {response:text};}}finally{clearTimeout(t);}
 }
+const SHEET_CACHE=new Map();
 async function fetchSheetRows(tab){
+  const cacheKey=tab;
+  const cached=SHEET_CACHE.get(cacheKey);
+  if(cached&&Date.now()-cached.t<45000)return cached.rows;
   const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?`+new URLSearchParams({tqx:'out:json',sheet:tab,tq:'select *'}).toString();
   const text=await (await fetch(url,{cache:'no-store'})).text();
-  return parseGviz(text);
+  const rows=parseGviz(text);
+  SHEET_CACHE.set(cacheKey,{t:Date.now(),rows});
+  return rows;
 }
 function parseGviz(text){
   const start=text.indexOf('{'),end=text.lastIndexOf('}'); if(start<0||end<start)throw new Error('Sheet not readable');
@@ -298,19 +327,20 @@ function handleSelect(){
   if(state.screen==='error'&&state.player)return startPlayer(state.player);
   if(state.screen==='pet'){state.screen='menu';render();return;}
   if(state.screen==='menu')return activateMenu();
-  if(['stats','inventory','habitat','quests'].includes(state.screen)){state.screen='menu';render();}
+  if(['stats','inventory','habitat','quests','games','shop'].includes(state.screen)){state.screen='menu';render();}
 }
 function activateMenu(){
   const item=MENU[state.menuIndex]||MENU[0];
+  if(item.key==='pets'){state.screen='pet';render();return;}
   if(item.key==='switch'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
-  if(item.key==='game'){sendParent('waa-petbot-game-action',{action:'backToGame'});sendParent('waa-petbot-close');return;}
+  if(item.key==='game'){state.screen='games';render();return;}
   state.screen=item.key;render();
 }
 function handleBack(){
   if(state.screen==='password'){state.screen='login';state.password='';state.error='';render();return;}
   if(state.screen==='login'){sendParent('waa-petbot-close');return;}
-  if(state.screen==='pet'){sendParent('waa-petbot-close');return;}
-  if(state.screen==='menu'){state.screen='pet';render();return;}
+  if(state.screen==='pet'){state.screen='menu';render();return;}
+  if(state.screen==='menu'){sendParent('waa-petbot-close');return;}
   if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
   state.screen='menu';render();
 }
