@@ -7,7 +7,11 @@
 <style>
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
-  --screen-left:24.13%; --screen-top:35.64%; --screen-width:51.29%; --screen-height:29.42%;
+  --screen-left:24.55%; --screen-top:36.1%; --screen-width:50.9%; --screen-height:26.8%;
+  --lcd-bg:linear-gradient(180deg,#cfe9ff,#9fcfff 55%,#84b7fb);
+  --lcd-text:#13213b;
+  --lcd-grid:rgba(18,33,59,.08);
+  --lcd-shadow:rgba(12,28,63,.20);
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);color:var(--ink)}
@@ -15,26 +19,26 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .app{position:relative;width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;padding:0}
 .stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18))}
 .device{position:absolute;z-index:10;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
-.screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none}
-.lcdScreen{position:absolute;inset:7.5% 7.5% 11.5% 7.5%;border-radius:8%/11%;overflow:hidden;background:linear-gradient(180deg,#bdcf88,#95a967);box-shadow:inset 0 0 24px rgba(0,0,0,.20),inset 0 0 0 3px rgba(35,49,23,.30);font-family:"Courier New",monospace;color:#172111}
-.lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(0,0,0,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.055) 1px,transparent 1px);background-size:8px 8px;opacity:.58;pointer-events:none;z-index:20}
+.screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease}
+.lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:"Courier New",monospace;color:var(--lcd-text)}
+.lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
 #lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:4px 6px;text-shadow:0 1px rgba(255,255,255,.18)}
 .lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:4px;align-items:center;font-weight:1000;font-size:clamp(7px,.70vw,11px);line-height:1;min-height:12px;z-index:6}
 .lcdTop b{font-weight:1000}
 .lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
 .bottomMsg{font-weight:1000;font-size:clamp(6px,.62vw,10px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.13);border-radius:999px;padding:2px 7px;margin:0 2px 3px}
-.petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:58%;height:58%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:grayscale(1) contrast(2.75) sepia(.18) saturate(.45) brightness(.82);mix-blend-mode:multiply;opacity:.96}
-.petFallback{font-size:clamp(32px,7vw,76px);filter:grayscale(1);opacity:.92}
+.petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:58%;height:58%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
+.petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
 .statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin:0 2px 3px}
 .bar{height:clamp(5px,.60vw,8px);border-radius:999px;border:1.5px solid rgba(35,49,23,.75);background:rgba(35,49,23,.15);overflow:hidden}
-.bar span{display:block;height:100%;background:#2d421f;width:50%}
+.bar span{display:block;height:100%;background:linear-gradient(90deg,#ff7cb7,#7acbff);width:50%}
 .menuGrid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:5px 2px 2px}
 .menuItem{border:1.5px solid rgba(35,49,23,.55);border-radius:7px;background:rgba(255,255,255,.10);display:grid;grid-template-columns:auto 1fr;align-items:center;gap:3px;padding:2px 4px;font-weight:1000;font-size:clamp(6px,.64vw,10px)}
 .menuItem.selected{background:rgba(35,49,23,.20);outline:2px solid rgba(35,49,23,.60)}
-.ico{font-size:clamp(11px,1.5vw,18px);line-height:1;filter:grayscale(1) contrast(2);}
+.ico{font-size:clamp(11px,1.5vw,18px);line-height:1;}
 .listScreen{width:100%;height:100%;display:grid;grid-template-columns:38% 1fr;gap:6px;align-items:center;padding:4px}
-.bigIcon{height:100%;display:grid;place-items:center;border:1.5px solid rgba(35,49,23,.55);border-radius:8px;background:rgba(255,255,255,.10);font-size:clamp(32px,5vw,70px);filter:grayscale(1) contrast(2)}
+.bigIcon{height:100%;display:grid;place-items:center;border:1.5px solid rgba(35,49,23,.35);border-radius:8px;background:rgba(255,255,255,.20);font-size:clamp(32px,5vw,70px)}
 .listText{min-width:0;font-weight:1000;font-size:clamp(7px,.70vw,12px);line-height:1.1}
 .listText .name{font-size:clamp(9px,.85vw,14px);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .choiceList{width:100%;height:100%;padding:3px 4px;display:flex;flex-direction:column;gap:3px;justify-content:center}
@@ -81,18 +85,24 @@ body.editorOpen .editor{display:block}
 .btn.primary{background:linear-gradient(180deg,#fff,#e9f8ff);border-color:#bfeaff}
 .legend{display:grid;grid-template-columns:repeat(2,1fr);gap:5px;margin-top:8px}
 .legend div{font-size:12px;background:#f7fbff;border:1px solid #d7eef8;border-radius:10px;padding:6px}
+
+body[data-edit-tab="screen"].editorOpen .screenHole{pointer-events:auto;cursor:move;box-shadow:0 0 0 3px rgba(89,190,255,.95),0 0 0 8px rgba(89,190,255,.18);background:rgba(89,190,255,.08)}
+body[data-edit-tab="screen"].editorOpen .screenHole::after{content:"";position:absolute;right:2px;bottom:2px;width:16px;height:16px;border-radius:4px;background:#fff;border:3px solid #5bc0ff;box-shadow:0 2px 8px rgba(0,0,0,.22)}
+body.greenScreen{--lcd-bg:linear-gradient(180deg,#bdcf88,#95a967);--lcd-text:#172111;--lcd-grid:rgba(0,0,0,.055);--lcd-shadow:rgba(0,0,0,.20)}
+body.colorScreen{--lcd-bg:linear-gradient(180deg,#eff7ff,#beddff 52%,#90bfff);--lcd-text:#10213b;--lcd-grid:rgba(16,33,59,.08);--lcd-shadow:rgba(12,28,63,.20)}
+
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:45dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px}.bottomMsg{font-size:7px}.editTab{font-size:12px;padding:7px 10px}}
 </style>
 </head>
-<body>
+<body class="colorScreen">
 <div class="app">
   <main class="stage" id="stage" aria-label="Waaambulance PetBot toy">
     <section class="screenHole" aria-label="PetBot LCD screen">
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-screenfit-drag-01" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-colourfit-02" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
@@ -110,6 +120,8 @@ body.editorOpen .editor{display:block}
     <h3>Toy click zones</h3>
     <p>These do not move the visible toy buttons. They only change the invisible places you can press.</p>
     <div class="dragHint">Drag a highlighted click zone to move it. Drag its small bottom-right square to resize it.</div>
+    <button class="btn primary" id="snapButtonsBtn">Snap buttons to visible shell</button>
+    <button class="btn" id="threeButtonBtn">Use simple 3-button layout</button>
     <label for="buttonSelect">Button zone</label>
     <select id="buttonSelect"></select>
     <label>Left/right <span id="btnLeftVal"></span></label><input id="btnLeft" type="range" min="0" max="100" step="0.1">
@@ -121,6 +133,7 @@ body.editorOpen .editor{display:block}
     <h3>LCD screen fit</h3>
     <div class="dragHint">Drag the blue LCD box on the toy. Drag the bottom-right corner to resize it. Use the button below to snap it back to the cut-out screen.</div>
     <button class="btn primary" id="autoFitScreenBtn">Auto-fit current shell screen</button>
+    <label>Screen style</label><select id="screenTheme"><option value="color">Colour screen</option><option value="green">Retro green LCD</option></select>
     <label>Screen left/right <span id="screenLeftVal"></span></label><input id="screenLeft" type="range" min="0" max="60" step="0.1">
     <label>Screen up/down <span id="screenTopVal"></span></label><input id="screenTop" type="range" min="10" max="70" step="0.1">
     <label>Screen width <span id="screenWidthVal"></span></label><input id="screenWidth" type="range" min="20" max="80" step="0.1">
@@ -692,23 +705,23 @@ const PETS = [
 ];
 
 let LAYOUT = {
-  screenHole: { left:24.13, top:35.64, width:51.29, height:29.42 },
-  screenInner: { insetX:1.2, insetY:1.2, bottomExtra:0 },
+  screenHole: { left:24.55, top:36.1, width:50.9, height:26.8 },
+  screenInner: { insetX:2.2, insetY:2.2, bottomExtra:0.4 },
   content: { petSize:58, petY:52 },
   buttons: {
-    explore: { label:'Explore / select', short:'1', left:33.9, top:13.8, width:32, height:2.3, radius:'24px' },
-    back:    { label:'Back', short:'2', left:44.8, top:17.9, width:10, height:5.6, radius:'10px' },
-    feed:    { label:'Feed', short:'3', left:20.4, top:70.2, width:5.8, height:5.8, radius:'20px' },
-    heal:    { label:'Heal', short:'4', left:72.4, top:70.2, width:5.8, height:5.8, radius:'20px' },
-    prev:    { label:'Previous', short:'5', left:33.1, top:79.1, width:3.2, height:3.7, radius:'20%' },
-    next:    { label:'Next', short:'6', left:62.9, top:78.7, width:2.9, height:4.4, radius:'20%' },
-    play:    { label:'Play', short:'7', left:45.8, top:80.7, width:7.7, height:5, radius:'20%' },
-    rest:    { label:'Rest', short:'8', left:46.2, top:66.6, width:6.6, height:5.4, radius:'10%' },
-    info:    { label:'Menu / pet info', short:'9', left:28.5, top:38.3, width:42.3, height:22.8, radius:'7%/10%' }
+    explore: { label:'Explore', short:'1', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' },
+    back:    { label:'Back', short:'2', left:45.0, top:15.7, width:9.2, height:8.2, radius:'16%' },
+    feed:    { label:'Feed', short:'3', left:14.2, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    heal:    { label:'Heal', short:'4', left:71.8, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    prev:    { label:'Previous', short:'5', left:10.8, top:56.5, width:9.8, height:10.8, radius:'28%' },
+    next:    { label:'Next', short:'6', left:79.4, top:56.5, width:9.8, height:10.8, radius:'28%' },
+    play:    { label:'Play / select', short:'7', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    rest:    { label:'Rest', short:'8', left:38.4, top:81.8, width:23.2, height:6.8, radius:'35%' },
+    info:    { label:'Menu / pet info', short:'9', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-tamagotchi-v2-screenfit-drag';
+const STORE_KEY = 'waaambulance-petbot-tamagotchi-v3-colour-shell';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -754,6 +767,7 @@ let state = {
   feedIndex:0,
   trainIndex:0,
   message:'Ready · use the toy buttons',
+  screenTheme:'color',
   flash:null,
   pets:[]
 };
@@ -936,7 +950,7 @@ function handleAction(action){
   if(action==='prev') return move(-1);
   if(action==='next') return move(1);
   if(action==='back') return back();
-  if(action==='info') return selectCurrent();
+  if(action==='info') return state.mode==='home' ? setMode('menu','Main menu') : selectCurrent();
   if(action==='explore') return state.mode==='menu'||state.mode==='feed'||state.mode==='train'?selectCurrent():quickExplore();
   if(action==='feed') return state.mode==='feed'?useFood():setMode('feed','Choose food');
   if(action==='heal') return quickHeal();
@@ -1057,6 +1071,47 @@ function startScreenDrag(e){
   window.addEventListener('pointerup',up,{once:true});
 }
 
+
+function applyTheme(){
+  const t=(state.screenTheme||'color');
+  document.body.classList.toggle('colorScreen', t==='color');
+  document.body.classList.toggle('greenScreen', t==='green');
+}
+function snapVisibleShellButtons(){
+  LAYOUT.buttons = {
+    explore: { label:'Explore', short:'1', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' },
+    back:    { label:'Back', short:'2', left:45.0, top:15.7, width:9.2, height:8.2, radius:'16%' },
+    feed:    { label:'Feed', short:'3', left:14.2, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    heal:    { label:'Heal', short:'4', left:71.8, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    prev:    { label:'Previous', short:'5', left:10.8, top:56.5, width:9.8, height:10.8, radius:'28%' },
+    next:    { label:'Next', short:'6', left:79.4, top:56.5, width:9.8, height:10.8, radius:'28%' },
+    play:    { label:'Play / select', short:'7', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    rest:    { label:'Rest', short:'8', left:38.4, top:81.8, width:23.2, height:6.8, radius:'35%' },
+    info:    { label:'Menu / pet info', short:'9', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' }
+  };
+  selectedButton='play';
+  applyLayout();
+  syncEditor(true);
+  save();
+}
+function useThreeButtonLayout(){
+  LAYOUT.buttons = {
+    explore: { label:'Explore', short:'1', left:27.5, top:38.3, width:45.2, height:18.2, radius:'10%/12%' },
+    back:    { label:'Back', short:'2', left:71.8, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    feed:    { label:'Feed', short:'3', left:14.2, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    heal:    { label:'Heal', short:'4', left:45.0, top:15.7, width:9.2, height:8.2, radius:'16%' },
+    prev:    { label:'Previous', short:'5', left:14.2, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    next:    { label:'Next', short:'6', left:71.8, top:71.0, width:13.5, height:11.0, radius:'30%' },
+    play:    { label:'Play / select', short:'7', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    rest:    { label:'Rest', short:'8', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' },
+    info:    { label:'Menu / pet info', short:'9', left:38.0, top:74.0, width:24.0, height:14.8, radius:'35%' }
+  };
+  selectedButton='play';
+  applyLayout();
+  syncEditor(true);
+  save();
+}
+
 function setupEditor(){
   $('editTab').addEventListener('click',()=>document.body.classList.toggle('editorOpen'));
   $('guideBtn').addEventListener('click',()=>{document.body.classList.toggle('guide'); $('guideBtn').textContent=document.body.classList.contains('guide')?'Hide click zones':'Show click zones';});
@@ -1077,7 +1132,10 @@ function setupEditor(){
   const screenControls=[['screenLeft','screenHole','left'],['screenTop','screenHole','top'],['screenWidth','screenHole','width'],['screenHeight','screenHole','height']];
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
-  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:24.13,top:35.64,width:51.38,height:29.49}; LAYOUT.screenInner={insetX:1.2,insetY:1.2,bottomExtra:0}; applyLayout(); syncEditor(true); save();});
+  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:24.55,top:36.1,width:50.9,height:26.8}; LAYOUT.screenInner={insetX:2.2,insetY:2.2,bottomExtra:0.4}; applyLayout(); syncEditor(true); save();});
+  $('screenTheme').addEventListener('change',e=>{state.screenTheme=e.target.value; applyTheme(); save();});
+  $('snapButtonsBtn').addEventListener('click',snapVisibleShellButtons);
+  $('threeButtonBtn').addEventListener('click',useThreeButtonLayout);
   $('screenHole').addEventListener('pointerdown',startScreenDrag);
   const psel=$('petSelect'); state.pets.forEach((p,i)=>{ const o=document.createElement('option'); o.value=i; o.textContent=p.name+' · '+p.type; psel.appendChild(o); });
   psel.addEventListener('change',e=>{state.petIndex=Number(e.target.value); render(); save();});
@@ -1088,7 +1146,7 @@ function setupEditor(){
 function syncEditor(setValues=true){
   if(!$('buttonSelect')) return;
   const b=LAYOUT.buttons[selectedButton];
-  if(setValues){ $('buttonSelect').value=selectedButton; $('btnLeft').value=b.left; $('btnTop').value=b.top; $('btnWidth').value=b.width; $('btnHeight').value=b.height; $('screenLeft').value=LAYOUT.screenHole.left; $('screenTop').value=LAYOUT.screenHole.top; $('screenWidth').value=LAYOUT.screenHole.width; $('screenHeight').value=LAYOUT.screenHole.height; $('screenInset').value=LAYOUT.screenInner.insetX; $('petSelect').value=state.petIndex; $('petSize').value=currentPet().size||LAYOUT.content.petSize; $('petY').value=currentPet().y||LAYOUT.content.petY; }
+  if(setValues){ $('buttonSelect').value=selectedButton; $('btnLeft').value=b.left; $('btnTop').value=b.top; $('btnWidth').value=b.width; $('btnHeight').value=b.height; $('screenLeft').value=LAYOUT.screenHole.left; $('screenTop').value=LAYOUT.screenHole.top; $('screenWidth').value=LAYOUT.screenHole.width; $('screenHeight').value=LAYOUT.screenHole.height; $('screenInset').value=LAYOUT.screenInner.insetX; $('screenTheme').value=state.screenTheme||'color'; $('petSelect').value=state.petIndex; $('petSize').value=currentPet().size||LAYOUT.content.petSize; $('petY').value=currentPet().y||LAYOUT.content.petY; }
   $('btnLeftVal').textContent=pct(b.left); $('btnTopVal').textContent=pct(b.top); $('btnWidthVal').textContent=pct(b.width); $('btnHeightVal').textContent=pct(b.height);
   $('screenLeftVal').textContent=pct(LAYOUT.screenHole.left); $('screenTopVal').textContent=pct(LAYOUT.screenHole.top); $('screenWidthVal').textContent=pct(LAYOUT.screenHole.width); $('screenHeightVal').textContent=pct(LAYOUT.screenHole.height); $('screenInsetVal').textContent=pct(LAYOUT.screenInner.insetX);
   $('petSizeVal').textContent=pct(currentPet().size||LAYOUT.content.petSize); $('petYVal').textContent=pct(currentPet().y||LAYOUT.content.petY);
