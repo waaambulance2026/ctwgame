@@ -1094,6 +1094,23 @@ body.petbotOpen.tamaGameEmbedded #game{
   display:block!important;
 }
 
+
+/* STAGE 12: better LCD embedded game fit and no huge control rings. */
+body.petbotOpen.tamaGameEmbedded #game{
+  left:50vw!important;
+  top:48.8dvh!important;
+  transform:translate(-50%,-50%) scale(.170)!important;
+  border-radius:22px!important;
+  box-shadow:none!important;
+  pointer-events:none!important;
+}
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen{
+  filter:drop-shadow(0 18px 30px rgba(18,20,45,.34))!important;
+}
+@media(max-width:700px){
+  body.petbotOpen.tamaGameEmbedded #game{transform:translate(-50%,-50%) scale(.145)!important;top:49.1dvh!important;}
+}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1139,7 +1156,7 @@ body.petbotOpen.tamaGameEmbedded #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=53&embed=1&launch=1&choose=1"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=54&embed=1&launch=1&choose=1"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2991,8 +3008,11 @@ function expandEmbeddedTamaGame(){
 }
 function tapEmbeddedControl(action){
   try{
-    if(action==='moveLeft'){ keys.left=true; keys.right=false; setTimeout(()=>{keys.left=false;},220); }
-    if(action==='moveRight'){ keys.right=true; keys.left=false; setTimeout(()=>{keys.right=false;},220); }
+    if(action==='moveLeft'){ keys.left=true; keys.right=false; setTimeout(()=>{keys.left=false;},360); }
+    if(action==='moveRight'){ keys.right=true; keys.left=false; setTimeout(()=>{keys.right=false;},360); }
+    if(action==='moveLeftStart'){ keys.left=true; keys.right=false; }
+    if(action==='moveRightStart'){ keys.right=true; keys.left=false; }
+    if(action==='moveStop'){ keys.left=false; keys.right=false; }
     if(action==='jump'){ jump(); }
   }catch(e){}
 }
@@ -3013,7 +3033,7 @@ function handlePetbotGameAction(action){
     stopEmbeddedTamaGame();
     return;
   }
-  if(action === 'moveLeft' || action === 'moveRight' || action === 'jump'){
+  if(action === 'moveLeft' || action === 'moveRight' || action === 'moveLeftStart' || action === 'moveRightStart' || action === 'moveStop' || action === 'jump'){
     tapEmbeddedControl(action);
     return;
   }
@@ -3406,7 +3426,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=53&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=54&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
