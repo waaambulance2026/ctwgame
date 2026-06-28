@@ -1829,8 +1829,11 @@ function expandEmbeddedTamaGame(){
 }
 function tapEmbeddedControl(action){
   try{
-    if(action==='moveLeft'){ keys.left=true; keys.right=false; setTimeout(()=>{keys.left=false;},220); }
-    if(action==='moveRight'){ keys.right=true; keys.left=false; setTimeout(()=>{keys.right=false;},220); }
+    if(action==='moveLeft'){ keys.left=true; keys.right=false; setTimeout(()=>{keys.left=false;},360); }
+    if(action==='moveRight'){ keys.right=true; keys.left=false; setTimeout(()=>{keys.right=false;},360); }
+    if(action==='moveLeftStart'){ keys.left=true; keys.right=false; }
+    if(action==='moveRightStart'){ keys.right=true; keys.left=false; }
+    if(action==='moveStop'){ keys.left=false; keys.right=false; }
     if(action==='jump'){ jump(); }
   }catch(e){}
 }
@@ -1851,7 +1854,7 @@ function handlePetbotGameAction(action){
     stopEmbeddedTamaGame();
     return;
   }
-  if(action === 'moveLeft' || action === 'moveRight' || action === 'jump'){
+  if(action === 'moveLeft' || action === 'moveRight' || action === 'moveLeftStart' || action === 'moveRightStart' || action === 'moveStop' || action === 'jump'){
     tapEmbeddedControl(action);
     return;
   }
@@ -2244,7 +2247,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=52&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=54&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
