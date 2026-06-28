@@ -686,7 +686,7 @@ body.editMode .targetPick{min-height:42px}
   min-height:0!important;
   border-radius:0!important;
   z-index:9999!important;
-  background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%)!important;
+  background:transparent!important;
   cursor:auto;
 }
 .petbotDockPreview{
@@ -897,6 +897,24 @@ body.editMode .targetPick{min-height:42px}
   font-size:18px;
   line-height:1;
 }
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniBars{
+  position:absolute!important;
+  z-index:2!important;
+  left:15%!important;
+  right:15%!important;
+  bottom:8%!important;
+  display:flex!important;
+  gap:4%!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniBars i{
+  display:block!important;
+  flex:1 1 0!important;
+  height:4px!important;
+  border-radius:999px!important;
+  background:linear-gradient(90deg,#76C7D8,#d282c2)!important;
+  box-shadow:inset 0 0 0 1px rgba(25,40,70,.22)!important;
+  transform-origin:left center!important;
+}
 #petbotDock:not(.fullscreen) .petbotDockBar,
 #petbotDock:not(.fullscreen) .petbotDockHint{
   display:none!important;
@@ -953,8 +971,8 @@ body.editMode .targetPick{min-height:42px}
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
-    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div></div><img src="/petbot_device.png?v=20260628-dock-screen-03" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=20"></iframe>
+    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="/petbot_device.png?v=20260628-dock-screen-04" alt=""></div>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=21&embed=1&user_id=1214671839205396481"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2742,15 +2760,42 @@ function setPetLoading(on,msg){
 function updateMiniTamagotchiDock(){
   const title=document.getElementById('dockMiniTitle');
   const pet=document.getElementById('dockMiniPet');
+  const bars=document.getElementById('dockMiniBars');
   if(!title || !pet) return;
-  const name=(currentPet && currentPet.name) ? currentPet.name : 'PetBot';
+  const p=currentPet || window.petbotIframePet || null;
+  const name=(p && p.name) ? p.name : 'PetBot';
   title.textContent=name.length>10 ? name.slice(0,9)+'…' : name;
-  if(currentPetImage){
-    pet.innerHTML='<img src="'+currentPetImage+'" alt="">';
+  const img=currentPetImage || (p && (p.url || p.image_url || p.cloudinary_image_url)) || '';
+  if(img){
+    pet.innerHTML='<img src="'+String(img).replace(/"/g,'&quot;')+'" alt="">';
   } else {
     pet.innerHTML='<span>♡</span>';
   }
+  if(bars){
+    const vals=[p?.hunger,p?.happy,p?.energy].map(v=>Math.max(0.08,pct(v||0)/100));
+    [...bars.querySelectorAll('i')].forEach((el,i)=>{el.style.transform='scaleX('+(vals[i]||0.08)+')';});
+  }
 }
+function receivePetbotIframeState(payload){
+  if(!payload || !payload.pet) return;
+  window.petbotIframePet=payload.pet;
+  currentPet={...(currentPet||{}),...payload.pet};
+  const img=payload.pet.url || payload.pet.image_url || payload.pet.cloudinary_image_url || '';
+  if(img) currentPetImage=img;
+  updateMiniTamagotchiDock();
+  if(payload.pet && payload.pet.name){
+    try{ localStorage.setItem('waa-last-petbot-pet', JSON.stringify(payload.pet)); }catch(e){}
+  }
+}
+window.addEventListener('message',function(e){
+  if(e.origin !== location.origin) return;
+  const d=e.data || {};
+  if(d.type === 'waa-petbot-state') receivePetbotIframeState(d);
+});
+try{
+  const last=JSON.parse(localStorage.getItem('waa-last-petbot-pet')||'null');
+  if(last && last.name) receivePetbotIframeState({pet:last});
+}catch(e){}
 // EDIT SECTION 24: PETBOT LIVE LOADING - gets owned pets from the safe read-only API
 async function loadPetbotPets(force=false){
   const userId=getPetUserId();
@@ -3049,6 +3094,25 @@ function fitGameToScreen(){
     help.style.left = `${Math.max(14, Math.min(DESIGN_W - 60, (vw - 54 - left) / scale))}px`;
     help.style.right = 'auto';
   }
+
+  // Keep the small Tamagotchi on the visible part of the game, under the HUD, not chopped off.
+  const dock = $('petbotDock');
+  if(dock && !dock.classList.contains('fullscreen')){
+    const dockW = (window.innerWidth <= 520) ? 98 : (window.innerWidth <= 900 ? 132 : 170);
+    const dockH = (window.innerWidth <= 520) ? 132 : (window.innerWidth <= 900 ? 176 : 226);
+    const visibleRightX = (vw - left) / scale;
+    const dockLeft = Math.max(18, Math.min(DESIGN_W - dockW - 18, visibleRightX - dockW - 32));
+    const dockTop = Math.max(visibleTop + 94, visibleTop + 18);
+    dock.style.setProperty('left', `${dockLeft}px`, 'important');
+    dock.style.setProperty('right', 'auto', 'important');
+    dock.style.setProperty('top', `${dockTop}px`, 'important');
+    dock.style.setProperty('width', `${dockW}px`, 'important');
+    dock.style.setProperty('height', `${dockH}px`, 'important');
+    dock.style.setProperty('min-width', `${dockW}px`, 'important');
+    dock.style.setProperty('min-height', `${dockH}px`, 'important');
+    dock.style.setProperty('max-width', `${dockW}px`, 'important');
+    dock.style.setProperty('max-height', `${dockH}px`, 'important');
+  }
 }
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
@@ -3070,12 +3134,30 @@ fitGameToScreen();
   function pauseForPetbot(){
     try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
   }
+  function petbotFrameUrl(){
+    let uid='1214671839205396481';
+    try{ if(typeof getPetUserId === 'function') uid=getPetUserId() || uid; }catch(e){}
+    return '/petbot_test.html?v=21&embed=1&user_id=' + encodeURIComponent(uid);
+  }
+  function syncPetbotFrameUser(){
+    try{
+      const wanted=petbotFrameUrl();
+      const current=new URL(frame.getAttribute('src') || '', location.href);
+      const next=new URL(wanted, location.href);
+      if(current.searchParams.get('user_id') !== next.searchParams.get('user_id')) frame.src=wanted;
+    }catch(e){}
+  }
+  function clearSmallDockPlacement(){
+    ['left','right','top','width','height','min-width','min-height','max-width','max-height','inset'].forEach(prop=>dock.style.removeProperty(prop));
+  }
   function refreshMiniPet(){
+    syncPetbotFrameUser();
     try{ if(typeof updateMiniTamagotchiDock === 'function') updateMiniTamagotchiDock(); }catch(e){}
     try{ if(typeof loadPetbotPets === 'function' && !(window.loadedPets||[]).length) loadPetbotPets(false); }catch(e){}
   }
   window.openPetbotFull = function(){
     refreshMiniPet();
+    clearSmallDockPlacement();
     dock.classList.remove('hidden');
     dock.classList.add('fullscreen');
     expandBtn.textContent = 'Small';
@@ -3084,6 +3166,7 @@ fitGameToScreen();
   window.closePetbotFull = function(){
     dock.classList.remove('fullscreen');
     expandBtn.textContent = 'Full';
+    requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
   };
   window.togglePetbotDock = function(){
     if(dock.classList.contains('hidden')) dock.classList.remove('hidden');
