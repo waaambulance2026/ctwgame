@@ -22,10 +22,10 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:Arial,Helvetica,sans-serif;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
-#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:6px 9px;text-shadow:0 1px rgba(255,255,255,.22)}
-.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-weight:1000;font-size:clamp(9px,.88vw,13px);line-height:1;min-height:16px;z-index:6}
+#lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:18px 24px 14px;text-shadow:0 1px rgba(255,255,255,.22)}
+.lcdTop{display:grid;grid-template-columns:1fr;align-items:center;justify-items:center;font-weight:1000;font-size:clamp(10px,.95vw,14px);line-height:1.1;min-height:18px;z-index:6;margin:0 22px 5px;text-align:center}
 .lcdTop b{font-weight:1000}
-.lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.lcdTop span:first-child{text-align:left}.lcdTop span:last-child{text-align:right}
+.lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}.lcdTop span:first-child,.lcdTop span:last-child{display:none}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center;overflow:hidden}
 .bottomMsg{display:none}
 .petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:62%;height:62%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
