@@ -1004,6 +1004,47 @@ body.petbotOpen #petbotDock.fullscreen .petbotDockFrame{
   background:transparent!important;
 }
 
+
+
+/* FIX 20260628B: the blank pastel screen was caused by body.petbotOpen::before
+   sitting above the transformed game canvas. The Tamagotchi dock is moved to <body>
+   and becomes the full-screen clean background itself. */
+body.petbotOpen::before{display:none!important;content:none!important;}
+body.petbotOpen #game{visibility:hidden!important;}
+body.petbotOpen #petbotDock{visibility:visible!important;}
+body.petbotOpen #petbotDock.fullscreen{
+  position:fixed!important;
+  inset:0!important;
+  left:0!important;
+  top:0!important;
+  width:100vw!important;
+  height:100dvh!important;
+  min-width:100vw!important;
+  min-height:100dvh!important;
+  max-width:none!important;
+  max-height:none!important;
+  z-index:2147483000!important;
+  transform:none!important;
+  background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 44%,#def5ff 100%)!important;
+  overflow:hidden!important;
+}
+body.petbotOpen #petbotDock.fullscreen .petbotDockFrame{
+  display:block!important;
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background:transparent!important;
+}
+body.petbotOpen #startScreen,
+body.petbotOpen .overlay,
+body.petbotOpen .hud,
+body.petbotOpen .builder,
+body.petbotOpen .petPanel,
+body.petbotOpen .instructions,
+body.petbotOpen .touch,
+body.petbotOpen .helpBtn{display:none!important;}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1048,8 +1089,8 @@ body.petbotOpen #petbotDock.fullscreen .petbotDockFrame{
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
-    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="/petbot_device.png?v=20260628-dock-screen-04" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=31&embed=1&launch=1&choose=1"></iframe>
+    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=32&embed=1&launch=1&choose=1"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3235,6 +3276,12 @@ fitGameToScreen();
   const backBtn = byId('petbotBackBtn');
   const openBtn = byId('petBtn');
   if(!dock || !frame || !expandBtn || !hideBtn) return;
+  try{
+    // The game canvas is transformed/scaled. A fixed element inside it can be painted
+    // underneath body overlays, which caused the blank pastel screen. Keep the Tamagotchi
+    // as a direct body child so it can truly cover the page.
+    if(dock.parentElement !== document.body) document.body.appendChild(dock);
+  }catch(e){}
 
   function pauseForPetbot(){
     try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
@@ -3255,15 +3302,15 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return '/petbot_test.html?v=31&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=32&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
       const wanted=petbotFrameUrl();
       const current=new URL(frame.getAttribute('src') || '', location.href);
       const next=new URL(wanted, location.href);
-      if(current.searchParams.get('v') !== next.searchParams.get('v') || current.searchParams.get('choose') !== next.searchParams.get('choose')) frame.src=wanted;
-    }catch(e){}
+      if(current.pathname.split('/').pop() !== next.pathname.split('/').pop() || current.searchParams.get('v') !== next.searchParams.get('v') || current.searchParams.get('choose') !== next.searchParams.get('choose')) frame.src=wanted;
+    }catch(e){ frame.src=petbotFrameUrl(); }
   }
   function clearSmallDockPlacement(){
     ['left','right','top','width','height','min-width','min-height','max-width','max-height','inset'].forEach(prop=>dock.style.removeProperty(prop));

@@ -1522,6 +1522,23 @@ async function fetchJson(url, ms=14000){
     try{return JSON.parse(txt)}catch(e){return {response:txt}}
   } finally { clearTimeout(t); }
 }
+function apiUrl(name, params){
+  const qs = params instanceof URLSearchParams ? params.toString() : String(params||'');
+  // Relative first, so this works in a repo subfolder and on Cloudflare Pages.
+  return `api/${name}${qs ? '?' + qs : ''}`;
+}
+function valueHasUserId(row, userId){
+  const wanted=String(userId||'').trim();
+  if(!wanted || !row) return false;
+  return Object.values(row).some(v=>String(v||'').trim()===wanted || String(v||'').includes(wanted));
+}
+function valueHasOwnerName(row, player){
+  if(!row || !player) return false;
+  const hay=Object.values(row).map(v=>String(v||'').toLowerCase()).join(' | ');
+  if(player.key==='ax') return hay.includes("ryan") || hay.includes("axolotl") || hay.includes("𝕽𝖞𝖆𝖓") || hay.includes("odin");
+  if(player.key==='aly') return hay.includes("ashely with one l") || hay.includes("ashley with one l") || hay.includes("aly") || hay.includes("hedwig");
+  return false;
+}
 function normalisePets(payload){
   const arrays = [];
   if(Array.isArray(payload)) arrays.push(payload);
@@ -1578,12 +1595,27 @@ async function fetchSheetRows(sheetName, query='select *'){
   const txt = await fetch(url, {cache:'no-store'}).then(r=>r.text());
   const json = JSON.parse(txt.replace(/^.*?google\.visualization\.Query\.setResponse\(/s,'').replace(/\);?\s*$/,''));
   if(json.status === 'error') throw new Error((json.errors||[]).map(e=>e.detailed_message||e.message).join('; ') || 'Sheet query failed');
-  const cols = (json.table.cols||[]).map((c,i)=>String(c.label || c.id || ('col_'+i)).trim() || ('col_'+i));
-  return (json.table.rows||[]).map(row=>{
+  let cols = (json.table.cols||[]).map((c,i)=>String(c.label || c.id || ('col_'+i)).trim() || ('col_'+i));
+  let rows = (json.table.rows||[]).map(row=>{
     const o={};
     (row.c||[]).forEach((cell,i)=>{ o[cols[i]] = cell ? (cell.f ?? cell.v ?? '') : ''; });
     return o;
   });
+  // Some Google exports use col_0/col_1 and keep the real headers in the first row.
+  if(rows.length){
+    const firstVals = cols.map(c=>String(rows[0][c] ?? '').trim());
+    const firstLower = firstVals.map(v=>v.toLowerCase().replace(/[^a-z0-9]/g,''));
+    if(firstLower.some(v=>['userid','discorduserid','userpetsid','petcode','petname','species','hunger','happiness','energy'].includes(v))){
+      const oldCols = cols;
+      cols = firstVals.map((v,i)=>v || ('col_'+i));
+      rows = rows.slice(1).map(r=>{
+        const o={};
+        oldCols.forEach((c,i)=>{ o[cols[i]] = r[c] ?? ''; });
+        return o;
+      });
+    }
+  }
+  return rows;
 }
 function rowMatchesPet(row, pet){
   const hay = Object.values(row||{}).map(v=>String(v).toLowerCase()).join(' | ');
@@ -1595,15 +1627,27 @@ function esc(v){
   return String(v ?? '').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
 function getRowUserId(row){
-  return String(pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','guild_user_id','recipient_id'],'')).trim();
+  const direct = String(pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','guild_user_id','recipient_id','owner_user_id','player_id','User ID','Discord User ID'],'')).trim();
+  if(direct) return direct;
+  // Some Google Sheet/API responses lose column names and become col_0/col_1.
+  // Scan values for the two temporary Discord IDs so Ax/Aly do not see everyone else's animals.
+  for(const p of PLAYER_LIST){
+    if(p.userId && p.userId !== 'test' && valueHasUserId(row,p.userId)) return p.userId;
+  }
+  return '';
 }
 function rowMatchesUser(row,userId){
   const uid = getRowUserId(row);
-  return !uid || !userId || uid === String(userId);
+  if(uid && userId) return uid === String(userId);
+  if(userId && valueHasUserId(row,userId)) return true;
+  if(userId && ACTIVE_PLAYER && valueHasOwnerName(row, ACTIVE_PLAYER)) return true;
+  return !uid && !userId;
 }
 function strictRowMatchesUser(row,userId){
+  if(!row || !userId) return false;
   const uid = getRowUserId(row);
-  return !!uid && !!userId && uid === String(userId);
+  if(uid) return uid === String(userId);
+  return valueHasUserId(row,userId) || valueHasOwnerName(row, ACTIVE_PLAYER);
 }
 function rowMatchesOwnedPet(row, pet, userId){
   if(!rowMatchesUser(row,userId)) return false;
@@ -1672,7 +1716,7 @@ function objectFromPayload(payload){
 async function fetchPetbotMode(mode, userId, extra={}){
   const q = new URLSearchParams({mode, user_id:String(userId||''), v:'tamagotchi-user-data'});
   Object.entries(extra||{}).forEach(([k,v])=>{ if(v!==undefined && v!==null && String(v)!=='') q.set(k,String(v)); });
-  const data = await fetchJson('/api/petbot?' + q.toString(), 12000);
+  const data = await fetchJson(apiUrl('petbot', q), 12000);
   if(data && data.found === false && data.response) throw new Error(data.response);
   return data;
 }
@@ -1758,7 +1802,7 @@ async function findImageForPet(pet, userId){
   // 1) Preferred existing Cloudflare route used by the main index pet panel.
   try{
     const q = new URLSearchParams({user_id:userId, pet_code:pet.code||'', pet_name:pet.name||'', pet:pet.pet||'', action:'main', v:'51'});
-    const d = await fetchJson('/api/sheet51?' + q, 9000);
+    const d = await fetchJson(apiUrl('sheet51', q), 9000);
     const img = cleanImageUrl(pick(d,['image_url','url','cloudinary_image_url','cloudinary_public_id'],''));
     if(img) return {url:img, meta:d};
   }catch(e){}
@@ -1831,13 +1875,14 @@ async function loadCareItemsFromSheet(){
   }catch(e){}
 }
 async function loadOwnedPetsFromApi(userId){
-  const d = await fetchJson(`/api/petbot?mode=view_pets&user_id=${encodeURIComponent(userId)}&per_page=50&v=tamagotchi-user-filter`, 14000);
+  const d = await fetchJson(apiUrl('petbot', new URLSearchParams({mode:'view_pets', user_id:String(userId||''), per_page:'50', v:'tamagotchi-user-filter-v2'})), 14000);
   if(d && d.found === false && d.response) throw new Error(d.response);
   const pets = normalisePets(d);
-  const tagged = pets.filter(p=>getRowUserId(p.raw));
-  // If the Apps Script returns all users, keep only the chosen Discord user.
-  // If the Apps Script already filtered and does not include user_id fields, keep the response.
-  return tagged.length ? tagged.filter(p=>strictRowMatchesUser(p.raw,userId)) : pets;
+  const filtered = pets.filter(p=>strictRowMatchesUser(p.raw,userId));
+  // Temporary safety rule: Ax and Aly must never see the whole public catalogue/all users.
+  // If the API cannot prove ownership, show an error instead of showing everyone.
+  if(ACTIVE_PLAYER && !ACTIVE_PLAYER.test) return filtered;
+  return filtered.length ? filtered : pets;
 }
 async function loadOwnedPetsFromSheet(userId){
   const rows = await fetchSheetRows('user_pets');
@@ -1882,7 +1927,7 @@ async function loadLivePetbot(){
     save();
     render();
   }catch(e){
-    state.message = 'Sheet offline';
+    state.message = 'Could not load only ' + (ACTIVE_PLAYER?.label || 'this player') + ' pets';
     console.warn('PetBot sheet load failed:', e);
     render();
   }
