@@ -7,7 +7,7 @@
 <style>
 :root{
   --ink:#1c1828; --pink:#f35aad; --blue:#16b8ea; --lcd:#a8bb73; --lcdDark:#27361d;
-  --screen-left:24.55%; --screen-top:36.1%; --screen-width:50.9%; --screen-height:26.8%;
+  --screen-left:20.6%; --screen-top:39.2%; --screen-width:58.0%; --screen-height:27.0%;
   --lcd-bg:linear-gradient(180deg,#f7fbff,#cfe9ff 58%,#a9d2ff);
   --lcd-text:#0f1825;
   --lcd-grid:rgba(16,33,59,.045);
@@ -23,12 +23,12 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:"Courier New",monospace;color:var(--lcd-text)}
 .lcdScreen::before{content:"";position:absolute;inset:0;background-image:linear-gradient(var(--lcd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--lcd-grid) 1px,transparent 1px);background-size:8px 8px;opacity:.26;pointer-events:none;z-index:20}
 #lcdApp{position:absolute;inset:0;z-index:5;display:flex;flex-direction:column;padding:6px 9px;text-shadow:0 1px rgba(255,255,255,.22)}
-.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:center;font-weight:1000;font-size:clamp(9px,.85vw,13px);line-height:1.05;min-height:15px;z-index:6}
+.lcdTop{display:grid;grid-template-columns:auto 1fr auto;gap:8px;align-items:center;font-weight:1000;font-size:clamp(10px,.95vw,15px);line-height:1.05;min-height:17px;z-index:6}
 .lcdTop b{font-weight:1000}
 .lcdTitle{text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .screenBody{position:relative;flex:1;min-height:0;display:grid;place-items:center}
-.bottomMsg{font-weight:1000;font-size:clamp(8px,.78vw,12px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.35);border-radius:999px;padding:3px 8px;margin:0 2px 4px;color:#0f1825}
-.petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:58%;height:58%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
+.bottomMsg{font-weight:1000;font-size:clamp(9px,.9vw,14px);text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;background:rgba(255,255,255,.42);border-radius:999px;padding:4px 10px;margin:0 2px 5px;color:#0f1825}
+.petSprite{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);width:62%;height:62%;background-repeat:no-repeat;background-position:center bottom;background-size:contain;filter:drop-shadow(0 2px 2px rgba(0,0,0,.08));mix-blend-mode:normal;opacity:1}
 .petFallback{font-size:clamp(32px,7vw,76px);opacity:.95}
 .statBars{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:0 2px 3px}
 .bar{height:clamp(7px,.70vw,10px);border-radius:999px;border:1.5px solid rgba(35,49,23,.75);background:rgba(35,49,23,.15);overflow:hidden}
@@ -107,7 +107,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-readable-01" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-measured-screen-01" alt="Waaambulance tamagotchi shell">
   </main>
 </div>
 <button class="editTab" id="editTab">Edit</button>
@@ -700,8 +700,8 @@ const PETS = [
 ];
 
 let LAYOUT = {
-  screenHole: { left:23.368507620341028, top:38.44861928474423, width:53.728730949147426, height:28.628730949147428 },
-  screenInner: { insetX:1.6, insetY:1.6, bottomExtra:0 },
+  screenHole: { left:20.6, top:39.2, width:58.0, height:27.0 },
+  screenInner: { insetX:0.4, insetY:0.4, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
     prev:   { label:'A · Previous / hold back', short:'A', left:19.628730949147428, top:70.68646446355817, width:12.3, height:6, radius:'30%', shape:'heart' },
@@ -710,7 +710,7 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-simple-3button-v4-readable';
+const STORE_KEY = 'waaambulance-petbot-screen-measured-v1';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -1147,7 +1147,7 @@ function setupEditor(){
   const screenControls=[['screenLeft','screenHole','left'],['screenTop','screenHole','top'],['screenWidth','screenHole','width'],['screenHeight','screenHole','height']];
   screenControls.forEach(([id,group,prop])=>$(id).addEventListener('input',e=>{LAYOUT[group][prop]=Number(e.target.value); applyLayout(); syncEditor(false); save();}));
   $('screenInset').addEventListener('input',e=>{LAYOUT.screenInner.insetX=Number(e.target.value); LAYOUT.screenInner.insetY=Number(e.target.value); applyLayout(); syncEditor(false); save();});
-  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:23.368507620341028,top:38.44861928474423,width:53.728730949147426,height:28.628730949147428}; LAYOUT.screenInner={insetX:1.6,insetY:1.6,bottomExtra:0}; applyLayout(); syncEditor(true); save();});
+  $('autoFitScreenBtn').addEventListener('click',()=>{LAYOUT.screenHole={left:20.6,top:39.2,width:58.0,height:27.0}; LAYOUT.screenInner={insetX:0.4,insetY:0.4,bottomExtra:0}; applyLayout(); syncEditor(true); save();});
   if($('reset3Btn')) $('reset3Btn').addEventListener('click',resetThreeButtons);
   $('screenHole').addEventListener('pointerdown',startScreenDrag);
   syncEditor();
