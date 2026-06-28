@@ -18,7 +18,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helv
 html.embed,html.embed body{background:transparent!important;}
 button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit}
 .app{position:relative;width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;padding:0}
-.stage{position:relative;width:min(97vw,calc(97dvh * 0.75));height:min(97dvh,calc(97vw * 1.333));max-width:815px;max-height:1086px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));touch-action:none;user-select:none}
+.stage{position:relative;width:min(94vw,calc(90dvh * 0.75));height:min(90dvh,calc(94vw * 1.333));max-width:760px;max-height:1014px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));touch-action:none;user-select:none}
 .device{position:absolute;z-index:10;inset:0;width:100%;height:100%;object-fit:contain;pointer-events:none;user-select:none;-webkit-user-drag:none}
 .screenHole{position:absolute;z-index:1;left:var(--screen-left);top:var(--screen-top);width:var(--screen-width);height:var(--screen-height);border-radius:7%/10%;overflow:hidden;pointer-events:none;transition:box-shadow .12s ease, background .12s ease;touch-action:none}
 .lcdScreen{position:absolute;inset:2.2% 2.2% 2.6% 2.2%;border-radius:8%/11%;overflow:hidden;background:var(--lcd-bg);box-shadow:inset 0 0 24px var(--lcd-shadow),inset 0 0 0 3px rgba(20,34,63,.22);font-family:Arial,Helvetica,sans-serif;color:var(--lcd-text)}
@@ -119,7 +119,7 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 .screenTapHint{display:none!important}
 html.embed .editTab{display:none!important}
 .embedBackBtn{display:none;position:fixed;z-index:9999;left:12px;top:12px;border:2px solid rgba(255,255,255,.92);border-radius:999px;padding:10px 13px;background:linear-gradient(180deg,#fff,#f8edf6);box-shadow:0 8px 22px rgba(0,0,0,.22);font-weight:1000;color:#25172e;font-size:14px}
-html.embed .embedBackBtn{display:block}
+html.embed .embedBackBtn{display:none!important}
 @media(max-width:700px){.screenTapHint{display:none!important}}
 
 
@@ -132,6 +132,16 @@ html.embed .embedBackBtn{display:block}
 .petCycleBtn{display:none!important;opacity:0!important;pointer-events:none!important}
 html.embed .petCycleBtn{display:none!important;}
 
+
+
+/* CLEAN LCD UI: make it look like a Tamagotchi screen, not web cards. */
+.lcdScreen{box-shadow:inset 0 0 18px rgba(12,28,63,.18),inset 0 0 0 2px rgba(20,34,63,.18)!important}
+#lcdApp{padding:7px 10px!important}
+.menuItem,.launchCard,.bigStatus{border:1.5px solid rgba(20,34,63,.26)!important;background:rgba(255,255,255,.28)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28)!important}
+.launchGrid{display:none!important}
+.petSprite{max-width:72%!important;max-height:72%!important;background-size:contain!important}
+.screenHint{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-size:clamp(7px,.68vw,10px);font-weight:1000;opacity:.72;z-index:8;pointer-events:none}
+
 </style>
 </head>
 <body class="colorScreen">
@@ -141,9 +151,9 @@ html.embed .petCycleBtn{display:none!important;}
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-measured-screen-02" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-clean-toy-01" alt="Waaambulance tamagotchi shell">
     <!-- No floating pet arrows: the real toy buttons are clickable.
-         Pink heart = previous/back, pacifier = select/menu, blue heart = next.
+         Pink heart = previous pet, pacifier = select/menu, blue heart = next pet, red medical cross = back to game.
          The LCD also still accepts left/right swipe. -->
   </main>
 </div>
@@ -151,7 +161,7 @@ html.embed .petCycleBtn{display:none!important;}
 <button class="editTab" id="editTab">Edit</button>
 <aside class="editor" id="editor" aria-label="PetBot setup editor">
   <h2>PetBot Tamagotchi setup</h2>
-  <p>Integrated version. Click the actual toy buttons: pink heart = previous/back, pacifier = OK/menu, blue heart = next. No floating arrows.</p>
+  <p>Clean version. Click the toy itself: pink heart = previous pet, pacifier = OK/menu, blue heart = next pet, red medical cross = back to game.</p>
   <button class="btn primary" id="playModeBtn">Play mode</button>
   <button class="btn" id="guideBtn">Show 3 button zones</button>
   <div class="tabs">
@@ -185,8 +195,8 @@ html.embed .petCycleBtn{display:none!important;}
 
   <h3>3 button map</h3>
   <div class="legend">
-    <div>left heart = ◀</div><div>pacifier = </div>
-    <div>right heart = ▶</div><div>hold left heart = back</div>
+    <div>left heart = ◀ pet</div><div>pacifier = OK/menu</div>
+    <div>right heart = ▶ pet</div><div>red cross = back to game</div>
   </div>
   <details>
     <summary><b>Copy settings</b></summary>
@@ -742,13 +752,14 @@ let LAYOUT = {
   screenInner: { insetX:0.4, insetY:0.4, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
+    exit:   { label:'Red medical cross · back to game', short:'✚', left:43.0, top:15.0, width:14.0, height:10.5, radius:'50%', shape:'circle' },
     prev:   { label:'Left heart · previous pet', short:'A', left:13.6, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' },
     select: { label:'Pacifier · select / menu', short:'B', left:38.0, top:70.8, width:24.0, height:16.2, radius:'50%', shape:'circle' },
     next:   { label:'Right heart · next pet', short:'C', left:70.2, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-sheet-connected-v5-integrated-buttons';
+const STORE_KEY = 'waaambulance-petbot-sheet-connected-v6-clean-toy';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -780,6 +791,10 @@ const MENU = [
   {key:'traits', label:'Traits', icon:'✨'},
   {key:'skills', label:'Skills', icon:'🎓'},
   {key:'effects', label:'Effects', icon:'🧪'},
+  {key:'solo', label:'Solo Quest', icon:'▶'},
+  {key:'team', label:'Team Quest', icon:'👥'},
+  {key:'builder', label:'Build/Edit', icon:'🛠'},
+  {key:'game', label:'Back to Game', icon:'🚑'},
   {key:'info', label:'Stats', icon:'♡'}
 ];
 const LAUNCH_MENU = [
@@ -840,7 +855,7 @@ function load(){
   state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
   state.launchIndex = clamp(state.launchIndex||0,0,LAUNCH_MENU.length-1);
   if(qs.get('launch') === '1') {
-    state.mode = 'launch';
+    state.mode = 'home';
     state.launchIndex = 0;
     state.message = 'Pet Care';
   }
@@ -896,10 +911,24 @@ function topBar(title,right){
   const p=currentPet();
   return `<div class="lcdTop"><span>♡ <b>${p.love||0}</b></span><span class="lcdTitle">${title}</span><span>${right||((state.petIndex+1)+'/'+state.pets.length)}</span></div>`;
 }
+function screenPercentSize(v, fallback=58){
+  let n = Number(v);
+  if(!Number.isFinite(n) || n <= 0) n = fallback;
+  // Sheet51 often stores habitat/display pixel widths. The LCD needs a percent size.
+  if(n > 160) n = n / 5.0;
+  else if(n > 100) n = n * 0.55;
+  return clamp(n, 22, 72);
+}
+function screenPercentPos(v, fallback=50){
+  let n = Number(v);
+  if(!Number.isFinite(n)) n = fallback;
+  if(n > 100) n = 50;
+  return clamp(n, 16, 84);
+}
 function petImgHTML(p){
-  const size = p.size || LAYOUT.content.petSize || 58;
-  const y = p.y || LAYOUT.content.petY || 52;
-  const x = p.x || 50;
+  const size = screenPercentSize(p.size || LAYOUT.content.petSize || 58, 58);
+  const y = screenPercentPos(p.y || LAYOUT.content.petY || 52, 52);
+  const x = screenPercentPos(p.x || 50, 50);
   const flip = (p.flip === -1) ? ' scaleX(-1)' : '';
   if(p.url) return `<div class="petSprite" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
   return `<div class="petFallback">${esc(p.fallback||'🐾')}</div>`;
@@ -915,14 +944,14 @@ function barsHTML(p){
 function renderLaunch(){
   const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
   return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">WAAAMBULANCE</span><span>${state.launchIndex+1}/${LAUNCH_MENU.length}</span></div>` +
-    `<div class="screenBody"><div class="launchGrid"><div class="launchCard"><span class="ico">${item.icon}</span><span class="launchName">${item.label}</span><span class="launchHint">${item.hint}<br>pink heart / blue heart choose · dummy button select</span></div></div></div>`;
+    `<div class="screenBody"><div class="menuGrid"><div class="menuItem selected"><span class="ico">${item.icon}</span><span>${item.label}</span></div></div><div class="screenHint">hearts choose · dummy OK</div></div>`;
 }
 function sendParentGameAction(action){
   try{ window.parent.postMessage({type:'waa-petbot-game-action', action}, location.origin); }catch(e){}
 }
 function renderHome(){
   const p=currentPet();
-  return topBar(p.name, (state.petIndex+1)+'/'+state.pets.length) + `<div class="screenBody">${petImgHTML(p)}</div><div class="bottomMsg"></div>${barsHTML(p)}`;
+  return topBar(p.name, (state.petIndex+1)+'/'+state.pets.length) + `<div class="screenBody">${petImgHTML(p)}<div class="screenHint">hearts change pet · dummy menu</div></div>${barsHTML(p)}`;
 }
 function renderMenu(){
   const m=MENU[state.menuIndex];
@@ -1043,7 +1072,7 @@ function selectCurrent(){
 }
 function back(){
   if(state.mode==='launch') return sendParentGameAction('backToGame');
-  if(state.mode==='home' && qs.get('launch')==='1') return setMode('launch','Launch menu');
+  if(state.mode==='home' && qs.get('launch')==='1') return sendParentGameAction('backToGame');
   if(state.mode==='home') return flash('PetBot is already home');
   if(state.mode==='menu') return setMode('home','◀  MENU  ▶');
   return setMode('menu','Choose an action');
@@ -1065,6 +1094,10 @@ function openMenuItem(key){
   if(key==='train') return setMode('train','Choose training');
   if(key==='info') return setMode('info','Pet stats');
   if(['inventory','shop','habitat','quests','profile','traits','skills','effects'].includes(key)) return setMode(key,key);
+  if(key==='solo') return sendParentGameAction('startSolo');
+  if(key==='team') return sendParentGameAction('startTeam');
+  if(key==='builder') return sendParentGameAction('openBuilder');
+  if(key==='game') return sendParentGameAction('backToGame');
   if(key==='play') return quickPlay();
   if(key==='rest') return quickRest();
   if(key==='heal') return quickHeal();
@@ -1089,6 +1122,7 @@ function quickHeal(){ const p=currentPet(); adjustPet({health:18, energy:-4, lov
 function quickExplore(){ const p=currentPet(); if(p.energy<10)return flash(p.name+' needs rest before exploring'); p.energy-=10; p.hunger=clamp(p.hunger-5,0,100); p.happy=clamp(p.happy+5,0,100); p.coins=(p.coins||0)+3; p.xp=(p.xp||0)+8; flash(p.name+' explored and found 3 coins!'); }
 function handleAction(action){
   const btn=document.querySelector(`.hot[data-action="${action}"]`); if(btn){btn.classList.add('press'); setTimeout(()=>btn.classList.remove('press'),130);}
+  if(action==='exit') return sendParentGameAction('backToGame');
   if(action==='prev') return move(-1);
   if(action==='next') return move(1);
   if(action==='back') return back();
@@ -1271,6 +1305,7 @@ function useThreeButtonLayout(){
 
 function resetThreeButtons(){
   LAYOUT.buttons = {
+    exit:   { label:'Red medical cross · back to game', short:'✚', left:43.0, top:15.0, width:14.0, height:10.5, radius:'50%', shape:'circle' },
     prev:   { label:'Left heart · previous pet', short:'A', left:13.6, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' },
     select: { label:'Pacifier · select / menu', short:'B', left:38.0, top:70.8, width:24.0, height:16.2, radius:'50%', shape:'circle' },
     next:   { label:'Right heart · next pet', short:'C', left:70.2, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' }
@@ -1770,8 +1805,6 @@ function setupPetCycleControls(){
       const dy=e.clientY-down.y;
       const rx=(e.clientX-r.left)/Math.max(1,r.width);
       if(Math.abs(dx)>34 && Math.abs(dx)>Math.abs(dy)){ handleAction(dx<0?'next':'prev'); }
-      else if(rx<0.34){ handleAction('prev'); }
-      else if(rx>0.66){ handleAction('next'); }
       else { handleAction('select'); }
       down=null;
     }, {passive:true});

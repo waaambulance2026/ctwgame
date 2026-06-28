@@ -976,6 +976,32 @@ body.petbotOpen #startScreen{display:none!important;}
 body.petbotOpen #petbotDock.fullscreen{background:transparent!important;}
 
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
+
+
+/* CLEAN TAMAGOTCHI FULLSCREEN FIX 20260628
+   No floating web controls while the Tamagotchi is open. The toy itself is the controller. */
+body.petbotOpen .petbotBackBtn,
+body.petbotOpen #petbotDock.fullscreen .petbotDockBar{
+  display:none!important;
+}
+body.petbotOpen .selectedEditTarget,
+body.petbotOpen .editableTarget,
+body.petbotOpen .character,
+body.petbotOpen .building,
+body.petbotOpen .obj{
+  outline:none!important;
+}
+body.petbotOpen .dragHint,
+body.petbotOpen .axFrameDebug,
+body.petbotOpen .character.spriteMissing::before,
+body.petbotOpen .character.spriteMissing::after{
+  display:none!important;
+}
+body.petbotOpen #petbotDock.fullscreen .petbotDockFrame{
+  display:block!important;
+  background:transparent!important;
+}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1021,7 +1047,7 @@ body.petbotOpen #petbotDock.fullscreen{background:transparent!important;}
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="/petbot_device.png?v=20260628-dock-screen-04" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=28&embed=1&launch=1&user_id=1214671839205396481"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=29&embed=1&launch=1&user_id=1214671839205396481"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3228,7 +3254,7 @@ fitGameToScreen();
   function petbotFrameUrl(){
     let uid='1214671839205396481';
     try{ if(typeof getPetUserId === 'function') uid=getPetUserId() || uid; }catch(e){}
-    return '/petbot_test.html?v=28&embed=1&launch=1&user_id=' + encodeURIComponent(uid);
+    return '/petbot_test.html?v=29&embed=1&launch=1&user_id=' + encodeURIComponent(uid);
   }
   function syncPetbotFrameUser(){
     try{
@@ -3251,6 +3277,7 @@ fitGameToScreen();
     clearSmallDockPlacement();
     dock.classList.remove('hidden');
     dock.classList.add('fullscreen');
+    document.body.classList.remove('editMode');
     document.body.classList.add('petbotOpen');
     expandBtn.textContent = 'Back';
     hideBtn.textContent = 'Close';
