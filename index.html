@@ -965,6 +965,16 @@ body.petbotOpen #petbotExpandBtn::after{content:'Back';font-size:15px!important;
   body.petbotOpen #petbotDock.fullscreen .petbotDockBar{right:10px!important;top:10px!important;}
 }
 
+
+
+/* TAMAGOTCHI-FIRST LAUNCH
+   When the PetBot toy is open, the old HUD/menu does not sit on top of it. */
+body.petbotOpen .hud,
+body.tamagotchiLanding .hud{display:none!important;}
+body.tamagotchiLanding #startScreen{display:none!important;}
+body.petbotOpen #startScreen{display:none!important;}
+body.petbotOpen #petbotDock.fullscreen{background:transparent!important;}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -1011,7 +1021,7 @@ body.petbotOpen #petbotExpandBtn::after{content:'Back';font-size:15px!important;
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="/petbot_device.png?v=20260628-dock-screen-04" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=21&embed=1&user_id=1214671839205396481"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=27&embed=1&launch=1&user_id=1214671839205396481"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2835,7 +2845,29 @@ window.addEventListener('message',function(e){
     return;
   }
   if(d.type === 'waa-petbot-state') receivePetbotIframeState(d);
+  if(d.type === 'waa-petbot-game-action') handlePetbotGameAction(d.action);
 });
+function handlePetbotGameAction(action){
+  document.body.classList.remove('tamagotchiLanding');
+  try{ if(action==='startSolo'||action==='startTeam'||action==='backToGame') sessionStorage.setItem('waa-game-started-this-tab','1'); }catch(e){}
+  if(action === 'startSolo'){
+    if(typeof closePetbotFull === 'function') closePetbotFull();
+    startSoloQuest();
+  }else if(action === 'startTeam'){
+    if(typeof closePetbotFull === 'function') closePetbotFull();
+    startTeamQuest();
+  }else if(action === 'openBuilder'){
+    if(typeof closePetbotFull === 'function') closePetbotFull();
+    const ss=$('startScreen'); if(ss) ss.classList.add('hidden');
+    openBuilder();
+  }else if(action === 'openOldMenu'){
+    if(typeof closePetbotFull === 'function') closePetbotFull();
+    openMenu();
+  }else if(action === 'backToGame'){
+    if(typeof closePetbotFull === 'function') closePetbotFull();
+    else resumeGame();
+  }
+}
 try{
   const last=JSON.parse(localStorage.getItem('waa-last-petbot-pet')||'null');
   if(last && last.name) receivePetbotIframeState({pet:last});
@@ -2843,7 +2875,7 @@ try{
 // EDIT SECTION 24: PETBOT LIVE LOADING - gets owned pets from the safe read-only API
 async function loadPetbotPets(force=false){
   const userId=getPetUserId();
-  $('petTitle').textContent='Loading pets...';$('petSub').textContent='Contacting PetBot';
+  $('petTitle').textContent='Loading pets...';$('petSub').textContent='Contacting PetBot Apps Script';
   $('petPreview').classList.add('empty');$('petPreview').innerHTML='<span>Loading pets...</span>';
   setPetLoading(true,'Loading owned pets for Discord user '+userId+' ...');
   try{
@@ -2862,7 +2894,7 @@ async function loadPetbotPets(force=false){
     await selectPet();
   }catch(e){
     setPetLoading(false,'PetBot load failed: '+(e.name==='AbortError'?'request timed out':e.message));
-    $('petTitle').textContent='PetBot error';$('petSub').textContent='Check Cloudflare variables and Apps Script response.';
+    $('petTitle').textContent='PetBot error';$('petSub').textContent='Check the PetBot Apps Script /exec response.';
     $('petPreview').classList.add('empty');$('petPreview').innerHTML='<span>PetBot error</span>';
   }
 }
@@ -3188,14 +3220,15 @@ fitGameToScreen();
         const start=byId('startScreen'); if(start) start.classList.add('hidden');
         const q=byId('questName'); if(q) q.textContent=(typeof team !== 'undefined' && team ? 'Team Quest' : 'Solo Quest') + ' in progress';
       }else{
-        const start=byId('startScreen'); if(start) start.classList.remove('hidden');
+        const start=byId('startScreen');
+        if(start && !document.body.classList.contains('tamagotchiLanding')) start.classList.remove('hidden');
       }
     }catch(e){}
   }
   function petbotFrameUrl(){
     let uid='1214671839205396481';
     try{ if(typeof getPetUserId === 'function') uid=getPetUserId() || uid; }catch(e){}
-    return '/petbot_test.html?v=22&embed=1&user_id=' + encodeURIComponent(uid);
+    return '/petbot_test.html?v=27&embed=1&launch=1&user_id=' + encodeURIComponent(uid);
   }
   function syncPetbotFrameUser(){
     try{
@@ -3231,6 +3264,12 @@ fitGameToScreen();
     resumeAfterPetbot();
     requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
   };
+  window.startTamagotchiLaunch = function(){
+    const start=byId('startScreen');
+    if(start) start.classList.add('hidden');
+    document.body.classList.add('tamagotchiLanding');
+    window.openPetbotFull();
+  };
   window.togglePetbotDock = function(){
     if(dock.classList.contains('hidden')) dock.classList.remove('hidden');
     else window.openPetbotFull();
@@ -3255,6 +3294,7 @@ fitGameToScreen();
     if(!dock.classList.contains('fullscreen')) window.openPetbotFull();
   });
   refreshMiniPet();
+  setTimeout(()=>{ try{ window.startTamagotchiLaunch(); }catch(e){} }, 80);
   if(openBtn){
     openBtn.addEventListener('click', function(e){
       e.preventDefault(); e.stopPropagation();

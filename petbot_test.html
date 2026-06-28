@@ -47,6 +47,13 @@ button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit
 .choice.selected{background:rgba(35,49,23,.20);outline:2px solid rgba(35,49,23,.60)}
 .infoGrid{width:100%;height:100%;padding:4px;display:grid;grid-template-columns:1fr 1fr;gap:4px;align-content:center}
 .infoCard{border:1.5px solid rgba(35,49,23,.45);border-radius:8px;padding:4px 5px;font-size:clamp(8px,.78vw,12px);font-weight:1000;background:rgba(255,255,255,.09)}
+.dataList{width:100%;height:100%;padding:4px;display:flex;flex-direction:column;gap:3px;overflow:hidden}
+.dataRow{border:1.5px solid rgba(35,49,23,.38);border-radius:7px;padding:3px 5px;font-weight:1000;font-size:clamp(8px,.76vw,12px);background:rgba(255,255,255,.12);display:grid;grid-template-columns:1fr auto;gap:6px;align-items:center;min-height:0}
+.dataRow .main{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dataRow .sub{opacity:.78;font-size:.88em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dataRow .val{font-size:.92em;white-space:nowrap;text-align:right}
+.infoGrid.wide{grid-template-columns:1fr 1fr}
+.infoCard small{display:block;font-size:.78em;opacity:.78;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .actionFlash{width:100%;height:100%;display:grid;place-items:center;text-align:center;font-weight:1000;font-size:clamp(13px,1.25vw,19px);padding:8px;line-height:1.15;overflow:hidden}
 .bigStatus{width:82%;min-height:70%;display:grid;place-items:center;text-align:center;border:2px solid rgba(20,34,63,.30);border-radius:14px;background:rgba(255,255,255,.32);padding:10px;font-weight:1000}
 .bigStatus .bigStatusIcon{font-size:clamp(30px,4vw,56px);line-height:1;margin-bottom:5px}
@@ -104,8 +111,27 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:45dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px}.bottomMsg{font-size:7px}.editTab{font-size:12px;padding:7px 10px}}
 
+.petCycleBtn{position:absolute;z-index:42;top:54%;width:clamp(40px,5.4vw,62px);height:clamp(40px,5.4vw,62px);border-radius:999px;border:2px solid rgba(255,255,255,.94);background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,237,246,.92));box-shadow:0 8px 22px rgba(0,0,0,.20),0 0 0 4px rgba(210,130,194,.14);font-weight:1000;color:#25172e;font-size:clamp(27px,3.4vw,42px);line-height:1;display:grid;place-items:center;transform:translateY(-50%);cursor:pointer;touch-action:manipulation}
+.petCycleBtn.prev{left:2.7%}
+.petCycleBtn.next{right:2.7%}
+.petCycleBtn:active{transform:translateY(-50%) scale(.94)}
+.petCycleLabel{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);font-size:10px;font-weight:1000;white-space:nowrap;background:rgba(255,255,255,.86);border-radius:999px;padding:3px 7px;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+.screenHole{pointer-events:auto}
+.screenTapHint{position:absolute;z-index:41;left:50%;top:67%;transform:translateX(-50%);background:rgba(255,255,255,.82);border:1px solid rgba(20,34,63,.15);border-radius:999px;padding:4px 9px;font-size:clamp(9px,.9vw,13px);font-weight:1000;box-shadow:0 4px 12px rgba(0,0,0,.10);pointer-events:none;color:#25172e}
+html.embed .editTab{display:none!important}
 .embedBackBtn{display:none;position:fixed;z-index:9999;left:12px;top:12px;border:2px solid rgba(255,255,255,.92);border-radius:999px;padding:10px 13px;background:linear-gradient(180deg,#fff,#f8edf6);box-shadow:0 8px 22px rgba(0,0,0,.22);font-weight:1000;color:#25172e;font-size:14px}
 html.embed .embedBackBtn{display:block}
+@media(max-width:700px){.petCycleBtn{top:56%;width:42px;height:42px;font-size:28px}.petCycleBtn.prev{left:1.4%}.petCycleBtn.next{right:1.4%}.petCycleLabel{display:none}.screenTapHint{font-size:10px;top:68%}}
+
+
+
+.launchGrid{width:100%;height:100%;display:grid;place-items:center;padding:4px}
+.launchCard{width:88%;min-height:72%;border:2px solid rgba(20,34,63,.38);border-radius:13px;background:rgba(255,255,255,.46);display:grid;grid-template-rows:auto auto auto;place-items:center;gap:4px;padding:7px;font-weight:1000;text-align:center}
+.launchCard .ico{font-size:clamp(24px,3.6vw,48px)}
+.launchCard .launchName{font-size:clamp(12px,1.22vw,18px);line-height:1.05}
+.launchCard .launchHint{font-size:clamp(7px,.72vw,11px);opacity:.82;line-height:1.05}
+.petCycleBtn{display:grid!important;opacity:.96!important;pointer-events:auto!important}
+html.embed .petCycleBtn{box-shadow:0 8px 22px rgba(0,0,0,.24),0 0 0 5px rgba(210,130,194,.18)!important;}
 
 </style>
 </head>
@@ -116,7 +142,10 @@ html.embed .embedBackBtn{display:block}
       <div class="lcdScreen" id="lcdScreen"><div id="lcdApp"></div></div>
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
-    <img class="device" src="/petbot_device.png?v=20260628-measured-screen-01" alt="Waaambulance tamagotchi shell">
+    <img class="device" src="/petbot_device.png?v=20260628-measured-screen-02" alt="Waaambulance tamagotchi shell">
+    <button class="petCycleBtn prev" id="petPrevBtn" type="button" aria-label="Previous pet">‹<span class="petCycleLabel">Previous pet</span></button>
+    <button class="petCycleBtn next" id="petNextBtn" type="button" aria-label="Next pet">›<span class="petCycleLabel">Next pet</span></button>
+    <div class="screenTapHint" id="screenTapHint">Tap sides / swipe to change pet</div>
   </main>
 </div>
 <button class="embedBackBtn" id="embedBackBtn" type="button">← Back to game</button>
@@ -714,13 +743,13 @@ let LAYOUT = {
   screenInner: { insetX:0.4, insetY:0.4, bottomExtra:0 },
   content: { petSize:58, petY:52 },
   buttons: {
-    prev:   { label:'Left heart · previous / hold back', short:'A', left:19.628730949147428, top:70.68646446355817, width:12.3, height:6, radius:'30%', shape:'heart' },
-    select: { label:'Pacifier · select / menu', short:'B', left:45.27735023389165, top:72.51712690508526, width:9.265746189829486, height:7.341436547457371, radius:'50%', shape:'circle' },
-    next:   { label:'Right heart · next', short:'C', left:68.3931844474624, top:71.29005583220159, width:12.3, height:6, radius:'30%', shape:'heart' }
+    prev:   { label:'Left heart · previous pet', short:'A', left:13.6, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' },
+    select: { label:'Pacifier · select / menu', short:'B', left:38.0, top:70.8, width:24.0, height:16.2, radius:'50%', shape:'circle' },
+    next:   { label:'Right heart · next pet', short:'C', left:70.2, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' }
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-sheet-connected-v1';
+const STORE_KEY = 'waaambulance-petbot-sheet-connected-v4-user-data';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -748,7 +777,18 @@ const MENU = [
   {key:'shop', label:'Shop', icon:'🏪'},
   {key:'habitat', label:'Habitat', icon:'🏡'},
   {key:'quests', label:'Quests', icon:'⭐'},
+  {key:'profile', label:'Profile', icon:'👤'},
+  {key:'traits', label:'Traits', icon:'✨'},
+  {key:'skills', label:'Skills', icon:'🎓'},
+  {key:'effects', label:'Effects', icon:'🧪'},
   {key:'info', label:'Stats', icon:'♡'}
+];
+const LAUNCH_MENU = [
+  {key:'petCare', label:'Pet Care', icon:'🐾', hint:'View pets and stats'},
+  {key:'solo', label:'Start Solo Quest', icon:'▶', hint:'Open the game full screen'},
+  {key:'team', label:'Start Team Quest', icon:'👥', hint:'Use the team picker settings'},
+  {key:'builder', label:'Build / Edit', icon:'🛠', hint:'Open the level editor'},
+  {key:'oldMenu', label:'Classic Menu', icon:'☰', hint:'Fallback game menu'}
 ];
 const SKILLS = [
   {key:'strength', label:'Strength', icon:'💪'},
@@ -763,6 +803,7 @@ let state = {
   mode:'home',
   lastMode:'home',
   menuIndex:0,
+  launchIndex:0,
   feedIndex:0,
   trainIndex:0,
   message:'◀  MENU  ▶',
@@ -798,6 +839,8 @@ function load(){
   const savedPets = (state.pets||[]);
   state.pets = PETS.map((p,i)=>petDefaults({...p, ...(savedPets[i]||{})},i));
   state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
+  state.launchIndex = clamp(state.launchIndex||0,0,LAUNCH_MENU.length-1);
+  if(qs.get('launch') === '1') state.mode = 'launch';
 }
 function mergeLayout(base, saved){
   return {
@@ -825,7 +868,9 @@ function notifyParentPetbotState(){
           name:p.name||'', code:p.code||'', pet:p.pet||'', type:p.type||'', category:p.category||'',
           url:p.url||'', image_url:p.url||'', level:p.level||1, xp:p.xp||0, coins:p.coins||0,
           hunger:p.hunger||0, happy:p.happy||0, energy:p.energy||0, health:p.health||0, love:p.love||0,
-          size:p.size||58, y:p.y||52
+          size:p.size||58, x:p.x||50, y:p.y||52,
+          traits:(p.traits||[]).length, skills:(p.skills||[]).length, effects:(p.effects||[]).length,
+          inventory:(PETBOT_USER_DATA.inventory||[]).length, habitat:(p.habitatLoadout||[]).length + (p.habitatRows||[]).length
         }
       }, location.origin);
     }
@@ -851,8 +896,10 @@ function topBar(title,right){
 function petImgHTML(p){
   const size = p.size || LAYOUT.content.petSize || 58;
   const y = p.y || LAYOUT.content.petY || 52;
-  if(p.url) return `<div class="petSprite" style="background-image:url('${p.url}');width:${size}%;height:${size}%;top:${y}%"></div>`;
-  return `<div class="petFallback">${p.fallback||'🐾'}</div>`;
+  const x = p.x || 50;
+  const flip = (p.flip === -1) ? ' scaleX(-1)' : '';
+  if(p.url) return `<div class="petSprite" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
+  return `<div class="petFallback">${esc(p.fallback||'🐾')}</div>`;
 }
 function barsHTML(p){
   return `<div class="statBars">
@@ -861,6 +908,14 @@ function barsHTML(p){
     <div class="bar" title="Energy"><span style="width:${bar(p.energy)}"></span></div>
     <div class="bar" title="Health"><span style="width:${bar(p.health)}"></span></div>
   </div>`;
+}
+function renderLaunch(){
+  const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
+  return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">WAAAMBULANCE</span><span>${state.launchIndex+1}/${LAUNCH_MENU.length}</span></div>` +
+    `<div class="screenBody"><div class="launchGrid"><div class="launchCard"><span class="ico">${item.icon}</span><span class="launchName">${item.label}</span><span class="launchHint">${item.hint}<br>◀ / ▶ choose · ● select</span></div></div></div>`;
+}
+function sendParentGameAction(action){
+  try{ window.parent.postMessage({type:'waa-petbot-game-action', action}, location.origin); }catch(e){}
 }
 function renderHome(){
   const p=currentPet();
@@ -881,31 +936,86 @@ function renderTrain(){
     SKILLS.map((s,i)=>`<div class="choice ${i===state.trainIndex?'selected':''}"><span>${s.icon} ${s.label}</span><span>Lv ${p.training[s.key]||0}</span></div>`).join('') +
     `</div></div><div class="bottomMsg"></div>`;
 }
+function rowsHTML(rows, emptyText='Nothing found yet', max=4){
+  const list = firstRows(rows,max);
+  if(!list.length) return `<div class="bigStatus"><div><div class="bigStatusIcon">♡</div><div class="bigStatusText">${esc(emptyText)}</div></div></div>`;
+  return `<div class="dataList">` + list.map(r=>{
+    const name = displayNameFromRow(r,'Item');
+    const sub = String(pick(r,['description','notes','category','type','slot','habitat_slot','target_category','target_pet','status'], '')).trim();
+    const val = displayValueFromRow(r,'');
+    return `<div class="dataRow"><div><div class="main">${esc(name)}</div>${sub?`<div class="sub">${esc(sub)}</div>`:''}</div><div class="val">${esc(val)}</div></div>`;
+  }).join('') + `</div>`;
+}
 function renderInfo(){
   const p=currentPet();
-  return topBar('PET STATS') + `<div class="screenBody"><div class="infoGrid">
-    <div class="infoCard">Level<br>${p.level}</div><div class="infoCard">XP<br>${p.xp}</div>
-    <div class="infoCard">Coins<br>${p.coins}</div><div class="infoCard">Love<br>${p.love}</div>
-    <div class="infoCard">Hunger<br>${p.hunger}</div><div class="infoCard">Energy<br>${p.energy}</div>
+  const profile = PETBOT_USER_DATA.profile || {};
+  const userCoins = p.coins || numVal(pick(profile,['coins','balance','money','pet_coins'],0),0);
+  return topBar('PET STATS') + `<div class="screenBody"><div class="infoGrid wide">
+    <div class="infoCard">Level<br>${esc(p.level)}<small>XP ${esc(p.xp)}</small></div><div class="infoCard">Coins<br>${esc(userCoins)}<small>Love ${esc(p.love)}</small></div>
+    <div class="infoCard">Health<br>${esc(p.health)}<small>Energy ${esc(p.energy)}</small></div><div class="infoCard">Care<br>${esc(p.hunger)}<small>Happy ${esc(p.happy)}</small></div>
+    <div class="infoCard">Traits<br>${(p.traits||[]).length}<small>Skills ${(p.skills||[]).length}</small></div><div class="infoCard">Effects<br>${(p.effects||[]).length}<small>Habitat ${(p.habitatLoadout||[]).length}</small></div>
   </div></div><div class="bottomMsg">  ·  ◀ / ▶ pet</div>`;
 }
+function renderProfile(){
+  const prof = PETBOT_USER_DATA.profile;
+  if(!prof) return topBar('PROFILE') + `<div class="screenBody">${rowsHTML([], 'No profile row found')}</div><div class="bottomMsg"></div>`;
+  const rows = [
+    {name:'User', value:pick(prof,['username','display_name','name','discord_name','user_id','discord_user_id'], LIVE_USER_ID)},
+    {name:'Coins', value:pick(prof,['coins','balance','money','pet_coins'], '')},
+    {name:'Last view', value:pick(PETBOT_USER_DATA.viewState||{},['screen','mode','current_pet','selected_pet','last_pet'], '')},
+    {name:'Pets', value:String(state.pets.length)}
+  ].filter(r=>String(r.value||'').trim() !== '').map(r=>({name:r.name, quantity:r.value}));
+  return topBar('PROFILE') + `<div class="screenBody">${rowsHTML(rows, 'No profile data')}</div><div class="bottomMsg"></div>`;
+}
+function renderInventory(){
+  return topBar('INVENTORY', String(PETBOT_USER_DATA.inventory.length)) + `<div class="screenBody">${rowsHTML(PETBOT_USER_DATA.inventory, 'No inventory rows')}</div><div class="bottomMsg"></div>`;
+}
+function renderTraits(){
+  const p=currentPet();
+  return topBar('TRAITS', String((p.traits||[]).length)) + `<div class="screenBody">${rowsHTML(p.traits, 'No traits for this pet')}</div><div class="bottomMsg"></div>`;
+}
+function renderSkills(){
+  const p=currentPet();
+  const sheetSkills = p.skills || [];
+  const builtIn = SKILLS.map(s=>({skill_name:s.label, level:p.training?.[s.key]||0}));
+  return topBar('SKILLS', String(sheetSkills.length || builtIn.length)) + `<div class="screenBody">${rowsHTML(sheetSkills.length?sheetSkills:builtIn, 'No skills for this pet')}</div><div class="bottomMsg"></div>`;
+}
+function renderEffects(){
+  const p=currentPet();
+  return topBar('EFFECTS', String((p.effects||[]).length)) + `<div class="screenBody">${rowsHTML(p.effects, 'No active effects')}</div><div class="bottomMsg"></div>`;
+}
+function renderHabitat(){
+  const p=currentPet();
+  const rows = [...(p.habitatLoadout||[]), ...(p.habitatRows||[]), ...PETBOT_USER_DATA.habitatInventory];
+  return topBar('HABITAT', String(rows.length)) + `<div class="screenBody">${rowsHTML(rows, 'No habitat rows')}</div><div class="bottomMsg"></div>`;
+}
+function renderQuests(){
+  const p=currentPet();
+  const rows = [...(p.explorations||[]), ...PETBOT_USER_DATA.miniQuestLogs];
+  return topBar('QUESTS', String(rows.length)) + `<div class="screenBody">${rowsHTML(rows, 'No quest/explore rows')}</div><div class="bottomMsg"></div>`;
+}
 function renderPlaceholder(title, icon, msg){
-  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">${icon}</div><div class="bigStatusText">Coming soon</div></div></div></div><div class="bottomMsg">hold ◀ = back</div>`;
+  return topBar(title.toUpperCase()) + `<div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">${icon}</div><div class="bigStatusText">${esc(msg || 'Coming soon')}</div></div></div></div><div class="bottomMsg">hold ◀ = back</div>`;
 }
 function renderFlash(){
   return topBar('PETBOT') + `<div class="screenBody"><div class="actionFlash">${state.flash?.msg || state.message}</div></div>${barsHTML(currentPet())}`;
 }
 function render(){
   let html='';
-  if(state.mode==='home') html=renderHome();
+  if(state.mode==='launch') html=renderLaunch();
+  else if(state.mode==='home') html=renderHome();
   else if(state.mode==='menu') html=renderMenu();
   else if(state.mode==='feed') html=renderFeed();
   else if(state.mode==='train') html=renderTrain();
   else if(state.mode==='info') html=renderInfo();
-  else if(state.mode==='inventory') html=renderPlaceholder('Inventory','🎒','Inventory screen placeholder');
-  else if(state.mode==='shop') html=renderPlaceholder('Shop','🏪','Shop screen placeholder');
-  else if(state.mode==='habitat') html=renderPlaceholder('Habitat','🏡','Habitat screen placeholder');
-  else if(state.mode==='quests') html=renderPlaceholder('Quests','⭐','Quest selector placeholder');
+  else if(state.mode==='inventory') html=renderInventory();
+  else if(state.mode==='shop') html=renderPlaceholder('Shop','🏪','Shop still needs the PetBot action API');
+  else if(state.mode==='habitat') html=renderHabitat();
+  else if(state.mode==='quests') html=renderQuests();
+  else if(state.mode==='profile') html=renderProfile();
+  else if(state.mode==='traits') html=renderTraits();
+  else if(state.mode==='skills') html=renderSkills();
+  else if(state.mode==='effects') html=renderEffects();
   else if(state.mode==='flash') html=renderFlash();
   else html=renderHome();
   $('lcdApp').innerHTML=html;
@@ -914,19 +1024,32 @@ function render(){
 }
 
 function selectCurrent(){
+  if(state.mode==='launch'){
+    const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
+    if(item.key==='petCare') return setMode('home','◀  MENU  ▶');
+    if(item.key==='solo') return sendParentGameAction('startSolo');
+    if(item.key==='team') return sendParentGameAction('startTeam');
+    if(item.key==='builder') return sendParentGameAction('openBuilder');
+    if(item.key==='oldMenu') return sendParentGameAction('openOldMenu');
+  }
   if(state.mode==='home') return setMode('menu','Choose an action');
   if(state.mode==='menu'){ const m=MENU[state.menuIndex]; return openMenuItem(m.key); }
   if(state.mode==='feed') return useFood();
   if(state.mode==='train') return doTrain();
-  if(['inventory','shop','habitat','quests','info'].includes(state.mode)) return setMode('menu','Choose an action');
+  if(['inventory','shop','habitat','quests','profile','traits','skills','effects','info'].includes(state.mode)) return setMode('menu','Choose an action');
 }
 function back(){
+  if(state.mode==='launch') return sendParentGameAction('backToGame');
+  if(state.mode==='home' && qs.get('launch')==='1') return setMode('launch','Launch menu');
   if(state.mode==='home') return flash('PetBot is already home');
   if(state.mode==='menu') return setMode('home','◀  MENU  ▶');
   return setMode('menu','Choose an action');
 }
 function move(dir){
-  if(state.mode==='home' || state.mode==='info'){
+  if(state.mode==='launch'){
+    state.launchIndex=(state.launchIndex + dir + LAUNCH_MENU.length)%LAUNCH_MENU.length;
+    state.message='Launch: ' + (LAUNCH_MENU[state.launchIndex]?.label || '');
+  } else if(state.mode==='home' || state.mode==='info'){
     state.petIndex=(state.petIndex + dir + state.pets.length)%state.pets.length;
     state.message='Switched to ' + currentPet().name;
   } else if(state.mode==='menu') state.menuIndex=(state.menuIndex + dir + MENU.length)%MENU.length;
@@ -938,7 +1061,7 @@ function openMenuItem(key){
   if(key==='feed') return setMode('feed','Choose food');
   if(key==='train') return setMode('train','Choose training');
   if(key==='info') return setMode('info','Pet stats');
-  if(['inventory','shop','habitat','quests'].includes(key)) return setMode(key,key);
+  if(['inventory','shop','habitat','quests','profile','traits','skills','effects'].includes(key)) return setMode(key,key);
   if(key==='play') return quickPlay();
   if(key==='rest') return quickRest();
   if(key==='heal') return quickHeal();
@@ -1145,9 +1268,9 @@ function useThreeButtonLayout(){
 
 function resetThreeButtons(){
   LAYOUT.buttons = {
-    prev:   { label:'Left heart · previous / hold back', short:'A', left:14.8, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' },
-    select: { label:'Pacifier · select / menu', short:'B', left:39.0, top:73.0, width:22.0, height:12.9, radius:'50%', shape:'circle' },
-    next:   { label:'Right heart · next', short:'C', left:72.9, top:69.6, width:12.3, height:11.0, radius:'30%', shape:'heart' }
+    prev:   { label:'Left heart · previous pet', short:'A', left:13.6, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' },
+    select: { label:'Pacifier · select / menu', short:'B', left:38.0, top:70.8, width:24.0, height:16.2, radius:'50%', shape:'circle' },
+    next:   { label:'Right heart · next pet', short:'C', left:70.2, top:67.8, width:16.2, height:13.8, radius:'30%', shape:'heart' }
   };
   selectedButton='select';
   const sel=$('buttonSelect'); if(sel){ sel.innerHTML=''; Object.entries(LAYOUT.buttons).forEach(([k,b])=>{ const o=document.createElement('option'); o.value=k; o.textContent=(b.short?b.short+' · ':'')+b.label; sel.appendChild(o); }); }
@@ -1192,8 +1315,10 @@ function syncEditor(setValues=true){
 
 // EDIT: LIVE PETBOT SHEET CONNECTION
 // Spreadsheet supplied by Ryan: https://docs.google.com/spreadsheets/d/1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA/edit
-// This first uses your Cloudflare API routes (/api/petbot and /api/sheet51). If those fail, it tries the public Google Sheet tabs directly.
+// This now uses your current Google Apps Script PetBot backend through /api/petbot.
+// Sheet51 is still used for the visual image/layout rows, because that is where your current Discord PetBot display data lives.
 const PETBOT_SHEET_ID = '1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
+const PETBOT_APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwZgX5P6tj9_DeO4srLAwCtkgE_OMCzXt-51l5p_GjHEfDErAmBHjE5XVn_NCcTrNO/exec';
 const DEFAULT_DISCORD_USER_ID = '1214671839205396481';
 const CLOUDINARY_CLOUD = 'dpwlfmhia';
 const qs = new URLSearchParams(location.search);
@@ -1234,6 +1359,7 @@ const PETBOT_REQUIRED_SHEETS = [
 ];
 let PETBOT_RESPONSE_ROWS = {};
 let PETBOT_DIAGNOSTIC = {};
+let PETBOT_USER_DATA = {profile:null, inventory:[], traits:[], skills:[], effects:[], coins:[], relationships:[], habitats:[], habitatInventory:[], habitatLoadout:[], explorations:[], miniQuestLogs:[], viewState:null, sheet51:[], images:[], actionImages:[]};
 
 
 function pick(obj, names, fallback=''){
@@ -1294,13 +1420,13 @@ function normalisePet(r,i=0){
     fallback:'🐾',
     size: numVal(pick(r,['screen_size','size','overlay_width','player_width','width'],58),58),
     y: numVal(pick(r,['screen_y','y','offset_y','overlay_y'],52),52),
-    love: numVal(pick(r,['love','bond','affection','points'],0),0),
-    hunger: numVal(pick(r,['hunger','food','fed'],65),65),
-    happy: numVal(pick(r,['happy','happiness','mood'],70),70),
-    energy: numVal(pick(r,['energy','rest'],72),72),
-    health: numVal(pick(r,['health','hp'],82),82),
-    level: numVal(pick(r,['level','lvl'],1),1),
-    xp: numVal(pick(r,['xp','experience'],0),0),
+    love: numVal(pick(r,['love','bond','affection','points','friendship'],0),0),
+    hunger: numVal(pick(r,['hunger','pet_hunger','hunger_percent','hunger_pct','food','fed','fullness','feed','care_hunger','stat_hunger'],65),65),
+    happy: numVal(pick(r,['happy','happiness','pet_happiness','happiness_percent','happiness_pct','mood','fun','joy','care_happiness','stat_happiness'],70),70),
+    energy: numVal(pick(r,['energy','pet_energy','energy_percent','energy_pct','rest','sleep','stamina','care_energy','stat_energy'],72),72),
+    health: numVal(pick(r,['health','hp','pet_health','health_percent','health_pct','wellness'],82),82),
+    level: numVal(pick(r,['level','lvl','pet_level'],1),1),
+    xp: numVal(pick(r,['xp','experience','pet_xp'],0),0),
     coins: numVal(pick(r,['coins','money','balance'],0),0),
     raw:r
   };
@@ -1329,6 +1455,166 @@ function rowMatchesPet(row, pet){
   const hay = Object.values(row||{}).map(v=>String(v).toLowerCase()).join(' | ');
   const keys = [pet.code, pet.name, pet.pet, pet.key].filter(Boolean).map(s=>String(s).toLowerCase());
   return keys.some(k => k && hay.includes(k));
+}
+
+function esc(v){
+  return String(v ?? '').replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function getRowUserId(row){
+  return String(pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','guild_user_id','recipient_id'],'')).trim();
+}
+function rowMatchesUser(row,userId){
+  const uid = getRowUserId(row);
+  return !uid || !userId || uid === String(userId);
+}
+function rowMatchesOwnedPet(row, pet, userId){
+  if(!rowMatchesUser(row,userId)) return false;
+  return rowMatchesPet(row, pet);
+}
+function firstRows(rows, n=4){ return (rows||[]).filter(Boolean).slice(0,n); }
+function displayNameFromRow(row, fallback='Item'){
+  return String(pick(row,['name','item_name','pet_name','trait_name','skill_name','effect_name','habitat_name','title','label','key','item_key','trait_key','skill_key','effect_key','code'],fallback)).trim() || fallback;
+}
+function displayValueFromRow(row, fallback=''){
+  return String(pick(row,['quantity','qty','count','amount','value','level','xp','status','enabled','active','rarity','coins','balance'],fallback)).trim();
+}
+function visualMetaFromRow(row){
+  if(!row) return {};
+  return {
+    size:numVal(pick(row,['screen_size','size','overlay_width','pet_width','image_width','width','display_width'],''), NaN),
+    y:numVal(pick(row,['screen_y','y','overlay_y','pet_y','image_y','display_y','offset_y','top'],''), NaN),
+    x:numVal(pick(row,['screen_x','x','overlay_x','pet_x','image_x','display_x','offset_x','left'],''), NaN),
+    z:numVal(pick(row,['z','z_index','habitat_z_index','layer','sort'],''), NaN),
+    flip:String(pick(row,['flip','flipped','mirror','facing','direction'], '')).toLowerCase()
+  };
+}
+function applyVisualMetaToPet(p,row){
+  const meta = visualMetaFromRow(row);
+  if(Number.isFinite(meta.size) && meta.size > 0) p.size = meta.size;
+  if(Number.isFinite(meta.y)) p.y = meta.y;
+  if(Number.isFinite(meta.x)) p.x = meta.x;
+  if(Number.isFinite(meta.z)) p.z = meta.z;
+  if(meta.flip){ p.flip = /left|mirror|flip|true|-1/.test(meta.flip) ? -1 : 1; }
+  p.visualMeta = row || p.visualMeta || null;
+  return p;
+}
+async function safeSheet(sheetName, query='select *'){
+  try{ return await fetchSheetRows(sheetName, query); }
+  catch(e){ console.warn('Could not load sheet', sheetName, e); return []; }
+}
+
+function rawRowsFromPayload(payload){
+  const arrays = [];
+  if(Array.isArray(payload)) arrays.push(payload);
+  if(payload && typeof payload === 'object'){
+    for(const key of ['rows','data','items','results','pets','owned_pets','inventory','coins','traits','skills','effects','habitats','quests','collection']){
+      if(Array.isArray(payload[key])) arrays.push(payload[key]);
+    }
+    if(payload.result && typeof payload.result === 'object'){
+      for(const key of ['rows','data','items','results','pets','owned_pets','inventory','coins','traits','skills','effects','habitats','quests','collection']){
+        if(Array.isArray(payload.result[key])) arrays.push(payload.result[key]);
+      }
+    }
+  }
+  const rows = arrays.find(a=>a && a.length) || [];
+  if(rows.length) return rows;
+  if(payload && typeof payload.response === 'string'){
+    return payload.response.split(/\n+/).map((line,i)=>line.trim()).filter(Boolean).map((text,i)=>({text,line:text,index:i+1}));
+  }
+  return [];
+}
+function objectFromPayload(payload){
+  if(!payload || typeof payload !== 'object') return null;
+  for(const key of ['profile','user','data','result']){
+    const v = payload[key];
+    if(v && typeof v === 'object' && !Array.isArray(v)) return v;
+  }
+  return payload;
+}
+async function fetchPetbotMode(mode, userId, extra={}){
+  const q = new URLSearchParams({mode, user_id:String(userId||''), v:'tamagotchi-user-data'});
+  Object.entries(extra||{}).forEach(([k,v])=>{ if(v!==undefined && v!==null && String(v)!=='') q.set(k,String(v)); });
+  const data = await fetchJson('/api/petbot?' + q.toString(), 12000);
+  if(data && data.found === false && data.response) throw new Error(data.response);
+  return data;
+}
+async function loadUserDataFromPetbotApi(userId){
+  const out = {profile:null, inventory:[], coins:[], miniQuestLogs:[], hookCollection:[], shop:[], careMenu:[], traits:[], skills:[], effects:[], habitat:[]};
+  const jobs = [
+    ['profile','pet_profile_compact'],
+    ['inventory','view_inventory'],
+    ['coins','view_pet_coins'],
+    ['miniQuestLogs','quest_stats'],
+    ['hookCollection','view_hook_collection'],
+    ['shop','view_shop'],
+    ['careMenu','care_item_menu'],
+    ['traits','view_traits'],
+    ['skills','view_skills'],
+    ['effects','view_effects'],
+    ['habitat','view_habitat']
+  ];
+  await Promise.all(jobs.map(async ([bucket,mode])=>{
+    try{
+      const data = await fetchPetbotMode(mode, userId);
+      if(bucket === 'profile') out.profile = objectFromPayload(data);
+      else out[bucket] = rawRowsFromPayload(data);
+    }catch(e){ console.warn('PetBot Apps Script mode failed', mode, e); }
+  }));
+  return out;
+}
+function firstNonEmptyRows(apiRows, sheetRows){
+  return (apiRows && apiRows.length) ? apiRows : (sheetRows || []);
+}
+async function loadAllUserData(userId, pets){
+  const [apiData, sheets] = await Promise.all([
+    loadUserDataFromPetbotApi(userId).catch(e=>{ console.warn('PetBot Apps Script user-data bundle failed', e); return null; }),
+    Promise.all([
+      safeSheet('user_profile'), safeSheet('user_inventory'), safeSheet('user_pet_traits'), safeSheet('user_pet_skills'),
+      safeSheet('user_pet_effects'), safeSheet('user_pet_coins'), safeSheet('pet_relationships'), safeSheet('user_habitat_inventory'),
+      safeSheet('user_pet_habitat_loadout'), safeSheet('user_habitat_layouts'), safeSheet('pet_explorations'), safeSheet('user_mini_quest_logs'),
+      safeSheet('user_view_state'), safeSheet('Sheet51'), safeSheet('user_pet_images'), safeSheet('pet_action_images')
+    ])
+  ]);
+  const [profile,inventory,traits,skills,effects,coins,relationships,habitatInventory,habitatLoadout,habitats,explorations,miniQuestLogs,viewState,sheet51,images,actionImages] = sheets;
+  const api = apiData || {};
+  PETBOT_USER_DATA = {
+    source: apiData ? 'apps_script_plus_sheet51' : 'sheet_tabs_fallback',
+    appsScriptUrl: PETBOT_APPS_SCRIPT_URL,
+    profile:api.profile || (profile||[]).find(r=>rowMatchesUser(r,userId)) || null,
+    inventory:firstNonEmptyRows(api.inventory, (inventory||[]).filter(r=>rowMatchesUser(r,userId))),
+    traits:firstNonEmptyRows(api.traits, (traits||[]).filter(r=>rowMatchesUser(r,userId))),
+    skills:firstNonEmptyRows(api.skills, (skills||[]).filter(r=>rowMatchesUser(r,userId))),
+    effects:firstNonEmptyRows(api.effects, (effects||[]).filter(r=>rowMatchesUser(r,userId))),
+    coins:firstNonEmptyRows(api.coins, (coins||[]).filter(r=>rowMatchesUser(r,userId))),
+    relationships:(relationships||[]).filter(r=>rowMatchesUser(r,userId)),
+    habitatInventory:(habitatInventory||[]).filter(r=>rowMatchesUser(r,userId)),
+    habitatLoadout:firstNonEmptyRows(api.habitat, (habitatLoadout||[]).filter(r=>rowMatchesUser(r,userId))),
+    habitats:firstNonEmptyRows(api.habitat, (habitats||[]).filter(r=>rowMatchesUser(r,userId))),
+    explorations:(explorations||[]).filter(r=>rowMatchesUser(r,userId)),
+    miniQuestLogs:firstNonEmptyRows(api.miniQuestLogs, (miniQuestLogs||[]).filter(r=>rowMatchesUser(r,userId))),
+    hookCollection:api.hookCollection||[], shop:api.shop||[], careMenu:api.careMenu||[],
+    viewState:(viewState||[]).find(r=>rowMatchesUser(r,userId)) || null,
+    sheet51:sheet51||[], images:images||[], actionImages:actionImages||[]
+  };
+  for(const p of pets||[]){
+    p.traits = PETBOT_USER_DATA.traits.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.skills = PETBOT_USER_DATA.skills.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.effects = PETBOT_USER_DATA.effects.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.coinRows = PETBOT_USER_DATA.coins.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.relationships = PETBOT_USER_DATA.relationships.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.habitatRows = PETBOT_USER_DATA.habitats.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.habitatLoadout = PETBOT_USER_DATA.habitatLoadout.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    p.explorations = PETBOT_USER_DATA.explorations.filter(r=>rowMatchesOwnedPet(r,p,userId));
+    const visualRows = [...PETBOT_USER_DATA.sheet51, ...PETBOT_USER_DATA.images, ...PETBOT_USER_DATA.actionImages];
+    const visual = visualRows.find(r=>rowMatchesOwnedPet(r,p,userId)) || visualRows.find(r=>rowMatchesPet(r,p));
+    if(visual){
+      const img = cleanImageUrl(pick(visual,['image_url','url','cloudinary_image_url','cloudinary_public_id','image','pet_image','sprite_url'],''));
+      if(img) p.url = img;
+      applyVisualMetaToPet(p, visual);
+    }
+  }
+  window.PETBOT_USER_DATA = PETBOT_USER_DATA;
+  return PETBOT_USER_DATA;
 }
 async function findImageForPet(pet, userId){
   // 1) Preferred existing Cloudflare route used by the main index pet panel.
@@ -1431,11 +1717,14 @@ async function loadLivePetbot(){
     try{ pets = await loadOwnedPetsFromApi(userId); }
     catch(apiErr){ pets = await loadOwnedPetsFromSheet(userId); }
     if(!pets.length) throw new Error('No owned pets found for ' + userId);
+    await loadAllUserData(userId, pets);
     const withImages = [];
     for(const p of pets){
       const img = await findImageForPet(p, userId);
-      withImages.push(petDefaults({...p, url:img.url || p.url, imageMeta:img.meta}, withImages.length));
+      if(img.meta) applyVisualMetaToPet(p, img.meta);
+      withImages.push(petDefaults({...p, url:img.url || p.url, imageMeta:img.meta || p.visualMeta}, withImages.length));
     }
+    await loadAllUserData(userId, withImages);
     state.pets = withImages;
     state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
     state.message = 'PetBot loaded';
@@ -1460,6 +1749,32 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='t') setMode('train','Choose training');
 });
 
+function setupPetCycleControls(){
+  const prev=$('petPrevBtn'), next=$('petNextBtn'), screen=$('screenHole');
+  function bindCycleButton(el, action){
+    if(!el) return;
+    ['click','pointerup','touchend'].forEach(evt=>el.addEventListener(evt, e=>{ e.preventDefault(); e.stopPropagation(); handleAction(action); }, {passive:false}));
+  }
+  bindCycleButton(prev,'prev');
+  bindCycleButton(next,'next');
+  if(screen){
+    let down=null;
+    screen.addEventListener('pointerdown', e=>{ down={x:e.clientX,y:e.clientY,t:Date.now()}; }, {passive:true});
+    screen.addEventListener('pointerup', e=>{
+      if(!down || document.body.classList.contains('editorOpen')) return;
+      const r=screen.getBoundingClientRect();
+      const dx=e.clientX-down.x;
+      const dy=e.clientY-down.y;
+      const rx=(e.clientX-r.left)/Math.max(1,r.width);
+      if(Math.abs(dx)>34 && Math.abs(dx)>Math.abs(dy)){ handleAction(dx<0?'next':'prev'); }
+      else if(rx<0.34){ handleAction('prev'); }
+      else if(rx>0.66){ handleAction('next'); }
+      else { handleAction('select'); }
+      down=null;
+    }, {passive:true});
+  }
+}
+
 window.addEventListener('message', function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
@@ -1467,7 +1782,7 @@ window.addEventListener('message', function(e){
     localStorage.setItem('waa-petbot-user-id', String(d.user_id));
   }
 });
-load(); applyLayout(); render(); setupEditor(); loadLivePetbot();
+load(); applyLayout(); render(); setupEditor(); setupPetCycleControls(); loadLivePetbot();
 </script>
 </body>
 </html>
