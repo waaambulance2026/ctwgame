@@ -111,17 +111,16 @@ body.colorScreen{--lcd-bg:linear-gradient(180deg,#f8fbff,#d7edff 54%,#afd7ff);--
 @media(max-width:900px){.editor{left:10px;right:10px;top:auto;bottom:10px;width:auto;max-height:45dvh}}
 @media(max-width:720px){.stage{width:min(95vw,calc(88dvh * .75));height:min(88dvh,calc(95vw * 1.333))}.lcdTop{font-size:8px}.bottomMsg{font-size:7px}.editTab{font-size:12px;padding:7px 10px}}
 
-.petCycleBtn{position:absolute;z-index:42;top:54%;width:clamp(40px,5.4vw,62px);height:clamp(40px,5.4vw,62px);border-radius:999px;border:2px solid rgba(255,255,255,.94);background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(248,237,246,.92));box-shadow:0 8px 22px rgba(0,0,0,.20),0 0 0 4px rgba(210,130,194,.14);font-weight:1000;color:#25172e;font-size:clamp(27px,3.4vw,42px);line-height:1;display:grid;place-items:center;transform:translateY(-50%);cursor:pointer;touch-action:manipulation}
-.petCycleBtn.prev{left:2.7%}
-.petCycleBtn.next{right:2.7%}
-.petCycleBtn:active{transform:translateY(-50%) scale(.94)}
-.petCycleLabel{position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);font-size:10px;font-weight:1000;white-space:nowrap;background:rgba(255,255,255,.86);border-radius:999px;padding:3px 7px;box-shadow:0 3px 10px rgba(0,0,0,.12)}
+/* The toy is controlled by the physical-looking Tamagotchi buttons, not floating arrows.
+   Invisible click zones sit directly on the pink heart, pacifier and blue heart. */
+.petCycleBtn{display:none!important}
+.petCycleLabel{display:none!important}
 .screenHole{pointer-events:auto}
-.screenTapHint{position:absolute;z-index:41;left:50%;top:67%;transform:translateX(-50%);background:rgba(255,255,255,.82);border:1px solid rgba(20,34,63,.15);border-radius:999px;padding:4px 9px;font-size:clamp(9px,.9vw,13px);font-weight:1000;box-shadow:0 4px 12px rgba(0,0,0,.10);pointer-events:none;color:#25172e}
+.screenTapHint{display:none!important}
 html.embed .editTab{display:none!important}
 .embedBackBtn{display:none;position:fixed;z-index:9999;left:12px;top:12px;border:2px solid rgba(255,255,255,.92);border-radius:999px;padding:10px 13px;background:linear-gradient(180deg,#fff,#f8edf6);box-shadow:0 8px 22px rgba(0,0,0,.22);font-weight:1000;color:#25172e;font-size:14px}
 html.embed .embedBackBtn{display:block}
-@media(max-width:700px){.petCycleBtn{top:56%;width:42px;height:42px;font-size:28px}.petCycleBtn.prev{left:1.4%}.petCycleBtn.next{right:1.4%}.petCycleLabel{display:none}.screenTapHint{font-size:10px;top:68%}}
+@media(max-width:700px){.screenTapHint{display:none!important}}
 
 
 
@@ -130,8 +129,8 @@ html.embed .embedBackBtn{display:block}
 .launchCard .ico{font-size:clamp(24px,3.6vw,48px)}
 .launchCard .launchName{font-size:clamp(12px,1.22vw,18px);line-height:1.05}
 .launchCard .launchHint{font-size:clamp(7px,.72vw,11px);opacity:.82;line-height:1.05}
-.petCycleBtn{display:grid!important;opacity:.96!important;pointer-events:auto!important}
-html.embed .petCycleBtn{box-shadow:0 8px 22px rgba(0,0,0,.24),0 0 0 5px rgba(210,130,194,.18)!important;}
+.petCycleBtn{display:none!important;opacity:0!important;pointer-events:none!important}
+html.embed .petCycleBtn{display:none!important;}
 
 </style>
 </head>
@@ -143,16 +142,16 @@ html.embed .petCycleBtn{box-shadow:0 8px 22px rgba(0,0,0,.24),0 0 0 5px rgba(210
     </section>
     <!-- Device shell image is loaded from the uploaded repo file, not embedded base64, so petbot_device.png updates show on Pages. -->
     <img class="device" src="/petbot_device.png?v=20260628-measured-screen-02" alt="Waaambulance tamagotchi shell">
-    <button class="petCycleBtn prev" id="petPrevBtn" type="button" aria-label="Previous pet">‹<span class="petCycleLabel">Previous pet</span></button>
-    <button class="petCycleBtn next" id="petNextBtn" type="button" aria-label="Next pet">›<span class="petCycleLabel">Next pet</span></button>
-    <div class="screenTapHint" id="screenTapHint">Tap sides / swipe to change pet</div>
+    <!-- No floating pet arrows: the real toy buttons are clickable.
+         Pink heart = previous/back, pacifier = select/menu, blue heart = next.
+         The LCD also still accepts left/right swipe. -->
   </main>
 </div>
 <button class="embedBackBtn" id="embedBackBtn" type="button">← Back to game</button>
 <button class="editTab" id="editTab">Edit</button>
 <aside class="editor" id="editor" aria-label="PetBot setup editor">
   <h2>PetBot Tamagotchi setup</h2>
-  <p>Simple version. Only 3 buttons matter: left heart = back/previous, pacifier = OK/menu, right heart = next.</p>
+  <p>Integrated version. Click the actual toy buttons: pink heart = previous/back, pacifier = OK/menu, blue heart = next. No floating arrows.</p>
   <button class="btn primary" id="playModeBtn">Play mode</button>
   <button class="btn" id="guideBtn">Show 3 button zones</button>
   <div class="tabs">
@@ -749,7 +748,7 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-sheet-connected-v4-user-data';
+const STORE_KEY = 'waaambulance-petbot-sheet-connected-v5-integrated-buttons';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
@@ -840,7 +839,11 @@ function load(){
   state.pets = PETS.map((p,i)=>petDefaults({...p, ...(savedPets[i]||{})},i));
   state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
   state.launchIndex = clamp(state.launchIndex||0,0,LAUNCH_MENU.length-1);
-  if(qs.get('launch') === '1') state.mode = 'launch';
+  if(qs.get('launch') === '1') {
+    state.mode = 'launch';
+    state.launchIndex = 0;
+    state.message = 'Pet Care';
+  }
 }
 function mergeLayout(base, saved){
   return {
@@ -912,7 +915,7 @@ function barsHTML(p){
 function renderLaunch(){
   const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
   return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">WAAAMBULANCE</span><span>${state.launchIndex+1}/${LAUNCH_MENU.length}</span></div>` +
-    `<div class="screenBody"><div class="launchGrid"><div class="launchCard"><span class="ico">${item.icon}</span><span class="launchName">${item.label}</span><span class="launchHint">${item.hint}<br>◀ / ▶ choose · ● select</span></div></div></div>`;
+    `<div class="screenBody"><div class="launchGrid"><div class="launchCard"><span class="ico">${item.icon}</span><span class="launchName">${item.label}</span><span class="launchHint">${item.hint}<br>pink heart / blue heart choose · dummy button select</span></div></div></div>`;
 }
 function sendParentGameAction(action){
   try{ window.parent.postMessage({type:'waa-petbot-game-action', action}, location.origin); }catch(e){}
@@ -928,7 +931,7 @@ function renderMenu(){
 }
 function renderFeed(){
   const f=FOOD[state.feedIndex];
-  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>◀ / ▶ browse  ·  ● use</div></div></div></div><div class="bottomMsg"></div>`;
+  return topBar('FOOD', (state.feedIndex+1)+'/'+FOOD.length) + `<div class="screenBody"><div class="listScreen"><div class="bigIcon">${f.icon}</div><div class="listText"><div class="name">${f.name}</div><div>Hunger +${f.hunger}</div><div>Happy +${f.happy}</div><div>Energy ${f.energy>=0?'+':''}${f.energy}</div><br><div>heart buttons browse · dummy button use</div></div></div></div><div class="bottomMsg"></div>`;
 }
 function renderTrain(){
   const p=currentPet();
@@ -954,7 +957,7 @@ function renderInfo(){
     <div class="infoCard">Level<br>${esc(p.level)}<small>XP ${esc(p.xp)}</small></div><div class="infoCard">Coins<br>${esc(userCoins)}<small>Love ${esc(p.love)}</small></div>
     <div class="infoCard">Health<br>${esc(p.health)}<small>Energy ${esc(p.energy)}</small></div><div class="infoCard">Care<br>${esc(p.hunger)}<small>Happy ${esc(p.happy)}</small></div>
     <div class="infoCard">Traits<br>${(p.traits||[]).length}<small>Skills ${(p.skills||[]).length}</small></div><div class="infoCard">Effects<br>${(p.effects||[]).length}<small>Habitat ${(p.habitatLoadout||[]).length}</small></div>
-  </div></div><div class="bottomMsg">  ·  ◀ / ▶ pet</div>`;
+  </div></div><div class="bottomMsg">heart buttons change pet</div>`;
 }
 function renderProfile(){
   const prof = PETBOT_USER_DATA.profile;
