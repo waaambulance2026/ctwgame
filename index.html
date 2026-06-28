@@ -764,6 +764,54 @@ body.editMode .targetPick{min-height:42px}
 }
 
 
+/* FINAL TAMAGOTCHI DOCK FIX
+   Only one visible Tamagotchi control: the HUD button plus this small toy preview.
+   The dock is moved away from the top/right edge so it is not chopped off. */
+#petbotDock:not(.fullscreen){
+  position:fixed!important;
+  top:calc(env(safe-area-inset-top) + 110px)!important;
+  right:calc(env(safe-area-inset-right) + 22px)!important;
+  width:clamp(126px,8.5vw,158px)!important;
+  height:clamp(166px,11.5vw,214px)!important;
+  min-width:126px!important;
+  min-height:166px!important;
+  max-width:158px!important;
+  max-height:214px!important;
+  z-index:140!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  transform:none!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockPreview{
+  inset:0!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockPreview img{
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+  display:block!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockBar,
+#petbotDock:not(.fullscreen) .petbotDockHint{
+  display:none!important;
+}
+#petbotDock.fullscreen .petbotDockBar{
+  display:flex!important;
+}
+@media(max-width:900px){
+  #petbotDock:not(.fullscreen){top:96px!important;right:14px!important;width:118px!important;height:158px!important;min-width:118px!important;min-height:158px!important;}
+}
+@media(max-width:520px){
+  #petbotDock:not(.fullscreen){top:82px!important;right:8px!important;width:88px!important;height:118px!important;min-width:88px!important;min-height:118px!important;}
+}
+
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -810,12 +858,11 @@ body.editMode .targetPick{min-height:42px}
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><img src="/petbot_device.png?v=20260628-dock-plain" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=15"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=17"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
     </div>
-    <div class="petbotDockHint">Tamagotchi</div>
   </div>
 
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
