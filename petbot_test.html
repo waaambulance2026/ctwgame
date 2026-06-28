@@ -15,7 +15,7 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;width:100%;height:100%;overflow:hidden;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);color:var(--ink)}
-html.embed,html.embed body{background:transparent!important;}
+html.embed,html.embed body{background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 44%,#def5ff 100%)!important;}
 button{border:0;background:transparent;cursor:pointer;font:inherit;color:inherit}
 .app{position:relative;width:100vw;height:100dvh;overflow:hidden;display:grid;place-items:center;padding:0}
 .stage{position:relative;width:min(94vw,calc(90dvh * 0.75));height:min(90dvh,calc(94vw * 1.333));max-width:760px;max-height:1014px;filter:drop-shadow(0 22px 42px rgba(0,0,0,.18)) drop-shadow(0 0 26px rgba(243,90,173,.20)) drop-shadow(0 0 22px rgba(22,184,234,.18));touch-action:none;user-select:none}
@@ -141,6 +141,13 @@ html.embed .petCycleBtn{display:none!important;}
 .launchGrid{display:none!important}
 .petSprite{max-width:72%!important;max-height:72%!important;background-size:contain!important}
 .screenHint{position:absolute;left:0;right:0;bottom:4px;text-align:center;font-size:clamp(7px,.68vw,10px);font-weight:1000;opacity:.72;z-index:8;pointer-events:none}
+
+
+/* TEMP DISCORD USER PICKER: inside the LCD, not a floating web overlay. */
+.loginList{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;justify-content:center;padding:3px 5px}
+.loginChoice{display:grid;grid-template-columns:auto 1fr;gap:6px;align-items:center;border:1.5px solid rgba(20,34,63,.35);border-radius:8px;background:rgba(255,255,255,.22);padding:5px 7px;font-weight:1000;font-size:clamp(9px,.82vw,13px)}
+.loginChoice.selected{background:rgba(255,255,255,.58);outline:2px solid rgba(20,34,63,.52)}
+.loginSub{font-size:.78em;opacity:.76;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.loginPassBox{width:100%;height:100%;display:grid;place-items:center;padding:5px}.loginPassCard{width:92%;border:1.5px solid rgba(20,34,63,.32);border-radius:12px;background:rgba(255,255,255,.32);padding:7px;text-align:center;font-weight:1000}.loginPassCard input{width:92%;border:1.5px solid rgba(20,34,63,.45);border-radius:8px;background:rgba(255,255,255,.86);font-weight:1000;text-align:center;padding:5px;margin:5px 0;color:#111}.loginPassCard button{border-radius:999px;background:rgba(255,255,255,.86);border:1.5px solid rgba(20,34,63,.28);padding:5px 12px;font-weight:1000}.loginError{font-size:clamp(7px,.68vw,10px);color:#8d174b;min-height:1.1em}.loadingPetbot{font-weight:1000;text-align:center;font-size:clamp(12px,1.2vw,18px)}
 
 </style>
 </head>
@@ -759,11 +766,31 @@ let LAYOUT = {
   }
 };
 
-const STORE_KEY = 'waaambulance-petbot-sheet-connected-v6-clean-toy';
+const STORE_KEY = 'waaambulance-petbot-sheet-connected-v7-user-login';
 const $ = id => document.getElementById(id);
 const clamp = (v,min,max)=>Math.max(min,Math.min(max,v));
 const pct = n => Number(n).toFixed(2).replace(/\.00$/,'') + '%';
 const bar = n => clamp(Math.round(n),0,100) + '%';
+
+const PLAYER_LIST = [
+  {key:'ax', label:'Ax', display:"💚 Ryan's Axolotl", userId:'1214671839205396481', password:'Axtok'},
+  {key:'aly', label:'Aly', display:'Ashely with one L', userId:'1407957358683885670', password:'Alytok'},
+  {key:'test', label:'Test', display:'Testing mode', userId:'test', password:'', test:true}
+];
+const PLAYER_BY_KEY = Object.fromEntries(PLAYER_LIST.map(p=>[p.key,p]));
+let ACTIVE_PLAYER = null;
+function selectedLoginPlayer(){ return PLAYER_LIST[clamp(state.loginIndex||0,0,PLAYER_LIST.length-1)] || PLAYER_LIST[0]; }
+function setActivePlayer(player){
+  ACTIVE_PLAYER = player || null;
+  LIVE_USER_ID = player && player.userId ? String(player.userId) : '';
+  try{
+    if(player) sessionStorage.setItem('waa-petbot-active-player-key', player.key);
+    else sessionStorage.removeItem('waa-petbot-active-player-key');
+  }catch(e){}
+}
+function clearActivePlayer(){ setActivePlayer(null); state.mode='login'; state.loginPass=''; state.loginError=''; state.message='Choose player'; render(); }
+function shouldAskPlayerNow(){ return qs.get('choose')==='1' || qs.get('launch')==='1' || !ACTIVE_PLAYER; }
+
 
 let FOOD = [
   {key:'milk', name:'Milk', icon:'🥛', hunger:12, happy:1, energy:2},
@@ -794,6 +821,7 @@ const MENU = [
   {key:'solo', label:'Solo Quest', icon:'▶'},
   {key:'team', label:'Team Quest', icon:'👥'},
   {key:'builder', label:'Build/Edit', icon:'🛠'},
+  {key:'switchUser', label:'Switch Player', icon:'👤'},
   {key:'game', label:'Back to Game', icon:'🚑'},
   {key:'info', label:'Stats', icon:'♡'}
 ];
@@ -823,7 +851,10 @@ let state = {
   message:'◀  MENU  ▶',
   screenTheme:'color',
   flash:null,
-  pets:[]
+  pets:[],
+  loginIndex:0,
+  loginPass:'',
+  loginError:''
 };
 let selectedButton = 'select';
 let selectedTab = 'buttons';
@@ -854,11 +885,14 @@ function load(){
   state.pets = PETS.map((p,i)=>petDefaults({...p, ...(savedPets[i]||{})},i));
   state.petIndex = clamp(state.petIndex||0,0,state.pets.length-1);
   state.launchIndex = clamp(state.launchIndex||0,0,LAUNCH_MENU.length-1);
-  if(qs.get('launch') === '1') {
-    state.mode = 'home';
-    state.launchIndex = 0;
-    state.message = 'Pet Care';
-  }
+  state.loginIndex = clamp(state.loginIndex||0,0,PLAYER_LIST.length-1);
+  // Temporary until Discord Activity login is connected: always ask who is playing on launch.
+  ACTIVE_PLAYER = null;
+  LIVE_USER_ID = '';
+  state.mode = 'login';
+  state.message = 'Choose player';
+  state.loginPass = '';
+  state.loginError = '';
 }
 function mergeLayout(base, saved){
   return {
@@ -908,8 +942,9 @@ function flash(msg, after='home'){
 }
 
 function topBar(title,right){
-  const p=currentPet();
-  return `<div class="lcdTop"><span>♡ <b>${p.love||0}</b></span><span class="lcdTitle">${title}</span><span>${right||((state.petIndex+1)+'/'+state.pets.length)}</span></div>`;
+  const p=currentPet() || {};
+  const count = Math.max(1, state.pets.length || 1);
+  return `<div class="lcdTop"><span>♡ <b>${p.love||0}</b></span><span class="lcdTitle">${title}</span><span>${right||((state.petIndex+1)+'/'+count)}</span></div>`;
 }
 function screenPercentSize(v, fallback=58){
   let n = Number(v);
@@ -941,6 +976,51 @@ function barsHTML(p){
     <div class="bar" title="Health"><span style="width:${bar(p.health)}"></span></div>
   </div>`;
 }
+
+function renderLogin(){
+  return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">WHO IS PLAYING?</span><span>${(state.loginIndex||0)+1}/${PLAYER_LIST.length}</span></div>`+
+    `<div class="screenBody"><div class="loginList">`+
+    PLAYER_LIST.map((p,i)=>`<div class="loginChoice ${i===(state.loginIndex||0)?'selected':''}"><span>${p.key==='test'?'🧪':'👤'}</span><div><div>${esc(p.label)}</div><div class="loginSub">${esc(p.display)}</div></div></div>`).join('')+
+    `</div><div class="screenHint">hearts choose · dummy OK</div></div>`;
+}
+function renderPassword(){
+  const p = selectedLoginPlayer();
+  return `<div class="lcdTop"><span>🔐</span><span class="lcdTitle">${esc(p.label)} LOGIN</span><span></span></div>`+
+    `<div class="screenBody"><div class="loginPassBox"><div class="loginPassCard"><div>${esc(p.label)} password</div><input id="loginPassInput" type="password" autocomplete="off" value="${esc(state.loginPass||'')}" placeholder="password"><button id="loginSubmitBtn" type="button">Enter</button><div class="loginError">${esc(state.loginError||'')}</div></div></div></div>`;
+}
+function renderLoading(){
+  const p = ACTIVE_PLAYER || selectedLoginPlayer();
+  return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">PETBOT</span><span></span></div><div class="screenBody"><div class="bigStatus"><div><div class="bigStatusIcon">🐾</div><div class="bigStatusText loadingPetbot">Loading ${esc(p.label||'player')} pets…</div></div></div></div>`;
+}
+function bindLoginScreen(){
+  const input=$('loginPassInput');
+  const btn=$('loginSubmitBtn');
+  if(input){
+    setTimeout(()=>{try{input.focus(); input.select();}catch(e){}},30);
+    input.addEventListener('input',()=>{state.loginPass=input.value;});
+    input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); submitLoginPassword(); }});
+  }
+  if(btn) btn.addEventListener('click', submitLoginPassword);
+}
+function chooseLoginPlayer(){
+  const p = selectedLoginPlayer();
+  state.loginPass=''; state.loginError='';
+  if(p.test) return completeLogin(p);
+  state.mode='password'; render(); save();
+}
+function submitLoginPassword(){
+  const p = selectedLoginPlayer();
+  const input=$('loginPassInput');
+  const pass = String(input ? input.value : (state.loginPass||''));
+  if(pass === p.password) return completeLogin(p);
+  state.loginError='Wrong password'; state.loginPass=''; render(); save();
+}
+function completeLogin(player){
+  setActivePlayer(player);
+  state.mode='loading'; state.message='Loading '+player.label+' pets'; state.loginPass=''; state.loginError=''; state.pets=[]; state.petIndex=0; render(); save();
+  loadLivePetbot();
+}
+
 function renderLaunch(){
   const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
   return `<div class="lcdTop"><span>🚑</span><span class="lcdTitle">WAAAMBULANCE</span><span>${state.launchIndex+1}/${LAUNCH_MENU.length}</span></div>` +
@@ -1034,7 +1114,10 @@ function renderFlash(){
 }
 function render(){
   let html='';
-  if(state.mode==='launch') html=renderLaunch();
+  if(state.mode==='login') html=renderLogin();
+  else if(state.mode==='password') html=renderPassword();
+  else if(state.mode==='loading') html=renderLoading();
+  else if(state.mode==='launch') html=renderLaunch();
   else if(state.mode==='home') html=renderHome();
   else if(state.mode==='menu') html=renderMenu();
   else if(state.mode==='feed') html=renderFeed();
@@ -1051,11 +1134,15 @@ function render(){
   else if(state.mode==='flash') html=renderFlash();
   else html=renderHome();
   $('lcdApp').innerHTML=html;
+  bindLoginScreen();
   syncEditor();
   notifyParentPetbotState();
 }
 
 function selectCurrent(){
+  if(state.mode==='login') return chooseLoginPlayer();
+  if(state.mode==='password') return submitLoginPassword();
+  if(state.mode==='loading') return;
   if(state.mode==='launch'){
     const item=LAUNCH_MENU[state.launchIndex] || LAUNCH_MENU[0];
     if(item.key==='petCare') return setMode('home','◀  MENU  ▶');
@@ -1071,6 +1158,8 @@ function selectCurrent(){
   if(['inventory','shop','habitat','quests','profile','traits','skills','effects','info'].includes(state.mode)) return setMode('menu','Choose an action');
 }
 function back(){
+  if(state.mode==='password'){ state.mode='login'; state.loginPass=''; state.loginError=''; return render(); }
+  if(state.mode==='login' || state.mode==='loading') return;
   if(state.mode==='launch') return sendParentGameAction('backToGame');
   if(state.mode==='home' && qs.get('launch')==='1') return sendParentGameAction('backToGame');
   if(state.mode==='home') return flash('PetBot is already home');
@@ -1078,10 +1167,16 @@ function back(){
   return setMode('menu','Choose an action');
 }
 function move(dir){
-  if(state.mode==='launch'){
+  if(state.mode==='login'){
+    state.loginIndex=(state.loginIndex + dir + PLAYER_LIST.length)%PLAYER_LIST.length;
+    state.message='Choose ' + selectedLoginPlayer().label;
+  } else if(state.mode==='password' || state.mode==='loading'){
+    return;
+  } else if(state.mode==='launch'){
     state.launchIndex=(state.launchIndex + dir + LAUNCH_MENU.length)%LAUNCH_MENU.length;
     state.message='Launch: ' + (LAUNCH_MENU[state.launchIndex]?.label || '');
   } else if(state.mode==='home' || state.mode==='info'){
+    if(!state.pets.length) return;
     state.petIndex=(state.petIndex + dir + state.pets.length)%state.pets.length;
     state.message='Switched to ' + currentPet().name;
   } else if(state.mode==='menu') state.menuIndex=(state.menuIndex + dir + MENU.length)%MENU.length;
@@ -1097,6 +1192,7 @@ function openMenuItem(key){
   if(key==='solo') return sendParentGameAction('startSolo');
   if(key==='team') return sendParentGameAction('startTeam');
   if(key==='builder') return sendParentGameAction('openBuilder');
+  if(key==='switchUser') return clearActivePlayer();
   if(key==='game') return sendParentGameAction('backToGame');
   if(key==='play') return quickPlay();
   if(key==='rest') return quickRest();
@@ -1372,7 +1468,7 @@ if(embedBackBtn){
     }catch(err){}
   });
 }
-const LIVE_USER_ID = qs.get('user_id') || localStorage.getItem('waa-petbot-user-id') || DEFAULT_DISCORD_USER_ID;
+let LIVE_USER_ID = ''; // set after Ax/Aly/Test login; later Discord Activity can set it automatically
 
 // Full PetBot workbook registry checked from the spreadsheet Index tab.
 // The app does NOT pull all of these on every load because that would be slow.
@@ -1504,6 +1600,10 @@ function getRowUserId(row){
 function rowMatchesUser(row,userId){
   const uid = getRowUserId(row);
   return !uid || !userId || uid === String(userId);
+}
+function strictRowMatchesUser(row,userId){
+  const uid = getRowUserId(row);
+  return !!uid && !!userId && uid === String(userId);
 }
 function rowMatchesOwnedPet(row, pet, userId){
   if(!rowMatchesUser(row,userId)) return false;
@@ -1731,30 +1831,43 @@ async function loadCareItemsFromSheet(){
   }catch(e){}
 }
 async function loadOwnedPetsFromApi(userId){
-  const d = await fetchJson(`/api/petbot?mode=view_pets&user_id=${encodeURIComponent(userId)}&per_page=50&v=tamagotchi`, 14000);
+  const d = await fetchJson(`/api/petbot?mode=view_pets&user_id=${encodeURIComponent(userId)}&per_page=50&v=tamagotchi-user-filter`, 14000);
   if(d && d.found === false && d.response) throw new Error(d.response);
-  return normalisePets(d);
+  const pets = normalisePets(d);
+  const tagged = pets.filter(p=>getRowUserId(p.raw));
+  // If the Apps Script returns all users, keep only the chosen Discord user.
+  // If the Apps Script already filtered and does not include user_id fields, keep the response.
+  return tagged.length ? tagged.filter(p=>strictRowMatchesUser(p.raw,userId)) : pets;
 }
 async function loadOwnedPetsFromSheet(userId){
   const rows = await fetchSheetRows('user_pets');
-  const filtered = rows.filter(r=>{
-    const uid = String(pick(r,['user_id','discord_user_id','discord_id','owner_id','member_id'],''));
-    return !uid || uid === String(userId);
-  });
-  return (filtered.length ? filtered : rows).map(normalisePet).filter(p=>p.name || p.code || p.pet);
+  const filtered = rows.filter(r=>strictRowMatchesUser(r,userId));
+  return filtered.map(normalisePet).filter(p=>p.name || p.code || p.pet);
 }
 async function loadLivePetbot(){
   const userId = LIVE_USER_ID;
+  if(!ACTIVE_PLAYER){ state.mode='login'; state.message='Choose player'; render(); return; }
   state.message = 'Loading PetBot';
+  state.mode = 'loading';
   render();
+  if(ACTIVE_PLAYER.test){
+    PETBOT_USER_DATA = {profile:{display_name:'Test'}, inventory:[], traits:[], skills:[], effects:[], coins:[], relationships:[], habitats:[], habitatInventory:[], habitatLoadout:[], explorations:[], miniQuestLogs:[], viewState:null, sheet51:[], images:[], actionImages:[]};
+    state.pets = PETS.map((p,i)=>petDefaults({...p},i));
+    state.petIndex = 0;
+    state.mode = 'home';
+    state.message = 'Test pets loaded';
+    save(); render(); return;
+  }
   try{
     await loadCareItemsFromSheet();
     await loadResponseSheets();
     if(qs.get('check_sheets')==='1') checkAllPetbotSheets();
     let pets = [];
-    try{ pets = await loadOwnedPetsFromApi(userId); }
-    catch(apiErr){ pets = await loadOwnedPetsFromSheet(userId); }
-    if(!pets.length) throw new Error('No owned pets found for ' + userId);
+    // For Ax/Aly, the safest temporary user matching is the real user_pets tab filtered by Discord ID.
+    // The Apps Script is still used as a fallback, but direct user_pets filtering prevents showing every animal.
+    try{ pets = await loadOwnedPetsFromSheet(userId); }
+    catch(sheetErr){ pets = await loadOwnedPetsFromApi(userId); }
+    if(!pets.length) throw new Error('No owned pets found for ' + (ACTIVE_PLAYER?.label || userId) + ' (' + userId + ')');
     await loadAllUserData(userId, pets);
     const withImages = [];
     for(const p of pets){
@@ -1818,7 +1931,7 @@ window.addEventListener('message', function(e){
     localStorage.setItem('waa-petbot-user-id', String(d.user_id));
   }
 });
-load(); applyLayout(); render(); setupEditor(); setupPetCycleControls(); loadLivePetbot();
+load(); applyLayout(); render(); setupEditor(); setupPetCycleControls(); if(ACTIVE_PLAYER) loadLivePetbot();
 </script>
 </body>
 </html>
