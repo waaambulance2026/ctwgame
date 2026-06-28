@@ -34,7 +34,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false};
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -103,41 +103,17 @@ function renderSimplePanel(title,msg,items){
 }
 function renderPanel(title){
   const kind=String(state.panelKind||title).toLowerCase().replace(/[^a-z]/g,'');
-  if(kind==='shop') return renderShopPanel(title);
   const isLoading=state.panelLoading&&state.panelKind===kind;
   const items=Array.isArray(state.panelItems)?state.panelItems:[];
-  const msg=(isLoading&&!items.length)?('Loading '+title+'...'):(state.panelMessage||('No '+title+' rows found yet.'));
+  const msg=isLoading?'Loading '+title+'...':(state.panelMessage||('No '+title+' rows found yet.'));
   const pageSize=4;
   const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
   const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
   const pageItems=items.slice(startIndex,startIndex+pageSize);
   const gridClass='panelGrid '+(kind==='shop'?'shopGrid':kind==='inventory'?'invGrid':kind==='habitat'?'habitatGrid':(kind==='hook'||kind==='hookawaa')?'hookGrid':'');
   const cardClass='panelCard '+(kind==='shop'?'shopCard':kind==='inventory'?'invCard':kind==='habitat'?'habitatCard':(kind==='hook'||kind==='hookawaa')?'hookCard':'');
-  return top(title,items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="${gridClass}">${pageItems.length?pageItems.map((it,j)=>{const realIndex=startIndex+j;return `<div class="${cardClass} ${realIndex===idx?'active':''}" data-panel-index="${realIndex}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`}).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
-}
-
-
-function renderShopPanel(title){
-  const target=state.pets[state.shopPetIndex]||currentPet()||{};
-  const targetName=target.name||target.pet||'Pet';
-  if(state.shopStep==='pet'){
-    const img=target.url?`<div class="shopTargetPetPic" style="background-image:url('${esc(target.url)}')"></div>`:`<div class="petEmoji" style="position:static;transform:none;font-size:38px">${esc(target.emoji||emojiFor(target.pet||target.category))}</div>`;
-    return top('SHOP PET',state.pets.length?((state.shopPetIndex+1)+'/'+state.pets.length):'')+`<div class="body"><div class="shopTargetCard">${img}<div class="shopTargetPetName">${esc(targetName)}</div><div class="shopFlowNote">Choose which pet/animal this shop is for.</div></div></div>`;
-  }
-  if(state.shopStep==='qty'){
-    const item=state.shopSelected || (state.panelItems||[])[state.panelIndex||0] || {};
-    const price=Number(pick(item.raw||item,['shop_price','price','cost','coins','pet_coins'],item.price||0))||0;
-    const total=price?`Total: 🪙 ${price*Number(state.shopQty||1)}`:'';
-    return top('BUY AMOUNT','')+`<div class="body"><div class="shopQtyCard"><div class="shopQtyItem">${esc(itemTitle(item))}</div><div class="shopFlowNote">For ${esc(targetName)}</div><div class="shopQtyNumber">x${esc(state.shopQty||1)}</div><div class="shopFlowNote">${esc(total)} · left/right changes amount</div></div></div>`;
-  }
-  const items=Array.isArray(state.panelItems)?state.panelItems:[];
-  const isLoading=state.panelLoading;
-  const msg=(isLoading&&!items.length)?'Loading shop...':(state.panelMessage||'No shop rows found for this pet yet.');
-  const pageSize=4;
-  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
-  const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
-  const pageItems=items.slice(startIndex,startIndex+pageSize);
-  return top('SHOP',items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(targetName)} · ${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="panelGrid shopGrid">${pageItems.length?pageItems.map((it,j)=>{const realIndex=startIndex+j;return `<div class="panelCard shopCard ${realIndex===idx?'active':''}" data-panel-index="${realIndex}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`}).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
+  const actionHint=kind==='shop'?'Select buys highlighted item':kind==='inventory'?'Select uses highlighted item':(kind==='hook'||kind==='hookawaa')?'Select plays Hook-a-Waaambulance':kind==='habitat'?'Select views/equips highlighted habitat item':'Select';
+  return top(title,items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="${gridClass}">${pageItems.length?pageItems.map((it,j)=>{const realIndex=startIndex+j;return `<div class="${cardClass} ${realIndex===idx?'active':''}" data-panel-index="${realIndex}"><span>${esc(iconForItem(it))}</span><span>${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`}).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div><div class="panelHelp">${esc(actionHint)}</div></div>`;
 }
 
 function itemImage(it){
@@ -185,41 +161,53 @@ function addLayerFromField(layers,row,keyMap,fieldNames,cls,defaults){
   layers.push(makeHabitatLayer(cls,url,defaults.x,defaults.y,defaults.w,defaults.h,defaults.z));
   return true;
 }
-function fieldAny(row, patterns){
-  if(!row||typeof row!=='object')return'';
-  const keys=Object.keys(row);
-  for(const pat of patterns){
-    const re=pat instanceof RegExp?pat:new RegExp(pat,'i');
-    const k=keys.find(x=>re.test(x));
-    if(k&&clean(row[k])!=='')return row[k];
-  }
-  return'';
-}
 function buildHabitatLayers(items,pet){
-  const rows=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean).filter(r=>!rowLooksLikeCareItem(r));
-  const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
+  const rows=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean);
+  const usefulRows=rows.filter(r=>!rowLooksLikeCareItem(r));
+  const keyMap=buildHabitatKeyMap(usefulRows);
   const layers=[];
-  const compositeFields=['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url'];
-  const compositeRow=rows.find(r=>cleanImageUrl(pick(r,compositeFields,'')));
-  if(compositeRow){
-    layers.push(makeHabitatLayer('background',cleanImageUrl(pick(compositeRow,compositeFields,'')),0,0,100,100,1));
-    if(petUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',petUrl,50,72,22,34,80));
-    return layers.filter(Boolean);
-  }
-  const row=rows.find(Boolean)||{};
-  // Only use direct image URL columns from user_habitats_layout/loadout rows. Do not resolve random catalogue keys into unrelated dragon/decor images.
-  const bgUrl=cleanImageUrl(fieldAny(row,[/background.*image.*url/i,/habitat.*background.*url/i,/room.*image.*url/i,/bg.*url/i,/background_url/i,/image_url/i]));
-  if(bgUrl)layers.push(makeHabitatLayer('background',bgUrl,0,0,100,100,1));
-  const baseUrl=cleanImageUrl(fieldAny(row,[/base.*image.*url/i,/floor.*image.*url/i,/ground.*image.*url/i,/base_url/i]));
-  if(baseUrl)layers.push(makeHabitatLayer('base',baseUrl,50,55,100,90,8));
-  const decorFields=[[/decor.*1.*image.*url/i,/decor_1.*url/i],[/decor.*2.*image.*url/i,/decor_2.*url/i],[/decor.*3.*image.*url/i,/decor_3.*url/i],[/special.*image.*url/i,/special.*url/i]];
-  decorFields.forEach((pats,i)=>{const u=cleanImageUrl(fieldAny(row,pats));if(u)layers.push(makeHabitatLayer('decor',u,28+i*16,56,22,28,25+i));});
-  const rowPetUrl=cleanImageUrl(fieldAny(row,[/pet.*image.*url/i,/overlay.*pet.*url/i,/pet_url/i]));
-  if(rowPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',rowPetUrl,50,72,24,36,80));
-  else if(petUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',petUrl,50,72,24,36,80));
-  return layers.filter(Boolean);
-}
 
+  // 1) Wide user_habitats_layout rows: columns like background_key, decor_1, decor_2, pet_image_url, etc.
+  for(const row of usefulRows){
+    addLayerFromField(layers,row,keyMap,['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url'],'background',{x:0,y:0,w:100,h:100,z:1});
+    addLayerFromField(layers,row,keyMap,['background_image_url','background_url','bg_image_url','background_key','bg_key'],'background',{x:0,y:0,w:100,h:100,z:1});
+    addLayerFromField(layers,row,keyMap,['base_image_url','floor_image_url','base_url','base_key'],'base',{x:50,y:82,w:100,h:36,z:5});
+    addLayerFromField(layers,row,keyMap,['decor_1_image_url','decor1_image_url','decor_1_url','decor1_url','decor_1','decor1','decor_key_1'],'decor',{x:28,y:58,w:30,h:34,z:20});
+    addLayerFromField(layers,row,keyMap,['decor_2_image_url','decor2_image_url','decor_2_url','decor2_url','decor_2','decor2','decor_key_2'],'decor',{x:72,y:58,w:30,h:34,z:22});
+    addLayerFromField(layers,row,keyMap,['decor_3_image_url','decor3_image_url','decor_3_url','decor3_url','decor_3','decor3','decor_key_3'],'decor',{x:50,y:42,w:28,h:30,z:24});
+    addLayerFromField(layers,row,keyMap,['special_image_url','special_url','special_key','special'],'decor',{x:50,y:32,w:24,h:26,z:30});
+    addLayerFromField(layers,row,keyMap,['pet_image_url','active_pet_image_url','pet_url'],'petLayer',{x:52,y:67,w:28,h:42,z:80});
+  }
+
+  // 2) Row-per-layer layout, usually from user_habitats_layout or Sheet51.
+  const imageRows=usefulRows.filter(r=>itemImage(r));
+  if(!layers.length){
+    const bg=imageRows.find(r=>/background|room|wall|floor|full|loadout|preview/.test(habitatSlot(r)+' '+String(itemTitle(r)).toLowerCase())) || imageRows[0] || null;
+    if(bg)layers.push(makeHabitatLayer('background',itemImage(bg),0,0,100,100,1));
+  }
+  for(const r of imageRows){
+    const url=itemImage(r);
+    if(!url)continue;
+    const slot=habitatSlot(r);
+    const title=String(itemTitle(r)).toLowerCase();
+    if(/background|room|wall|floor|full|loadout|preview/.test(slot+' '+title))continue;
+    const x=clamp(n(pick(r,['overlay_x','x','x_pos','display_x','layout_x'],'50'),50),0,100);
+    const y=clamp(n(pick(r,['overlay_y','y','y_pos','display_y','layout_y'],'62'),62),0,100);
+    const w=clamp(n(pick(r,['overlay_width','width','w','display_width','size'],'26'),26),6,90);
+    const h=clamp(n(pick(r,['overlay_height','height','h','display_height'],'26'),26),6,90);
+    const z=n(pick(r,['z','z_index','layer','habitat_z_index'],'20'),20);
+    layers.push(makeHabitatLayer(/pet/.test(slot+' '+title)?'petLayer':'decor',url,x,y,w,h,z));
+  }
+
+  // 3) Always show the selected pet if no pet layer already came from the sheet.
+  if(!layers.some(l=>l&&l.cls==='petLayer')){
+    const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
+    if(petUrl)layers.push(makeHabitatLayer('petLayer',petUrl,52,68,28,42,80));
+  }
+  // de-dupe by url/class/position
+  const seen=new Set();
+  return layers.filter(Boolean).filter(l=>{const k=[l.cls,l.url,l.x,l.y,l.w,l.h].join('|');if(seen.has(k))return false;seen.add(k);return true;});
+}
 function habitatLayerHtml(layer){
   if(!layer||!layer.url)return'';
   if(layer.cls==='background') return `<div class="habitatLayer background" style="background-image:url('${esc(layer.url)}');z-index:${esc(layer.z)}"></div>`;
@@ -230,9 +218,8 @@ function renderHabitatPanel(){
   const pet=currentPet()||{};
   const layers=buildHabitatLayers(items,pet);
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg)}<br><small>user_habitats_layout did not return a usable image yet.</small></div>` : '';
-  const label = layers.length ? `<div class="habitatLabel">${esc(pet.name||'Habitat')}</div>` : '';
-  return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}${label}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg)}<br><small>Looking for user_habitats_layout / habitat loadout image.</small></div>` : '';
+  return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
   const url=itemImage(it);
@@ -281,7 +268,7 @@ function wireRenderedControls(){
   document.querySelectorAll('[data-player-index]').forEach(el=>el.addEventListener('click',()=>{state.loginIndex=Number(el.dataset.playerIndex)||0;choosePlayer();}));
   document.querySelectorAll('[data-menu-index]').forEach(el=>el.addEventListener('click',()=>{state.menuIndex=Number(el.dataset.menuIndex)||0;activateMenu();}));
   document.querySelectorAll('[data-game-index]').forEach(el=>el.addEventListener('click',()=>{state.gameIndex=Number(el.dataset.gameIndex)||0;activateGameMenu();}));
-  document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;state.panelActionMsg='';render();}));
+  document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;handleSelect();}));
   const input=$('passInput');
   if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
 }
@@ -501,51 +488,6 @@ function parseGviz(text){
   return rows.filter(r=>Object.values(r).some(v=>clean(v)!==''));
 }
 
-
-function isRealShopRow(row){
-  const titleRaw=String(pick(row,['item_name','shop_name','name','label','title'],'')).trim();
-  const title=norm(titleRaw);
-  if(!title)return false;
-  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
-  // Hide generic/demo/fallback stock. Only real sheet shop rows should appear.
-  if(['caresnack','happytoy','restblanket','smallhealkit','testsnack','testtoyball'].includes(title))return false;
-  if(/care\s*snack|happy\s*toy|rest\s*blanket|small\s*heal|demo item|sample item|fallback|placeholder/.test(s))return false;
-  if(/hook_waaambulance|hook-a-waa|prize pool/.test(s))return false;
-  const enabled=String(pick(row,['shop_enabled','enabled','active','is_active'],'true')).toLowerCase();
-  if(['false','no','0','off','disabled'].includes(enabled))return false;
-  return true;
-}
-function isHookPrizeRow(row){
-  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
-  if(/level_config|how to play|game config|tutorial|booth config/.test(s))return false;
-  const key=String(pick(row,['hook_key','item_id','reward_item_key','key','id'],'')).toLowerCase();
-  const cat=String(pick(row,['category','type'],'')).toLowerCase();
-  const title=String(pick(row,['name','reward_item_name','hook_name','title','item_name'],'')).toLowerCase();
-  const img=cleanImageUrl(pick(row,['image_url','image','url','cloudinary_image_url'],''));
-  return /^hook_waaambulance_\d+/.test(key) || (cat==='hook_waaambulance' && !!img && !!title);
-}
-function normaliseHookRow(row){
-  const r=normaliseStoreRow(row);
-  r.item_id=pick(row,['hook_key','reward_item_key','item_id','item_key','key','id'],r.item_id||'');
-  r.item_name=pick(row,['name','reward_item_name','hook_name','title','item_name'],r.item_name||'Hook prize');
-  r.price=pick(row,['play_cost','cost'],r.price||'');
-  r.category=pick(row,['rarity','collection_name','category'],r.category||'');
-  r.image_url=pick(row,['image_url','image','url','cloudinary_image_url'],r.image_url||'');
-  return r;
-}
-function weightedPrize(pool){
-  const arr=(pool||[]).filter(Boolean);
-  if(!arr.length)return null;
-  const total=arr.reduce((sum,it)=>sum+Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0)),0);
-  if(total<=0)return arr[Math.floor(Math.random()*arr.length)];
-  let roll=Math.random()*total;
-  for(const it of arr){
-    roll-=Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0));
-    if(roll<=0)return it;
-  }
-  return arr[arr.length-1];
-}
-
 async function loadPanelData(kind){
   const userId=state.player?.userId||'';
   const p=currentPet()||{};
@@ -561,32 +503,60 @@ async function loadPanelData(kind){
     return rows.filter(r=>strictUserMatch(r,userId)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
   }
   if(kind==='shop'){
-    rows=await loadRowsFromProxyAndSheets(['view_shop'],['shop','pet_shop','shop_items','habitat_shop'],userId,p);
-    const shop=rows.filter(r=>isRealShopRow(r)&&shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
-    return shop;
+    rows=await loadRowsFromProxyAndSheets(['view_shop','care_item_menu','shop'],['shop','pet_shop','shop_items','items','pet_items','care_items','food_items','toy_items','habitat_shop'],userId,p);
+    const shop=rows.filter(r=>shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    return shop.length ? shop : fallbackShopItems(p);
   }
   if(kind==='habitat'){
-    rows=await loadRowsFromProxyAndSheets(['view_habitat'],['user_habitats_layout','user_habitat_loadout','user_habitat_layouts'],userId,p);
+    rows=await loadRowsFromProxyAndSheets(['view_habitat','habitat'],['user_habitats_layout','user_habitats_layouts','user_habitat_loadout','user_habitat_layouts','user_habitat_inventory','habitat_layouts','habitat_shop','Sheet51'],userId,p);
     const userRows=rows.filter(r=>strictUserMatch(r,userId));
     const petRows=userRows.filter(r=>matchPet(r,p));
-    const chosen=(petRows.length?petRows:userRows);
+    const catalogRows=rows.filter(r=>!hasOtherUser(r,userId));
+    const chosen=[...(petRows.length?petRows:userRows),...catalogRows];
     const base=dedupeRows(chosen).map(normaliseHabitatRow).filter(x=>!rowLooksLikeCareItem(x.raw||x) && (itemTitle(x)!=='Item' || itemImage(x) || habitatKey(x.raw||x)));
     base.sort((a,b)=>(itemImage(b)?1:0)-(itemImage(a)?1:0));
     return base.length?base:[{item_name:'No habitat loadout image found yet',item_type:'habitat'}];
   }
   if(kind==='hook'){
-    rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
-    const prizes=rows.filter(isHookPrizeRow).map(normaliseHookRow).filter(x=>itemTitle(x)!=='Item' && (itemImage(x)||x.item_id));
-    return prizes;
+    rows=await loadRowsFromProxyAndSheets(['view_hook_prizes','get_hook_waaambulance'],['hook_waaambulance','hook_waaambulance_prizes'],userId,p);
+    const prizes=rows.map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    return prizes.length?prizes:[{item_id:'hook_ticket',item_name:'Hook-a-Waaambulance ticket',price:15,rarity:'common'},{item_id:'hook_seed_mix',item_name:'Bird seed prize',price:15,rarity:'common'},{item_id:'hook_siren_toy',item_name:'Siren toy prize',price:15,rarity:'rare'}];
   }
   return [];
 }
-function fallbackShopItems(p){ return []; }
+function fallbackShopItems(p){
+  const species=String(p.pet||p.species||p.code||'pet').toLowerCase();
+  const cat=String(p.category||'').toLowerCase();
+  const base=[
+    {item_id:'care_snack',item_name:'Care snack',price:10,item_type:'food'},
+    {item_id:'happy_toy',item_name:'Happy toy',price:18,item_type:'toy'},
+    {item_id:'rest_blanket',item_name:'Rest blanket',price:22,item_type:'comfort'},
+    {item_id:'small_heal',item_name:'Small heal kit',price:25,item_type:'medicine'}
+  ];
+  if(cat.includes('bird')||species.includes('raven')||species.includes('owl')) base.unshift(
+    {item_id:'bird_seed_mix',item_name:'Bird seed mix',price:10,item_type:'food'},
+    {item_id:'shiny_trinket',item_name:'Shiny trinket',price:16,item_type:'toy'},
+    {item_id:'perch_upgrade',item_name:'Perch upgrade',price:40,item_type:'habitat'}
+  );
+  else if(cat.includes('reptile')||species.includes('chameleon')||species.includes('snake')||species.includes('gecko')) base.unshift(
+    {item_id:'cricket_box',item_name:'Cricket box',price:12,item_type:'food'},
+    {item_id:'heat_lamp',item_name:'Heat lamp',price:35,item_type:'habitat'}
+  );
+  else if(cat.includes('aquatic')||species.includes('axolotl')||species.includes('fish')) base.unshift(
+    {item_id:'axolotl_pellets',item_name:'Axolotl pellets',price:12,item_type:'food'},
+    {item_id:'kelp_hideout',item_name:'Kelp hideout',price:35,item_type:'habitat'}
+  );
+  else if(cat.includes('mythical')||species.includes('dragon')||species.includes('unicorn')) base.unshift(
+    {item_id:'magic_snack',item_name:'Magic snack',price:15,item_type:'food'},
+    {item_id:'sparkle_toy',item_name:'Sparkle toy',price:28,item_type:'toy'}
+  );
+  return dedupeRows(base);
+}
 async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   const all=[];
   for(const mode of modes){
     try{
-      const q=new URLSearchParams({mode,user_id:String(userId||''),pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage11'});
+      const q=new URLSearchParams({mode,user_id:String(userId||''),pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage9'});
       const data=await fetchJson('/api/petbot?'+q.toString(),12000);
       all.push(...findArray(data,['inventory','shop','items','rows','data','results','prizes','catalogue','catalog']));
     }catch(e){log('panel proxy '+mode+' failed',e.message||e);}
@@ -619,8 +589,6 @@ function handlePrev(){
   if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
-  if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+state.pets.length-1)%state.pets.length;render();return;}
-  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.max(1,(Number(state.shopQty)||1)-1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+state.panelItems.length-1)%state.panelItems.length;render();return;}
   if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'moveLeft'});return;}
 }
@@ -629,8 +597,6 @@ function handleNext(){
   if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
-  if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+1)%state.pets.length;render();return;}
-  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.min(99,(Number(state.shopQty)||1)+1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+1)%state.panelItems.length;render();return;}
   if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'moveRight'});return;}
 }
@@ -649,7 +615,7 @@ function activateMenu(){
   const item=MENU[state.menuIndex]||MENU[0];
   if(item.key==='pets'){state.screen='pet';render();return;}
   if(item.key==='games'){state.screen='games';state.gameIndex=0;render();return;}
-  if(item.key==='shop'){openShopPanel();return;}
+  if(item.key==='shop'){openDataPanel('shop');return;}
   if(item.key==='inventory'){openDataPanel('inventory');return;}
   if(item.key==='habitat'){openDataPanel('habitat');return;}
   if(item.key==='hook'){openDataPanel('hook');return;}
@@ -681,41 +647,11 @@ function activateGameMenu(){
   }
   state.screen='menu';render();
 }
-
-function openShopPanel(){
-  state.screen='shop';
-  state.panelKind='shop';
-  state.shopStep='pet';
-  state.shopPetIndex=state.petIndex||0;
-  state.shopQty=1;
-  state.shopSelected=null;
-  state.panelItems=[];
-  state.panelIndex=0;
-  state.panelLoading=false;
-  state.panelActionMsg='';
-  state.panelMessage='Choose animal first';
-  render();
-}
-function loadShopItemsForTarget(){
-  state.shopStep='items';
-  state.petIndex=clamp(state.shopPetIndex||0,0,Math.max(0,state.pets.length-1));
-  state.panelLoading=true;
-  state.panelItems=[];
-  state.panelIndex=0;
-  state.panelActionMsg='';
-  state.panelMessage='Loading shop...';
-  render();
-  loadPanelData('shop').then(items=>{
-    if(state.panelKind!=='shop')return;
-    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' shop item'+(items.length===1?'':'s')):'No shop items found for this pet yet.';render();
-  }).catch(err=>{if(state.panelKind!=='shop')return;state.panelItems=[];state.panelLoading=false;state.panelMessage='Shop failed to load: '+(err.message||String(err));render();});
-}
-
 function openDataPanel(kind){
   state.screen=kind;state.panelKind=kind;state.panelLoading=true;state.panelItems=[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage='Loading '+kind+'...';if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}render();
   loadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
-    state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');render();
+    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');render();
   }).catch(err=>{
     if(state.panelKind!==kind)return;
     state.panelItems=[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
@@ -723,14 +659,9 @@ function openDataPanel(kind){
 }
 async function activatePanelItem(){
   const kind=state.panelKind;
-  if(kind==='shop'&&state.shopStep==='pet')return loadShopItemsForTarget();
   const item=(state.panelItems||[])[state.panelIndex||0];
   if(!item){state.panelActionMsg='Nothing selected';render();return;}
-  if(kind==='shop'){
-    if(state.shopStep==='pet')return loadShopItemsForTarget();
-    if(state.shopStep==='items'){state.shopSelected=item;state.shopQty=1;state.shopStep='qty';render();return;}
-    if(state.shopStep==='qty')return buySelectedItem(state.shopSelected||item);
-  }
+  if(kind==='shop') return buySelectedItem(item);
   if(kind==='inventory') return useSelectedItem(item);
   if(kind==='hook') return playHook(item);
   if(kind==='habitat'){state.panelActionMsg='Viewing '+itemTitle(item);render();return;}
@@ -742,13 +673,10 @@ async function postPetbotAction(payload){
   return data;
 }
 async function buySelectedItem(item){
-  const target=state.pets[state.shopPetIndex]||currentPet()||{};
-  const qty=Math.max(1,Math.min(99,Number(state.shopQty)||1));
-  state.panelActionMsg='Buying x'+qty+' '+itemTitle(item)+'...';render();
+  state.panelActionMsg='Buying '+itemTitle(item)+'...';render();
   try{
-    const data=await postPetbotAction({mode:'buy_item',user_id:state.player?.userId||'',pet_code:target.code||currentPet()?.code||'',target_pet_code:target.code||'',target_pet_name:target.name||'',item_id:item.item_id||'',item_name:itemTitle(item),quantity:qty,amount:qty,price:item.price||pick(item.raw||{},['price','shop_price','cost'],'')});
-    state.panelActionMsg=data.message||('Bought x'+qty+' '+itemTitle(item));
-    state.shopStep='items';
+    const data=await postPetbotAction({mode:'buy_item',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',item_id:item.item_id||'',item_name:itemTitle(item),price:item.price||pick(item.raw||{},['price','shop_price','cost'],'')});
+    state.panelActionMsg=data.message||('Bought '+itemTitle(item));
     await openPanelReload('shop');
   }catch(e){state.panelActionMsg='Buy not enabled yet: '+(e.message||e);render();}
 }
@@ -762,11 +690,11 @@ async function useSelectedItem(item){
 }
 async function playHook(item){
   const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
-  const prize=weightedPrize(pool) || item || {item_name:'Mystery Waaambulance prize',price:15};
+  const prize=pool[Math.floor(Math.random()*Math.max(1,pool.length))] || item || {item_name:'Mystery Waaambulance prize',price:15};
   state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
   await new Promise(r=>setTimeout(r,520));
   try{
-    const data=await postPetbotAction({mode:'play_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});
+    const data=await postPetbotAction({mode:'play_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize)});
     state.panelActionMsg=data.message||data.prize_name||('You hooked '+itemTitle(prize));
   }catch(e){
     state.panelActionMsg='You hooked '+itemTitle(prize)+' · saving is not enabled yet';
@@ -775,7 +703,7 @@ async function playHook(item){
 }
 async function openPanelReload(kind){
   state.panelKind=kind;state.panelLoading=true;render();
-  const items=await loadPanelData(kind);state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelIndex=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));render();
+  const items=await loadPanelData(kind);state.panelItems=items;state.panelLoading=false;state.panelIndex=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));render();
 }
 function questJump(){
   if(state.screen!=='questGame')return;
@@ -786,8 +714,6 @@ function handleBack(){
   if(state.screen==='login'){sendParent('waa-petbot-close');return;}
   if(state.screen==='pet'){state.screen='menu';render();return;}
   if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
-  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopStep='items';render();return;}
-  if(state.screen==='shop'&&state.shopStep==='items'){state.shopStep='pet';state.panelItems=[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage='Choose animal first';render();return;}
   if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'stopEmbedded'});state.screen='games';render();return;}
   if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
   state.screen='menu';render();
@@ -797,19 +723,9 @@ function notifyParent(){
   const p=currentPet(); if(!p)return;
   sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:p.url||'',image_url:p.url||'',level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
 }
-$('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
-$('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
+$('btnPrev').addEventListener('click',e=>{e.preventDefault();handlePrev();});
+$('btnNext').addEventListener('click',e=>{e.preventDefault();handleNext();});
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
-function bindQuestHoldButton(id,startAction){
-  const btn=$(id); if(!btn)return;
-  const stop=e=>{ if(state.screen==='questGame'){ try{e.preventDefault();}catch(_e){} sendParent('waa-petbot-game-action',{action:'moveStop'}); } };
-  btn.addEventListener('pointerdown',e=>{ if(state.screen==='questGame'){ e.preventDefault(); try{btn.setPointerCapture(e.pointerId);}catch(_e){} sendParent('waa-petbot-game-action',{action:startAction}); } });
-  btn.addEventListener('pointerup',stop);
-  btn.addEventListener('pointercancel',stop);
-  btn.addEventListener('pointerleave',stop);
-}
-bindQuestHoldButton('btnPrev','moveLeftStart');
-bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
 $('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame') sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); else sendParent('waa-petbot-toggle-fullscreen');});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});

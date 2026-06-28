@@ -3,7 +3,8 @@ const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzwZgX5P6tj9_De
 const ALLOWED_READ_MODES = new Set([
   'pet_profile_compact','view_pets','view_inventory','view_shop','view_pet_coins','care_item_menu',
   'view_hook_prizes','view_hook_collection','get_hook_waaambulance','quest_stats','profile','inventory',
-  'traits','skills','effects','coins','habitat','view_habitat','quests','miniQuestLogs','shop','careMenu','hookCollection'
+  'traits','skills','effects','coins','habitat','view_habitat','view_habitat_layout','view_user_habitats_layout','view_user_habitat_layouts',
+  'view_quests','view_mini_quests','mini_quests','quests','miniQuestLogs','shop','careMenu','hookCollection'
 ]);
 
 const ALLOWED_WRITE_MODES = new Set([
