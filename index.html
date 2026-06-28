@@ -817,14 +817,14 @@ body.editMode .targetPick{min-height:42px}
 /* TAMAGOTCHI DOCK FINAL POSITION + MINI SCREEN
    Background stays transparent, but the toy screen is filled so it does not look hollow. */
 #petbotDock:not(.fullscreen){
-  top:calc(env(safe-area-inset-top) + 178px)!important;
-  right:calc(env(safe-area-inset-right) + 26px)!important;
-  width:150px!important;
-  height:200px!important;
-  min-width:150px!important;
-  min-height:200px!important;
-  max-width:150px!important;
-  max-height:200px!important;
+  top:calc(env(safe-area-inset-top) + 260px)!important;
+  right:calc(env(safe-area-inset-right) + 32px)!important;
+  width:170px!important;
+  height:226px!important;
+  min-width:170px!important;
+  min-height:226px!important;
+  max-width:170px!important;
+  max-height:226px!important;
   z-index:115!important;
   background:transparent!important;
   overflow:visible!important;
@@ -881,19 +881,31 @@ body.editMode .targetPick{min-height:42px}
 #petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniPet{
   position:relative;
   z-index:1;
+  width:58%;
+  height:58%;
+  display:grid;
+  place-items:center;
+  transform:translateY(8px);
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniPet img{
+  max-width:100%;
+  max-height:100%;
+  object-fit:contain;
+  display:block;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniPet span{
   font-size:18px;
   line-height:1;
-  transform:translateY(5px);
 }
 #petbotDock:not(.fullscreen) .petbotDockBar,
 #petbotDock:not(.fullscreen) .petbotDockHint{
   display:none!important;
 }
 @media(max-width:900px){
-  #petbotDock:not(.fullscreen){top:150px!important;right:16px!important;width:120px!important;height:160px!important;min-width:120px!important;min-height:160px!important;}
+  #petbotDock:not(.fullscreen){top:210px!important;right:18px!important;width:132px!important;height:176px!important;min-width:132px!important;min-height:176px!important;}
 }
 @media(max-width:520px){
-  #petbotDock:not(.fullscreen){top:120px!important;right:10px!important;width:92px!important;height:124px!important;min-width:92px!important;min-height:124px!important;}
+  #petbotDock:not(.fullscreen){top:150px!important;right:10px!important;width:98px!important;height:132px!important;min-width:98px!important;min-height:132px!important;}
 }
 
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
@@ -941,8 +953,8 @@ body.editMode .targetPick{min-height:42px}
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
-    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle">PetBot</div><div class="miniPet">♡</div></div><img src="/petbot_device.png?v=20260628-dock-screen-02" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=17"></iframe>
+    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div></div><img src="/petbot_device.png?v=20260628-dock-screen-03" alt=""></div>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=20"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2726,6 +2738,19 @@ function setPetLoading(on,msg){
   $('tamaScreen')?.classList.toggle('loading',!!on);
   if(msg) $('petStatus').textContent=msg;
 }
+
+function updateMiniTamagotchiDock(){
+  const title=document.getElementById('dockMiniTitle');
+  const pet=document.getElementById('dockMiniPet');
+  if(!title || !pet) return;
+  const name=(currentPet && currentPet.name) ? currentPet.name : 'PetBot';
+  title.textContent=name.length>10 ? name.slice(0,9)+'…' : name;
+  if(currentPetImage){
+    pet.innerHTML='<img src="'+currentPetImage+'" alt="">';
+  } else {
+    pet.innerHTML='<span>♡</span>';
+  }
+}
 // EDIT SECTION 24: PETBOT LIVE LOADING - gets owned pets from the safe read-only API
 async function loadPetbotPets(force=false){
   const userId=getPetUserId();
@@ -2754,8 +2779,8 @@ async function loadPetbotPets(force=false){
 }
 async function selectPet(){
   const i=+$('petSelect').value||0,p=(window.loadedPets||[])[i],userId=getPetUserId();
-  if(!p){$('petPreview').classList.add('empty');$('petPreview').textContent='No pet loaded yet';$('petTitle').textContent='No pet loaded';$('petSub').textContent='Choose a pet or press Reload live.';return}
-  currentPet=p;currentPetImage='';
+  if(!p){$('petPreview').classList.add('empty');$('petPreview').textContent='No pet loaded yet';$('petTitle').textContent='No pet loaded';$('petSub').textContent='Choose a pet or press Reload live.';updateMiniTamagotchiDock();return}
+  currentPet=p;currentPetImage='';updateMiniTamagotchiDock();
   $('petTitle').textContent=p.name||'Unnamed pet';
   $('petSub').textContent=(p.pet||'pet')+(p.code?' • code '+p.code:'')+(p.level?' • level '+p.level:'');
   $('petCodeBadge').textContent='code '+(p.code||'—');$('petLevelBadge').textContent='level '+(p.level||'—');setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);
@@ -2771,6 +2796,7 @@ async function selectPet(){
         await testImageUrl(candidate,9000);
         currentPetImage=candidate;
         currentPetMeta=d||{};
+        updateMiniTamagotchiDock();
         const suggestedW=Number(d.player_width||d.width||d.overlay_width||d.scale_width||0);
         const scale=Number(d.scale||0);
         petPlayerW=Math.max(45,Math.min(240,suggestedW || (scale>0&&scale<3?Math.round(130*scale):115)));
@@ -2784,16 +2810,19 @@ async function selectPet(){
         setPetLoading(false,p.name+' loaded with Sheet 51 image.');
       }catch(imgErr){
         currentPetImage='';
+        updateMiniTamagotchiDock();
         $('petPreview').classList.add('empty');$('petPreview').innerHTML='<span>Image link found but did not load</span>';
         $('petImageBadge').textContent='Bad image link';$('petImageBadge').className='petBadge';
         setPetLoading(false,'Sheet 51 matched a row, but the image URL did not load. Check that the Cloudinary public ID/image_url is a real delivery URL. URL: '+candidate);
       }
     } else {
+      updateMiniTamagotchiDock();
       $('petPreview').classList.add('empty');$('petPreview').textContent='No Sheet 51 image found for '+p.name;
       $('petImageBadge').textContent='No Sheet 51 image';$('petImageBadge').className='petBadge';
       setPetLoading(false,'Pet loaded, but Sheet 51 did not find an image match for '+p.name+'. Reason: '+(d.reason||'no match'));
     }
   }catch(e){
+    updateMiniTamagotchiDock();
     $('petPreview').classList.add('empty');$('petPreview').innerHTML='<span>Sheet 51 error</span>';
     $('petImageBadge').textContent='Sheet 51 error';$('petImageBadge').className='petBadge';
     setPetLoading(false,'Sheet 51 lookup failed: '+(e.name==='AbortError'?'request timed out':e.message));
@@ -3041,7 +3070,12 @@ fitGameToScreen();
   function pauseForPetbot(){
     try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
   }
+  function refreshMiniPet(){
+    try{ if(typeof updateMiniTamagotchiDock === 'function') updateMiniTamagotchiDock(); }catch(e){}
+    try{ if(typeof loadPetbotPets === 'function' && !(window.loadedPets||[]).length) loadPetbotPets(false); }catch(e){}
+  }
   window.openPetbotFull = function(){
+    refreshMiniPet();
     dock.classList.remove('hidden');
     dock.classList.add('fullscreen');
     expandBtn.textContent = 'Small';
@@ -3070,6 +3104,7 @@ fitGameToScreen();
     if(e.target.closest('.petbotDockBtn')) return;
     if(!dock.classList.contains('fullscreen')) window.openPetbotFull();
   });
+  refreshMiniPet();
   if(openBtn){
     openBtn.addEventListener('click', function(e){
       e.preventDefault(); e.stopPropagation();
