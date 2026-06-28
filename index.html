@@ -661,23 +661,21 @@ body.editMode .targetPick{min-height:42px}
 
 
 /* PETBOT TAMAGOTCHI DOCK + FULL SCREEN
-   The PetBot stays as petbot_test.html, but index.html shows it as a small
-   docked Tamagotchi in the top-right. Click it or press expand for full screen. */
+   Small mode is now only the toy PNG on top of the game: no iframe background.
+   Full screen mode loads /petbot_test.html for the working app. */
 .petbotDock{
   position:fixed;
   z-index:92;
-  right:calc(env(safe-area-inset-right) + 16px);
-  top:calc(env(safe-area-inset-top) + 88px);
-  width:min(250px,24vw);
-  height:min(335px,32vw);
-  min-width:150px;
-  min-height:205px;
-  border-radius:24px;
-  overflow:hidden;
-  background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%);
-  box-shadow:0 18px 40px rgba(0,0,0,.28),0 0 0 3px rgba(255,255,255,.55);
-  border:2px solid rgba(255,255,255,.72);
+  right:calc(env(safe-area-inset-right) + 18px);
+  top:calc(env(safe-area-inset-top) + 86px);
+  width:clamp(120px,10vw,170px);
+  height:clamp(150px,13vw,220px);
+  overflow:visible;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
   transition:all .18s ease;
+  cursor:pointer;
 }
 .petbotDock.hidden{display:none;}
 .petbotDock.fullscreen{
@@ -688,8 +686,22 @@ body.editMode .targetPick{min-height:42px}
   min-height:0!important;
   border-radius:0!important;
   z-index:9999!important;
-  border:0!important;
-  box-shadow:none!important;
+  background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 42%,#def5ff 100%)!important;
+  cursor:auto;
+}
+.petbotDockPreview{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  pointer-events:none;
+  filter:drop-shadow(0 12px 18px rgba(0,0,0,.28)) drop-shadow(0 0 12px rgba(118,199,216,.45));
+}
+.petbotDockPreview img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
 }
 .petbotDockFrame{
   position:absolute;
@@ -698,27 +710,31 @@ body.editMode .targetPick{min-height:42px}
   height:100%;
   border:0;
   background:transparent;
+  display:none;
 }
+.petbotDock.fullscreen .petbotDockFrame{display:block;}
+.petbotDock.fullscreen .petbotDockPreview{display:none;}
 .petbotDockBar{
   position:absolute;
   z-index:2;
   left:8px;
   right:8px;
   top:8px;
-  display:flex;
+  display:none;
   justify-content:flex-end;
   gap:6px;
   pointer-events:none;
 }
+.petbotDock.fullscreen .petbotDockBar{display:flex;}
 .petbotDockBtn{
   pointer-events:auto;
   border:0;
   border-radius:999px;
-  padding:7px 9px;
-  font-size:12px;
+  padding:10px 13px;
+  font-size:15px;
   font-weight:900;
   color:#21142d;
-  background:rgba(255,255,255,.88);
+  background:rgba(255,255,255,.90);
   box-shadow:0 6px 16px rgba(0,0,0,.18);
 }
 .petbotDockBtn.main{background:linear-gradient(180deg,#fff,#f8edf6)}
@@ -726,33 +742,27 @@ body.editMode .targetPick{min-height:42px}
   position:absolute;
   z-index:2;
   left:50%;
-  bottom:8px;
+  bottom:-10px;
   transform:translateX(-50%);
   pointer-events:none;
   border-radius:999px;
-  padding:5px 9px;
-  font-size:11px;
+  padding:4px 8px;
+  font-size:10px;
   font-weight:900;
   color:#21142d;
-  background:rgba(255,255,255,.80);
+  background:rgba(255,255,255,.86);
   box-shadow:0 4px 12px rgba(0,0,0,.12);
+  white-space:nowrap;
 }
 .petbotDock.fullscreen .petbotDockHint{display:none;}
-.petbotDock.fullscreen .petbotDockBtn{font-size:15px;padding:10px 13px;}
 @media(max-width:900px){
-  .petbotDock{
-    width:148px;
-    height:198px;
-    right:10px;
-    top:82px;
-    border-radius:18px;
-  }
-  .petbotDockHint{display:none;}
+  .petbotDock{width:128px;height:168px;right:10px;top:80px;}
 }
 @media(max-width:520px){
-  .petbotDock{width:118px;height:158px;top:76px;right:8px;}
-  .petbotDockBtn{font-size:11px;padding:6px 8px;}
+  .petbotDock{width:96px;height:130px;top:74px;right:7px;}
+  .petbotDockHint{display:none;}
 }
+
 
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
@@ -762,7 +772,7 @@ body.editMode .targetPick{min-height:42px}
 <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
 <div id="game">
   <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div id="buildingObjects"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
-  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Tamagotchi</button><button class="pill purple" id="petbotAppBtn">PetBot</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
+  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Tamagotchi</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
   <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p><b>Move:</b> A/D or arrow keys. <b>Jump:</b> Space, W or ↑. <b>Enter:</b> stand near a glowing building and press Enter. Menu opens Solo/Team, Tamagotchi and Admin Builder.</p></aside>
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
@@ -799,12 +809,13 @@ body.editMode .targetPick{min-height:42px}
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
+    <div class="petbotDockPreview" aria-hidden="true"><img src="/petbot_device.png?v=20260628-dock-plain" alt=""></div>
     <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=15"></iframe>
     <div class="petbotDockBar">
-      <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Full</button>
+      <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
     </div>
-    <div class="petbotDockHint">click to open</div>
+    <div class="petbotDockHint">Tamagotchi</div>
   </div>
 
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
@@ -2893,7 +2904,7 @@ fitGameToScreen();
   const frame = byId('petbotDockFrame');
   const expandBtn = byId('petbotExpandBtn');
   const hideBtn = byId('petbotHideBtn');
-  const openBtn = byId('petbotAppBtn');
+  const openBtn = byId('petBtn');
   if(!dock || !frame || !expandBtn || !hideBtn) return;
 
   function pauseForPetbot(){
