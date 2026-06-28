@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 12</title>
+<title>CTW PetBot Tamagotchi - Stage 13</title>
 <style>
 :root{
   --ink:#16223f;
@@ -413,12 +413,16 @@ function makeHabitatLayer(cls,url,x=50,y=50,w=30,h=30,z=20){
   return {cls:cls||'decor',url,x,y,w,h,z};
 }
 function buildHabitatKeyMap(rows){
+  // Exact-key map only. Do not match by loose names, because that was causing random dragon/decor art.
   const map=new Map();
   for(const r of rows||[]){
     if(!r||rowLooksLikeCareItem(r))continue;
     const url=itemImage(r);
     if(!url)continue;
-    const keys=[habitatKey(r),pick(r,['item_id','item_key','key','id','habitat_key','background_key','base_key','decor_key','special_key','name','item_name','habitat_name'],'')].map(clean).filter(Boolean);
+    const keys=[
+      pick(r,['habitat_key','item_id','item_key','key','id','background_key','base_key','decor_key','special_key','loadout_key','asset_key'],''),
+      pick(r,['cloudinary_public_id','public_id'],'')
+    ].map(clean).filter(Boolean);
     for(const k of keys)map.set(norm(k),r);
   }
   return map;
@@ -447,28 +451,81 @@ function fieldAny(row, patterns){
   }
   return'';
 }
+function layoutRowsFromHabitatItems(items){
+  const raw=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean);
+  const special=raw.find(r=>r&&r.__habitatRender);
+  if(special){return {layoutRows:special.layoutRows||[], catalogRows:special.catalogRows||[]};}
+  return {layoutRows:raw, catalogRows:[]};
+}
+function findBestHabitatLayoutRow(layoutRows,pet,userId){
+  const rows=(layoutRows||[]).filter(r=>r&&!rowLooksLikeCareItem(r));
+  if(!rows.length)return null;
+  const userRows=rows.filter(r=>strictUserMatch(r,userId));
+  const pool=userRows.length?userRows:rows;
+  const petRows=pool.filter(r=>matchPet(r,pet));
+  if(petRows.length)return petRows[0];
+  // Prefer rows that look like actual loadout/layout rows, not inventory item rows.
+  const loadout=pool.find(r=>fieldAny(r,[/background/i,/base/i,/decor/i,/special/i,/loadout/i,/room/i,/render/i,/composite/i]));
+  return loadout||pool[0];
+}
+function firstFieldValue(row,fieldSets){
+  for(const fields of fieldSets){
+    const v=pick(row,fields,'');
+    if(clean(v)!=='')return v;
+  }
+  return '';
+}
 function buildHabitatLayers(items,pet){
-  const rows=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean).filter(r=>!rowLooksLikeCareItem(r));
+  const {layoutRows,catalogRows}=layoutRowsFromHabitatItems(items);
+  const userId=state.player?.userId||'';
+  const layout=findBestHabitatLayoutRow(layoutRows,pet,userId)||{};
+  const keyMap=buildHabitatKeyMap([...(catalogRows||[]),...(layoutRows||[])]);
   const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
   const layers=[];
-  const compositeFields=['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url'];
-  const compositeRow=rows.find(r=>cleanImageUrl(pick(r,compositeFields,'')));
-  if(compositeRow){
-    layers.push(makeHabitatLayer('background',cleanImageUrl(pick(compositeRow,compositeFields,'')),0,0,100,100,1));
-    if(petUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',petUrl,50,72,22,34,80));
+
+  const compositeFields=['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url','final_image_url','canvas_image_url'];
+  const compositeUrl=cleanImageUrl(pick(layout,compositeFields,''));
+  if(compositeUrl){
+    layers.push(makeHabitatLayer('background',compositeUrl,0,0,100,100,1));
     return layers.filter(Boolean);
   }
-  const row=rows.find(Boolean)||{};
-  // Only use direct image URL columns from user_habitats_layout/loadout rows. Do not resolve random catalogue keys into unrelated dragon/decor images.
-  const bgUrl=cleanImageUrl(fieldAny(row,[/background.*image.*url/i,/habitat.*background.*url/i,/room.*image.*url/i,/bg.*url/i,/background_url/i,/image_url/i]));
-  if(bgUrl)layers.push(makeHabitatLayer('background',bgUrl,0,0,100,100,1));
-  const baseUrl=cleanImageUrl(fieldAny(row,[/base.*image.*url/i,/floor.*image.*url/i,/ground.*image.*url/i,/base_url/i]));
-  if(baseUrl)layers.push(makeHabitatLayer('base',baseUrl,50,55,100,90,8));
-  const decorFields=[[/decor.*1.*image.*url/i,/decor_1.*url/i],[/decor.*2.*image.*url/i,/decor_2.*url/i],[/decor.*3.*image.*url/i,/decor_3.*url/i],[/special.*image.*url/i,/special.*url/i]];
-  decorFields.forEach((pats,i)=>{const u=cleanImageUrl(fieldAny(row,pats));if(u)layers.push(makeHabitatLayer('decor',u,28+i*16,56,22,28,25+i));});
-  const rowPetUrl=cleanImageUrl(fieldAny(row,[/pet.*image.*url/i,/overlay.*pet.*url/i,/pet_url/i]));
-  if(rowPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',rowPetUrl,50,72,24,36,80));
-  else if(petUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',petUrl,50,72,24,36,80));
+
+  function layerFromValue(cls,value,x,y,w,h,z){
+    const url=resolveHabitatImage(value,keyMap);
+    if(!url)return false;
+    layers.push(makeHabitatLayer(cls,url,x,y,w,h,z));
+    return true;
+  }
+
+  const bgVal=firstFieldValue(layout,[
+    ['background_image_url','habitat_background_url','room_image_url','background_url','bg_url','image_url'],
+    ['background_key','bg_key','background','habitat_background','room_background','room_key']
+  ]);
+  layerFromValue('background',bgVal,0,0,100,100,1);
+
+  const baseVal=firstFieldValue(layout,[
+    ['base_image_url','floor_image_url','ground_image_url','base_url'],
+    ['base_key','floor_key','ground_key','base','floor','ground']
+  ]);
+  layerFromValue('base',baseVal,50,62,100,78,8);
+
+  const decorSets=[
+    [['decor_1_image_url','decor1_image_url','decor_1_url'],['decor_1_key','decor1_key','decor_1','decor1','decor_key_1']],
+    [['decor_2_image_url','decor2_image_url','decor_2_url'],['decor_2_key','decor2_key','decor_2','decor2','decor_key_2']],
+    [['decor_3_image_url','decor3_image_url','decor_3_url'],['decor_3_key','decor3_key','decor_3','decor3','decor_key_3']],
+    [['special_image_url','special_url'],['special_key','special','special_item_key']]
+  ];
+  decorSets.forEach((sets,i)=>{
+    const v=firstFieldValue(layout,sets);
+    if(v)layerFromValue('decor',v,28+i*15,55,24,32,25+i);
+  });
+
+  const hasRoomLayer=layers.some(l=>l.cls==='background'||l.cls==='base'||l.cls==='decor');
+  const rowPetUrl=cleanImageUrl(fieldAny(layout,[/pet.*image.*url/i,/overlay.*pet.*url/i,/pet_url/i]));
+  if(hasRoomLayer){
+    const finalPetUrl=rowPetUrl||petUrl;
+    if(finalPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',finalPetUrl,50,72,22,32,80));
+  }
   return layers.filter(Boolean);
 }
 
@@ -482,7 +539,7 @@ function renderHabitatPanel(){
   const pet=currentPet()||{};
   const layers=buildHabitatLayers(items,pet);
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg)}<br><small>user_habitats_layout did not return a usable image yet.</small></div>` : '';
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'No habitat image found')}<br><small>Need a background/loadout image or valid background_key in user_habitats_layout.</small></div>` : '';
   const label = layers.length ? `<div class="habitatLabel">${esc(pet.name||'Habitat')}</div>` : '';
   return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}${label}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
 }
@@ -818,13 +875,22 @@ async function loadPanelData(kind){
     return shop;
   }
   if(kind==='habitat'){
-    rows=await loadRowsFromProxyAndSheets(['view_habitat'],['user_habitats_layout','user_habitat_loadout','user_habitat_layouts'],userId,p);
-    const userRows=rows.filter(r=>strictUserMatch(r,userId));
+    const layoutRows=await loadRowsFromProxyAndSheets(
+      ['view_habitat','view_habitat_layout','view_user_habitats_layout','view_user_habitat_layouts','habitat'],
+      ['user_habitats_layout','user_habitat_layouts','user_habitat_loadout','user_habitat_inventory'],userId,p
+    );
+    const userRows=layoutRows.filter(r=>strictUserMatch(r,userId));
     const petRows=userRows.filter(r=>matchPet(r,p));
     const chosen=(petRows.length?petRows:userRows);
-    const base=dedupeRows(chosen).map(normaliseHabitatRow).filter(x=>!rowLooksLikeCareItem(x.raw||x) && (itemTitle(x)!=='Item' || itemImage(x) || habitatKey(x.raw||x)));
-    base.sort((a,b)=>(itemImage(b)?1:0)-(itemImage(a)?1:0));
-    return base.length?base:[{item_name:'No habitat loadout image found yet',item_type:'habitat'}];
+    let catalogRows=[];
+    const catalogTabs=['habitat_shop','habitats','habitat_assets','Sheet51'];
+    const catalogResults=await Promise.allSettled(catalogTabs.map(tab=>fetchSheetRows(tab)));
+    catalogResults.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))catalogRows.push(...r.value);});
+    catalogRows=dedupeRows(catalogRows).filter(r=>!rowLooksLikeCareItem(r)&&itemImage(r));
+    if(chosen.length){
+      return [{item_name:'Habitat loadout',item_type:'habitat_render',raw:{__habitatRender:true,layoutRows:chosen,catalogRows}}];
+    }
+    return [{item_name:'No habitat loadout found',item_type:'habitat_missing',raw:{__habitatRender:true,layoutRows:[],catalogRows}}];
   }
   if(kind==='hook'){
     rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
@@ -1054,11 +1120,23 @@ $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
-  const stop=e=>{ if(state.screen==='questGame'){ try{e.preventDefault();}catch(_e){} sendParent('waa-petbot-game-action',{action:'moveStop'}); } };
-  btn.addEventListener('pointerdown',e=>{ if(state.screen==='questGame'){ e.preventDefault(); try{btn.setPointerCapture(e.pointerId);}catch(_e){} sendParent('waa-petbot-game-action',{action:startAction}); } });
+  let repeatTimer=null;
+  const stop=e=>{
+    if(repeatTimer){clearInterval(repeatTimer);repeatTimer=null;}
+    if(state.screen==='questGame'){ try{e&&e.preventDefault();}catch(_e){} sendParent('waa-petbot-game-action',{action:'moveStop'}); }
+  };
+  btn.addEventListener('pointerdown',e=>{
+    if(state.screen==='questGame'){
+      e.preventDefault(); try{btn.setPointerCapture(e.pointerId);}catch(_e){}
+      sendParent('waa-petbot-game-action',{action:startAction});
+      if(repeatTimer)clearInterval(repeatTimer);
+      repeatTimer=setInterval(()=>{ if(state.screen==='questGame') sendParent('waa-petbot-game-action',{action:startAction}); else stop(); },140);
+    }
+  });
   btn.addEventListener('pointerup',stop);
   btn.addEventListener('pointercancel',stop);
   btn.addEventListener('pointerleave',stop);
+  window.addEventListener('blur',stop);
 }
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
