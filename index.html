@@ -1054,13 +1054,13 @@ body.petbotOpen.tamaGameEmbedded #game{
   display:block!important;
   position:fixed!important;
   left:50vw!important;
-  top:47.8dvh!important;
+  top:47.1dvh!important;
   width:1920px!important;
   height:1080px!important;
   min-width:1920px!important;
   min-height:1080px!important;
   transform-origin:center center!important;
-  transform:translate(-50%,-50%) scale(.168)!important;
+  transform:translate(-50%,-50%) scale(.205)!important;
   z-index:2147482999!important;
   pointer-events:none!important;
   border-radius:30px!important;
@@ -1074,7 +1074,7 @@ body.petbotOpen.tamaGameEmbedded .helpBtn,
 body.petbotOpen.tamaGameEmbedded .builder,
 body.petbotOpen.tamaGameEmbedded .overlay,
 body.petbotOpen.tamaGameEmbedded #startScreen{display:none!important}
-body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{background:transparent!important}
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{background:transparent!important;opacity:1!important}
 @media(max-width:700px){
   body.petbotOpen.tamaGameEmbedded #game{transform:translate(-50%,-50%) scale(.15)!important;top:48.3dvh!important}
 }
@@ -1124,7 +1124,7 @@ body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{backgro
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=49&embed=1&launch=1&choose=1"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=51&embed=1&launch=1&choose=1"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3391,7 +3391,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=49&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=51&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
