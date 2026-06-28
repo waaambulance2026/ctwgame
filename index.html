@@ -812,6 +812,90 @@ body.editMode .targetPick{min-height:42px}
 }
 
 
+
+
+/* TAMAGOTCHI DOCK FINAL POSITION + MINI SCREEN
+   Background stays transparent, but the toy screen is filled so it does not look hollow. */
+#petbotDock:not(.fullscreen){
+  top:calc(env(safe-area-inset-top) + 178px)!important;
+  right:calc(env(safe-area-inset-right) + 26px)!important;
+  width:150px!important;
+  height:200px!important;
+  min-width:150px!important;
+  min-height:200px!important;
+  max-width:150px!important;
+  max-height:200px!important;
+  z-index:115!important;
+  background:transparent!important;
+  overflow:visible!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockPreview{
+  position:absolute!important;
+  inset:0!important;
+  background:transparent!important;
+  display:block!important;
+  pointer-events:none!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockPreview img{
+  position:absolute!important;
+  inset:0!important;
+  z-index:2!important;
+  width:100%!important;
+  height:100%!important;
+  object-fit:contain!important;
+  object-position:center center!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd{
+  position:absolute!important;
+  z-index:1!important;
+  left:23.4%!important;
+  top:38.4%!important;
+  width:53.7%!important;
+  height:28.7%!important;
+  border-radius:8%/12%!important;
+  background:linear-gradient(180deg,#eff8ff,#bfe1ff 56%,#8fc7ff)!important;
+  box-shadow:inset 0 0 8px rgba(0,0,0,.20), inset 0 0 0 1px rgba(30,54,90,.28)!important;
+  overflow:hidden!important;
+  display:grid!important;
+  place-items:center!important;
+  color:#17233a!important;
+  font-weight:900!important;
+  font-size:9px!important;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  background-image:linear-gradient(rgba(20,30,50,.055) 1px,transparent 1px),linear-gradient(90deg,rgba(20,30,50,.055) 1px,transparent 1px);
+  background-size:4px 4px;
+  opacity:.38;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniTitle{
+  position:absolute;
+  top:7px;
+  left:0;
+  right:0;
+  text-align:center;
+  font-size:8px;
+}
+#petbotDock:not(.fullscreen) .petbotDockMiniLcd .miniPet{
+  position:relative;
+  z-index:1;
+  font-size:18px;
+  line-height:1;
+  transform:translateY(5px);
+}
+#petbotDock:not(.fullscreen) .petbotDockBar,
+#petbotDock:not(.fullscreen) .petbotDockHint{
+  display:none!important;
+}
+@media(max-width:900px){
+  #petbotDock:not(.fullscreen){top:150px!important;right:16px!important;width:120px!important;height:160px!important;min-width:120px!important;min-height:160px!important;}
+}
+@media(max-width:520px){
+  #petbotDock:not(.fullscreen){top:120px!important;right:10px!important;width:92px!important;height:124px!important;min-width:92px!important;min-height:124px!important;}
+}
+
 /* EDIT SECTION 06: CSS ENDS HERE - HTML STRUCTURE STARTS NEXT */
 </style>
 </head>
@@ -857,7 +941,7 @@ body.editMode .targetPick{min-height:42px}
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
-    <div class="petbotDockPreview" aria-hidden="true"><img src="/petbot_device.png?v=20260628-dock-plain" alt=""></div>
+    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle">PetBot</div><div class="miniPet">♡</div></div><img src="/petbot_device.png?v=20260628-dock-screen-02" alt=""></div>
     <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="/petbot_test.html?v=17"></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
