@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 17</title>
+<title>CTW PetBot Tamagotchi - Stage 18</title>
 <style>
 :root{
   --ink:#16223f;
@@ -322,6 +322,62 @@ body.questPlaying .hit{pointer-events:auto!important;}
 .panelActionMsg{font-size:clamp(6px,.7vw,9px)!important;line-height:1.05!important;max-height:20px!important;overflow:hidden!important;}
 .shopTargetCard,.shopQtyCard{height:100%!important;}
 @media (max-width:520px){.lcd{left:20.55%!important;top:39.15%!important;width:59.1%!important;height:27.75%!important}.mainMenuGrid .menuItem{min-height:31px!important}.petSelectStage{height:56%;min-height:66px}.petHomeTop{grid-template-columns:32% 1fr;gap:4px}.petAction{min-height:24px;padding:3px 4px}.petHomeStats .stat{grid-template-columns:11px 1fr 15px}}
+
+
+
+/* Stage 18: final readable Tamagotchi LCD pass.
+   This overrides the older stage CSS above so the screens stop fighting each other. */
+.device{width:min(98vw,calc(99svh * .6667))!important;max-height:99svh!important;}
+.lcd{left:20.6%!important;top:39.1%!important;width:59.0%!important;height:28.0%!important;border-radius:8%/13%!important;background:linear-gradient(180deg,#e9fbff,#c7eef5)!important;}
+.top{height:13%!important;min-height:0!important;padding:1px 9px!important;display:grid!important;place-items:center!important;background:rgba(255,255,255,.20)!important;}
+.top span:nth-child(2){font-size:clamp(8px,.9vw,12px)!important;line-height:1!important;letter-spacing:.02em!important;}
+.body{height:87%!important;min-height:0!important;padding:4px 7px!important;overflow:hidden!important;}
+.bigText{font-size:clamp(10px,1.05vw,14px)!important;line-height:1.1!important;}
+.choiceList{height:100%!important;gap:4px!important;justify-content:center!important;}
+.choice{min-height:0!important;padding:5px 7px!important;font-size:clamp(8px,.9vw,12px)!important;border-radius:9px!important;}
+.mainMenuGrid{height:100%!important;width:96%!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(3,1fr)!important;gap:5px!important;}
+.mainMenuGrid .menuItem{min-height:0!important;height:auto!important;display:grid!important;grid-template-columns:30px 1fr!important;align-items:center!important;text-align:left!important;padding:5px 10px!important;font-size:clamp(10px,1vw,13px)!important;border-radius:10px!important;}
+.mainMenuGrid .menuItem b{font-size:clamp(17px,1.8vw,24px)!important;text-align:center!important;}
+.petSelectBody{display:grid!important;grid-template-rows:1fr auto auto auto!important;align-items:center!important;justify-items:center!important;gap:1px!important;padding:2px 8px 4px!important;}
+.petSelectStage{height:100%!important;min-height:0!important;width:100%!important;overflow:visible!important;}
+.petSelectStage .petImg{width:70%!important;height:70%!important;max-width:76%!important;max-height:76%!important;top:52%!important;}
+.petSelectStage .petEmoji{font-size:clamp(34px,5.4vw,62px)!important;}
+.petSelectName{font-size:clamp(10px,1vw,13px)!important;line-height:1.05!important;}
+.petSelectSub{font-size:clamp(6px,.68vw,9px)!important;line-height:1!important;}
+.petSelectDots{height:7px!important;}
+.petSelectDots i{width:4px!important;height:4px!important;}
+.petHomeBody{height:87%!important;display:grid!important;grid-template-rows:54% 46%!important;gap:3px!important;padding:3px 7px 5px!important;overflow:hidden!important;}
+.petHomeTop{min-height:0!important;height:100%!important;display:grid!important;grid-template-columns:34% 66%!important;gap:5px!important;align-items:center!important;}
+.petHomePet{min-height:0!important;height:100%!important;overflow:visible!important;}
+.petHomePet .petImg{width:78%!important;height:78%!important;max-width:82%!important;max-height:82%!important;top:52%!important;}
+.petHomePet .petEmoji{font-size:clamp(28px,4.5vw,52px)!important;}
+.petHomeStats{height:100%!important;display:grid!important;grid-template-rows:auto repeat(4,1fr)!important;gap:1px!important;min-width:0!important;}
+.petHomeSub{font-size:clamp(6px,.68vw,9px)!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;font-weight:900!important;opacity:.78!important;}
+.petHomeStats .stat{grid-template-columns:13px 1fr 20px!important;gap:2px!important;padding:1px 3px!important;font-size:clamp(5px,.62vw,8px)!important;line-height:1!important;border-radius:6px!important;background:rgba(255,255,255,.22)!important;}
+.petHomeStats .bar{height:5px!important;}
+.petActionGrid{height:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:4px!important;}
+.petAction{min-height:0!important;height:auto!important;padding:3px 3px!important;border-radius:9px!important;display:grid!important;grid-template-columns:22px 1fr!important;align-items:center!important;text-align:left!important;font-size:clamp(8px,.82vw,11px)!important;}
+.petAction b{font-size:clamp(14px,1.4vw,20px)!important;text-align:center!important;}
+.panelHead{font-size:clamp(6px,.66vw,9px)!important;line-height:1!important;min-height:10px!important;margin:0 0 2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.panelActionMsg{font-size:clamp(6px,.66vw,9px)!important;line-height:1!important;min-height:10px!important;margin:0 0 2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.panelGrid{flex:1!important;height:auto!important;min-height:0!important;width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:repeat(2,1fr)!important;gap:4px!important;overflow:hidden!important;}
+.panelCard{min-height:0!important;height:auto!important;padding:4px!important;border-radius:8px!important;font-size:clamp(7px,.76vw,10px)!important;line-height:1.05!important;overflow:hidden!important;}
+.panelCard.hasImage{grid-template-columns:30px 1fr!important;gap:4px!important;}
+.panelThumb,.panelIcon{width:28px!important;height:28px!important;min-width:28px!important;}
+.panelText small{font-size:.72em!important;}
+.careBody{height:87%!important;display:grid!important;grid-template-rows:auto 1fr auto!important;gap:3px!important;padding:4px 7px!important;}
+.carePetLine{font-size:clamp(7px,.78vw,10px)!important;line-height:1!important;}
+.careGrid{height:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-auto-rows:1fr!important;gap:4px!important;}
+.careCard{min-height:0!important;padding:2px!important;font-size:clamp(8px,.82vw,11px)!important;}
+.shopQtyCard{height:100%!important;gap:3px!important;}
+.shopQtyNumber{font-size:clamp(20px,2.5vw,34px)!important;padding:3px 14px!important;}
+.habitatFullScreen,.hookFullScreen{inset:0!important;border-radius:inherit!important;}
+.habitatFullScreen .habitatFrame,.hookFullScreen .hookPond{inset:0!important;width:100%!important;height:100%!important;background-size:cover!important;background-position:center!important;}
+.hookFullScreen .hookResult{font-size:clamp(7px,.75vw,10px)!important;line-height:1!important;bottom:2%!important;}
+.questGameGlass{position:absolute!important;inset:0!important;background:transparent!important;pointer-events:none!important;}
+body.questPlaying .lcd{background:transparent!important;box-shadow:none!important;}
+body.questPlaying .lcd:before{opacity:.04!important;}
+@media(max-width:520px){.lcd{left:20.2%!important;top:39.0%!important;width:59.6%!important;height:28.2%!important}.mainMenuGrid .menuItem{font-size:9px!important}.petAction{font-size:8px!important}.panelCard.hasImage{grid-template-columns:25px 1fr!important}.panelThumb,.panelIcon{width:24px!important;height:24px!important;min-width:24px!important}}
 
 </style>
 </head>
@@ -692,9 +748,10 @@ async function runCareAction(){
       const fresh=await loadUserPetsFast(state.player?.userId||'');
       if(fresh&&fresh.length){
         const oldCode=p.code||p.userPetId||p.name;
-        state.pets=fresh.map((x,i)=>withDefaults(x,i));
+        state.pets=preservePetVisuals(fresh);
         const same=state.pets.findIndex(x=>(x.code||x.userPetId||x.name)===oldCode);
         if(same>=0)state.petIndex=same;
+        preloadPetImages(state.pets);
         writeCachedPets(state.player.userId,state.pets);
       }
     }catch(e){}
@@ -763,23 +820,23 @@ async function startPlayer(player){
   try{
     if(player.test){
       const pets=TEST_PETS.map(p=>({...p}));
-      state.pets=pets.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded test pets';render();return;
+      state.pets=pets.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded test pets';render();return;
     }
     const cached=readCachedPets(player.userId);
     if(cached&&cached.length){
-      state.pets=cached.map((p,i)=>withDefaults(p,i));state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
+      state.pets=cached.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
       loadUserPets(player.userId).then(fresh=>{
         if(!fresh||!fresh.length||!state.player||state.player.userId!==player.userId)return;
-        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;state.petIndex=Math.min(state.petIndex,ready.length-1);state.screen='menu';state.message='Updated '+ready.length+' pets';render();prefetchCurrentPetPanels();
+        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);state.screen='menu';state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
       }).catch(e=>log('background refresh failed',e.message||e));
       return;
     }
     const pets=await loadUserPetsFast(player.userId);
     if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
-    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();prefetchCurrentPetPanels();
+    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();prefetchCurrentPetPanels();
     enrichPets(ready,player.userId).then(enriched=>{
       if(!enriched||!enriched.length||!state.player||state.player.userId!==player.userId)return;
-      const updated=enriched.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,updated);state.pets=updated;state.petIndex=Math.min(state.petIndex,updated.length-1);render();
+      const updated=enriched.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,updated);state.pets=preservePetVisuals(updated);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);render();
     }).catch(e=>log('background visual enrich failed',e.message||e));
   }catch(err){state.lastError=err.message||String(err);state.screen='error';render();}
 }
@@ -1008,10 +1065,33 @@ function panelCacheKey(kind){
 async function cachedLoadPanelData(kind,force=false){
   const key=panelCacheKey(kind);
   const hit=PANEL_CACHE.get(key);
-  if(!force&&hit&&Date.now()-hit.t<PANEL_TTL)return hit.items;
+  if(!force&&hit&&Date.now()-hit.t<PANEL_TTL){preloadPanelImages(hit.items);return hit.items;}
   const items=await loadPanelData(kind);
   PANEL_CACHE.set(key,{t:Date.now(),items});
+  preloadPanelImages(items);
   return items;
+}
+function getCachedPanelItems(kind){
+  const hit=PANEL_CACHE.get(panelCacheKey(kind));
+  if(hit&&Date.now()-hit.t<PANEL_TTL)return hit.items||[];
+  return null;
+}
+function preloadOne(url){try{url=cleanImageUrl(url);if(!url)return;const img=new Image();img.decoding='async';img.loading='eager';img.src=url;}catch(e){}}
+function preloadPanelImages(items){try{(items||[]).slice(0,30).forEach(it=>preloadOne(itemImage(it)));}catch(e){}}
+function preloadPetImages(pets){try{(pets||state.pets||[]).slice(0,30).forEach(p=>preloadOne(p.url||p.image_url||itemImage(p.raw||{})));}catch(e){}}
+function petVisualKey(p){return norm(p&&((p.code||'')+'|'+(p.userPetId||'')+'|'+(p.name||'')+'|'+(p.pet||'')));}
+function preservePetVisuals(freshPets){
+  const old=state.pets||[];
+  const oldByKey=new Map(old.map(p=>[petVisualKey(p),p]));
+  return (freshPets||[]).map((np,i)=>{
+    const fp=withDefaults(np,i);
+    const op=oldByKey.get(petVisualKey(fp))||old.find(x=>norm(x.code||x.userPetId||x.name)===norm(fp.code||fp.userPetId||fp.name));
+    if(op){
+      ['url','image_url','cloudinary_image_url','size','x','y','flip','emoji'].forEach(k=>{if((fp[k]===''||fp[k]==null||k==='size'||k==='x'||k==='y') && op[k]!=null)fp[k]=op[k];});
+      if(!fp.url && (op.url||op.image_url||op.cloudinary_image_url))fp.url=op.url||op.image_url||op.cloudinary_image_url;
+    }
+    return fp;
+  });
 }
 function prefetchCurrentPetPanels(){
   if(!state.player||state.player.test||!currentPet())return;
@@ -1078,7 +1158,7 @@ async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   const all=[];
   for(const mode of modes){
     try{
-      const q=new URLSearchParams({mode,user_id:String(userId||''),selected_pet_code:p.code||'',pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage17'});
+      const q=new URLSearchParams({mode,user_id:String(userId||''),selected_pet_code:p.code||'',pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage18'});
       const data=await fetchJson('/api/petbot?'+q.toString(),12000);
       if(data&&typeof data==='object'&&!Array.isArray(data)&&data.found!==false){
         const rootImage=itemImage(data);
@@ -1203,16 +1283,18 @@ function openShopPanel(){
   state.shopPetIndex=state.petIndex||0;
   state.shopQty=1;
   state.shopSelected=null;
-  state.panelItems=[];
+  const cached=getCachedPanelItems('shop');
+  state.panelItems=cached||[];
   state.panelIndex=0;
-  state.panelLoading=true;
+  state.panelLoading=!cached;
   state.panelActionMsg='';
-  state.panelMessage='Loading shop for '+((currentPet()||{}).name||(currentPet()||{}).pet||'pet')+'...';
+  state.panelMessage=cached?(cached.length+' shop item'+(cached.length===1?'':'s')):'Loading shop for '+((currentPet()||{}).name||(currentPet()||{}).pet||'pet')+'...';
+  preloadPanelImages(state.panelItems);
   render();
   cachedLoadPanelData('shop').then(items=>{
     if(state.panelKind!=='shop')return;
-    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' shop item'+(items.length===1?'':'s')):'No shop items found for this pet yet.';render();
-  }).catch(err=>{if(state.panelKind!=='shop')return;state.panelItems=[];state.panelLoading=false;state.panelMessage='Shop failed to load: '+(err.message||String(err));render();});
+    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' shop item'+(items.length===1?'':'s')):'No shop items found for this pet yet.';preloadPanelImages(items);render();
+  }).catch(err=>{if(state.panelKind!=='shop')return;state.panelItems=cached||[];state.panelLoading=false;state.panelMessage='Shop failed to load: '+(err.message||String(err));render();});
 }
 function loadShopItemsForTarget(){
   state.shopStep='items';
@@ -1230,13 +1312,14 @@ function loadShopItemsForTarget(){
 }
 
 function openDataPanel(kind){
-  state.screen=kind;state.panelKind=kind;state.panelLoading=true;state.panelItems=[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage='Loading '+kind+'...';if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}render();
+  const cached=getCachedPanelItems(kind);
+  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):'Loading '+kind+'...';if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
   cachedLoadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
-    state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');render();
+    state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');preloadPanelImages(items);render();
   }).catch(err=>{
     if(state.panelKind!==kind)return;
-    state.panelItems=[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
+    state.panelItems=cached||[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
   });
 }
 async function activatePanelItem(){
@@ -1329,6 +1412,13 @@ function handleBack(){
   state.screen='menu';render();
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
+function requestLocalFullscreen(){
+  try{
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+    else if(document.fullscreenElement && document.exitFullscreen){ const r=document.exitFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+  }catch(e){}
+}
 function notifyParent(){
   const p=currentPet(); if(!p)return;
   sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:p.url||'',image_url:p.url||'',level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
@@ -1359,7 +1449,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame') sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); else sendParent('waa-petbot-toggle-fullscreen');});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});

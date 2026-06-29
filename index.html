@@ -1169,7 +1169,7 @@ body.petbotOpen.tamaGameEmbedded #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=58&embed=1&launch=1&choose=1"></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=59&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2989,9 +2989,10 @@ window.addEventListener('message',function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
   if(d.type === 'waa-petbot-toggle-fullscreen'){
+    try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(err){}
     try{
-      if(!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-      else if(document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+      if(!document.fullscreenElement && document.documentElement.requestFullscreen){ const r=document.documentElement.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+      else if(document.fullscreenElement && document.exitFullscreen){ const r=document.exitFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
     }catch(err){}
     return;
   }
@@ -3017,6 +3018,7 @@ function expandEmbeddedTamaGame(){
   document.body.classList.remove('tamaGameEmbedded');
   try{ if(typeof window.closePetbotFull === 'function') window.closePetbotFull(); }catch(e){}
   try{ if(typeof paused !== 'undefined') paused = false; if(typeof playing !== 'undefined') playing = true; }catch(e){}
+  try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen){ const r=document.documentElement.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); } }catch(e){}
   requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
 }
 function tapEmbeddedControl(action){
@@ -3439,7 +3441,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=58&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=59&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
