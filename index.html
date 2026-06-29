@@ -1132,6 +1132,21 @@ body.petbotOpen #petbotDock.fullscreen .petbotDockBar{display:none!important;}
 body.gameExpandedFromTama #petbotDock{display:none!important;}
 body.gameExpandedFromTama #game{visibility:visible!important;opacity:1!important;display:block!important;z-index:9999!important;}
 body.gameExpandedFromTama .overlay,body.gameExpandedFromTama #startScreen{display:none!important;}
+
+/* Stage 21: dynamically fitted embedded game inside the real Tamagotchi LCD. */
+body.petbotOpen.tamaGameEmbedded #game{
+  left:var(--tama-lcd-cx,50vw)!important;
+  top:var(--tama-lcd-cy,50dvh)!important;
+  transform:translate3d(-50%,-50%,0) scale(var(--tama-game-scale,.24))!important;
+  transform-origin:center center!important;
+  border-radius:22px!important;
+  box-shadow:none!important;
+  will-change:transform!important;
+  contain:paint!important;
+}
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen{background:transparent!important;}
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{background:transparent!important;}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1177,7 +1192,7 @@ body.gameExpandedFromTama .overlay,body.gameExpandedFromTama #startScreen{displa
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=80&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=91&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3017,12 +3032,36 @@ function startEmbeddedTamaGame(kind){
   document.body.classList.add('tamaGameEmbedded');
   document.body.classList.add('petbotOpen');
   try{ sessionStorage.setItem('waa-game-started-this-tab','1'); }catch(e){}
+  try{ fitEmbeddedTamaGame(); }catch(e){}
   try{ if(kind==='team') startTeamQuest(); else startSoloQuest(); }catch(e){ console.error('Could not start embedded game',e); }
   try{ if(typeof paused !== 'undefined') paused = false; if(typeof playing !== 'undefined') playing = true; }catch(e){}
+  requestAnimationFrame(()=>{ try{ fitEmbeddedTamaGame(); }catch(e){} });
 }
 function stopEmbeddedTamaGame(){
   document.body.classList.remove('tamaGameEmbedded');
   try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
+}
+
+function fitEmbeddedTamaGame(){
+  if(!document.body.classList.contains('tamaGameEmbedded')) return;
+  try{
+    const vw=window.innerWidth||document.documentElement.clientWidth||1920;
+    const vh=window.innerHeight||document.documentElement.clientHeight||1080;
+    // petbot_test.html uses a 1024x1536 toy image centered in the iframe.
+    const deviceW=Math.min(vw*0.98, vh*0.99*(1024/1536));
+    const deviceH=deviceW*(1536/1024);
+    const deviceLeft=(vw-deviceW)/2;
+    const deviceTop=(vh-deviceH)/2;
+    // Transparent LCD hole measured from petbot_device.png: x=217 y=607 w=586 h=409.
+    const lcdX=217/1024, lcdY=607/1536, lcdW=586/1024, lcdH=409/1536;
+    const cx=deviceLeft+deviceW*(lcdX+lcdW/2);
+    const cy=deviceTop+deviceH*(lcdY+lcdH/2);
+    // Cover the LCD by height; this crops the sides instead of leaving black bands.
+    const scale=Math.max(0.12,(deviceH*lcdH/1080)*1.08);
+    document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
+    document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
+    document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
+  }catch(e){}
 }
 function expandEmbeddedTamaGame(){
   // Stage 19: expand the real platform game out of the Tamagotchi frame.
@@ -3415,6 +3454,8 @@ function fitGameToScreen(){
 }
 window.addEventListener('resize', fitGameToScreen);
 window.addEventListener('orientationchange', fitGameToScreen);
+window.addEventListener('resize',()=>{try{fitEmbeddedTamaGame();}catch(e){}});
+window.addEventListener('orientationchange',()=>{setTimeout(()=>{try{fitEmbeddedTamaGame();}catch(e){}},120);});
 fitGameToScreen();
 
 
@@ -3456,7 +3497,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=80&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=91&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -3475,7 +3516,9 @@ fitGameToScreen();
     try{ if(typeof loadPetbotPets === 'function' && !(window.loadedPets||[]).length) loadPetbotPets(false); }catch(e){}
   }
   window.openPetbotFull = function(){
+    const returningFromExpanded=document.body.classList.contains('gameExpandedFromTama') || document.body.classList.contains('tamaGameEmbedded');
     document.body.classList.remove('gameExpandedFromTama');
+    document.body.classList.remove('tamaGameEmbedded');
     refreshMiniPet();
     clearSmallDockPlacement();
     dock.classList.remove('hidden');
@@ -3485,6 +3528,9 @@ fitGameToScreen();
     expandBtn.textContent = 'Back';
     hideBtn.textContent = 'Close';
     pauseForPetbot();
+    if(returningFromExpanded){
+      setTimeout(()=>{try{frame.contentWindow.postMessage({type:'waa-parent-return-to-tamagotchi'},location.origin);}catch(e){}},60);
+    }
   };
   window.closePetbotFull = function(){
     document.body.classList.remove('tamaGameEmbedded');
