@@ -357,6 +357,9 @@ body:not(.editMode) .obj.lessonBlock.interactNearby{
 .petPreview{background:#fff!important;border:3px dashed #d282c2!important}
 .petSizeControls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:8px 0}.petSizeControls label{font-size:12px;font-weight:900}.petSizeControls input,.petSizeControls select{margin-top:4px}
 .character img{transition:none!important}
+/* STAGE 26 WALK SMOOTHING: keep the moving sprites on the GPU and avoid transition stutter. */
+.character,.character img,#shadow,#buddyShadow,#teamShadow2,#teamShadow3{will-change:transform;backface-visibility:hidden;}
+.character img{transform:translateZ(0);}
 .character.spriteMissing img{opacity:1!important;visibility:visible!important;}
 
 
@@ -1230,7 +1233,7 @@ body.petbotOpen.tamaGameEmbedded .helpBtn{display:none!important;}
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=125&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=126&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -1391,7 +1394,9 @@ function preloadSpriteAction(char,action){
       if(!url||spriteBroken.has(url))return;
       const img=new Image();
       img.decoding='async';
+      img.loading='eager';
       img.src=url;
+      if(img.decode)img.decode().catch(()=>{});
     });
   }
 }
@@ -1726,6 +1731,7 @@ function applyTeamSlotPositions(members=selectedTeamMembers()){
   });
 }
 function applyCharacterSlotSizes(){
+  characterSlotSizeDirty=false;
   const members=selectedTeamMembers();
   applyTeamSlotPositions(members);
   const teamScale=members.length>1?.88:1;
@@ -1768,7 +1774,10 @@ function spriteTransform(characterKey, action, frameIndex, direction, slotName, 
 }
 
 function applySpriteTransform(){
-  applyCharacterSlotSizes();
+  if(characterSlotSizeDirty){
+    characterSlotSizeDirty=false;
+    applyCharacterSlotSizes();
+  }
 
   const mainAction = ($('sprite') && $('sprite').dataset.action) || 'idle';
   const buddyAction = ($('buddySprite') && $('buddySprite').dataset.action) || 'idle';
@@ -1809,12 +1818,17 @@ function applySpriteTransform(){
 let main='ax', buddy='none', team=false, teamExtra=['none','none'], mainFrame=0,buddyFrame=0,lastFrame=0,lastBuddyFrame=0,last=0;let playing=false,paused=false,ended=false,score=0,lives=3,levelIndex=0,distance=0,spawnTimer=0,finishMade=false;let groundX=0,hillX=0;let player={x:0,jump:0,vy:0,grounded:true,jumpPrepUntil:0,jumpStartedAt:0,jumpLandUntil:0,jumpRecoveryUntil:0};let objects=[], spawnedPlan=new Set(), currentPetImage='', currentPet=null, currentPetMeta={};let nearbyBuilding=null, nearbyInteractable=null,lastBuildingPrompt=0,lastObjectPrompt=0;let petPlayerW=115, petFlip=-1, mainFlip=1, buddyFlip=1, facing=1;const keys={left:false,right:false,jump:false};
 const idleAnim={sprite:{playing:false,next:0,frame:0,last:0},buddySprite:{playing:false,next:0,frame:0,last:0},teamSprite2:{playing:false,next:0,frame:0,last:0},teamSprite3:{playing:false,next:0,frame:0,last:0}};
 let visualWalkUntil=0;
+let characterSlotSizeDirty=true;
+function markCharacterSlotSizeDirty(){characterSlotSizeDirty=true;}
 function resetIdleAnim(){const now=performance.now();Object.values(idleAnim).forEach(s=>{s.playing=false;s.frame=0;s.last=0;s.next=now+2600+Math.random()*2600;});}
 function movementInput(){return (keys.right?1:0)-(keys.left?1:0)}
 function updateSpriteFacing(input=0){
+  const oldFacing=facing;
   if(input<0)facing=-1;
   if(input>0)facing=1;
-  applySpriteTransform();
+  // Stage 26: only repaint sprite transforms when facing actually changes.
+  // The old code rebuilt sprite sizes/transforms every animation frame while walking, which made walking feel laggy.
+  if(facing!==oldFacing||characterSlotSizeDirty)applySpriteTransform();
 }
 // EDIT SECTION 20: LEVEL DATA - edit Level 1 items, hazards, Cloudinary paths and scores here
 function placeSvg(title,emoji,colourA='#d282c2',colourB='#76C7D8'){
@@ -2180,6 +2194,7 @@ function setPair(m,b='none',extraA='none',extraB='none'){
   document.body.classList.toggle('teamExtra3',members.length>3);
   document.body.classList.toggle('team4Mode',members.length>3);
   mainFrame=0;buddyFrame=0;lastFrame=0;lastBuddyFrame=0;
+  markCharacterSlotSizeDirty();
   resetIdleAnim();
   ['sprite','buddySprite','teamSprite2','teamSprite3'].forEach(id=>spriteCurrent[id]='');
   preloadAxWalkFrames();
@@ -2421,6 +2436,14 @@ function collide(o){
   updateHud();
 }
 function levelComplete(){playing=false;objects.forEach(o=>o.el.remove());objects=[];if(levelIndex<levels.length-1){$('levelTitle').textContent='Quest complete';$('levelText').textContent=`${levels[levelIndex].quest} survived. Next: ${levels[levelIndex+1].quest}.`;$('levelScreen').classList.remove('hidden')}else end(true)}function end(won){playing=false;ended=true;$('endTitle').textContent=won?'Test quests complete':'Patrol over';$('endText').textContent=won?`Score: ${score}. Ax and Pura escaped with mild nonsense.`:`Score: ${score}. The drama won. Very rude.`;$('endScreen').classList.remove('hidden')}
+const lastTransformValue={};
+function setTransformOnce(id,value){
+  if(lastTransformValue[id]===value)return;
+  const el=$(id);
+  if(!el)return;
+  el.style.transform=value;
+  lastTransformValue[id]=value;
+}
 function updatePlayer(dt){
   const now=performance.now();
 
@@ -2449,12 +2472,12 @@ function updatePlayer(dt){
     }
   }
 
-  $('player').style.transform=`translateX(-50%) translate(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px)`;
+  setTransformOnce('player',`translateX(-50%) translate3d(${player.x}px, ${-(player.jump+cssNumber('--playerDrop',26))}px, 0)`);
   const mainShadow=(getCharacterVisualConfig(main).shadowScale||1)*(player.grounded?1:.72);
-  $('shadow').style.transform=`translateX(-50%) translateX(${player.x}px) scale(${mainShadow})`;
-  $('buddy').style.transform=`translateX(-50%) translateY(${-cssNumber('--buddyDrop',16)}px)`;
-  if($('teamMate2'))$('teamMate2').style.transform=`translateX(-50%) translateY(${-(cssNumber('--buddyDrop',16)+4)}px)`;
-  if($('teamMate3'))$('teamMate3').style.transform=`translateX(-50%) translateY(${-(cssNumber('--buddyDrop',16)+2)}px)`;
+  setTransformOnce('shadow',`translateX(-50%) translate3d(${player.x}px,0,0) scale(${mainShadow})`);
+  setTransformOnce('buddy',`translateX(-50%) translate3d(0,${-cssNumber('--buddyDrop',16)}px,0)`);
+  if($('teamMate2'))setTransformOnce('teamMate2',`translateX(-50%) translate3d(0,${-(cssNumber('--buddyDrop',16)+4)}px,0)`);
+  if($('teamMate3'))setTransformOnce('teamMate3',`translateX(-50%) translate3d(0,${-(cssNumber('--buddyDrop',16)+2)}px,0)`);
 }
 
 function animateOne(elId,char,action,now,state){
@@ -2706,6 +2729,7 @@ function readSettings(){
   return o;
 }
 function applySettings(o={}){
+  markCharacterSlotSizeDirty();
   // Sprite URL patterns now come from the single SPRITE_PATTERNS block in index.html only.
   // Do NOT load old shared spritePatterns from Cloudflare, because old saves can keep broken Owl/Ax paths alive.
   // Use only EDIT SECTION 17 / SPRITE_PATTERNS as the source of truth for sprite folders/names.
@@ -2935,7 +2959,7 @@ Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySet
 if($('placeSelect'))$('placeSelect').onchange=()=>{selectedPlace=$('placeSelect').value;syncPlaceControls();};
 if($('placeQuick'))$('placeQuick').onchange=()=>{const v=$('placeQuick').value;$('placeQuick').value='';if(v==='bringHere')bringSelectedPlaceHere();if(v==='groundSnap')snapSelectedPlaceToGround();};
 $('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=()=>{ if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel(); };$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden'); if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel();};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
-$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;updateSpriteFacing(0);};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;updateSpriteFacing(0);};
+$('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;applySpriteTransform();};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;applySpriteTransform();};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
   $('puraIdleUrl').value=Array.isArray(SPRITE_PATTERNS.pura.idle)?SPRITE_PATTERNS.pura.idle[0]:SPRITE_PATTERNS.pura.idle;$('puraWalkUrl').value=Array.isArray(SPRITE_PATTERNS.pura.walk)?`${CLOUD}/v1781797065/pura_walk_{n}.png`:SPRITE_PATTERNS.pura.walk;$('puraJumpUrl').value=Array.isArray(SPRITE_PATTERNS.pura.jump)?SPRITE_PATTERNS.pura.jump[0]:SPRITE_PATTERNS.pura.jump;
@@ -3332,7 +3356,7 @@ function toggleDayNightManual(){
   setDayNightMode(!document.body.classList.contains('night'));
 }
 
-$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;updateSpriteFacing(0);};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
+$('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;applySpriteTransform();};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=toggleDayNightManual;$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
 addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
@@ -3596,7 +3620,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=125&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=126&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
