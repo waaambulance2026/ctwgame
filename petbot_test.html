@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 13</title>
+<title>CTW PetBot Tamagotchi - Stage 14</title>
 <style>
 :root{
   --ink:#16223f;
@@ -394,7 +394,7 @@ function renderShopPanel(title){
 
 function itemImage(it){
   const raw=(it&&it.raw)||it||{};
-  const v=pick(raw,['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id'],'');
+  const v=pick(raw,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id'],'');
   return cleanImageUrl(v);
 }
 function habitatSlot(row){return String(pick(row,['habitat_slot','slot','loadout_slot','layout_slot','layer','section','type','item_type'],'')).toLowerCase();}
@@ -483,7 +483,7 @@ function buildHabitatLayers(items,pet){
   const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
   const layers=[];
 
-  const compositeFields=['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url','final_image_url','canvas_image_url'];
+  const compositeFields=['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url','final_image_url','canvas_image_url','image_url'];
   const compositeUrl=cleanImageUrl(pick(layout,compositeFields,''));
   if(compositeUrl){
     layers.push(makeHabitatLayer('background',compositeUrl,0,0,100,100,1));
@@ -876,7 +876,7 @@ async function loadPanelData(kind){
   }
   if(kind==='habitat'){
     const layoutRows=await loadRowsFromProxyAndSheets(
-      ['view_habitat','view_habitat_layout','view_user_habitats_layout','view_user_habitat_layouts','habitat'],
+      ['get_pet_habitat','view_pet_habitat','pet_habitat','view_habitat','view_habitat_layout','view_user_habitats_layout','view_user_habitat_layouts','habitat'],
       ['user_habitats_layout','user_habitat_layouts','user_habitat_loadout','user_habitat_inventory'],userId,p
     );
     const userRows=layoutRows.filter(r=>strictUserMatch(r,userId));
@@ -904,9 +904,20 @@ async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   const all=[];
   for(const mode of modes){
     try{
-      const q=new URLSearchParams({mode,user_id:String(userId||''),pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage11'});
+      const q=new URLSearchParams({mode,user_id:String(userId||''),selected_pet_code:p.code||'',pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage14'});
       const data=await fetchJson('/api/petbot?'+q.toString(),12000);
+      if(data&&typeof data==='object'&&!Array.isArray(data)&&data.found!==false){
+        const rootImage=itemImage(data);
+        const hasUsefulRoot=rootImage||pick(data,['pet_name','pet_code','habitat_title','background_habitat_key','base_habitat_key','decor_1_item_key','prize_1_name','hook_name','quest_name'],'');
+        if(hasUsefulRoot) all.push(data);
+      }
       all.push(...findArray(data,['inventory','shop','items','rows','data','results','prizes','catalogue','catalog']));
+      for(let i=1;i<=25;i++){
+        const name=data&&pick(data,[`prize_${i}_name`,`hook_${i}_name`,`item_${i}_name`,`menu_item_${i}_name`],'');
+        const img=data&&pick(data,[`prize_${i}_image`,`hook_${i}_image`,`item_${i}_image`,`menu_item_${i}_image`],'');
+        const key=data&&pick(data,[`prize_${i}_key`,`hook_${i}_key`,`item_${i}_key`,`menu_item_${i}_value`],'');
+        if(name||img||key) all.push({item_name:name||key||`Prize ${i}`,item_id:key,hook_key:key,image_url:img,quantity:pick(data,[`prize_${i}_quantity`,`prize_${i}_owned_count`],''),category:pick(data,[`prize_${i}_type`,`prize_${i}_rarity`,`hook_${i}_rarity`],'')});
+      }
     }catch(e){log('panel proxy '+mode+' failed',e.message||e);}
   }
   for(const tab of tabs){
@@ -915,7 +926,7 @@ async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   return dedupeRows(all);
 }
 function normaliseStoreRow(row){
-  return {raw:row,item_name:pick(row,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name'],'Item'),item_id:pick(row,['item_id','item_key','key','id','habitat_key','prize_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins'],''),category:pick(row,['category','item_type','type','target_category','rarity'],''),image_url:pick(row,['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','background_image_url','loadout_image_url','preview_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url'],'')};
+  return {raw:row,item_name:pick(row,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name','hook_name','habitat_title'],'Item'),item_id:pick(row,['item_id','item_key','key','id','habitat_key','prize_key','hook_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins','play_cost'],''),category:pick(row,['category','item_type','type','target_category','rarity','hook_rarity'],''),image_url:pick(row,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','background_image_url','loadout_image_url','preview_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url'],'')};
 }
 function normaliseHabitatRow(row){
   const slot=pick(row,['slot','habitat_slot','loadout_slot','layer','section','type'],'');
@@ -1084,8 +1095,12 @@ async function playHook(item){
   state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
   await new Promise(r=>setTimeout(r,520));
   try{
-    const data=await postPetbotAction({mode:'play_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});
-    state.panelActionMsg=data.message||data.prize_name||('You hooked '+itemTitle(prize));
+    const data=await postPetbotAction({mode:'complete_hook_waaambulance',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});
+    state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('You hooked '+itemTitle(prize));
+    if(data&&typeof data==='object'){
+      const realPrize={...prize,raw:{...(prize.raw||{}),...data},item_name:data.hook_name||data.prize_name||data.item_earned||itemTitle(prize),item_id:data.hook_key||data.prize_key||prize.item_id,image_url:data.image_url||data.hook_image_url||data.prize_image||prize.image_url};
+      state.hookPrize=realPrize;
+    }
   }catch(e){
     state.panelActionMsg='You hooked '+itemTitle(prize)+' · saving is not enabled yet';
   }
