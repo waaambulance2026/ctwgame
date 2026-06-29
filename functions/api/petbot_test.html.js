@@ -3,6 +3,15 @@
 'use strict';
 const SPREADSHEET_ID='1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
 const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const DEFAULT_HABITAT_BG='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png';
+const FAST_HOOK_ITEMS=[
+  {item_id:'hook_dreamy_crowd_magnet',item_name:'Dreamy Crowd Magnet',category:'hook',price:15},
+  {item_id:'hook_branch_climber',item_name:'Branch Climber',category:'hook',price:15},
+  {item_id:'hook_crownforge_tire',item_name:'Crownforge Tire',category:'hook',price:15},
+  {item_id:'hook_shiny_siren_token',item_name:'Shiny Siren Token',category:'hook',price:15},
+  {item_id:'hook_tiny_waa_prize',item_name:'Tiny Waaambulance Prize',category:'hook',price:15},
+  {item_id:'hook_pacifier_charm',item_name:'Pacifier Charm',category:'hook',price:15}
+];
 const PLAYER_LIST=[
   {key:'ax',label:'Ax',display:"Ryan's Axolotl",userId:'1214671839205396481',password:'Axtok'},
   {key:'aly',label:'Aly',display:'Ashely with one L',userId:'1407957358683885670',password:'Alytok'},
@@ -316,6 +325,12 @@ function buildHabitatLayers(items,pet){
     const finalPetUrl=rowPetUrl||petUrl;
     if(finalPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',finalPetUrl,50,72,22,32,80));
   }
+  // Stage 23: never leave Habitat as a blank LCD. If the sheet/API does not return
+  // a usable composite/layer on this load, show a safe room fallback with the selected pet.
+  if(!layers.length){
+    layers.push(makeHabitatLayer('background',DEFAULT_HABITAT_BG,0,0,100,100,1));
+    if(petUrl)layers.push(makeHabitatLayer('fallbackPet',petUrl,50,74,28,38,80));
+  }
   return layers.filter(Boolean);
 }
 
@@ -324,12 +339,17 @@ function habitatLayerHtml(layer){
   if(layer.cls==='background') return `<div class="habitatLayer background" style="background-image:url('${esc(layer.url)}');z-index:${esc(layer.z)}"></div>`;
   return `<div class="habitatLayer ${esc(layer.cls||'decor')}" style="background-image:url('${esc(layer.url)}');left:${esc(layer.x)}%;top:${esc(layer.y)}%;width:${esc(layer.w)}%;height:${esc(layer.h)}%;z-index:${esc(layer.z)};transform:translate(-50%,-50%)"></div>`;
 }
+function habitatCacheKey(){const p=currentPet()||{};return 'waa-habitat-layers-'+(state.player?.userId||'')+'-'+(p.code||p.userPetId||p.name||p.pet||'pet');}
+function readCachedHabitatLayers(){try{return JSON.parse(localStorage.getItem(habitatCacheKey())||'[]')||[];}catch(e){return []}}
+function writeCachedHabitatLayers(layers){try{if((layers||[]).some(l=>l&&l.url&&l.cls==='background'))localStorage.setItem(habitatCacheKey(),JSON.stringify(layers.slice(0,12)));}catch(e){}}
 function renderHabitatPanel(){
   const items=Array.isArray(state.panelItems)?state.panelItems:[];
   const pet=currentPet()||{};
-  const layers=buildHabitatLayers(items,pet);
+  let layers=buildHabitatLayers(items,pet);
+  if(layers.length)writeCachedHabitatLayers(layers);
+  if((!layers.length||state.panelLoading)&&readCachedHabitatLayers().length)layers=readCachedHabitatLayers();
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'No habitat image found')}<br><small>Need a background/loadout image or valid background_key in user_habitats_layout.</small></div>` : '';
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'No habitat image found')}</div>` : '';
   return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
@@ -754,27 +774,29 @@ async function loadPanelData(kind){
   }
   if(kind==='habitat'){
     let layoutRows=[];
+    // Ask the Apps Script/Worker first as it may already know the composite habitat image,
+    // then add sheet rows. If one source fails, the others still render.
+    try{ layoutRows.push(...await loadRowsFromProxyAndSheets(['view_habitat','get_pet_habitat','view_pet_habitat','pet_habitat'],[],userId,p)); }catch(e){}
     const layoutTabs=['user_habitats_layout','user_habitat_layouts','user_habitat_loadout','user_habitat_inventory'];
     const layoutResults=await Promise.allSettled(layoutTabs.map(tab=>fetchSheetRows(tab)));
     layoutResults.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))layoutRows.push(...r.value);});
-    if(!layoutRows.length){layoutRows=await loadRowsFromProxyAndSheets(['get_pet_habitat','view_pet_habitat','pet_habitat','view_habitat'],[],userId,p);}
+    layoutRows=dedupeRows(layoutRows).filter(r=>r&&!rowLooksLikeCareItem(r));
     const userRows=layoutRows.filter(r=>strictUserMatch(r,userId));
-    const petRows=userRows.filter(r=>matchPet(r,p));
-    const chosen=(petRows.length?petRows:userRows);
+    const petRows=(userRows.length?userRows:layoutRows).filter(r=>matchPet(r,p));
+    const chosen=(petRows.length?petRows:(userRows.length?userRows:layoutRows));
     let catalogRows=[];
     const catalogTabs=['habitat_shop','habitats','habitat_assets','Sheet51'];
     const catalogResults=await Promise.allSettled(catalogTabs.map(tab=>fetchSheetRows(tab)));
     catalogResults.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))catalogRows.push(...r.value);});
     catalogRows=dedupeRows(catalogRows).filter(r=>!rowLooksLikeCareItem(r)&&itemImage(r));
-    if(chosen.length){
-      return [{item_name:'Habitat loadout',item_type:'habitat_render',raw:{__habitatRender:true,layoutRows:chosen,catalogRows}}];
-    }
-    return [{item_name:'No habitat loadout found',item_type:'habitat_missing',raw:{__habitatRender:true,layoutRows:[],catalogRows}}];
+    return [{item_name:'Habitat loadout',item_type:'habitat_render',raw:{__habitatRender:true,layoutRows:chosen,catalogRows}}];
   }
   if(kind==='hook'){
-    rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
-    const prizes=rows.filter(isHookPrizeRow).map(normaliseHookRow).filter(x=>itemTitle(x)!=='Item' && (itemImage(x)||x.item_id));
-    return prizes;
+    try{
+      rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
+      const prizes=rows.filter(isHookPrizeRow).map(normaliseHookRow).filter(x=>itemTitle(x)!=='Item' && (itemImage(x)||x.item_id));
+      return prizes.length?prizes:FAST_HOOK_ITEMS;
+    }catch(e){return FAST_HOOK_ITEMS;}
   }
   return [];
 }
@@ -943,7 +965,8 @@ function loadShopItemsForTarget(){
 
 function openDataPanel(kind){
   const cached=getCachedPanelItems(kind);
-  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):'Loading '+kind+'...';if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
+  const instant=(kind==='hook'&&!cached)?FAST_HOOK_ITEMS:[];
+  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||instant;state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):(kind==='hook'?'Pacifier casts the hook':'Loading '+kind+'...');if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
   cachedLoadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
     state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');preloadPanelImages(items);render();
@@ -1000,26 +1023,28 @@ async function useSelectedItem(item){
 }
 async function playHook(item){
   const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
-  const prize=weightedPrize(pool) || item || {item_name:'Mystery Waaambulance prize',price:15};
+  const prize=weightedPrize(pool) || item || FAST_HOOK_ITEMS[0] || {item_name:'Mystery Waaambulance prize',price:15};
   state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
-  await new Promise(r=>setTimeout(r,520));
-  try{
-    let data=null, lastErr=null;
-    for(const mode of ['complete_hook_waaambulance','cast_hook_waaambulance','play_hook_waaambulance']){
-      try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',selected_pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});break;}
-      catch(err){lastErr=err;}
-    }
-    if(!data)throw lastErr||new Error('hook save failed');
-    state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('You hooked '+itemTitle(prize));
-    if(data&&typeof data==='object'){
+  await new Promise(r=>setTimeout(r,180));
+  state.hookCasting=false;
+  state.panelActionMsg='You hooked '+itemTitle(prize);
+  render();
+  // Save in the background so the mini game does not feel frozen. If the backend returns
+  // the real PetBot prize, replace the local prize with that response.
+  (async()=>{
+    try{
+      let data=null, lastErr=null;
+      for(const mode of ['play_hook_waaambulance','cast_hook_waaambulance','complete_hook_waaambulance']){
+        try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',selected_pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});break;}
+        catch(err){lastErr=err;}
+      }
+      if(!data)throw lastErr||new Error('hook save failed');
+      if(state.screen!=='hook')return;
+      state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('Saved: '+itemTitle(prize));
       const realPrize={...prize,raw:{...(prize.raw||{}),...data},item_name:data.hook_name||data.prize_name||data.item_earned||itemTitle(prize),item_id:data.hook_key||data.prize_key||prize.item_id,image_url:data.image_url||data.hook_image_url||data.prize_image||prize.image_url};
-      state.hookPrize=realPrize;
-    }
-  }catch(e){
-    state.panelActionMsg='You hooked '+itemTitle(prize)+' · saving is not enabled yet';
-  }
-  clearPanelCache('inventory'); clearPanelCache('hook');
-  state.hookCasting=false; render();
+      state.hookPrize=realPrize; clearPanelCache('inventory'); clearPanelCache('hook'); render();
+    }catch(e){ if(state.screen==='hook'){ state.panelActionMsg='You hooked '+itemTitle(prize)+' · check inventory after refresh'; render(); } }
+  })();
 }
 async function openPanelReload(kind){
   state.panelKind=kind;state.panelLoading=true;render();
@@ -1063,17 +1088,14 @@ $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='
 $('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
-  let repeatTimer=null;
   const stop=e=>{
-    if(repeatTimer){clearInterval(repeatTimer);repeatTimer=null;}
     if(state.screen==='questGame'){ try{e&&e.preventDefault();}catch(_e){} sendParent('waa-petbot-game-action',{action:'moveStop'}); }
   };
   btn.addEventListener('pointerdown',e=>{
     if(state.screen==='questGame'){
       e.preventDefault(); try{btn.setPointerCapture(e.pointerId);}catch(_e){}
+      // One start message, one stop message. Repeating postMessages made the embedded game feel laggy.
       sendParent('waa-petbot-game-action',{action:startAction});
-      if(repeatTimer)clearInterval(repeatTimer);
-      repeatTimer=setInterval(()=>{ if(state.screen==='questGame') sendParent('waa-petbot-game-action',{action:startAction}); else stop(); },140);
     }
   });
   btn.addEventListener('pointerup',stop);

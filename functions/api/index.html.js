@@ -1842,12 +1842,13 @@ function fitEmbeddedTamaGame(){
     const lcdTop=deviceTop+deviceH*lcdY;
     const lcdPxW=deviceW*lcdW;
     const lcdPxH=deviceH*lcdH;
-    // Cover LCD height so there are no black letterbox bands, then left-anchor the world
-    // so Ax/Pura stay visible in the Tamagotchi instead of being cropped off-screen.
-    const scale=Math.max(0.10,(lcdPxH/1080)*1.025);
+    // Stage 23: zoom in for Tamagotchi mode. Stage 22 showed too much of the whole level,
+    // which made the sprite tiny. Left-anchor the enlarged world so the player and
+    // buildings stay usable inside the LCD.
+    const scale=Math.max(0.16,(lcdPxH/1080)*1.62,(lcdPxW/1920)*1.62);
     const displayW=1920*scale;
-    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.02);
-    const cy=lcdTop+(lcdPxH/2);
+    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.08);
+    const cy=lcdTop+(lcdPxH*0.58);
     document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
     document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
     document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
@@ -1872,7 +1873,11 @@ function tapEmbeddedControl(action){
     if(action==='moveLeftStart'){ keys.left=true; keys.right=false; }
     if(action==='moveRightStart'){ keys.right=true; keys.left=false; }
     if(action==='moveStop'){ keys.left=false; keys.right=false; }
-    if(action==='jump'){ jump(); }
+    if(action==='jump'){
+      // Pacifier is the select button in Tamagotchi mode: enter/use nearby buildings first,
+      // only jump when there is nothing to select.
+      if(!(typeof enterNearbyBuilding==='function' && enterNearbyBuilding()) && !(typeof enterNearbyInteractable==='function' && enterNearbyInteractable())) jump();
+    }
   }catch(e){}
 }
 function handlePetbotGameAction(action){
@@ -2287,7 +2292,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=92&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=93&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
