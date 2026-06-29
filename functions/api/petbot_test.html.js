@@ -28,7 +28,6 @@ const PET_ACTIONS=[
 const GAME_MENU=[
   {key:'solo',label:'Solo Quest',icon:'🚑',action:'questSolo'},
   {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
-  {key:'platform',label:'Open Platform Game',icon:'🎮',action:'questPlatform'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
 const CARE_ACTIONS=[
@@ -104,7 +103,11 @@ function renderPetHome(){
   const title=`${petName} · Lv ${p.level||1}`;
   const sub=`${p.pet||p.species||'pet'} · XP ${p.xp||0}`;
   const img=petImage(p);
-  return top(title,'')+`<div class="body petHomeStage21"><div class="petFocus21">${img}</div><div class="petInfo21"><div class="petSub21">${esc(sub)}</div><div class="petChipGrid21"><div class="petChip21"><span>🍔</span><b>${esc(p.hunger??0)}</b><small>Food</small></div><div class="petChip21"><span>😊</span><b>${esc(p.happiness??0)}</b><small>Happy</small></div><div class="petChip21"><span>⚡</span><b>${esc(p.energy??0)}</b><small>Energy</small></div><div class="petChip21"><span>➕</span><b>${esc(p.health??0)}</b><small>Health</small></div></div></div><div class="petHint21">🍼 Press pacifier for actions</div></div>`;
+  return top(title,'')+`<div class="body petHome22"><div class="petHome22Art">${img}</div><div class="petHome22Stats"><div class="petHome22Sub">${esc(sub)}</div>${stat22('🍔','food','Food',p.hunger)}${stat22('😊','happy','Happy',p.happiness)}${stat22('⚡','energy','Energy',p.energy)}${stat22('➕','health','Health',p.health)}</div></div>`;
+}
+function stat22(icon,cls,label,value){
+  const v=clamp(Math.round(n(value,0)),0,100);
+  return `<div class="stat22 ${cls}"><div class="stat22Top"><span>${icon} ${esc(label)}</span><b>${v}</b></div><div class="stat22Bar"><i style="width:${v}%"></i></div></div>`;
 }
 function renderPetActions(){
   const p=currentPet();
@@ -373,7 +376,7 @@ async function runCareAction(){
   render();
 }
 function renderGames(){
-  return top('GAMES','')+`<div class="body"><div class="panelHead">Choose a real Waaambulance game</div><div class="panelGrid">${GAME_MENU.map((g,i)=>`<div class="panelCard ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
+  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Choose Solo or Team Quest</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
 }
 function renderQuestGame(){
   return `<div class="questGameGlass" aria-label="${esc(state.quest.mode||'Quest')} running inside Tamagotchi"></div>`;
@@ -1081,7 +1084,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); requestLocalFullscreen(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { sendParent('waa-petbot-toggle-fullscreen'); }});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});

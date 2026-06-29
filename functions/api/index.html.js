@@ -1832,17 +1832,22 @@ function fitEmbeddedTamaGame(){
   try{
     const vw=window.innerWidth||document.documentElement.clientWidth||1920;
     const vh=window.innerHeight||document.documentElement.clientHeight||1080;
-    // petbot_test.html uses a 1024x1536 toy image centered in the iframe.
     const deviceW=Math.min(vw*0.98, vh*0.99*(1024/1536));
     const deviceH=deviceW*(1536/1024);
     const deviceLeft=(vw-deviceW)/2;
     const deviceTop=(vh-deviceH)/2;
-    // Transparent LCD hole measured from petbot_device.png: x=217 y=607 w=586 h=409.
+    // Same LCD cut-out used by the Tamagotchi art.
     const lcdX=217/1024, lcdY=607/1536, lcdW=586/1024, lcdH=409/1536;
-    const cx=deviceLeft+deviceW*(lcdX+lcdW/2);
-    const cy=deviceTop+deviceH*(lcdY+lcdH/2);
-    // Cover the LCD by height; this crops the sides instead of leaving black bands.
-    const scale=Math.max(0.12,(deviceH*lcdH/1080)*1.08);
+    const lcdLeft=deviceLeft+deviceW*lcdX;
+    const lcdTop=deviceTop+deviceH*lcdY;
+    const lcdPxW=deviceW*lcdW;
+    const lcdPxH=deviceH*lcdH;
+    // Cover LCD height so there are no black letterbox bands, then left-anchor the world
+    // so Ax/Pura stay visible in the Tamagotchi instead of being cropped off-screen.
+    const scale=Math.max(0.10,(lcdPxH/1080)*1.025);
+    const displayW=1920*scale;
+    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.02);
+    const cy=lcdTop+(lcdPxH/2);
     document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
     document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
     document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
@@ -2282,7 +2287,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=91&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=92&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
