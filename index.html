@@ -1856,21 +1856,25 @@ const levels=[
       // No extra random lesson clutter: each board explains the next real stop.
       {at:-1723,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Controls: Right/D moves forward, Left/A goes backwards, Space/W/Up jumps.'},
+      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Welcome to Tutorial Town: walk, jump, then press Select near buildings.'},
+      {at:-980,kind:'token',tokenIndex:0,message:'Tutorial Token: collect by touching it properly.'},
+      {at:-820,kind:'token',tokenIndex:1,message:'Hidden-ish token: exploration gets rewards.'},
 
-      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Enter or tap it.'},
+      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Select.'},
       {at:-332,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
       {at:730,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
       {at:1048,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: use Space/W/Up. Later this area can teach hazards and stomping.'},
+      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: hop over the training cone.'},
       {at:1550,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
+      {at:1760,kind:'token',tokenIndex:2,message:'Mushroom token collected.'},
 
       {at:2100,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
       {at:2411,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter: choose Tutorial Town, Wrong Moon or Swamp Monster.'},
+      {at:3300,kind:'sign',title:'Secret',data:['🎁','Secret',0,''],message:'You found a secret already?! Bonus curiosity points.'},
+      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Selector: Tutorial Town first, Wrong Moon next.'},
       {at:3826,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
       {at:6200,kind:'finish'}
@@ -3076,10 +3080,10 @@ function fitEmbeddedTamaGame(){
     // Stage 23: zoom in for Tamagotchi mode. Stage 22 showed too much of the whole level,
     // which made the sprite tiny. Left-anchor the enlarged world so the player and
     // buildings stay usable inside the LCD.
-    const scale=Math.max(0.16,(lcdPxH/1080)*1.62,(lcdPxW/1920)*1.62);
+    const scale=Math.max(0.18,(lcdPxH/1080)*1.82,(lcdPxW/1920)*1.82);
     const displayW=1920*scale;
-    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.08);
-    const cy=lcdTop+(lcdPxH*0.58);
+    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.12);
+    const cy=lcdTop+(lcdPxH*0.60);
     document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
     document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
     document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));

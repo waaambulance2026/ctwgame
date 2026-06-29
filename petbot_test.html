@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 23</title>
+<title>CTW PetBot Tamagotchi - Stage 24</title>
 <style>
 :root{
   --ink:#16223f;
@@ -503,6 +503,25 @@ body.questPlaying .device{pointer-events:auto!important;}
 .hookResult{font-size:clamp(7px,.76vw,10px)!important;line-height:1.05!important;padding:2px 5px!important;}
 @media(max-width:520px){.petHome22{grid-template-columns:45% 55%!important}.petHome22Art .petImg{width:105%!important;height:105%!important}}
 
+
+/* Stage 24: Tutorial Town spec support + safer habitat view. */
+.petHome22{grid-template-columns:50% 50%!important;padding:3px 8px 5px!important;gap:3px!important;}
+.petHome22Art{overflow:visible!important;}
+.petHome22Art .petImg{width:112%!important;height:112%!important;max-width:122%!important;max-height:122%!important;top:53%!important;}
+.petHome22Stats{gap:2px!important;grid-template-rows:auto repeat(4,1fr)!important;}
+.stat22{min-height:0!important;padding:2px 3px!important;}
+.stat22Top span{max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.quests22 .panelHead:after{content:'Tutorial Town first, Wrong Moon next';display:block;font-size:clamp(6px,.68vw,9px);opacity:.72;margin-top:2px;}
+.habitatFullScreen{background:#bff3ff!important;}
+.habitatFullScreen::before{content:'';position:absolute!important;inset:0!important;background:linear-gradient(180deg,#203d97 0%,#3957bb 48%,#72d781 49%,#72d781 64%,#2e6d42 65%,#2e6d42 100%)!important;z-index:0!important;}
+.habitatFullScreen .habitatView{z-index:1!important;}
+.habitatFullScreen .habitatFrame{background-color:transparent!important;}
+.habitatFullScreen .habitatLayer.background{z-index:1!important;}
+.habitatFullScreen .habitatLayer.fallbackPet{z-index:90!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;}
+.habitatFullScreen .habitatPetEmoji{position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,62px);z-index:95;filter:drop-shadow(0 5px 4px rgba(0,0,0,.25));}
+.hookFullScreen .hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
+.hookFullScreen .hookResult{max-height:34%!important;overflow:hidden!important;}
+
 </style>
 </head>
 <body>
@@ -558,6 +577,12 @@ const GAME_MENU=[
   {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
+const TUTORIAL_TOWN_SCRIPT={
+  title:'Tutorial Town',
+  next:'Wrong Moon Quest',
+  rewards:{coins:10,xp:25},
+  flow:['Wake up in the Tamagotchi','Collect tokens by touching them','Visit Pet Shop','Try Hook-a-Waaambulance','Open Habitat','Use Quest Selector','Team Quest practice','Stage clear']
+};
 const CARE_ACTIONS=[
   {key:'feed',label:'Feed',icon:'🍔',mode:'feed_pet'},
   {key:'play',label:'Play',icon:'🧸',mode:'play_pet'},
@@ -844,11 +869,13 @@ function buildHabitatLayers(items,pet){
     const finalPetUrl=rowPetUrl||petUrl;
     if(finalPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',finalPetUrl,50,72,22,32,80));
   }
-  // Stage 23: never leave Habitat as a blank LCD. If the sheet/API does not return
-  // a usable composite/layer on this load, show a safe room fallback with the selected pet.
-  if(!layers.length){
-    layers.push(makeHabitatLayer('background',DEFAULT_HABITAT_BG,0,0,100,100,1));
-    if(petUrl)layers.push(makeHabitatLayer('fallbackPet',petUrl,50,74,28,38,80));
+  // Stage 24: Habitat must never become an empty/blank LCD.
+  // If a real user_habitats_layout image fails, keep a default room plus the selected pet.
+  if(!layers.some(l=>l&&l.cls==='background')){
+    layers.unshift(makeHabitatLayer('background',DEFAULT_HABITAT_BG,0,0,100,100,1));
+  }
+  if(!layers.some(l=>/petLayer|fallbackPet/.test(String(l&&l.cls||'')))){
+    if(petUrl)layers.push(makeHabitatLayer('fallbackPet',petUrl,50,74,34,44,80));
   }
   return layers.filter(Boolean);
 }
@@ -868,8 +895,10 @@ function renderHabitatPanel(){
   if(layers.length)writeCachedHabitatLayers(layers);
   if((!layers.length||state.panelLoading)&&readCachedHabitatLayers().length)layers=readCachedHabitatLayers();
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'No habitat image found')}</div>` : '';
-  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
+  const hasPetImage=layers.some(l=>/petLayer|fallbackPet/.test(String(l&&l.cls||'')));
+  const emojiFallback=!hasPetImage?`<div class="habitatPetEmoji">${esc(pet.emoji||emojiFor(pet.pet||pet.category))}</div>`:'';
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'Default habitat')}</div>` : '';
+  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${emojiFallback}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
   const url=itemImage(it);
@@ -915,7 +944,7 @@ async function runCareAction(){
   render();
 }
 function renderGames(){
-  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Choose Solo or Team Quest</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
+  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Tutorial Town</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span><small>${g.key==='solo'?'One pet tutorial':g.key==='team'?'Team Quest tutorial':'Return to pet'}</small></div>`).join('')}</div></div>`;
 }
 function renderQuestGame(){
   return `<div class="questGameGlass" aria-label="${esc(state.quest.mode||'Quest')} running inside Tamagotchi"></div>`;
@@ -1424,14 +1453,14 @@ function activateGameMenu(){
   const item=GAME_MENU[state.gameIndex]||GAME_MENU[0];
   if(item.action==='back'){state.screen='petActions';render();return;}
   if(item.action==='questSolo'){
-    state.quest={mode:'Solo Quest',embedded:true,score:0};
+    state.quest={mode:'Solo Quest · Tutorial Town',embedded:true,score:0};
     state.screen='questGame';
     render();
     setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSoloEmbedded'}),80);
     return;
   }
   if(item.action==='questTeam'){
-    state.quest={mode:'Team Quest',embedded:true,score:0};
+    state.quest={mode:'Team Quest · Tutorial Town',embedded:true,score:0};
     state.screen='questGame';
     render();
     setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startTeamEmbedded'}),80);
