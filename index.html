@@ -1163,6 +1163,28 @@ body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen,
 body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{background:transparent!important;}
 body.gameExpandedFromTama #petbotDock{display:none!important;}
 
+
+/* Stage 25: hard crop the real quest to the Tamagotchi LCD.
+   This stops the road/background drawing outside the toy screen. */
+body.petbotOpen.tamaGameEmbedded #game{
+  clip-path:inset(var(--tama-clip-top,360px) var(--tama-clip-right,860px) var(--tama-clip-bottom,70px) var(--tama-clip-left,0px) round 26px)!important;
+  -webkit-clip-path:inset(var(--tama-clip-top,360px) var(--tama-clip-right,860px) var(--tama-clip-bottom,70px) var(--tama-clip-left,0px) round 26px)!important;
+  overflow:hidden!important;
+  background:#101128!important;
+}
+body:not(.tamaGameEmbedded) #game,
+body.gameExpandedFromTama #game{
+  clip-path:none!important;
+  -webkit-clip-path:none!important;
+}
+body.petbotOpen.tamaGameEmbedded .overlay,
+body.petbotOpen.tamaGameEmbedded .hud,
+body.petbotOpen.tamaGameEmbedded .instructions,
+body.petbotOpen.tamaGameEmbedded .builder,
+body.petbotOpen.tamaGameEmbedded .petPanel,
+body.petbotOpen.tamaGameEmbedded .touch,
+body.petbotOpen.tamaGameEmbedded .helpBtn{display:none!important;}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1208,7 +1230,7 @@ body.gameExpandedFromTama #petbotDock{display:none!important;}
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=93&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=125&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3071,24 +3093,41 @@ function fitEmbeddedTamaGame(){
     const deviceH=deviceW*(1536/1024);
     const deviceLeft=(vw-deviceW)/2;
     const deviceTop=(vh-deviceH)/2;
-    // Same LCD cut-out used by the Tamagotchi art.
-    const lcdX=217/1024, lcdY=607/1536, lcdW=586/1024, lcdH=409/1536;
+
+    // Use the same LCD rectangle as petbot_test.html Stage 20.
+    const lcdX=.2118, lcdY=.3952, lcdW=.5724, lcdH=.2663;
     const lcdLeft=deviceLeft+deviceW*lcdX;
     const lcdTop=deviceTop+deviceH*lcdY;
     const lcdPxW=deviceW*lcdW;
     const lcdPxH=deviceH*lcdH;
-    // Stage 23: zoom in for Tamagotchi mode. Stage 22 showed too much of the whole level,
-    // which made the sprite tiny. Left-anchor the enlarged world so the player and
-    // buildings stay usable inside the LCD.
-    const scale=Math.max(0.18,(lcdPxH/1080)*1.82,(lcdPxW/1920)*1.82);
-    const displayW=1920*scale;
-    const cx=lcdLeft+(displayW/2)-(lcdPxW*0.12);
-    const cy=lcdTop+(lcdPxH*0.60);
+    const lcdCenterX=lcdLeft+lcdPxW/2;
+    const lcdCenterY=lcdTop+lcdPxH/2;
+
+    // Stage 25: zoom into the useful part of the level, then crop it to the LCD.
+    // The player starts near the left of the design canvas, so the local crop begins near x=0.
+    let scale=Math.max(lcdPxW/860, lcdPxH/520);
+    scale=Math.max(.24,Math.min(.56,scale));
+    const cropW=Math.min(DESIGN_W,lcdPxW/scale);
+    const cropH=Math.min(DESIGN_H,lcdPxH/scale);
+    const cropLeft=Math.max(0,Math.min(DESIGN_W-cropW,12));
+    const cropTop=Math.max(0,Math.min(DESIGN_H-cropH,DESIGN_H-cropH-58));
+    const cropCenterX=cropLeft+cropW/2;
+    const cropCenterY=cropTop+cropH/2;
+
+    // Position the selected crop rectangle exactly over the Tamagotchi screen.
+    const cx=lcdCenterX-((cropCenterX-(DESIGN_W/2))*scale);
+    const cy=lcdCenterY-((cropCenterY-(DESIGN_H/2))*scale);
+
     document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
     document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
     document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
-  }catch(e){}
+    document.documentElement.style.setProperty('--tama-clip-left',cropLeft+'px');
+    document.documentElement.style.setProperty('--tama-clip-top',cropTop+'px');
+    document.documentElement.style.setProperty('--tama-clip-right',(DESIGN_W-cropLeft-cropW)+'px');
+    document.documentElement.style.setProperty('--tama-clip-bottom',(DESIGN_H-cropTop-cropH)+'px');
+  }catch(e){console.warn('fitEmbeddedTamaGame failed',e);}
 }
+
 function expandEmbeddedTamaGame(){
   // Stage 19: expand the real platform game out of the Tamagotchi frame.
   document.body.classList.remove('tamaGameEmbedded');
@@ -3101,6 +3140,36 @@ function expandEmbeddedTamaGame(){
   try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen){ const r=document.documentElement.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); } }catch(e){}
   requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
 }
+function selectNearestEmbedded(){
+  if(!document.body.classList.contains('tamaGameEmbedded')) return false;
+  try{
+    const playerEl=$('player');
+    if(!playerEl||!Array.isArray(objects)) return false;
+    const pr=playerEl.getBoundingClientRect();
+    const pcx=pr.left+pr.width/2, pcy=pr.top+pr.height/2;
+    let best=null;
+    for(const o of objects){
+      if(!o||o.hit||o.vanished||o.opening||!o.el) continue;
+      if(!(o.kind==='building'||o.kind==='task'||o.kind==='sign')) continue;
+      const r=o.el.getBoundingClientRect();
+      if(r.width<4||r.height<4) continue;
+      const cx=r.left+r.width/2, cy=r.top+r.height/2;
+      const dx=Math.abs(cx-pcx), dy=Math.abs(cy-pcy);
+      const limitX=o.kind==='building'?260:170;
+      const limitY=o.kind==='building'?190:130;
+      if(dx>limitX||dy>limitY) continue;
+      const score=dx+(dy*.45);
+      if(!best||score<best.score) best={o,score};
+    }
+    if(best&&best.o){
+      if(best.o.kind==='building'&&typeof openBuilding==='function'){
+        openBuilding(best.o); return true;
+      }
+      if(typeof interactObject==='function') return !!interactObject(best.o);
+    }
+  }catch(e){}
+  return false;
+}
 function tapEmbeddedControl(action){
   try{
     if(action==='moveLeft'){ keys.left=true; keys.right=false; setTimeout(()=>{keys.left=false;},360); }
@@ -3109,8 +3178,8 @@ function tapEmbeddedControl(action){
     if(action==='moveRightStart'){ keys.right=true; keys.left=false; }
     if(action==='moveStop'){ keys.left=false; keys.right=false; }
     if(action==='jump'){
-      // Pacifier is the select button in Tamagotchi mode: enter/use nearby buildings first,
-      // only jump when there is nothing to select.
+      // Pacifier is Select first. In Tamagotchi mode the screen is small, so also use a wider helper radius.
+      if(selectNearestEmbedded()) return;
       if(!(typeof enterNearbyBuilding==='function' && enterNearbyBuilding()) && !(typeof enterNearbyInteractable==='function' && enterNearbyInteractable())) jump();
     }
   }catch(e){}
@@ -3527,7 +3596,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=93&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=125&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{

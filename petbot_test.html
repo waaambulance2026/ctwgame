@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 24</title>
+<title>CTW PetBot Tamagotchi - Stage 25</title>
 <style>
 :root{
   --ink:#16223f;
@@ -522,6 +522,28 @@ body.questPlaying .device{pointer-events:auto!important;}
 .hookFullScreen .hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
 .hookFullScreen .hookResult{max-height:34%!important;overflow:hidden!important;}
 
+
+/* Stage 25: cleaner fitting screens. */
+.petHome22{grid-template-columns:42% 58%!important;padding:4px 9px 6px!important;gap:5px!important;}
+.petHome22Art{overflow:hidden!important;border-radius:10px!important;}
+.petHome22Art .petImg{width:90%!important;height:90%!important;max-width:98%!important;max-height:98%!important;top:51%!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;}
+.petHome22Stats{gap:3px!important;}
+.stat22{grid-template-rows:auto 7px!important;padding:3px 5px!important;border-radius:9px!important;}
+.stat22Top{font-size:clamp(6px,.7vw,9px)!important;}
+.stat22Bar{height:7px!important;}
+.habitatFullScreen{background:linear-gradient(180deg,#bff3ff,#eaffff)!important;}
+.habitatFullScreen::before{display:block!important;}
+.habitatFullScreen .habitatFrame{background-color:transparent!important;background-image:none!important;}
+.habitatFullScreen .habitatLayer.background{background-size:cover!important;background-position:center!important;}
+.habitatFullScreen .habitatLayer.stage11Pet,
+.habitatFullScreen .habitatLayer.fallbackPet{background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;}
+.hookFullScreen .hookPond{background:none!important;overflow:hidden!important;}
+.hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;}
+.hookFullScreen .hookLine,.hookFullScreen .hookWave,.hookFullScreen .hookFloatPrize,.hookFullScreen .hookPrize,.hookFullScreen .hookPrizeImage,.hookFullScreen .hookResult{position:absolute!important;z-index:3!important;}
+.hookFullScreen .hookResult{z-index:6!important;left:3%!important;right:3%!important;bottom:2%!important;max-height:26%!important;overflow:hidden!important;background:rgba(255,255,255,.88)!important;}
+.hookFullScreen .hookPrizeImage{z-index:5!important;border-radius:10px!important;background-size:contain!important;background-repeat:no-repeat!important;background-color:rgba(255,255,255,.7)!important;}
+@media(max-width:520px){.petHome22{grid-template-columns:40% 60%!important;padding:3px 7px 5px!important}.petHome22Art .petImg{width:88%!important;height:88%!important}.stat22{padding:2px 4px!important}.stat22Bar{height:6px!important}}
+
 </style>
 </head>
 <body>
@@ -911,10 +933,14 @@ function renderHookGamePanel(){
   const selected=state.hookPrize||items[idx]||{};
   const loading=state.panelLoading;
   const floats=[0,1,2,3,4,5].map((n)=>items[(idx+n)%Math.max(1,items.length)]||{});
-  const prizeImg=state.hookPrize&&itemImage(state.hookPrize)?`<div class="hookPrizeImage" style="background-image:url('${esc(itemImage(state.hookPrize))}')"></div>`:'';
-  const prizeTitle=loading?'Loading prize pool...':(state.panelActionMsg|| (selected&&itemTitle(selected)!=='Item'?('Prize: '+itemTitle(selected)):'Pacifier casts the hook'));
-  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><div class="hookLine"></div><div class="hookWave"></div>${floats.map((it,i)=>hookPrizeFloatHtml(it,'p'+((i%4)+1),'🚑')).join('')}${prizeImg||'<div class="hookPrize">🪝</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
+  const wonUrl=state.hookPrize&&itemImage(state.hookPrize);
+  const prizeImg=wonUrl?`<div class="hookPrizeImage" style="background-image:url('${esc(wonUrl)}')"></div>`:'';
+  const prizeName=itemTitle(selected);
+  const prizeTitle=loading?'Loading prize pool...':(state.panelActionMsg|| (selected&&prizeName!=='Item'?('Prize: '+prizeName):'Pacifier casts the hook'));
+  const floatHtml=floats.map((it,i)=>hookPrizeFloatHtml(it,'p'+((i%4)+1),'🚑')).join('');
+  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="hook_a_waaambulance.gif?v=stage25" alt="Hook-a-Waaambulance game">${floatHtml}<div class="hookLine"></div><div class="hookWave"></div>${prizeImg||'<div class="hookPrize">🚑</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
 }
+
 function renderCarePanel(){
   const p=currentPet()||{};
   const idx=clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1);
