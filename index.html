@@ -1188,6 +1188,19 @@ body.petbotOpen.tamaGameEmbedded .petPanel,
 body.petbotOpen.tamaGameEmbedded .touch,
 body.petbotOpen.tamaGameEmbedded .helpBtn{display:none!important;}
 
+
+
+/* STAGE 27: quest input + on-screen text + smoother full-screen walking */
+.tamaGameCaption{
+  display:none;position:fixed;left:var(--tama-lcd-left,50vw);top:calc(var(--tama-lcd-top,50dvh) + 8px);width:var(--tama-lcd-w,360px);min-height:26px;transform:none;z-index:2147483600;pointer-events:none;text-align:center;padding:5px 10px;border-radius:999px;background:rgba(255,247,189,.94);color:#21142d;font-weight:1000;font-size:clamp(11px,1.45vw,17px);line-height:1.12;box-shadow:0 8px 18px rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.45);text-shadow:none;
+}
+body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{display:block!important;}
+body.gameExpandedFromTama .tamaGameCaption.show{display:block!important;left:50vw!important;top:auto!important;bottom:calc(env(safe-area-inset-bottom) + 22px)!important;width:min(760px,86vw)!important;transform:translateX(-50%)!important;}
+body.gameExpandedFromTama #buildingObjects,body.gameExpandedFromTama .building,body.gameExpandedFromTama .interactiveStop,body.gameExpandedFromTama .lessonBlock,body:not(.petbotOpen) #buildingObjects,body:not(.petbotOpen) .building{pointer-events:auto!important;}
+body.gameMoving .building img,body.gameMoving .obj.hasImage img{filter:drop-shadow(0 10px 12px rgba(0,0,0,.24))!important;}
+body.gameMoving .building,body.gameMoving .obj,body.gameMoving .character img{transition:none!important;}
+body.gameExpandedFromTama #game{will-change:transform!important;contain:layout paint style!important;backface-visibility:hidden!important;}
+
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1233,7 +1246,7 @@ body.petbotOpen.tamaGameEmbedded .helpBtn{display:none!important;}
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=126&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=127&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -1242,7 +1255,7 @@ body.petbotOpen.tamaGameEmbedded .helpBtn{display:none!important;}
   <button class="petbotBackBtn" id="petbotBackBtn" type="button" aria-label="Back to game">← Back to game</button>
 
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
-  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
+  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="tamaGameCaption" id="tamaGameCaption" aria-live="polite"></div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
   <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
   <div class="overlay hidden" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Tamagotchi</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
@@ -3583,6 +3596,182 @@ fitGameToScreen();
 
 
 
+
+
+// STAGE 27: reliable building select, visible Tamagotchi quest text, and smoother moving state.
+function stage27EnsureCaption(){
+  let cap=document.getElementById('tamaGameCaption');
+  if(!cap){cap=document.createElement('div');cap.id='tamaGameCaption';cap.className='tamaGameCaption';cap.setAttribute('aria-live','polite');document.body.appendChild(cap);}
+  return cap;
+}
+function stage27ShowCaption(msg,duration=1800){
+  const cap=stage27EnsureCaption();
+  cap.textContent=String(msg||'');
+  cap.classList.add('show');
+  clearTimeout(stage27ShowCaption.t);
+  stage27ShowCaption.t=setTimeout(()=>cap.classList.remove('show'),duration);
+}
+function showToast(msg){
+  const t=$('toast');
+  if(t){t.textContent=msg;t.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>t.classList.remove('show'),1300);}
+  if(document.body.classList.contains('tamaGameEmbedded')||document.body.classList.contains('gameExpandedFromTama')) stage27ShowCaption(msg,1900);
+}
+function stage27SetMovingClass(moving){
+  moving=!!moving;
+  if(stage27SetMovingClass.last===moving)return;
+  stage27SetMovingClass.last=moving;
+  document.body.classList.toggle('gameMoving',moving);
+}
+function renderObjectNow(o){
+  if(!o||!o.el)return;
+  const left=(Number(o.x)||0).toFixed(2)+'px';
+  const top=(Number(o.y)||0).toFixed(2)+'px';
+  if(o._lastLeft!==left){o.el.style.left=left;o._lastLeft=left;}
+  if(o._lastTop!==top){o.el.style.top=top;o._lastTop=top;}
+}
+function stage27ObjectDistanceScore(o,pcx,pcy,wide){
+  const r=o.el.getBoundingClientRect();
+  if(!r||r.width<4||r.height<4)return null;
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  const dx=Math.abs(cx-pcx), dy=Math.abs(cy-pcy);
+  const isBuilding=o.kind==='building';
+  const limitX=isBuilding?(wide?560:430):(wide?310:230);
+  const limitY=isBuilding?(wide?360:260):(wide?220:160);
+  if(dx>limitX||dy>limitY)return null;
+  return dx+(dy*.42);
+}
+function selectNearestWorldStop(opts={}){
+  const wide=!!(opts.embedded||opts.expanded||document.body.classList.contains('tamaGameEmbedded')||document.body.classList.contains('gameExpandedFromTama'));
+  if(!playing||ended||document.body.classList.contains('editMode'))return false;
+  if(!$('startScreen').classList.contains('hidden'))return false;
+  if($('doorScreen')&&!$('doorScreen').classList.contains('hidden'))return false;
+  const overlays=['shopScreen','welcomeInfoScreen','hookScreen','questStartScreen','levelScreen','endScreen'];
+  if(overlays.some(id=>$(id)&&!$(id).classList.contains('hidden')))return false;
+  const playerEl=$('player');
+  if(!playerEl||!Array.isArray(objects))return false;
+  const pr=playerEl.getBoundingClientRect();
+  const pcx=pr.left+pr.width/2, pcy=pr.top+pr.height*.70;
+  let best=null;
+  for(const o of objects){
+    if(!o||o.hit||o.vanished||o.opening||!o.el)continue;
+    if(!(o.kind==='building'||o.kind==='task'||o.kind==='sign'))continue;
+    const score=stage27ObjectDistanceScore(o,pcx,pcy,wide);
+    if(score==null)continue;
+    if(!best||score<best.score)best={o,score};
+  }
+  if(!best){
+    const playerDesignX=cssNumber('--playerX',150)+(player&&player.x?player.x:0);
+    for(const o of objects){
+      if(!o||o.hit||o.vanished||o.opening||!o.el)continue;
+      if(!(o.kind==='building'||o.kind==='task'||o.kind==='sign'))continue;
+      const dx=Math.abs((Number(o.x)||0)-playerDesignX);
+      const limit=o.kind==='building'?(wide?620:470):(wide?360:260);
+      if(dx<=limit){const score=dx+(o.kind==='building'?0:80);if(!best||score<best.score)best={o,score};}
+    }
+  }
+  if(!best||!best.o){showToast('Move closer to the glowing building, then press the pacifier or Enter.');return false;}
+  const o=best.o;
+  if(o.kind==='building'&&typeof openBuilding==='function'){openBuilding(o);return true;}
+  if(typeof interactObject==='function')return !!interactObject(o);
+  return false;
+}
+function enterNearbyBuilding(){
+  if(!playing||ended||document.body.classList.contains('editMode'))return false;
+  if(nearbyBuilding&&!nearbyBuilding.vanished&&!nearbyBuilding.opening){openBuilding(nearbyBuilding);return true;}
+  return selectNearestWorldStop({expanded:document.body.classList.contains('gameExpandedFromTama')});
+}
+function enterNearbyInteractable(){
+  if(!playing||ended||document.body.classList.contains('editMode'))return false;
+  if(nearbyInteractable&&!nearbyInteractable.vanished&&!nearbyInteractable.hit)return interactObject(nearbyInteractable);
+  return selectNearestWorldStop({expanded:document.body.classList.contains('gameExpandedFromTama')});
+}
+function selectNearestEmbedded(){
+  if(!document.body.classList.contains('tamaGameEmbedded'))return false;
+  return selectNearestWorldStop({embedded:true});
+}
+function tapEmbeddedControl(action){
+  try{
+    if(action==='moveLeft'){keys.left=true;keys.right=false;stage27SetMovingClass(true);setTimeout(()=>{keys.left=false;stage27SetMovingClass(false);},300);return;}
+    if(action==='moveRight'){keys.right=true;keys.left=false;stage27SetMovingClass(true);setTimeout(()=>{keys.right=false;stage27SetMovingClass(false);},300);return;}
+    if(action==='moveLeftStart'){keys.left=true;keys.right=false;stage27SetMovingClass(true);return;}
+    if(action==='moveRightStart'){keys.right=true;keys.left=false;stage27SetMovingClass(true);return;}
+    if(action==='moveStop'){keys.left=false;keys.right=false;stage27SetMovingClass(false);return;}
+    if(action==='jump'||action==='selectOrJump'){
+      if(selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')}))return;
+      jump();
+    }
+  }catch(e){console.warn('Tamagotchi control failed',e);}
+}
+function fitEmbeddedTamaGame(){
+  if(!document.body.classList.contains('tamaGameEmbedded'))return;
+  try{
+    const vw=window.innerWidth||document.documentElement.clientWidth||1920;
+    const vh=window.innerHeight||document.documentElement.clientHeight||1080;
+    const deviceW=Math.min(vw*0.98, vh*0.99*(1024/1536));
+    const deviceH=deviceW*(1536/1024);
+    const deviceLeft=(vw-deviceW)/2, deviceTop=(vh-deviceH)/2;
+    const lcdX=.2118,lcdY=.3952,lcdW=.5724,lcdH=.2663;
+    const lcdLeft=deviceLeft+deviceW*lcdX, lcdTop=deviceTop+deviceH*lcdY;
+    const lcdPxW=deviceW*lcdW, lcdPxH=deviceH*lcdH;
+    const lcdCenterX=lcdLeft+lcdPxW/2, lcdCenterY=lcdTop+lcdPxH/2;
+    let scale=Math.max(lcdPxW/760,lcdPxH/470);
+    scale=Math.max(.30,Math.min(.62,scale));
+    const cropW=Math.min(DESIGN_W,lcdPxW/scale), cropH=Math.min(DESIGN_H,lcdPxH/scale);
+    const playerDesignX=cssNumber('--playerX',150)+(player&&player.x?player.x:0);
+    const cropLeft=Math.max(0,Math.min(DESIGN_W-cropW,playerDesignX-145));
+    const cropTop=Math.max(0,Math.min(DESIGN_H-cropH,DESIGN_H-cropH-54));
+    const cropCenterX=cropLeft+cropW/2, cropCenterY=cropTop+cropH/2;
+    const cx=lcdCenterX-((cropCenterX-(DESIGN_W/2))*scale);
+    const cy=lcdCenterY-((cropCenterY-(DESIGN_H/2))*scale);
+    document.documentElement.style.setProperty('--tama-lcd-left',lcdLeft+'px');
+    document.documentElement.style.setProperty('--tama-lcd-top',lcdTop+'px');
+    document.documentElement.style.setProperty('--tama-lcd-w',lcdPxW+'px');
+    document.documentElement.style.setProperty('--tama-lcd-h',lcdPxH+'px');
+    document.documentElement.style.setProperty('--tama-lcd-cx',cx+'px');
+    document.documentElement.style.setProperty('--tama-lcd-cy',cy+'px');
+    document.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
+    document.documentElement.style.setProperty('--tama-clip-left',cropLeft+'px');
+    document.documentElement.style.setProperty('--tama-clip-top',cropTop+'px');
+    document.documentElement.style.setProperty('--tama-clip-right',(DESIGN_W-cropLeft-cropW)+'px');
+    document.documentElement.style.setProperty('--tama-clip-bottom',(DESIGN_H-cropTop-cropH)+'px');
+  }catch(e){console.warn('fitEmbeddedTamaGame failed',e);}
+}
+function expandEmbeddedTamaGame(){
+  document.body.classList.remove('tamaGameEmbedded');
+  document.body.classList.remove('tamagotchiLanding');
+  document.body.classList.add('gameExpandedFromTama');
+  stage27SetMovingClass(false);
+  try{if(typeof window.closePetbotFull==='function')window.closePetbotFull();}catch(e){}
+  try{const dock=document.getElementById('petbotDock');if(dock)dock.classList.add('hidden');}catch(e){}
+  try{const start=document.getElementById('startScreen');if(start)start.classList.add('hidden');}catch(e){}
+  try{if(typeof paused!=='undefined')paused=false;if(typeof playing!=='undefined')playing=true;}catch(e){}
+  try{window.focus();document.body.setAttribute('tabindex','-1');document.body.focus({preventScroll:true});}catch(e){}
+  try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen){const r=document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>{});}}catch(e){}
+  showToast('Full-screen quest: stand near a glowing building and press Enter, Space, or tap it.');
+  requestAnimationFrame(()=>{try{fitGameToScreen();}catch(e){}});
+}
+window.addEventListener('keydown',function(e){
+  const inQuestView=document.body.classList.contains('gameExpandedFromTama')||document.body.classList.contains('tamaGameEmbedded');
+  if((e.code==='ArrowLeft'||e.code==='ArrowRight'||e.code==='KeyA'||e.code==='KeyD')&&inQuestView) stage27SetMovingClass(true);
+  if(!inQuestView)return;
+  if(e.repeat)return;
+  if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'){
+    if(selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})){e.preventDefault();e.stopPropagation();}
+  }
+},true);
+window.addEventListener('keyup',function(e){
+  if(e.code==='ArrowLeft'||e.code==='ArrowRight'||e.code==='KeyA'||e.code==='KeyD') setTimeout(()=>stage27SetMovingClass(!!(keys&&((keys.left)||(keys.right)))),0);
+},true);
+(function(){
+  const game=document.getElementById('game');
+  if(game){game.addEventListener('pointerdown',function(e){
+    if(document.body.classList.contains('editMode'))return;
+    if(!(document.body.classList.contains('gameExpandedFromTama')||document.body.classList.contains('tamaGameEmbedded')))return;
+    const target=e.target&&e.target.closest?e.target.closest('.building,.interactiveStop,.lessonBlock'):null;
+    if(target&&selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})){e.preventDefault();e.stopPropagation();}
+  },true);}
+})();
+
 // PETBOT TAMAGOTCHI DOCK HOOK
 // Small by default in the top-right. Fullscreen now has a real Back button outside the iframe.
 (function(){
@@ -3620,7 +3809,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=126&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=127&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
