@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 14</title>
+<title>CTW PetBot Tamagotchi - Stage 15</title>
 <style>
 :root{
   --ink:#16223f;
@@ -235,6 +235,17 @@ body.questPlaying .lcd{background:transparent!important;box-shadow:none!importan
 body.questPlaying .lcd:before{opacity:.08!important;}
 body.questPlaying .device::after{z-index:12!important;}
 body.questPlaying .hit{pointer-events:auto!important;}
+
+
+
+/* Stage 15: habitat fills the full Tamagotchi LCD, with no extra title/body padding. */
+.habitatFullScreen{position:absolute!important;inset:0!important;z-index:4!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#dff7fb!important;border-radius:inherit!important;}
+.habitatFullScreen .habitatView{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;}
+.habitatFullScreen .habitatFrame{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important;background-color:#dff7fb!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.habitatFullScreen .habitatLayer.background{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.habitatFullScreen .habitatLayer.base{background-size:cover!important;}
+.habitatFullScreen .habitatEmpty{font-size:clamp(8px,.9vw,12px)!important;padding:14px!important;}
+.habitatFullScreen .habitatLabel,.habitatFullScreen .panelActionMsg{display:none!important;}
 
 </style>
 </head>
@@ -540,8 +551,7 @@ function renderHabitatPanel(){
   const layers=buildHabitatLayers(items,pet);
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
   const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'No habitat image found')}<br><small>Need a background/loadout image or valid background_key in user_habitats_layout.</small></div>` : '';
-  const label = layers.length ? `<div class="habitatLabel">${esc(pet.name||'Habitat')}</div>` : '';
-  return top('HABITAT','')+`<div class="body"><div class="habitatView"><div class="habitatFrame stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}${label}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div></div></div>`;
+  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple ${layers.length?'withImage':''}">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
   const url=itemImage(it);
