@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 21</title>
+<title>CTW PetBot Tamagotchi - Stage 22</title>
 <style>
 :root{
   --ink:#16223f;
@@ -454,6 +454,40 @@ body.questPlaying #app{pointer-events:none!important;}
 body.questPlaying .device{pointer-events:auto!important;}
 @media(max-width:520px){.petHomeStage21{grid-template-columns:42% 58%!important;padding:3px 6px 4px!important}.petChipGrid21{gap:3px!important}.petHint21{font-size:8px!important;padding:3px 7px!important}.petFocus21 .petImg{width:105%!important;height:105%!important}}
 
+
+/* Stage 22: layout-only repair. Hardware buttons control the screens; pet stats are bars again. */
+.lcd{left:21.18%!important;top:39.52%!important;width:57.24%!important;height:26.63%!important;border-radius:7%/11%!important;}
+.lcd .body{overflow:hidden!important;}
+.lcd .choice,.lcd .menuItem,.lcd .panelCard,.lcd .petAction,.lcd .careCard,.lcd [data-pet-index],.lcd [data-menu-index],.lcd [data-panel-index],.lcd [data-pet-action-index],.lcd [data-care-index],.lcd [data-game-index]{pointer-events:none!important;}
+.lcd .passwordCard,.lcd .passwordCard input{pointer-events:auto!important;}
+.petHint21{display:none!important;}
+.petHome22{height:100%!important;width:100%!important;display:grid!important;grid-template-columns:43% 57%!important;grid-template-rows:1fr!important;align-items:center!important;gap:5px!important;padding:4px 10px 7px!important;overflow:hidden!important;}
+.petHome22Art{position:relative!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;}
+.petHome22Art .petImg{position:absolute!important;left:50%!important;top:52%!important;width:82%!important;height:82%!important;max-width:92%!important;max-height:92%!important;transform:translate(-50%,-50%)!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;filter:drop-shadow(0 5px 5px rgba(25,35,55,.22))!important;}
+.petHome22Art .petEmoji{font-size:clamp(42px,5.6vw,68px)!important;}
+.petHome22Stats{min-width:0!important;width:100%!important;height:100%!important;display:grid!important;grid-template-rows:auto repeat(4,1fr)!important;gap:3px!important;align-content:center!important;}
+.petHome22Sub{font-size:clamp(6px,.70vw,9px)!important;line-height:1!important;text-align:center!important;font-weight:1000!important;opacity:.78!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.stat22{min-width:0!important;display:grid!important;grid-template-rows:auto 7px!important;gap:2px!important;padding:2px 3px!important;border:1px solid rgba(22,34,63,.18)!important;border-radius:8px!important;background:rgba(255,255,255,.35)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)!important;}
+.stat22Top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:3px!important;font-size:clamp(5px,.60vw,8px)!important;line-height:1!important;font-weight:1000!important;white-space:nowrap!important;}
+.stat22Top b{font-size:clamp(7px,.76vw,10px)!important;}
+.stat22Bar{height:7px!important;border-radius:999px!important;background:rgba(255,255,255,.58)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.18)!important;overflow:hidden!important;}
+.stat22Bar i{display:block!important;height:100%!important;border-radius:999px!important;background:#9bb0ff!important;}
+.stat22.food .stat22Bar i{background:#ff8faf!important;}
+.stat22.happy .stat22Bar i{background:#ffc85f!important;}
+.stat22.energy .stat22Bar i{background:#73df9b!important;}
+.stat22.health .stat22Bar i{background:#75c7ff!important;}
+.petSelectBody{padding:3px 10px 6px!important;gap:2px!important;}
+.petSelectStage .petImg{width:70%!important;height:70%!important;max-width:78%!important;max-height:78%!important;top:51%!important;}
+.petSelectName{font-size:clamp(11px,1.08vw,14px)!important;}
+.petSelectSub{font-size:clamp(7px,.72vw,9px)!important;}
+.petActionGrid.bigActions{grid-template-columns:1fr 1fr!important;gap:4px!important;width:100%!important;height:100%!important;}
+.bigActions .petAction{min-height:0!important;padding:4px!important;font-size:clamp(7px,.74vw,10px)!important;}
+.quests22{padding:5px 9px 7px!important;}
+.questGrid22{grid-template-columns:1fr!important;grid-auto-rows:1fr!important;gap:4px!important;height:100%!important;}
+.questCard22{min-height:0!important;display:grid!important;grid-template-columns:24px 1fr!important;align-items:center!important;justify-items:start!important;text-align:left!important;font-size:clamp(8px,.86vw,11px)!important;padding:5px 8px!important;}
+.questGameGlass{position:absolute!important;inset:0!important;background:transparent!important;pointer-events:none!important;}
+@media(max-width:520px){.petHome22{grid-template-columns:41% 59%!important;gap:4px!important;padding:3px 7px 5px!important}.petHome22Art .petImg{width:78%!important;height:78%!important}.stat22{grid-template-rows:auto 6px!important;padding:2px!important}.stat22Bar{height:6px!important}.questCard22{grid-template-columns:20px 1fr!important;padding:4px 6px!important}}
+
 </style>
 </head>
 <body>
@@ -498,7 +532,6 @@ const PET_ACTIONS=[
 const GAME_MENU=[
   {key:'solo',label:'Solo Quest',icon:'🚑',action:'questSolo'},
   {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
-  {key:'platform',label:'Open Platform Game',icon:'🎮',action:'questPlatform'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
 const CARE_ACTIONS=[
@@ -574,7 +607,11 @@ function renderPetHome(){
   const title=`${petName} · Lv ${p.level||1}`;
   const sub=`${p.pet||p.species||'pet'} · XP ${p.xp||0}`;
   const img=petImage(p);
-  return top(title,'')+`<div class="body petHomeStage21"><div class="petFocus21">${img}</div><div class="petInfo21"><div class="petSub21">${esc(sub)}</div><div class="petChipGrid21"><div class="petChip21"><span>🍔</span><b>${esc(p.hunger??0)}</b><small>Food</small></div><div class="petChip21"><span>😊</span><b>${esc(p.happiness??0)}</b><small>Happy</small></div><div class="petChip21"><span>⚡</span><b>${esc(p.energy??0)}</b><small>Energy</small></div><div class="petChip21"><span>➕</span><b>${esc(p.health??0)}</b><small>Health</small></div></div></div><div class="petHint21">🍼 Press pacifier for actions</div></div>`;
+  return top(title,'')+`<div class="body petHome22"><div class="petHome22Art">${img}</div><div class="petHome22Stats"><div class="petHome22Sub">${esc(sub)}</div>${stat22('🍔','food','Food',p.hunger)}${stat22('😊','happy','Happy',p.happiness)}${stat22('⚡','energy','Energy',p.energy)}${stat22('➕','health','Health',p.health)}</div></div>`;
+}
+function stat22(icon,cls,label,value){
+  const v=clamp(Math.round(n(value,0)),0,100);
+  return `<div class="stat22 ${cls}"><div class="stat22Top"><span>${icon} ${esc(label)}</span><b>${v}</b></div><div class="stat22Bar"><i style="width:${v}%"></i></div></div>`;
 }
 function renderPetActions(){
   const p=currentPet();
@@ -843,7 +880,7 @@ async function runCareAction(){
   render();
 }
 function renderGames(){
-  return top('GAMES','')+`<div class="body"><div class="panelHead">Choose a real Waaambulance game</div><div class="panelGrid">${GAME_MENU.map((g,i)=>`<div class="panelCard ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
+  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Choose Solo or Team Quest</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span></div>`).join('')}</div></div>`;
 }
 function renderQuestGame(){
   return `<div class="questGameGlass" aria-label="${esc(state.quest.mode||'Quest')} running inside Tamagotchi"></div>`;
@@ -1551,7 +1588,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); requestLocalFullscreen(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { sendParent('waa-petbot-toggle-fullscreen'); }});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}});
