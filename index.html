@@ -1124,6 +1124,13 @@ body.petbotOpen.tamaGameEmbedded #game{
   body.petbotOpen.tamaGameEmbedded #game{transform:translate(-50%,-50%) scale(.175)!important;top:48.7dvh!important;}
 }
 
+
+/* Stage 19: CSS fullscreen fallback. Do not rely on browser Fullscreen API. */
+body.petbotOpen #petbotDock.fullscreen{position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;min-width:100vw!important;min-height:100dvh!important;max-width:none!important;max-height:none!important;transform:none!important;display:grid!important;place-items:center!important;}
+body.petbotOpen #petbotDock.fullscreen .petbotDockFrame{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;background:transparent!important;}
+body.petbotOpen #petbotDock.fullscreen .petbotDockBar{display:none!important;}
+body.gameExpandedFromTama #petbotDock{display:none!important;}
+body.gameExpandedFromTama #game{visibility:visible!important;opacity:1!important;}
 </style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
@@ -1169,7 +1176,7 @@ body.petbotOpen.tamaGameEmbedded #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=59&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=71&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -2989,10 +2996,12 @@ window.addEventListener('message',function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
   if(d.type === 'waa-petbot-toggle-fullscreen'){
+    // Stage 19: this is a CSS fullscreen first. Browser Fullscreen API can be blocked
+    // when the click started inside an iframe, so the game must still visibly expand.
+    try{ document.body.classList.remove('gameExpandedFromTama'); }catch(err){}
     try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(err){}
     try{
       if(!document.fullscreenElement && document.documentElement.requestFullscreen){ const r=document.documentElement.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
-      else if(document.fullscreenElement && document.exitFullscreen){ const r=document.exitFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
     }catch(err){}
     return;
   }
@@ -3015,8 +3024,13 @@ function stopEmbeddedTamaGame(){
   try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
 }
 function expandEmbeddedTamaGame(){
+  // Stage 19: expand the real platform game out of the Tamagotchi frame.
   document.body.classList.remove('tamaGameEmbedded');
+  document.body.classList.remove('tamagotchiLanding');
+  document.body.classList.add('gameExpandedFromTama');
   try{ if(typeof window.closePetbotFull === 'function') window.closePetbotFull(); }catch(e){}
+  try{ const dock=document.getElementById('petbotDock'); if(dock) dock.classList.add('hidden'); }catch(e){}
+  try{ const start=document.getElementById('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
   try{ if(typeof paused !== 'undefined') paused = false; if(typeof playing !== 'undefined') playing = true; }catch(e){}
   try{ if(!document.fullscreenElement && document.documentElement.requestFullscreen){ const r=document.documentElement.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); } }catch(e){}
   requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
@@ -3441,7 +3455,7 @@ fitGameToScreen();
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=59&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=71&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -3460,6 +3474,7 @@ fitGameToScreen();
     try{ if(typeof loadPetbotPets === 'function' && !(window.loadedPets||[]).length) loadPetbotPets(false); }catch(e){}
   }
   window.openPetbotFull = function(){
+    document.body.classList.remove('gameExpandedFromTama');
     refreshMiniPet();
     clearSmallDockPlacement();
     dock.classList.remove('hidden');
