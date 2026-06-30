@@ -3865,10 +3865,10 @@ window.addEventListener('keyup',function(e){
     try{ document.body.classList.remove('tamaGameEmbedded','gameExpandedFromTama'); }catch(e){}
     try{ if(typeof window.openPetbotFull==='function') window.openPetbotFull(); }catch(e){}
     try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
-    const frame=q$('petbotFrame');
+    const frame=q$('petbotDockFrame')||q$('petbotFrame');
     const msg={type:'waa-parent-open-screen',screen,place,label:label||place};
-    setTimeout(()=>{try{frame&&frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin)}catch(e){}},90);
-    setTimeout(()=>{try{frame&&frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin)}catch(e){}},320);
+    try{localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({screen,place,label:label||place,t:Date.now()}));}catch(e){}
+    [90,280,620,1100].forEach(ms=>setTimeout(()=>{try{frame&&frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin)}catch(e){}},ms));
     if(typeof stage27ShowCaption==='function') stage27ShowCaption((label||place||'Building')+' opened',1600);
   }
   window.stage28OpenPetbotScreen = postPetbotOpen;

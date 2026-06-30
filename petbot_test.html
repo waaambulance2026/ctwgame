@@ -1691,6 +1691,53 @@ document.addEventListener('pointerdown',e=>{
 document.addEventListener('click',e=>{
   if(!e.target.closest('.device')){e.preventDefault();e.stopPropagation();}
 },true);
+
+// STAGE 29: parent quest buildings can open the real PetBot/Tamagotchi screens reliably.
+function petbotOpenParentScreen(screen){
+  screen=String(screen||'petHome');
+  if(!state.player || !currentPet()){
+    state._pendingParentScreen=screen;
+    return false;
+  }
+  try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
+  state._pendingParentScreen='';
+  state.panelActionMsg='';
+  state.panelMessage='';
+  if(screen==='shop') { openShopPanel(); return true; }
+  if(screen==='habitat') { openDataPanel('habitat'); return true; }
+  if(screen==='hook') { openDataPanel('hook'); return true; }
+  if(screen==='inventory') { openDataPanel('inventory'); return true; }
+  if(screen==='games' || screen==='quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
+  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.panelActionMsg='Choose care action'; render(); return true; }
+  if(screen==='petActions' || screen==='actions') { state.screen='petActions'; state.petActionIndex=0; render(); return true; }
+  state.screen='petHome'; render(); return true;
+}
+function petbotConsumePendingParentScreen(){
+  let pending=state._pendingParentScreen||'';
+  try{
+    const raw=localStorage.getItem('waaPendingPetbotScreen');
+    if(raw){
+      const pack=JSON.parse(raw);
+      if(pack && pack.t && Date.now()-Number(pack.t)<15000) pending=pack.screen||pending;
+      else localStorage.removeItem('waaPendingPetbotScreen');
+    }
+  }catch(e){}
+  if(pending) petbotOpenParentScreen(pending);
+}
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin)return;
+  const d=e.data||{};
+  if(d.type==='waa-parent-open-screen'){
+    petbotOpenParentScreen(d.screen||'petHome');
+  }
+});
+let stage29PendingTries=0;
+const stage29PendingTimer=setInterval(()=>{
+  stage29PendingTries++;
+  petbotConsumePendingParentScreen();
+  if(stage29PendingTries>45 && !state._pendingParentScreen){clearInterval(stage29PendingTimer);}
+},250);
+
 // Stage 21: when the parent returns from expanded platform mode, do not leave the LCD transparent/blank.
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
