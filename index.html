@@ -4376,6 +4376,264 @@ window.addEventListener('keyup',function(e){
     if(e.key === 'Escape' && dock.classList.contains('fullscreen')) window.closePetbotFull();
   });
 })();
+
+
+// STAGE 33: stable Tamagotchi quest viewport + CSS fullscreen mode reset.
+// This patch stops the Tamagotchi quest from clipping/scaling the whole game with clip-path.
+// Instead it puts the game inside a real LCD viewport with overflow hidden, which is much lighter.
+(function(){
+  const d=document;
+  const body=d.body;
+  const DESIGN_W33=(typeof DESIGN_W!=='undefined'?DESIGN_W:1920);
+  const DESIGN_H33=(typeof DESIGN_H!=='undefined'?DESIGN_H:1080);
+  const game=d.getElementById('game');
+  if(!game) return;
+  const originalParent=game.parentNode;
+  const originalNext=game.nextSibling;
+  let mask=null;
+  let tamaFitTimer=0;
+  const previousFitGameToScreen = (typeof fitGameToScreen==='function') ? fitGameToScreen : null;
+
+  function setImp(el,prop,val){ if(el) el.style.setProperty(prop,val,'important'); }
+  function num(v,fb){ const n=Number(v); return Number.isFinite(n)?n:fb; }
+  function q(id){ return d.getElementById(id); }
+  function questShell(){ return body.classList.contains('tamaGameEmbedded') || body.classList.contains('gameExpandedFromTama'); }
+  function stopMove(){ try{keys.left=false;keys.right=false;}catch(e){} try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(false); }catch(e){} }
+
+  const st=d.createElement('style');
+  st.textContent=`
+    #tamaGameMask33{position:fixed;z-index:2147482999;overflow:hidden;background:#79d9ff;border-radius:18px;box-shadow:inset 0 0 0 2px rgba(16,25,48,.30);contain:layout paint size;transform:translateZ(0);pointer-events:none;display:none;}
+    body.petbotOpen.tamaGameEmbedded #tamaGameMask33{display:block!important;}
+    body.petbotOpen.tamaGameEmbedded #tamaGameMask33 #game{visibility:visible!important;opacity:1!important;display:block!important;position:absolute!important;left:0!important;top:0!important;width:${DESIGN_W33}px!important;height:${DESIGN_H33}px!important;min-width:${DESIGN_W33}px!important;min-height:${DESIGN_H33}px!important;max-width:none!important;max-height:none!important;clip-path:none!important;-webkit-clip-path:none!important;border-radius:0!important;box-shadow:none!important;z-index:1!important;pointer-events:none!important;will-change:transform;contain:layout paint style;}
+    body.tamaLiteRender33 .hud,body.tamaLiteRender33 .instructions,body.tamaLiteRender33 .touch,body.tamaLiteRender33 .helpBtn,body.tamaLiteRender33 .builder,body.tamaLiteRender33 .overlay,body.tamaLiteRender33 #startScreen{display:none!important;}
+    body.tamaLiteRender33 .character img,body.tamaLiteRender33 .building img,body.tamaLiteRender33 .obj img{filter:none!important;}
+    body.tamaLiteRender33 .building,body.tamaLiteRender33 .obj,body.tamaLiteRender33 .character{transition:none!important;backface-visibility:hidden!important;}
+    body.gameExpandedFromTama #tamaGameMask33{display:none!important;}
+    body.gameExpandedFromTama #game{visibility:visible!important;opacity:1!important;display:block!important;position:fixed!important;clip-path:none!important;-webkit-clip-path:none!important;border-radius:0!important;box-shadow:none!important;pointer-events:auto!important;}
+  `;
+  d.head.appendChild(st);
+
+  function ensureMask(){
+    if(!mask){
+      mask=d.createElement('div');
+      mask.id='tamaGameMask33';
+      body.appendChild(mask);
+    }
+    return mask;
+  }
+  function moveGameToMask(){
+    const m=ensureMask();
+    if(game.parentNode!==m) m.appendChild(game);
+  }
+  function releaseGame(){
+    if(game.parentNode===mask){
+      try{ originalParent.insertBefore(game, originalNext && originalNext.parentNode===originalParent ? originalNext : null); }
+      catch(e){ body.appendChild(game); }
+    }
+  }
+  function deviceRect(){
+    const vw=innerWidth||d.documentElement.clientWidth||1920;
+    const vh=innerHeight||d.documentElement.clientHeight||1080;
+    const deviceW=Math.min(vw*.98, vh*.99*(1024/1536));
+    const deviceH=deviceW*(1536/1024);
+    const deviceLeft=(vw-deviceW)/2;
+    const deviceTop=(vh-deviceH)/2;
+    const lcdX=.2118,lcdY=.3952,lcdW=.5724,lcdH=.2663;
+    return {
+      left:deviceLeft+deviceW*lcdX,
+      top:deviceTop+deviceH*lcdY,
+      width:deviceW*lcdW,
+      height:deviceH*lcdH
+    };
+  }
+  function playerDesignX(){
+    let base=150;
+    try{ if(typeof cssNumber==='function') base=cssNumber('--playerX',150); }catch(e){}
+    let px=0;
+    try{ px=(typeof player!=='undefined'&&player&&Number(player.x))||0; }catch(e){}
+    return base+px;
+  }
+  function fitTamaLite(){
+    if(!body.classList.contains('tamaGameEmbedded')) return;
+    const m=ensureMask();
+    moveGameToMask();
+    const r=deviceRect();
+    setImp(m,'left',r.left+'px');
+    setImp(m,'top',r.top+'px');
+    setImp(m,'width',r.width+'px');
+    setImp(m,'height',r.height+'px');
+    // Slightly wider crop reduces redraw stress and stops the sprite feeling like it is fighting the LCD edges.
+    let scale=Math.max(r.width/820, r.height/500);
+    scale=Math.max(.24, Math.min(.54, scale));
+    const cropW=Math.min(DESIGN_W33, r.width/scale);
+    const cropH=Math.min(DESIGN_H33, r.height/scale);
+    const cropLeft=Math.max(0, Math.min(DESIGN_W33-cropW, playerDesignX()-210));
+    const cropTop=Math.max(0, Math.min(DESIGN_H33-cropH, DESIGN_H33-cropH-52));
+    setImp(game,'position','absolute');
+    setImp(game,'left','0px');
+    setImp(game,'top','0px');
+    setImp(game,'width',DESIGN_W33+'px');
+    setImp(game,'height',DESIGN_H33+'px');
+    setImp(game,'transform-origin','0 0');
+    setImp(game,'transform',`translate3d(${-cropLeft*scale}px, ${-cropTop*scale}px, 0) scale(${scale})`);
+    setImp(game,'clip-path','none');
+    setImp(game,'-webkit-clip-path','none');
+    setImp(game,'visibility','visible');
+    setImp(game,'display','block');
+    setImp(game,'pointer-events','none');
+    d.documentElement.style.setProperty('--tama-game-scale',scale.toFixed(4));
+  }
+  function scheduleTamaFit(){
+    if(!body.classList.contains('tamaGameEmbedded')) return;
+    clearTimeout(tamaFitTimer);
+    tamaFitTimer=setTimeout(()=>{try{fitTamaLite();}catch(e){}},80);
+  }
+  function fitExpandedCss(){
+    releaseGame();
+    body.classList.remove('petbotOpen','tamaGameEmbedded','tamagotchiLanding','tamaLiteRender33');
+    body.classList.add('gameExpandedFromTama');
+    const dock=q('petbotDock'); if(dock) dock.classList.add('hidden');
+    const vw=innerWidth||d.documentElement.clientWidth||DESIGN_W33;
+    const vh=innerHeight||d.documentElement.clientHeight||DESIGN_H33;
+    const scale=Math.max(vw/DESIGN_W33, vh/DESIGN_H33);
+    const left=(vw-DESIGN_W33*scale)/2;
+    const top=vh-DESIGN_H33*scale;
+    try{ currentGameScale=scale; currentGameLeft=left; currentGameTop=top; }catch(e){}
+    setImp(game,'position','fixed');
+    setImp(game,'left','0px');
+    setImp(game,'top','0px');
+    setImp(game,'width',DESIGN_W33+'px');
+    setImp(game,'height',DESIGN_H33+'px');
+    setImp(game,'transform-origin','0 0');
+    setImp(game,'transform',`translate3d(${left}px, ${top}px, 0) scale(${scale})`);
+    setImp(game,'clip-path','none');
+    setImp(game,'-webkit-clip-path','none');
+    setImp(game,'visibility','visible');
+    setImp(game,'display','block');
+    setImp(game,'pointer-events','auto');
+    try{ if(typeof paused!=='undefined') paused=false; if(typeof playing!=='undefined') playing=true; }catch(e){}
+    try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
+  }
+
+  // Much cheaper HUD updates. The old function wrote the same text every frame.
+  let hudLast='';
+  window.updateHud = updateHud = function(){
+    let pack='';
+    try{ pack=[score,lives,levelIndex,Math.floor(distance),levels[levelIndex]&&levels[levelIndex].name].join('|'); }catch(e){ pack=String(Date.now()); }
+    if(pack===hudLast) return;
+    hudLast=pack;
+    try{ const el=q('score'); if(el) el.textContent=score; }catch(e){}
+    try{ const el=q('lives'); if(el) el.textContent=lives; }catch(e){}
+    try{ const el=q('level'); if(el) el.textContent=levelIndex+1; }catch(e){}
+    try{ const el=q('distance'); if(el) el.textContent=Math.floor(distance); }catch(e){}
+    try{ const el=q('questName'); if(el) el.textContent=levels[levelIndex].name; }catch(e){}
+  };
+
+  // In the tiny Tamagotchi LCD, changing PNG src too fast is what makes walking look stuttery.
+  // Keep movement smooth by slowing only the walk-frame swap in Tamagotchi mode.
+  const oldAnimateOne=(typeof animateOne==='function')?animateOne:null;
+  if(oldAnimateOne){
+    window.animateOne = animateOne = function(elId,char,action,now,state){
+      if(body.classList.contains('tamaGameEmbedded') && action==='walk'){
+        state=state||{playing:false,next:0,frame:0,last:0,action:''};
+        if(state.action!==action){state.action=action;state.frame=0;state.last=0;}
+        const total=(typeof getActionFrameCount==='function')?getActionFrameCount(char,action):10;
+        const frameMs=185;
+        if(now-(state.last||0)>frameMs){
+          const frame=state.frame||0;
+          try{ setSpriteFrame(elId,char,action,frame); }catch(e){}
+          state.frame=(frame+1)%Math.max(1,total);
+          state.last=now;
+        }
+        return;
+      }
+      return oldAnimateOne(elId,char,action,now,state);
+    };
+  }
+
+  window.fitEmbeddedTamaGame = fitEmbeddedTamaGame = fitTamaLite;
+  window.fitGameToScreen = fitGameToScreen = function(){
+    if(body.classList.contains('tamaGameEmbedded')) return fitTamaLite();
+    if(body.classList.contains('gameExpandedFromTama')) return fitExpandedCss();
+    if(previousFitGameToScreen) return previousFitGameToScreen();
+  };
+
+  window.startEmbeddedTamaGame = startEmbeddedTamaGame = function(kind){
+    stopMove();
+    body.classList.remove('gameExpandedFromTama');
+    body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33');
+    const dock=q('petbotDock');
+    if(dock){ dock.classList.remove('hidden'); dock.classList.add('fullscreen'); }
+    try{ sessionStorage.setItem('waa-game-started-this-tab','1'); }catch(e){}
+    try{ if(kind==='team') startTeamQuest(); else startSoloQuest(); }catch(e){ console.error('Could not start Tamagotchi quest',e); }
+    try{ if(typeof paused!=='undefined') paused=false; if(typeof playing!=='undefined') playing=true; }catch(e){}
+    fitTamaLite();
+    setTimeout(fitTamaLite,90);
+    setTimeout(fitTamaLite,300);
+  };
+  window.stopEmbeddedTamaGame = stopEmbeddedTamaGame = function(){
+    stopMove();
+    body.classList.remove('tamaGameEmbedded','tamaLiteRender33');
+    releaseGame();
+    try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
+  };
+  window.expandEmbeddedTamaGame = expandEmbeddedTamaGame = function(){
+    stopMove();
+    try{ if(d.fullscreenElement && d.exitFullscreen) d.exitFullscreen().catch(()=>{}); }catch(e){}
+    fitExpandedCss();
+    try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
+    try{ showToast('Full screen quest: Space jumps. Enter opens buildings.'); }catch(e){}
+  };
+
+  window.tapEmbeddedControl = tapEmbeddedControl = function(action){
+    try{
+      if(action==='moveLeft'||action==='moveLeftStart'){
+        keys.left=true; keys.right=false;
+        try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(true); }catch(e){}
+        scheduleTamaFit();
+        if(action==='moveLeft') setTimeout(()=>{keys.left=false;try{if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);}catch(e){}},220);
+        return;
+      }
+      if(action==='moveRight'||action==='moveRightStart'){
+        keys.right=true; keys.left=false;
+        try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(true); }catch(e){}
+        scheduleTamaFit();
+        if(action==='moveRight') setTimeout(()=>{keys.right=false;try{if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);}catch(e){}},220);
+        return;
+      }
+      if(action==='moveStop'){ stopMove(); scheduleTamaFit(); return; }
+      if(action==='jumpOnly'){ if(typeof jump==='function') jump(); return; }
+      if(action==='selectOrJump'||action==='jump'){
+        if(typeof window.stage31SelectNearestWorldStop==='function' && window.stage31SelectNearestWorldStop({embedded:body.classList.contains('tamaGameEmbedded'),expanded:body.classList.contains('gameExpandedFromTama')})) return;
+        if(typeof window.selectNearestWorldStop==='function' && window.selectNearestWorldStop({embedded:body.classList.contains('tamaGameEmbedded'),expanded:body.classList.contains('gameExpandedFromTama')})) return;
+        if(typeof jump==='function') jump();
+      }
+    }catch(e){ console.warn('stage33 control failed',e); }
+  };
+
+  window.handlePetbotGameAction = handlePetbotGameAction = function(action){
+    if(action==='startSoloEmbedded'||action==='startPlatformEmbedded'){ startEmbeddedTamaGame('solo'); return; }
+    if(action==='startTeamEmbedded'){ startEmbeddedTamaGame('team'); return; }
+    if(action==='expandEmbedded'){ expandEmbeddedTamaGame(); return; }
+    if(action==='stopEmbedded'){ stopEmbeddedTamaGame(); return; }
+    if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){ tapEmbeddedControl(action); return; }
+    body.classList.remove('tamagotchiLanding','tamaGameEmbedded','tamaLiteRender33');
+    releaseGame();
+    if(action==='startSolo'||action==='startPlatform'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} startSoloQuest(); return; }
+    if(action==='startTeam'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} startTeamQuest(); return; }
+    if(action==='openBuilder'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} const ss=q('startScreen'); if(ss) ss.classList.add('hidden'); openBuilder(); return; }
+    if(action==='openOldMenu'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} openMenu(); return; }
+    if(action==='backToGame'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} return; }
+  };
+
+  // Keep the lightweight LCD mask lined up after rotation/resize or while the browser UI changes size.
+  addEventListener('resize',()=>{ if(body.classList.contains('tamaGameEmbedded')) setTimeout(fitTamaLite,60); else if(body.classList.contains('gameExpandedFromTama')) setTimeout(fitExpandedCss,60); },{passive:true});
+  addEventListener('orientationchange',()=>{ setTimeout(()=>{ if(body.classList.contains('tamaGameEmbedded')) fitTamaLite(); else if(body.classList.contains('gameExpandedFromTama')) fitExpandedCss(); },220); },{passive:true});
+  addEventListener('fullscreenchange',()=>{ if(body.classList.contains('tamaGameEmbedded')) setTimeout(fitTamaLite,80); else if(body.classList.contains('gameExpandedFromTama')) setTimeout(fitExpandedCss,80); });
+
+  // If the page was already opened in Tamagotchi mode before this patch loaded, stabilise it.
+  setTimeout(()=>{ try{ if(body.classList.contains('tamaGameEmbedded')) fitTamaLite(); }catch(e){} },120);
+})();
 </script>
 </body>
 </html>
