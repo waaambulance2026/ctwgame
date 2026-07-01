@@ -1303,7 +1303,7 @@ body.gameExpandedFromTama #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=132&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=134&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4290,7 +4290,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=132&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=134&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -4634,6 +4634,166 @@ window.addEventListener('keyup',function(e){
   // If the page was already opened in Tamagotchi mode before this patch loaded, stabilise it.
   setTimeout(()=>{ try{ if(body.classList.contains('tamaGameEmbedded')) fitTamaLite(); }catch(e){} },120);
 })();
+
+
+// STAGE 34: final quest control/router patch.
+// Fixes: keyboard walking inside Tamagotchi/fullscreen, visible LCD captions, and Back-to-Quest after opening shop/habitat/hook.
+(function(){
+  const d=document;
+  const body=d.body;
+  function q(id){return d.getElementById(id);}
+  function questShell(){return body.classList.contains('tamaGameEmbedded') || body.classList.contains('gameExpandedFromTama');}
+  function stopMove(){
+    try{keys.left=false;keys.right=false;}catch(e){}
+    try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(false); }catch(e){}
+  }
+  function visibleCaption(msg,ms){
+    msg=String(msg||'');
+    try{ if(typeof stage27ShowCaption==='function') stage27ShowCaption(msg,ms||2200); }catch(e){}
+    try{ if(typeof showToast==='function') showToast(msg); }catch(e){}
+  }
+  function placeToScreen(place){
+    place=String(place||'');
+    if(place==='petShop') return 'shop';
+    if(place==='habitat') return 'habitat';
+    if(place==='hookWaaambulance') return 'hook';
+    if(place==='questStarter') return 'games';
+    if(place==='welcomeBoard') return 'petHome';
+    return 'petActions';
+  }
+  function postToPetbot(msg){
+    const frame=q('petbotDockFrame')||q('petbotFrame');
+    [80,220,520,900,1400].forEach(ms=>setTimeout(()=>{
+      try{ frame && frame.contentWindow && frame.contentWindow.postMessage(msg, location.origin); }catch(e){}
+    },ms));
+  }
+  function rememberQuestReturn(){
+    const mode=body.classList.contains('gameExpandedFromTama')?'expanded':'embedded';
+    window.waaQuestReturnMode=mode;
+    try{sessionStorage.setItem('waaQuestReturnMode',mode);}catch(e){}
+    return mode;
+  }
+  function resumeQuest(mode){
+    mode=mode||window.waaQuestReturnMode;
+    try{mode=mode||sessionStorage.getItem('waaQuestReturnMode')||'embedded';}catch(e){mode=mode||'embedded';}
+    stopMove();
+    const dock=q('petbotDock');
+    const start=q('startScreen');
+    try{ if(start) start.classList.add('hidden'); }catch(e){}
+    try{ if(typeof playing!=='undefined') playing=true; if(typeof paused!=='undefined') paused=false; }catch(e){}
+    body.classList.remove('tamagotchiLanding');
+    if(mode==='expanded'){
+      body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33');
+      body.classList.add('gameExpandedFromTama');
+      if(dock) dock.classList.add('hidden');
+      setTimeout(()=>{try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}},30);
+      setTimeout(()=>{try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}},220);
+    }else{
+      body.classList.remove('gameExpandedFromTama');
+      body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33');
+      if(dock){ dock.classList.remove('hidden'); dock.classList.add('fullscreen'); }
+      setTimeout(()=>{try{ if(typeof fitEmbeddedTamaGame==='function') fitEmbeddedTamaGame(); }catch(e){}},30);
+      setTimeout(()=>{try{ if(typeof fitEmbeddedTamaGame==='function') fitEmbeddedTamaGame(); }catch(e){}},220);
+    }
+    visibleCaption('Back to quest',1600);
+    try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
+  }
+  window.waaResumeQuestFromPetbot=resumeQuest;
+
+  // Keep the text caption aligned to the actual LCD mask used by Stage 33.
+  const oldFitEmbedded=(typeof window.fitEmbeddedTamaGame==='function')?window.fitEmbeddedTamaGame:null;
+  window.fitEmbeddedTamaGame=fitEmbeddedTamaGame=function(){
+    if(oldFitEmbedded) oldFitEmbedded();
+    try{
+      const mask=q('tamaGameMask33');
+      if(mask && body.classList.contains('tamaGameEmbedded')){
+        const r=mask.getBoundingClientRect();
+        d.documentElement.style.setProperty('--tama-lcd-left',r.left+'px');
+        d.documentElement.style.setProperty('--tama-lcd-top',r.top+'px');
+        d.documentElement.style.setProperty('--tama-lcd-w',r.width+'px');
+        d.documentElement.style.setProperty('--tama-lcd-h',r.height+'px');
+      }
+    }catch(e){}
+  };
+
+  // Replace quest building opening with a proper "open PetBot screen, then allow Back to Quest" route.
+  const oldOpenBuilding=(typeof window.openBuilding==='function')?window.openBuilding:null;
+  window.openBuilding=openBuilding=function(o){
+    if(o && o.kind==='building' && questShell()){
+      const returnMode=rememberQuestReturn();
+      stopMove();
+      const screen=placeToScreen(o.place);
+      const label=o.label||o.place||'Building';
+      try{ body.classList.remove('tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33'); }catch(e){}
+      try{ if(typeof window.openPetbotFull==='function') window.openPetbotFull(); }catch(e){}
+      try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
+      try{localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({screen,place:o.place,label,returnToQuest:true,returnMode,t:Date.now()}));}catch(e){}
+      postToPetbot({type:'waa-parent-open-screen',screen,place:o.place,label,returnToQuest:true,returnMode});
+      visibleCaption(label+' opened',1600);
+      return true;
+    }
+    return oldOpenBuilding?oldOpenBuilding(o):false;
+  };
+
+  // This handles the PetBot cross/back when it asks to return to the quest.
+  const oldHandle=(typeof window.handlePetbotGameAction==='function')?window.handlePetbotGameAction:null;
+  window.handlePetbotGameAction=handlePetbotGameAction=function(action){
+    if(action==='returnToQuest'||action==='resumeQuest'){
+      resumeQuest();
+      return;
+    }
+    if(oldHandle) return oldHandle(action);
+  };
+
+  // Final keyboard layer for the actual page, for when focus is outside the iframe.
+  // It does not make Space select buildings: Space/ArrowUp/W are jump only.
+  window.addEventListener('keydown',function(e){
+    if(!questShell()) return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      try{keys.left=true;keys.right=false;}catch(_e){}
+      try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(true); }catch(_e){}
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      try{keys.right=true;keys.left=false;}catch(_e){}
+      try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(true); }catch(_e){}
+      return;
+    }
+    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if(!e.repeat){ try{ if(typeof jump==='function') jump(); }catch(_e){} }
+      return;
+    }
+    if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      let done=false;
+      try{ done=!!(typeof window.stage31SelectNearestWorldStop==='function' && window.stage31SelectNearestWorldStop({embedded:body.classList.contains('tamaGameEmbedded'),expanded:body.classList.contains('gameExpandedFromTama')})); }catch(_e){}
+      if(!done){ try{ done=!!(typeof window.selectNearestWorldStop==='function' && window.selectNearestWorldStop({embedded:body.classList.contains('tamaGameEmbedded'),expanded:body.classList.contains('gameExpandedFromTama')})); }catch(_e){} }
+      if(!done) visibleCaption('Stand beside the stop, then press Enter.',1700);
+      return;
+    }
+  },true);
+  window.addEventListener('keyup',function(e){
+    if(!questShell()) return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      try{keys.left=false;}catch(_e){}
+      try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(!!(keys.left||keys.right)); }catch(_e){}
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      try{keys.right=false;}catch(_e){}
+      try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(!!(keys.left||keys.right)); }catch(_e){}
+      return;
+    }
+  },true);
+})();
+
 </script>
 </body>
 </html>
