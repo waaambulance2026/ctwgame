@@ -1303,7 +1303,7 @@ body.gameExpandedFromTama #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=131&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=132&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3295,7 +3295,7 @@ function handlePetbotGameAction(action){
     stopEmbeddedTamaGame();
     return;
   }
-  if(action === 'moveLeft' || action === 'moveRight' || action === 'moveLeftStart' || action === 'moveRightStart' || action === 'moveStop' || action === 'jump'){
+  if(action === 'moveLeft' || action === 'moveRight' || action === 'moveLeftStart' || action === 'moveRightStart' || action === 'moveStop' || action === 'jump' || action === 'selectOrJump' || action === 'jumpOnly'){
     tapEmbeddedControl(action);
     return;
   }
@@ -3753,6 +3753,7 @@ function tapEmbeddedControl(action){
     if(action==='moveLeftStart'){keys.left=true;keys.right=false;stage27SetMovingClass(true);return;}
     if(action==='moveRightStart'){keys.right=true;keys.left=false;stage27SetMovingClass(true);return;}
     if(action==='moveStop'){keys.left=false;keys.right=false;stage27SetMovingClass(false);return;}
+    if(action==='jumpOnly'){jump();return;}
     if(action==='jump'||action==='selectOrJump'){
       if(selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')}))return;
       jump();
@@ -3804,7 +3805,7 @@ function expandEmbeddedTamaGame(){
   try{if(typeof paused!=='undefined')paused=false;if(typeof playing!=='undefined')playing=true;}catch(e){}
   try{window.focus();document.body.setAttribute('tabindex','-1');document.body.focus({preventScroll:true});}catch(e){}
   try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen){const r=document.documentElement.requestFullscreen();if(r&&r.catch)r.catch(()=>{});}}catch(e){}
-  showToast('Full-screen quest: stand near a glowing building and press Enter, Space, or tap it.');
+  showToast('Full-screen quest: Space jumps. Enter opens the building/sign.');
   requestAnimationFrame(()=>{try{fitGameToScreen();}catch(e){}});
 }
 window.addEventListener('keydown',function(e){
@@ -3812,7 +3813,7 @@ window.addEventListener('keydown',function(e){
   if((e.code==='ArrowLeft'||e.code==='ArrowRight'||e.code==='KeyA'||e.code==='KeyD')&&inQuestView) stage27SetMovingClass(true);
   if(!inQuestView)return;
   if(e.repeat)return;
-  if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'){
+  if(e.code==='Enter'||e.code==='NumpadEnter'){
     if(selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})){e.preventDefault();e.stopPropagation();}
   }
 },true);
@@ -3943,13 +3944,14 @@ window.addEventListener('keyup',function(e){
       if(action==='moveLeftStart'){keys.left=true;keys.right=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(true);return;}
       if(action==='moveRightStart'){keys.right=true;keys.left=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(true);return;}
       if(action==='moveStop'){keys.left=false;keys.right=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);return;}
+      if(action==='jumpOnly'){jump();return;}
       if(action==='jump'||action==='selectOrJump'){if(window.selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')}))return;jump();}
     }catch(e){console.warn('Stage 28 control failed',e);}
   };
   window.addEventListener('keydown',function(e){
     const inQuest=isQuestShell();
     if(!inQuest||e.repeat)return;
-    if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'||e.code==='KeyE'){
+    if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='KeyE'){
       if(window.selectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})){e.preventDefault();e.stopImmediatePropagation();}
     }
   },true);
@@ -3969,7 +3971,7 @@ window.addEventListener('keyup',function(e){
 
 
 
-// STAGE 31: actual quest-mode repair — fullscreen fit, building select, and smoother walking.
+// STAGE 32: actual quest-mode repair — fullscreen fit, building select, and smoother walking.
 (function(){
   function q(id){return document.getElementById(id)}
   function questShell(){return document.body.classList.contains('tamaGameEmbedded') || document.body.classList.contains('gameExpandedFromTama')}
@@ -4190,6 +4192,7 @@ window.addEventListener('keyup',function(e){
       if(action==='moveLeft'||action==='moveLeftStart'){keys.left=true;keys.right=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(true);if(action==='moveLeft')setTimeout(()=>{keys.left=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);},240);return;}
       if(action==='moveRight'||action==='moveRightStart'){keys.right=true;keys.left=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(true);if(action==='moveRight')setTimeout(()=>{keys.right=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);},240);return;}
       if(action==='moveStop'){keys.left=false;keys.right=false;if(typeof stage27SetMovingClass==='function')stage27SetMovingClass(false);return;}
+      if(action==='jumpOnly'){jump();return;}
       if(action==='jump'||action==='selectOrJump'){ if(window.stage31SelectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})) return; jump(); }
     }catch(e){console.warn('stage31 control failed',e);}
   };
@@ -4207,7 +4210,10 @@ window.addEventListener('keyup',function(e){
       return;
     }
     if(e.code==='Space'){
-      if(window.stage31SelectNearestWorldStop({embedded:document.body.classList.contains('tamaGameEmbedded'),expanded:document.body.classList.contains('gameExpandedFromTama')})){e.preventDefault();e.stopImmediatePropagation();}
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      try{ if(typeof jump==='function') jump(); }catch(_e){}
+      return;
     }
   },true);
   window.addEventListener('keyup',function(e){
@@ -4284,7 +4290,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=131&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=132&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
