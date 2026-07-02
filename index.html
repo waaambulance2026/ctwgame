@@ -6871,6 +6871,67 @@ without cutting off the game.
 })();
 </script>
 
+
+
+<!-- STAGE 70: Tamagotchi button returns the live quest to Tamagotchi GAME mode.
+     It must NOT open the old fullscreen PetBot/Odin screen. -->
+<script>
+(function(){
+  function q(id){ return document.getElementById(id); }
+  function stop(e){
+    if(!e) return;
+    try{ e.preventDefault(); }catch(_){}
+    try{ e.stopPropagation(); }catch(_){}
+    try{ e.stopImmediatePropagation(); }catch(_){}
+  }
+  function hideStart(){
+    try{ const s=q('startScreen'); if(s) s.classList.add('hidden'); }catch(_){}
+  }
+  function goToTamagotchiGame(e){
+    stop(e);
+    hideStart();
+    try{ if(typeof playing !== 'undefined') playing = true; }catch(_){}
+    try{ if(typeof paused !== 'undefined') paused = false; }catch(_){}
+
+    // First use the clean view controller if it exists.
+    try{
+      if(typeof window.waaShowTamagotchiGame === 'function'){
+        window.waaShowTamagotchiGame();
+        return false;
+      }
+    }catch(err){ console.warn('Stage 70 clean Tamagotchi mode failed', err); }
+
+    // Fallbacks for the older stage patches still in the file.
+    try{ if(typeof window.stage43ReturnQuestToTamagotchi === 'function'){ window.stage43ReturnQuestToTamagotchi(); return false; } }catch(_){}
+    try{ if(typeof window.stage42ReturnQuestToTamagotchi === 'function'){ window.stage42ReturnQuestToTamagotchi(); return false; } }catch(_){}
+    try{ if(typeof window.stage37ReturnExpandedQuestToTamagotchi === 'function'){ window.stage37ReturnExpandedQuestToTamagotchi(); return false; } }catch(_){}
+    try{ if(typeof window.startEmbeddedTamaGame === 'function'){ window.startEmbeddedTamaGame('solo'); return false; } }catch(_){}
+    return false;
+  }
+
+  function bind(){
+    ['petBtn','menuPetBtn'].forEach(id=>{
+      const btn=q(id);
+      if(!btn) return;
+      // Remove the old property handler that opened PetBot fullscreen.
+      try{ btn.onclick = null; }catch(_){}
+      if(btn.__stage70TamaGameBound) return;
+      btn.__stage70TamaGameBound = true;
+      btn.addEventListener('click', goToTamagotchiGame, true);
+      btn.addEventListener('touchend', goToTamagotchiGame, {capture:true, passive:false});
+    });
+  }
+
+  bind();
+  window.addEventListener('DOMContentLoaded', bind);
+  window.addEventListener('load', bind);
+  setInterval(bind, 400);
+
+  // Public helper, useful while testing from the browser console.
+  window.stage70GoToTamagotchiGame = goToTamagotchiGame;
+})();
+</script>
+
 </body>
 </html>
 
