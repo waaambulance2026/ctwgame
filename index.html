@@ -5877,5 +5877,141 @@ window.addEventListener('keyup',function(e){
 })();
 </script>
 
+
+
+<script id="stage45-building-door-priority-fix">
+/*
+  STAGE 45: Building door priority fix.
+  Stage 44 made signs too eager, so shops/buildings sometimes showed tutorial text.
+
+  New simple rule:
+  - Stand close to a sign/text box = read tutorial text.
+  - Stand close to a glowing building/door = open the PetBot menu.
+  - Buildings win when the player is actually at the door.
+*/
+(function(){
+  const d=document;
+  const body=d.body;
+  const $=id=>d.getElementById(id);
+
+  function questActive(){
+    return body.classList.contains('tamaGameEmbedded') ||
+           body.classList.contains('gameExpandedFromTama') ||
+           body.classList.contains('petbotOpen') ||
+           (typeof playing!=='undefined' && playing);
+  }
+
+  function usable(o){
+    return !!(o && !o.vanished && !o.opening && o.el &&
+      (o.kind==='building' || o.kind==='sign' || o.kind==='task'));
+  }
+
+  function objectAt(o){
+    try{ if(Number.isFinite(Number(o && o.at))) return Number(o.at); }catch(e){}
+    try{
+      if(o && Number.isFinite(Number(o.x)) && typeof routeAtFromX==='function'){
+        return routeAtFromX(Number(o.x), o.kind || 'building');
+      }
+    }catch(e){}
+    return NaN;
+  }
+
+  function playerAt(){
+    try{
+      const base=(typeof cssNumber==='function') ? cssNumber('--playerX',150) : 150;
+      const px=base + ((typeof player!=='undefined' && player && Number(player.x)) || 0);
+      if(typeof routeAtFromX==='function') return routeAtFromX(px,'building');
+    }catch(e){}
+    try{ return Number(distance)||0; }catch(e){ return 0; }
+  }
+
+  function nearestByRoute(kinds){
+    let best=null;
+    const list=(typeof objects!=='undefined' && Array.isArray(objects)) ? objects : (Array.isArray(window.objects)?window.objects:[]);
+    const here=playerAt();
+    for(const o of list){
+      if(!usable(o) || !kinds.includes(o.kind)) continue;
+      const at=objectAt(o);
+      if(!Number.isFinite(at)) continue;
+      const dist=Math.abs(at-here);
+      if(!best || dist<best.dist) best={o,dist};
+    }
+    return best;
+  }
+
+  function say(text){
+    try{ if(typeof stage27ShowCaption==='function'){ stage27ShowCaption(text,5200); return; } }catch(e){}
+    try{ if(typeof showToast==='function') showToast(text); }catch(e){}
+  }
+
+  function readText(o){
+    if(!o) return false;
+    try{ o.read=true; o.el && o.el.classList.add('tutorialRead'); }catch(e){}
+    const title=String(o.title || o.label || 'Tutorial');
+    const msg=String(o.message || 'Read this tutorial, then keep walking.');
+    say(title+': '+msg);
+    return true;
+  }
+
+  function openDoor(o){
+    if(!o) return false;
+    try{ if(typeof openBuilding==='function') return !!openBuilding(o); }catch(e){ console.warn('Stage45 openDoor failed',e); }
+    return false;
+  }
+
+  function chooseStop(){
+    try{
+      if(!questActive() || ended || body.classList.contains('editMode')) return false;
+      const start=$('startScreen');
+      if(start && !start.classList.contains('hidden')) return false;
+    }catch(e){}
+
+    const sign=nearestByRoute(['sign','task']);
+    const building=nearestByRoute(['building']);
+
+    /* Door zone: if the player is actually close to a building, open the building.
+       This fixes Pet Shop/Hook/Quest Starter being stolen by their tutorial signs. */
+    if(building && building.dist <= 150) return openDoor(building.o);
+
+    /* Sign zone: close to a sign reads text. */
+    if(sign && sign.dist <= 130) return readText(sign.o);
+
+    /* Wider fallback. Building still wins before signs once the player has moved past the board. */
+    if(building && building.dist <= 230) return openDoor(building.o);
+    if(sign && sign.dist <= 210) return readText(sign.o);
+
+    try{ if(typeof showToast==='function') showToast('Stand closer to a sign or building, then press Enter/E.'); }catch(e){}
+    return false;
+  }
+
+  window.stage45ChooseTutorialStop=chooseStop;
+  window.stage44SelectTutorialTownThing=chooseStop;
+  window.selectNearestWorldStop=chooseStop;
+  window.stage31SelectNearestWorldStop=chooseStop;
+  window.enterNearbyBuilding=chooseStop;
+  window.enterNearbyInteractable=chooseStop;
+
+  const previousTap=window.tapEmbeddedControl;
+  window.tapEmbeddedControl=function(action){
+    if(action==='selectOrJump' || action==='openNearest'){
+      if(chooseStop()) return;
+      return;
+    }
+    if(previousTap) return previousTap.apply(this,arguments);
+  };
+
+  window.addEventListener('keydown',function(e){
+    const code=e.code||'';
+    if(!(body.classList.contains('tamaGameEmbedded') || body.classList.contains('gameExpandedFromTama'))) return;
+    if(code==='Enter' || code==='NumpadEnter' || code==='KeyE'){
+      e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+      chooseStop();
+    }
+  },true);
+
+  console.info('Stage 45 loaded: building doors open menus again; signs still show tutorial text.');
+})();
+</script>
+
 </body>
 </html>
