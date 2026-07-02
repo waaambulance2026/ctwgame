@@ -31,7 +31,7 @@ SAFE PLACES TO EDIT YOURSELF:
 6) PLACE_IMAGES
    Cloudinary image links for buildings, signs, tokens and hazards.
 
-7) VIEW MODE CONTROLLER v66
+7) VIEW MODE CONTROLLER v67
    Fullscreen view and Tamagotchi view only.
 
 DO NOT EDIT:
@@ -6324,20 +6324,20 @@ body.gameExpandedFromTama .tamaGameCaption.show{
 </script>
 
 <!-- ============================================================
-VIEW MODE CONTROLLER v66 - SAFE RESPONSIVE VIEW
+VIEW MODE CONTROLLER v67 - EXACT SCREEN FIT
 
 THIS IS THE ONLY SECTION TO EDIT FOR SCREEN VIEW PROBLEMS.
 
 Important simple rule:
-A 1920x1080 game cannot fill every device shape without either:
-1) FIT  = whole game visible, with side/top space on some screens
-2) FILL = no side space, but it crops some of the game
+This version uses EXACT FIT.
 
-This version uses SAFE FIT for wide screens and phones/tablets.
-The spare side space is now a soft sky/backdrop only, not fake repeated
-hills/ground. That avoids the broken-looking duplicated world seams.
+EXACT FIT means the game always fills the visible browser area.
+It does NOT crop and it does NOT leave side bars.
+On screens that are not 16:9, the game is gently stretched to match
+the screen shape. That is the only simple way to fill every screen
+without cutting off the game.
 ============================================================ -->
-<style id="waa-view-mode-controller-v66-css">
+<style id="waa-view-mode-controller-v67-css">
   html, body{
     background:#79d9ff url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png') center center / cover no-repeat fixed!important;
   }
@@ -6345,33 +6345,9 @@ hills/ground. That avoids the broken-looking duplicated world seams.
     background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat fixed!important;
   }
 
-  /* Soft backdrop for spare space around the 16:9 game.
-     Do NOT put hills/ground here. The real hills/ground stay inside #game.
-     This stops the side areas from looking like duplicated broken scenery. */
+  /* Exact fit fills the whole browser with the real game.
+     No fake side backdrop is needed in full game mode. */
   #waaResponsiveBackdrop{
-    position:fixed;
-    inset:0;
-    z-index:0;
-    pointer-events:none;
-    overflow:hidden;
-    display:block;
-    background:#79d9ff url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png') center center / cover no-repeat;
-  }
-  body.night #waaResponsiveBackdrop{
-    background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat;
-  }
-  #waaResponsiveBackdrop::after{
-    content:'';
-    position:absolute;
-    inset:0;
-    background:
-      radial-gradient(circle at 50% 70%, rgba(255,255,255,.20), transparent 48%),
-      linear-gradient(90deg, rgba(8,12,34,.08), transparent 14%, transparent 86%, rgba(8,12,34,.08));
-    pointer-events:none;
-  }
-
-  body.petbotOpen.tamaGameEmbedded #waaResponsiveBackdrop,
-  body.petbotOpen.waa-view-petbot-menu #waaResponsiveBackdrop{
     display:none!important;
   }
   body.gameExpandedFromTama::before,
@@ -6383,7 +6359,7 @@ hills/ground. That avoids the broken-looking duplicated world seams.
   body.gameExpandedFromTama #game,
   body.waa-view-full-game #game{
     z-index:1!important;
-    box-shadow:0 0 0 1px rgba(255,255,255,.14)!important;
+    box-shadow:none!important;
   }
 
   body.gameExpandedFromTama .hud,
@@ -6410,7 +6386,7 @@ hills/ground. That avoids the broken-looking duplicated world seams.
     opacity:1!important;
     position:fixed!important;
     top:calc(env(safe-area-inset-top) + var(--waa-game-top, 0px) + 150px)!important;
-    right:calc(env(safe-area-inset-right) + var(--waa-side-gap, 0px) + 22px)!important;
+    right:calc(env(safe-area-inset-right) + 22px)!important;
     width:150px!important;
     height:200px!important;
     min-width:150px!important;
@@ -6487,13 +6463,13 @@ hills/ground. That avoids the broken-looking duplicated world seams.
       min-width:116px!important;
       min-height:154px!important;
       top:calc(env(safe-area-inset-top) + var(--waa-game-top, 0px) + 96px)!important;
-      right:calc(env(safe-area-inset-right) + var(--waa-side-gap, 0px) + 10px)!important;
+      right:calc(env(safe-area-inset-right) + 10px)!important;
     }
     #waaDebugBtn{font-size:11px;padding:7px 9px;}
   }
 </style>
 
-<script id="waa-view-mode-controller-v66-script">
+<script id="waa-view-mode-controller-v67-script">
 (function(){
   const d = document;
   const body = d.body;
@@ -6501,7 +6477,7 @@ hills/ground. That avoids the broken-looking duplicated world seams.
   /* SAFE_FIT means the whole game is visible.
      On wide screens this leaves side space. That is expected and safer than cropping.
   */
-  const FULLSCREEN_MODE = 'safe-fit';
+  const FULLSCREEN_MODE = 'exact-fit';
 
   const OLD_MODE_CLASSES = [
     'stage52ModeFull','stage52ModeTama','stage53PetbotMenu','stage54Returning',
@@ -6566,7 +6542,7 @@ hills/ground. That avoids the broken-looking duplicated world seams.
     return back;
   }
 
-  window.fitGameToScreen = function fitGameToScreenV66(){
+  window.fitGameToScreen = function fitGameToScreenV67(){
     const game = q('game');
     if(!game) return;
     if(body.classList.contains('tamaGameEmbedded')){
@@ -6576,21 +6552,27 @@ hills/ground. That avoids the broken-looking duplicated world seams.
 
     const vw = window.innerWidth || d.documentElement.clientWidth || W();
     const vh = window.innerHeight || d.documentElement.clientHeight || H();
-    const scale = Math.min(vw / W(), vh / H());
-    const left = (vw - W() * scale) / 2;
-    const top = (vh - H() * scale) / 2;
-    const sideGap = Math.max(0, left);
-    const topGap = Math.max(0, top);
 
-    try{ currentGameScale = scale; currentGameLeft = left; currentGameTop = top; }catch(e){}
+    /* EXACT FIT:
+       scaleX fills the screen width.
+       scaleY fills the screen height.
+       This removes side bars and avoids cropping on every device shape. */
+    const scaleX = vw / W();
+    const scaleY = vh / H();
+    const left = 0;
+    const top = 0;
+
+    try{ currentGameScale = Math.min(scaleX, scaleY); currentGameLeft = 0; currentGameTop = 0; }catch(e){}
     try{
-      body.style.setProperty('--waa-game-scale', String(scale));
-      body.style.setProperty('--waa-game-left', left+'px');
-      body.style.setProperty('--waa-game-top', top+'px');
-      body.style.setProperty('--waa-side-gap', sideGap+'px');
-      body.style.setProperty('--waa-top-gap', topGap+'px');
-      body.style.setProperty('--waa-game-visible-width', (W()*scale)+'px');
-      body.style.setProperty('--waa-game-visible-height', (H()*scale)+'px');
+      body.style.setProperty('--waa-game-scale-x', String(scaleX));
+      body.style.setProperty('--waa-game-scale-y', String(scaleY));
+      body.style.setProperty('--waa-game-scale', String(Math.min(scaleX, scaleY)));
+      body.style.setProperty('--waa-game-left', '0px');
+      body.style.setProperty('--waa-game-top', '0px');
+      body.style.setProperty('--waa-side-gap', '0px');
+      body.style.setProperty('--waa-top-gap', '0px');
+      body.style.setProperty('--waa-game-visible-width', vw+'px');
+      body.style.setProperty('--waa-game-visible-height', vh+'px');
     }catch(e){}
 
     ensureResponsiveBackdrop();
@@ -6603,7 +6585,7 @@ hills/ground. That avoids the broken-looking duplicated world seams.
     imp(game,'min-width',W()+'px');
     imp(game,'min-height',H()+'px');
     imp(game,'transform-origin','0 0');
-    imp(game,'transform',`translate3d(${left}px, ${top}px, 0) scale(${scale})`);
+    imp(game,'transform',`translate3d(0, 0, 0) scale(${scaleX}, ${scaleY})`);
     imp(game,'clip-path','none');
     imp(game,'-webkit-clip-path','none');
     imp(game,'border-radius','0');
@@ -6677,8 +6659,8 @@ hills/ground. That avoids the broken-looking duplicated world seams.
 
   function bindViewButtons(){
     const petBtn = q('petBtn');
-    if(petBtn && !petBtn.__waaViewV66Bound){
-      petBtn.__waaViewV66Bound = true;
+    if(petBtn && !petBtn.__waaViewV67Bound){
+      petBtn.__waaViewV67Bound = true;
       petBtn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -6687,8 +6669,8 @@ hills/ground. That avoids the broken-looking duplicated world seams.
       }, true);
     }
     const menuPetBtn = q('menuPetBtn');
-    if(menuPetBtn && !menuPetBtn.__waaViewV66Bound){
-      menuPetBtn.__waaViewV66Bound = true;
+    if(menuPetBtn && !menuPetBtn.__waaViewV67Bound){
+      menuPetBtn.__waaViewV67Bound = true;
       menuPetBtn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -6733,10 +6715,11 @@ hills/ground. That avoids the broken-looking duplicated world seams.
       ? getComputedStyle(mask).display + ' / ' + getComputedStyle(mask).visibility + ' / z=' + getComputedStyle(mask).zIndex
       : 'missing';
     box.textContent = [
-      'VIEW MODE DEBUG v66',
+      'VIEW MODE DEBUG v67',
       '',
-      'fullscreen mode: SAFE FIT',
+      'fullscreen mode: EXACT FIT',
       'screen: ' + window.innerWidth + ' x ' + window.innerHeight,
+      'scaleX/scaleY: ' + (window.innerWidth / W()).toFixed(4) + ' / ' + (window.innerHeight / H()).toFixed(4),
       'body classes:',
       body.className,
       '',
