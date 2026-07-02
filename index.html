@@ -31,7 +31,7 @@ SAFE PLACES TO EDIT YOURSELF:
 6) PLACE_IMAGES
    Cloudinary image links for buildings, signs, tokens and hazards.
 
-7) VIEW MODE CONTROLLER v63
+7) VIEW MODE CONTROLLER v64
    Fullscreen view and Tamagotchi view only.
 
 DO NOT EDIT:
@@ -6324,7 +6324,7 @@ body.gameExpandedFromTama .tamaGameCaption.show{
 </script>
 
 <!-- ============================================================
-VIEW MODE CONTROLLER v63 - RESPONSIVE FULLSCREEN / TAMAGOTCHI ONLY
+VIEW MODE CONTROLLER v64 - RESPONSIVE FULLSCREEN / TAMAGOTCHI ONLY
 
 THIS IS THE ONLY SECTION TO EDIT FOR SCREEN VIEW PROBLEMS.
 
@@ -6338,7 +6338,7 @@ Simple settings inside this section:
 
 For most devices, use "fit" first.
 ============================================================ -->
-<style id="waa-view-mode-controller-v63-css">
+<style id="waa-view-mode-controller-v64-css">
   /* Remove ugly black bars: when the 1920x1080 game has spare side space,
      the page behind it uses the same sky colour/image. */
   html, body{
@@ -6346,6 +6346,26 @@ For most devices, use "fit" first.
   }
   body.night{
     background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat fixed!important;
+  }
+
+  /* Full-screen fit leaves side space on very wide screens.
+     These rules make that space look like the game sky, not black bars. */
+  body.gameExpandedFromTama,
+  body.waa-view-full-game{
+    background:#79d9ff url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png') center center / cover no-repeat fixed!important;
+  }
+  body.night.gameExpandedFromTama,
+  body.night.waa-view-full-game{
+    background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat fixed!important;
+  }
+  body.gameExpandedFromTama::before,
+  body.waa-view-full-game::before{
+    display:none!important;
+    content:none!important;
+  }
+  body.gameExpandedFromTama #game,
+  body.waa-view-full-game #game{
+    z-index:1!important;
   }
 
   body.gameExpandedFromTama .hud,
@@ -6373,7 +6393,7 @@ For most devices, use "fit" first.
     opacity:1!important;
     position:fixed!important;
     top:calc(env(safe-area-inset-top) + 150px)!important;
-    right:calc(env(safe-area-inset-right) + 22px)!important;
+    right:calc(env(safe-area-inset-right) + var(--waa-side-gap, 0px) + 22px)!important;
     width:150px!important;
     height:200px!important;
     min-width:150px!important;
@@ -6460,13 +6480,13 @@ For most devices, use "fit" first.
       min-width:116px!important;
       min-height:154px!important;
       top:96px!important;
-      right:10px!important;
+      right:calc(var(--waa-side-gap, 0px) + 10px)!important;
     }
     #waaDebugBtn{font-size:11px;padding:7px 9px;}
   }
 </style>
 
-<script id="waa-view-mode-controller-v63-script">
+<script id="waa-view-mode-controller-v64-script">
 (function(){
   const d = document;
   const body = d.body;
@@ -6475,7 +6495,7 @@ For most devices, use "fit" first.
      fit  = whole game visible on all screen shapes, no cropping.
      fill = fills browser, but crops edges.
   */
-  const FULLSCREEN_MODE = 'fit';
+  const FULLSCREEN_MODE = 'smart';
 
   const OLD_MODE_CLASSES = [
     'stage52ModeFull','stage52ModeTama','stage53PetbotMenu','stage54Returning',
@@ -6541,16 +6561,25 @@ For most devices, use "fit" first.
     const vh = window.innerHeight || d.documentElement.clientHeight || H();
     const fitScale = Math.min(vw / W(), vh / H());
     const fillScale = Math.max(vw / W(), vh / H());
-    const scale = FULLSCREEN_MODE === 'fill' ? fillScale : fitScale;
+    const isPortrait = vh > vw;
+    const scale = FULLSCREEN_MODE === 'fill'
+      ? fillScale
+      : (FULLSCREEN_MODE === 'smart' && isPortrait ? fillScale : fitScale);
 
     const left = (vw - W() * scale) / 2;
     const top = (vh - H() * scale) / 2;
+    const sideGap = Math.max(0, left);
+    const topGap = Math.max(0, top);
 
     try{ currentGameScale = scale; currentGameLeft = left; currentGameTop = top; }catch(e){}
     try{
       body.style.setProperty('--waa-game-scale', String(scale));
       body.style.setProperty('--waa-game-left', left+'px');
       body.style.setProperty('--waa-game-top', top+'px');
+      body.style.setProperty('--waa-side-gap', sideGap+'px');
+      body.style.setProperty('--waa-top-gap', topGap+'px');
+      body.style.setProperty('--waa-game-visible-width', (W()*scale)+'px');
+      body.style.setProperty('--waa-game-visible-height', (H()*scale)+'px');
     }catch(e){}
 
     imp(game,'position','fixed');
@@ -6587,8 +6616,9 @@ For most devices, use "fit" first.
     try{ if(typeof paused !== 'undefined') paused = false; }catch(e){}
     try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
     window.fitGameToScreen();
-    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); updateDebug(); },80);
-    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); updateDebug(); },260);
+    enforceFullGameVisuals();
+    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); enforceFullGameVisuals(); updateDebug(); },80);
+    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); enforceFullGameVisuals(); updateDebug(); },260);
   }
 
   function showTamagotchiGame(){
@@ -6605,6 +6635,22 @@ For most devices, use "fit" first.
       try{ if(typeof window.fitEmbeddedTamaGame === 'function') window.fitEmbeddedTamaGame(); }catch(e){}
       updateDebug();
     },ms));
+  }
+
+  function enforceFullGameVisuals(){
+    if(!body.classList.contains('waa-view-full-game') && !body.classList.contains('gameExpandedFromTama')) return;
+    if(body.classList.contains('petbotOpen') || body.classList.contains('tamaGameEmbedded')) return;
+    const game = q('game');
+    if(game){
+      imp(game,'visibility','visible');
+      imp(game,'opacity','1');
+      imp(game,'display','block');
+      imp(game,'z-index','1');
+      imp(game,'clip-path','none');
+      imp(game,'-webkit-clip-path','none');
+    }
+    body.style.setProperty('background', "#79d9ff url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png') center center / cover no-repeat fixed", 'important');
+    keepSmallToyVisible();
   }
 
   function openPetbotMenu(){
@@ -6675,9 +6721,9 @@ For most devices, use "fit" first.
       ? getComputedStyle(mask).display + ' / ' + getComputedStyle(mask).visibility + ' / z=' + getComputedStyle(mask).zIndex
       : 'missing';
     box.textContent = [
-      'VIEW MODE DEBUG v63',
+      'VIEW MODE DEBUG v64',
       '',
-      'fullscreen mode: ' + FULLSCREEN_MODE,
+      'fullscreen mode: ' + FULLSCREEN_MODE + ' (smart = fit on wide screens, fill on narrow portrait screens)',
       'screen: ' + window.innerWidth + ' x ' + window.innerHeight,
       'body classes:',
       body.className,
@@ -6711,6 +6757,7 @@ For most devices, use "fit" first.
       try{ if(typeof window.fitEmbeddedTamaGame === 'function') window.fitEmbeddedTamaGame(); }catch(e){}
     }else{
       window.fitGameToScreen();
+      enforceFullGameVisuals();
     }
     updateDebug();
   }, {passive:true});
@@ -6739,7 +6786,7 @@ For most devices, use "fit" first.
     window.fitGameToScreen();
     updateDebug();
     observer.observe(body,{attributes:true, attributeFilter:['class']});
-    setInterval(updateDebug,1000);
+    setInterval(function(){ enforceFullGameVisuals(); updateDebug(); },1000);
   });
 })();
 </script>
