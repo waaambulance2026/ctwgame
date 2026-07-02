@@ -6786,6 +6786,52 @@ without cutting off the game.
 })();
 </script>
 
+
+
+<!-- STAGE 68: remove the broken left Tamagotchi return button.
+     Use only the HUD Tamagotchi button inside the game header. -->
+<script>
+(function(){
+  const IDS=['stage37TamaReturnBtn','stage42TamaReturnBtn','stage43TamaReturnBtn'];
+  function removeLeftButtons(){
+    IDS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){
+        try{ el.remove(); }catch(e){ try{ el.style.display='none'; el.style.pointerEvents='none'; }catch(_e){} }
+      }
+    });
+  }
+  const st=document.createElement('style');
+  st.textContent=`
+    #stage37TamaReturnBtn,
+    #stage42TamaReturnBtn,
+    #stage43TamaReturnBtn{
+      display:none !important;
+      visibility:hidden !important;
+      pointer-events:none !important;
+      opacity:0 !important;
+    }
+  `;
+  document.head.appendChild(st);
+  removeLeftButtons();
+  const obs=new MutationObserver(removeLeftButtons);
+  obs.observe(document.documentElement,{childList:true,subtree:true});
+
+  // Keep the in-game HUD button as the only way back to Tamagotchi.
+  const oldOpenPetbotFull=window.openPetbotFull;
+  window.openPetbotFull=function(){
+    try{
+      if(document.body.classList.contains('gameExpandedFromTama')){
+        if(typeof window.stage43ReturnQuestToTamagotchi==='function') return window.stage43ReturnQuestToTamagotchi();
+        if(typeof window.stage42ReturnQuestToTamagotchi==='function') return window.stage42ReturnQuestToTamagotchi();
+        if(typeof window.stage37ReturnExpandedQuestToTamagotchi==='function') return window.stage37ReturnExpandedQuestToTamagotchi();
+      }
+    }catch(e){}
+    return oldOpenPetbotFull ? oldOpenPetbotFull.apply(this,arguments) : undefined;
+  };
+})();
+</script>
+
 </body>
 </html>
 
