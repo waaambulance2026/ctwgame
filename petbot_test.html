@@ -1994,6 +1994,65 @@ window.addEventListener('message',e=>{
 
 render();
 })();
+
+// STAGE 40: keep the PetBot LCD in quest-control mode and make the pacifier jump only.
+(function(){
+  function sendQuestAction40(action){
+    try{sendParent('waa-petbot-game-action',{action});}catch(e){}
+  }
+  function showQuestScreen40(){
+    try{
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+      state.returnToQuest=false;
+      render();
+    }catch(e){console.warn('Stage 40 quest LCD restore failed',e);}
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
+      showQuestScreen40();
+      try{e.stopImmediatePropagation();}catch(_e){}
+    }
+  },true);
+
+  // The middle pacifier/select button is the platform jump button while the quest is running.
+  const oldQuestJump40=window.questJump || (typeof questJump==='function'?questJump:null);
+  window.questJump=questJump=function(){
+    if(state.screen==='questGame'){
+      sendQuestAction40('jumpOnly');
+      return;
+    }
+    if(oldQuestJump40) return oldQuestJump40.apply(this,arguments);
+  };
+  const oldHandleSelect40=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
+  window.handleSelect=handleSelect=function(){
+    if(state.screen==='questGame'){
+      sendQuestAction40('jumpOnly');
+      return;
+    }
+    if(oldHandleSelect40) return oldHandleSelect40.apply(this,arguments);
+  };
+
+  const btn=document.getElementById('btnSelect');
+  if(btn && !btn.__stage40JumpBound){
+    btn.__stage40JumpBound=true;
+    btn.addEventListener('click',function(e){
+      if(state.screen==='questGame'){
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        sendQuestAction40('jumpOnly');
+      }
+    },true);
+    btn.addEventListener('touchend',function(e){
+      if(state.screen==='questGame'){
+        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+        sendQuestAction40('jumpOnly');
+      }
+    },{capture:true,passive:false});
+  }
+})();
+
 </script>
 </body>
 </html>
