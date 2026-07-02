@@ -7105,5 +7105,126 @@ body.waaTamaGame .tamaGameCaption.show{
 })();
 </script>
 
+
+<!-- STAGE 53: start in PetBot menu, not blank quest; quest only starts after pressing Games/Quest. -->
+<style id="stage53-menu-vs-quest-style">
+  body.stage53PetbotMenu #tamaGameMask33{display:none!important;}
+  body.stage53PetbotMenu #game{visibility:hidden!important;opacity:0!important;pointer-events:none!important;}
+  body.stage53PetbotMenu #petbotDock.fullscreen{display:block!important;visibility:visible!important;opacity:1!important;background:radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 44%,#def5ff 100%)!important;}
+  body.stage53PetbotMenu #petbotDock.fullscreen .petbotDockFrame{display:block!important;visibility:visible!important;opacity:1!important;}
+  body.stage53PetbotMenu #petbotDock.fullscreen .petbotDockPreview{display:none!important;}
+  body.stage53PetbotMenu .hud, body.stage53PetbotMenu .touch, body.stage53PetbotMenu .instructions{display:none!important;}
+</style>
+<script id="stage53-menu-vs-quest-script">
+(function(){
+  const d=document, body=d.body;
+  function q(id){return d.getElementById(id);} 
+  function css(el,p,v){ if(el) el.style.setProperty(p,v,'important'); }
+  function dock(){return q('petbotDock');}
+  function frame(){return q('petbotDockFrame')||q('petbotFrame');}
+  function hideGameMask(){ const m=q('tamaGameMask33'); if(m) css(m,'display','none'); }
+  function setFrameVisible(){
+    const dk=dock(), f=frame();
+    if(!dk) return;
+    dk.classList.remove('hidden'); dk.classList.add('fullscreen');
+    css(dk,'display','block'); css(dk,'visibility','visible'); css(dk,'opacity','1'); css(dk,'position','fixed');
+    css(dk,'inset','0'); css(dk,'left','0'); css(dk,'top','0'); css(dk,'width','100vw'); css(dk,'height','100dvh');
+    css(dk,'min-width','100vw'); css(dk,'min-height','100dvh'); css(dk,'max-width','none'); css(dk,'max-height','none');
+    css(dk,'z-index','2147483000'); css(dk,'background','radial-gradient(circle at 50% 42%,#fff 0,#fff2fb 44%,#def5ff 100%)');
+    if(f){ css(f,'display','block'); css(f,'visibility','visible'); css(f,'opacity','1'); css(f,'position','absolute'); css(f,'inset','0'); css(f,'width','100%'); css(f,'height','100%'); }
+    const prev=dk.querySelector('.petbotDockPreview'); if(prev) css(prev,'display','none');
+  }
+  function setSmallWidget(){
+    const dk=dock(), f=frame();
+    if(!dk) return;
+    dk.classList.remove('hidden','fullscreen');
+    css(dk,'display','block'); css(dk,'visibility','visible'); css(dk,'opacity','1'); css(dk,'position','fixed');
+    css(dk,'left','auto'); css(dk,'bottom','auto'); css(dk,'top','calc(env(safe-area-inset-top) + 118px)'); css(dk,'right','calc(env(safe-area-inset-right) + 22px)');
+    css(dk,'width','clamp(96px,8.2vw,156px)'); css(dk,'height','clamp(128px,10.9vw,208px)'); css(dk,'min-width','96px'); css(dk,'min-height','128px'); css(dk,'max-width','156px'); css(dk,'max-height','208px');
+    css(dk,'z-index','220'); css(dk,'background','transparent'); css(dk,'transform','none'); css(dk,'overflow','visible'); css(dk,'pointer-events','auto');
+    if(f) css(f,'display','none');
+    const prev=dk.querySelector('.petbotDockPreview'); if(prev){ css(prev,'display','grid'); css(prev,'visibility','visible'); css(prev,'opacity','1'); }
+  }
+  function postToPetbot(msg){
+    const f=frame();
+    [60,160,360,760,1300].forEach(ms=>setTimeout(()=>{try{f&&f.contentWindow&&f.contentWindow.postMessage(msg,location.origin);}catch(e){}},ms));
+  }
+  function openPetbotMenu(screen){
+    body.classList.remove('waaTamaGame','waaFullscreenGame','gameExpandedFromTama','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding','waaFullscreenMenu','petbotBuildingFullScreen','tamaMenuOpenFromQuest');
+    body.classList.add('petbotOpen','stage53PetbotMenu','waaTamaMenu');
+    hideGameMask();
+    try{ const game=q('game'); if(game){ css(game,'visibility','hidden'); css(game,'opacity','0'); css(game,'pointer-events','none'); } }catch(e){}
+    try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
+    try{ paused=true; }catch(e){}
+    setFrameVisible();
+    // Clear stale quest/open-screen messages so the PetBot does not jump to a blank quest LCD.
+    try{ localStorage.removeItem('waaPendingPetbotScreen'); localStorage.removeItem('waaQuestIsLive'); sessionStorage.removeItem('waaQuestReturnMode'); }catch(e){}
+    postToPetbot({type:'waa-parent-petbot-menu', screen:screen||'menu', stage:53, t:Date.now()});
+    if(screen) postToPetbot({type:'waa-parent-open-screen', screen:screen, returnToQuest:false, stage:53, t:Date.now()});
+    return true;
+  }
+  function markQuestLive(){ try{ localStorage.setItem('waaQuestIsLive', String(Date.now())); }catch(e){} }
+  function startQuest(kind){
+    body.classList.remove('stage53PetbotMenu','waaTamaMenu');
+    markQuestLive();
+    try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
+    try{ if(kind==='team') startTeamQuest(); else startSoloQuest(); }catch(e){ console.warn('Stage 53 start quest failed', e); }
+    if(typeof window.waaEnterTamagotchiGame==='function') return window.waaEnterTamagotchiGame();
+    if(typeof window.startEmbeddedTamaGame==='function') return window.startEmbeddedTamaGame(kind==='team'?'team':'solo');
+  }
+  function expandQuest(){
+    body.classList.remove('stage53PetbotMenu','waaTamaMenu');
+    markQuestLive();
+    if(typeof window.waaEnterFullscreenGame==='function') return window.waaEnterFullscreenGame();
+    if(typeof window.stage43ExpandQuest==='function') return window.stage43ExpandQuest();
+  }
+  function returnQuestToTama(){
+    body.classList.remove('stage53PetbotMenu','waaTamaMenu');
+    markQuestLive();
+    if(typeof window.waaEnterTamagotchiGame==='function') return window.waaEnterTamagotchiGame();
+    if(typeof window.stage43ReturnQuestToTamagotchi==='function') return window.stage43ReturnQuestToTamagotchi();
+  }
+  const previousHandle=window.handlePetbotGameAction;
+  window.handlePetbotGameAction=function(action){
+    if(action==='startSoloEmbedded'||action==='startPlatformEmbedded') return startQuest('solo');
+    if(action==='startTeamEmbedded') return startQuest('team');
+    if(action==='expandEmbedded') return expandQuest();
+    if(action==='backToTamagotchi'||action==='returnQuestToTamagotchi') return returnQuestToTama();
+    if(action==='returnToQuest'||action==='resumeQuest'){
+      const mode=window.waaGameViewMode||sessionStorage.getItem('waaQuestReturnMode')||'embedded';
+      return mode==='expanded'?expandQuest():returnQuestToTama();
+    }
+    if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){
+      try{ if(typeof window.tapEmbeddedControl==='function') return window.tapEmbeddedControl(action); }catch(e){}
+      if(action==='jumpOnly'||action==='jump') { try{ jump(); }catch(e){} return true; }
+    }
+    if(previousHandle) return previousHandle.apply(this,arguments);
+  };
+  try{ handlePetbotGameAction=window.handlePetbotGameAction; }catch(e){}
+
+  window.openPetbotFull=function(){ return openPetbotMenu('menu'); };
+  window.startTamagotchiLaunch=function(){ return openPetbotMenu('menu'); };
+  window.closePetbotFull=function(){
+    body.classList.remove('petbotOpen','stage53PetbotMenu','waaTamaMenu','waaFullscreenMenu','petbotBuildingFullScreen','tamaMenuOpenFromQuest');
+    setSmallWidget();
+    try{ if(playing){ paused=false; } }catch(e){}
+    try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}
+  };
+  // Opening the small widget should open PetBot menu, not start a quest.
+  const dk=dock();
+  if(dk && !dk.__stage53Bound){
+    dk.__stage53Bound=true;
+    dk.addEventListener('click',function(e){
+      if(e.target && e.target.closest && e.target.closest('.petbotDockBtn')) return;
+      if(!dk.classList.contains('fullscreen')){ e.preventDefault(); e.stopPropagation(); openPetbotMenu('menu'); }
+    },true);
+  }
+  // Let older automatic launch call this new safe menu opener.
+  setTimeout(()=>{ if(body.classList.contains('petbotOpen') && body.classList.contains('tamaGameEmbedded') && !localStorage.getItem('waaQuestIsLive')) openPetbotMenu('menu'); },180);
+  setTimeout(()=>{ if(!body.classList.contains('waaTamaGame') && !body.classList.contains('waaFullscreenGame') && !body.classList.contains('gameExpandedFromTama')) openPetbotMenu('menu'); },260);
+  console.info('Stage 53 loaded: PetBot opens as menu. Quest mode starts only after choosing a game.');
+})();
+</script>
+
 </body>
 </html>

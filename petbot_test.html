@@ -2277,5 +2277,62 @@ render();
 })();
 </script>
 
+
+<!-- STAGE 53: do not switch to blank quest LCD unless the parent actually started a quest. -->
+<script id="stage53-quest-guard-script">
+(function(){
+  function questLiveRecent(){
+    try{
+      const t=Number(localStorage.getItem('waaQuestIsLive')||0);
+      return t && Date.now()-t < 1000*60*60;
+    }catch(e){return false;}
+  }
+  function isMenuScreen(){
+    try{return ['login','password','loading','menu','pet','petHome','petActions','shop','habitat','hook','inventory','care','games','welcomeBoard','stats','quests'].includes(state.screen);}catch(e){return true;}
+  }
+  function openNormalMenu(screen){
+    try{localStorage.removeItem('waaPendingPetbotScreen'); localStorage.removeItem('waaQuestIsLive');}catch(e){}
+    try{document.documentElement.classList.remove('questPlaying'); document.body.classList.remove('questPlaying');}catch(e){}
+    screen=String(screen||'menu');
+    try{
+      if(!state.player){ state.screen='login'; render(); return; }
+      if(screen==='shop'){ openShopPanel(); return; }
+      if(screen==='habitat'){ openDataPanel('habitat'); return; }
+      if(screen==='hook'){ openDataPanel('hook'); return; }
+      if(screen==='inventory'){ openDataPanel('inventory'); return; }
+      if(screen==='care'){ state.screen='care'; state.panelIndex=0; render(); return; }
+      if(screen==='games'){ state.screen='games'; state.gameIndex=0; render(); return; }
+      if(screen==='welcomeBoard'){ state.screen='welcomeBoard'; render(); return; }
+      state.screen=currentPet && currentPet() ? 'petHome' : 'menu';
+      render();
+    }catch(e){console.warn('Stage 53 PetBot menu open failed',e);}
+  }
+  // Capture this before the older Stage 37 listener turns the LCD into a transparent/blank quest screen.
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin) return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-petbot-menu'){
+      e.stopImmediatePropagation();
+      openNormalMenu(d.screen||'menu');
+      return;
+    }
+    if(d.type==='waa-parent-quest-active'){
+      const allow=questLiveRecent() && (!isMenuScreen() || state.screen==='questGame' || d.forceQuest===true);
+      if(!allow){
+        e.stopImmediatePropagation();
+        if(state.screen==='questGame') openNormalMenu('menu');
+        return;
+      }
+    }
+    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest && !questLiveRecent()){
+      e.stopImmediatePropagation();
+      openNormalMenu('menu');
+      return;
+    }
+  },true);
+  console.info('Stage 53 PetBot quest guard loaded.');
+})();
+</script>
+
 </body>
 </html>
