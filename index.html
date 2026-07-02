@@ -3591,7 +3591,7 @@ function fitGameToScreen(){
   currentGameLeft = left;
   currentGameTop = top;
 
-  game.style.transform = `translate(${left}px, ${top}px) scale(${scale})`;
+  game.style.setProperty('transform', `translate(${left}px, ${top}px) scale(${scale})`, 'important');
 
   // Keep HUD visible even when the game canvas is cropped vertically.
   const visibleTop = Math.max(10, (10 - top) / scale);
@@ -3686,6 +3686,7 @@ fitGameToScreen();
     try{
       const cap=$id('tamaGameCaption');
       if(cap){
+        if(cap.parentElement!==d.body) d.body.appendChild(cap);
         cap.textContent=msg;
         cap.classList.add('show');
         if(inTamaQuest()){
@@ -3733,7 +3734,9 @@ fitGameToScreen();
     body.classList.add('petbotOpen');
     const dock=$id('petbotDock');
     if(dock){dock.classList.remove('hidden');dock.classList.add('fullscreen');}
-    try{ if(typeof window.openPetbotFull==='function') window.openPetbotFull(); }catch(e){}
+    // The dock was already opened above. Do not call openPetbotFull() here,
+    // because that would send a generic Pet Home message after the specific shop/habitat screen.
+    try{ setTimeout(()=>{ const frame=document.getElementById('petbotDockFrame'); frame&&frame.focus&&frame.focus(); },80); }catch(e){}
     try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
     try{localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({screen,place:o.place,label,returnToQuest:true,returnMode,t:Date.now()}));}catch(e){}
     postToPetbot({type:'waa-parent-open-screen',screen,place:o.place,label,returnToQuest:true,returnMode});
@@ -3925,6 +3928,7 @@ fitGameToScreen();
       setTimeout(fitTamaQuest,220);
     }
     showQuestCaption('Back to quest',1500);
+    try{window.waaQuestReturnMode='';sessionStorage.removeItem('waaQuestReturnMode');localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
     try{window.focus();body.focus({preventScroll:true});}catch(e){}
   }
   window.waaResumeQuestFromPetbot=resumeQuest;
@@ -3951,6 +3955,8 @@ fitGameToScreen();
     if(e.origin!==location.origin)return;
     const data=e.data||{};
     if(data.type==='waa-petbot-game-action'){
+      e.preventDefault();
+      e.stopImmediatePropagation();
       gameAction(data.action);
     }
   },true);
@@ -4021,6 +4027,86 @@ fitGameToScreen();
   window.addEventListener('resize',()=>{ if(inTamaQuest())setTimeout(fitTamaQuest,60); },{passive:true});
   window.addEventListener('orientationchange',()=>{ if(inTamaQuest())setTimeout(fitTamaQuest,200); },{passive:true});
   setInterval(()=>{ if(inTamaQuest())fitTamaQuest(); },700);
+})();
+
+// STAGE 36: missing PetBot open/close functions + safer return-to-quest bridge.
+// The HUD buttons and iframe messages were calling openPetbotFull()/closePetbotFull(),
+// but this zip did not actually define them. That made Tamagotchi/fullscreen switching unreliable.
+(function(){
+  const d=document;
+  const body=d.body;
+  const $id=(id)=>d.getElementById(id);
+
+  function postToPetbot(msg){
+    const frame=$id('petbotDockFrame')||$id('petbotFrame');
+    [20,120,350].forEach(ms=>setTimeout(()=>{
+      try{frame && frame.contentWindow && frame.contentWindow.postMessage(msg,location.origin);}catch(e){}
+    },ms));
+  }
+
+  function rememberQuestMode(mode){
+    mode=mode||window.waaQuestReturnMode;
+    try{mode=mode||sessionStorage.getItem('waaQuestReturnMode');}catch(e){}
+    return mode||'';
+  }
+
+  function showDockFull(){
+    const dock=$id('petbotDock');
+    if(!dock)return;
+    dock.classList.remove('hidden');
+    dock.classList.add('fullscreen');
+    body.classList.add('petbotOpen');
+    try{dock.style.removeProperty('display');}catch(e){}
+    try{($id('petbotDockFrame')||{}).style && ($id('petbotDockFrame').style.pointerEvents='auto');}catch(e){}
+  }
+
+  window.openPetbotFull=function openPetbotFull(){
+    body.classList.remove('gameExpandedFromTama');
+    body.classList.remove('tamagotchiLanding');
+    body.classList.remove('tamaLiteRender33');
+    showDockFull();
+    try{ if(typeof playing!=='undefined' && playing && !body.classList.contains('tamaGameEmbedded')) paused=true; }catch(e){}
+    try{ if($id('pauseBtn') && typeof playing!=='undefined' && playing) $id('pauseBtn').textContent='Resume'; }catch(e){}
+    postToPetbot({type:'waa-parent-open-screen',screen:'petHome',returnToQuest:false});
+  };
+
+  window.closePetbotFull=function closePetbotFull(mode){
+    mode=mode||rememberQuestMode(mode);
+    const returning=!!mode || body.classList.contains('tamaGameEmbedded') || body.classList.contains('gameExpandedFromTama');
+    const dock=$id('petbotDock');
+
+    if(returning && typeof window.waaResumeQuestFromPetbot==='function'){
+      try{window.waaResumeQuestFromPetbot(mode||'embedded');return;}catch(e){}
+    }
+
+    body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33','tamaLiteRender35','tamagotchiLanding');
+    if(dock){dock.classList.remove('fullscreen');dock.classList.remove('hidden');}
+    try{
+      if(typeof playing!=='undefined' && playing && !ended && $id('startScreen') && $id('startScreen').classList.contains('hidden')){
+        paused=false;
+        if($id('pauseBtn'))$id('pauseBtn').textContent='Pause';
+      }
+    }catch(e){}
+    try{fitGameToScreen();}catch(e){}
+  };
+
+  const dock=$id('petbotDock');
+  if(dock){
+    dock.addEventListener('click',function(e){
+      if(e.target && e.target.closest && e.target.closest('button'))return;
+      if(!dock.classList.contains('fullscreen')) window.openPetbotFull();
+    });
+  }
+  const expand=$id('petbotExpandBtn');
+  if(expand)expand.onclick=function(e){
+    e.preventDefault();
+    if(body.classList.contains('petbotOpen')) window.closePetbotFull();
+    else window.openPetbotFull();
+  };
+  const hide=$id('petbotHideBtn');
+  if(hide)hide.onclick=function(e){e.preventDefault();window.closePetbotFull();};
+  const back=$id('petbotBackBtn');
+  if(back)back.onclick=function(e){e.preventDefault();window.closePetbotFull();};
 })();
 
 </script>
