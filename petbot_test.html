@@ -560,6 +560,16 @@ body.questPlaying .device{pointer-events:auto!important;}
 .hookResultText{white-space:normal!important;overflow:hidden!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;}
 .hookCostLine{position:absolute!important;z-index:4!important;left:4%!important;right:4%!important;top:3%!important;border-radius:999px!important;background:rgba(255,255,255,.78)!important;color:#16223f!important;text-align:center!important;font-weight:1000!important;font-size:clamp(7px,.74vw,10px)!important;padding:2px 5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
 
+
+
+/* STAGE 49: Hook screen uses the real GIF as the game.
+   The old generated hook line/wave looked like a road/scrolling strip, so it is hidden. */
+.hookFullScreen .hookPond{background:#67d7f2!important;overflow:hidden!important;}
+.hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;z-index:0!important;display:block!important;}
+.hookFullScreen .hookLine,.hookFullScreen .hookWave,.hookFullScreen .hookFloatPrize,.hookFullScreen .hookPrize{display:none!important;}
+.hookFullScreen .hookResultBox{z-index:8!important;bottom:2%!important;max-height:38%!important;}
+.hookFullScreen .hookCostLine{z-index:7!important;}
+
 </style>
 
 <style id="stage38-habitat-css">
@@ -1002,7 +1012,9 @@ function renderHookGamePanel(){
   const loading=!!state.panelLoading;
   const info=state.hookInfo||{};
   const result=state.hookResult||null;
-  const gif=cleanImageUrl(pick(info,['spin_gif_url','game_image_url','image_url'],'')) || 'hook_a_waaambulance.gif?v=stage46';
+  // Stage 49: the Hook screen background must be the actual Hook-a-Waaambulance GIF.
+  // Do not use backend image_url here because that can be a static caught-prize image.
+  const gif=cleanImageUrl(pick(info,['spin_gif_url','hook_gif_url','hook_spin_gif_url','gif_url'],'')) || 'hook_a_waaambulance.gif?v=stage49';
   const cost=pick(info,['play_cost','cost'],'');
   const coins=pick(info,['user_coins','wallet_after','wallet_before'],'');
   const canPlay=info && info.can_play===false ? false : true;
@@ -1024,7 +1036,7 @@ function renderHookGamePanel(){
     if(bonusName && !String(body).toLowerCase().includes(String(bonusName).toLowerCase())) body += '\nBonus prize: '+bonusName;
     if(result.wallet_after!==undefined && result.wallet_after!=='' && !String(body).toLowerCase().includes('wallet')) body += '\nCoins now: '+result.wallet_after;
   }
-  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="${esc(gif)}" alt="Hook-a-Waaambulance game"><div class="hookCostLine">${esc(topLine)}</div><div class="hookLine"></div><div class="hookWave"></div><div class="hookResultBox">${pics}<div class="hookResultName">${esc(name)}</div><div class="hookResultText">${hookTextHtml(body)}</div></div></div></div></div>`;
+  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="${esc(gif)}" alt="Hook-a-Waaambulance game"><div class="hookCostLine">${esc(topLine)}</div><div class="hookResultBox">${pics}<div class="hookResultName">${esc(name)}</div><div class="hookResultText">${hookTextHtml(body)}</div></div></div></div></div>`;
 }
 
 function renderCarePanel(){

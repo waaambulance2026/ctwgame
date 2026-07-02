@@ -6013,5 +6013,110 @@ window.addEventListener('keyup',function(e){
 })();
 </script>
 
+
+
+<!-- STAGE 49: Fullscreen building screens + Hook background cleanup helper -->
+<style id="stage49-fullscreen-building-fixes">
+/* When a PetBot menu such as Hook/Shop/Habitat is open, hide the embedded platform game behind it.
+   This stops the road/game layer showing through the Tamagotchi screen. */
+body.petbotOpen.tamaMenuOpenFromQuest #game{
+  visibility:hidden!important;
+  opacity:0!important;
+  pointer-events:none!important;
+}
+body.petbotOpen.tamaMenuOpenFromQuest #tamaGameMask33{
+  display:none!important;
+}
+
+/* Fullscreen quest tutorial text belongs below the HUD/stat bar, not above it. */
+body.gameExpandedFromTama .tamaGameCaption.show{
+  top:calc(env(safe-area-inset-top) + 82px)!important;
+  bottom:auto!important;
+  left:50vw!important;
+  width:min(760px,86vw)!important;
+  transform:translateX(-50%)!important;
+  z-index:2147483646!important;
+  max-height:26vh!important;
+  white-space:normal!important;
+  overflow:hidden!important;
+  border-radius:16px!important;
+}
+@media(max-width:820px){
+  body.gameExpandedFromTama .tamaGameCaption.show{
+    top:calc(env(safe-area-inset-top) + 78px)!important;
+    width:min(92vw,760px)!important;
+  }
+}
+</style>
+<script id="stage49-fullscreen-building-fixes-script">
+(function(){
+  const body=document.body;
+  function q(id){return document.getElementById(id);}
+  function petbotFrame(){return q('petbotDockFrame')||q('petbotFrame');}
+  function toScreen(place){
+    place=String(place||'');
+    if(place==='petShop') return 'shop';
+    if(place==='habitat') return 'habitat';
+    if(place==='hookWaaambulance') return 'hook';
+    if(place==='questStarter') return 'games';
+    if(place==='welcomeBoard') return 'welcomeBoard';
+    return 'petActions';
+  }
+  function postPetbotOpen(screen,place,label,returnMode){
+    const msg={type:'waa-parent-open-screen',screen,place,label:label||place,returnToQuest:true,returnMode:returnMode||'embedded'};
+    try{localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({...msg,t:Date.now()}));}catch(e){}
+    const frame=petbotFrame();
+    [80,220,520,900,1400].forEach(ms=>setTimeout(()=>{try{frame&&frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin);}catch(e){}},ms));
+  }
+  function openPetbotScreenFull(o,returnMode){
+    if(!o||o.kind!=='building')return false;
+    const dock=q('petbotDock');
+    const screen=toScreen(o.place);
+    const label=o.label||o.place||'Building';
+    try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(false); }catch(e){}
+    try{ keys.left=false; keys.right=false; }catch(e){}
+    try{ if(typeof playing!=='undefined') playing=true; if(typeof paused!=='undefined') paused=true; }catch(e){}
+    try{ if(q('startScreen')) q('startScreen').classList.add('hidden'); }catch(e){}
+
+    // The building menu is now a full-screen PetBot screen, not the small embedded quest LCD.
+    body.classList.remove('tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','tamagotchiLanding','tamaMenuOpenFromQuest');
+    body.classList.add('petbotOpen','petbotBuildingFullScreen');
+    if(dock){dock.classList.remove('hidden');dock.classList.add('fullscreen');}
+    try{ if(typeof window.openPetbotFull==='function') window.openPetbotFull(); }catch(e){}
+    postPetbotOpen(screen,o.place,label,returnMode||'expanded');
+    try{ if(typeof stage27ShowCaption==='function') stage27ShowCaption(label+' opened',1400); else if(typeof showToast==='function') showToast(label+' opened'); }catch(e){}
+    return true;
+  }
+
+  // If the PetBot reports it is on a menu screen, do not keep the quest game visible behind it.
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-petbot-state'){
+      const mode=String(d.mode||'');
+      const isQuest=(mode==='questGame');
+      if(body.classList.contains('petbotOpen') && body.classList.contains('tamaGameEmbedded') && !isQuest){
+        body.classList.add('tamaMenuOpenFromQuest');
+      }else if(isQuest || !body.classList.contains('petbotOpen')){
+        body.classList.remove('tamaMenuOpenFromQuest');
+      }
+    }
+  },false);
+
+  // Final override: if the player is in full-screen platform mode and opens a building,
+  // the PetBot building screen opens fullscreen and remembers to return to fullscreen quest.
+  const oldOpen=window.openBuilding;
+  window.openBuilding=function(o){
+    if(o && o.kind==='building' && body.classList.contains('gameExpandedFromTama')){
+      return openPetbotScreenFull(o,'expanded');
+    }
+    if(oldOpen) return oldOpen.apply(this,arguments);
+    return false;
+  };
+
+  console.info('Stage 49 loaded: Hook background cleaned, embedded road hidden behind menus, fullscreen buildings stay fullscreen.');
+})();
+</script>
+
 </body>
 </html>
