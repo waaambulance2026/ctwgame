@@ -6932,6 +6932,95 @@ without cutting off the game.
 })();
 </script>
 
+
+
+<!-- STAGE 71: STRONG Tamagotchi button fix.
+     This runs at DOCUMENT capture level, before old button handlers.
+     It stops the old PetBot/Odin fullscreen screen from opening. -->
+<script>
+(function(){
+  function q(id){ return document.getElementById(id); }
+  function stop(e){
+    if(!e) return;
+    try{ e.preventDefault(); }catch(_){}
+    try{ e.stopPropagation(); }catch(_){}
+    try{ e.stopImmediatePropagation(); }catch(_){}
+  }
+  function hideOldScreens(){
+    try{ const s=q('startScreen'); if(s) s.classList.add('hidden'); }catch(_){}
+    try{ const p=q('petPanel'); if(p) p.classList.add('hidden'); }catch(_){}
+    try{ document.body.classList.remove('waa-view-petbot-menu','petbotBuildingFullScreen','tamaMenuOpenFromQuest','tamagotchiLanding'); }catch(_){}
+  }
+  function forceQuestIntoTamagotchi(e){
+    stop(e);
+    hideOldScreens();
+    try{ if(typeof playing !== 'undefined') playing = true; }catch(_){}
+    try{ if(typeof paused !== 'undefined') paused = false; }catch(_){}
+
+    // Use the working older return/fitting functions directly.
+    // These set: petbotOpen + tamaGameEmbedded + tamaLiteRender33
+    try{
+      if(typeof window.stage43ReturnQuestToTamagotchi === 'function'){
+        window.stage43ReturnQuestToTamagotchi();
+      }else if(typeof window.stage42ReturnQuestToTamagotchi === 'function'){
+        window.stage42ReturnQuestToTamagotchi();
+      }else if(typeof window.stage37ReturnExpandedQuestToTamagotchi === 'function'){
+        window.stage37ReturnExpandedQuestToTamagotchi();
+      }else if(typeof window.startEmbeddedTamaGame === 'function'){
+        window.startEmbeddedTamaGame('solo');
+      }
+    }catch(err){ console.warn('Stage 71 return to Tamagotchi failed', err); }
+
+    try{ document.body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waa-view-tama-game'); }catch(_){}
+    try{ document.body.classList.remove('gameExpandedFromTama','stage43Expanded','waa-view-full-game','waa-view-petbot-menu'); }catch(_){}
+
+    // Refit several times because old patches can move the game after the first call.
+    [0,60,160,360,800].forEach(ms=>setTimeout(function(){
+      try{ if(typeof window.fitEmbeddedTamaGame === 'function') window.fitEmbeddedTamaGame(); }catch(_){}
+      try{ if(typeof window.updateMiniTamagotchiDock === 'function') window.updateMiniTamagotchiDock(); }catch(_){}
+    },ms));
+    return false;
+  }
+
+  function isTamagotchiControl(target){
+    if(!target || !target.closest) return false;
+    // top HUD Tamagotchi, menu Tamagotchi, and the small toy preview in full-game mode
+    return !!target.closest('#petBtn,#menuPetBtn,#petbotDock:not(.fullscreen),#petbotDock:not(.fullscreen) .petbotDockPreview');
+  }
+
+  // This is the important bit: document capture fires before old target handlers.
+  document.addEventListener('click', function(e){
+    if(isTamagotchiControl(e.target)) forceQuestIntoTamagotchi(e);
+  }, true);
+  document.addEventListener('touchend', function(e){
+    if(isTamagotchiControl(e.target)) forceQuestIntoTamagotchi(e);
+  }, {capture:true, passive:false});
+
+  // Also replace the visible button nodes after load to remove old listeners already attached to them.
+  function replaceButton(id){
+    const old=q(id);
+    if(!old || old.__stage71CleanButton) return;
+    const fresh=old.cloneNode(true);
+    fresh.__stage71CleanButton=true;
+    fresh.addEventListener('click', forceQuestIntoTamagotchi, true);
+    fresh.addEventListener('touchend', forceQuestIntoTamagotchi, {capture:true, passive:false});
+    old.parentNode.replaceChild(fresh, old);
+  }
+  function cleanButtons(){
+    replaceButton('petBtn');
+    replaceButton('menuPetBtn');
+  }
+  cleanButtons();
+  window.addEventListener('DOMContentLoaded', cleanButtons);
+  window.addEventListener('load', cleanButtons);
+  setInterval(cleanButtons, 500);
+
+  // Override public helpers so other old code cannot send this button to the Odin/PetBot screen.
+  window.stage71ForceQuestIntoTamagotchi = forceQuestIntoTamagotchi;
+  window.waaShowTamagotchiGame = forceQuestIntoTamagotchi;
+})();
+</script>
+
 </body>
 </html>
 
