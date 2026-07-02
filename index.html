@@ -7226,5 +7226,98 @@ body.waaTamaGame .tamaGameCaption.show{
 })();
 </script>
 
+
+
+<!-- STAGE 54: no blank Tamagotchi return - force PetBot LCD into quest-control transparency before/while fitting the game. -->
+<style id="stage54-no-blank-tama-return-style">
+  body.waaTamaGame #tamaGameMask33,
+  body.tamaGameEmbedded #tamaGameMask33{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body.waaTamaGame #petbotDock.fullscreen,
+  body.tamaGameEmbedded #petbotDock.fullscreen{
+    background:transparent!important;
+  }
+  body.waaTamaGame #petbotDock.fullscreen .petbotDockFrame,
+  body.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    background:transparent!important;
+  }
+</style>
+<script id="stage54-no-blank-tama-return-script">
+(function(){
+  const d=document, body=d.body;
+  function q(id){return d.getElementById(id);} 
+  function f(){return q('petbotDockFrame')||q('petbotFrame');}
+  function sendForceQuest(){
+    try{ localStorage.setItem('waaQuestIsLive', String(Date.now())); }catch(e){}
+    const msg={type:'waa-parent-quest-active',mode:'Tutorial Town',embedded:true,keepQuest:true,forceQuest:true,stage:54,t:Date.now()};
+    const frame=f();
+    try{ frame && frame.contentWindow && frame.contentWindow.postMessage(msg, location.origin); }catch(e){}
+  }
+  function repeatForceQuest(){
+    [0,20,60,120,220,420,760,1200,1800].forEach(ms=>setTimeout(sendForceQuest,ms));
+  }
+  function refitTama(){
+    try{ if(typeof window.fitEmbeddedTamaGame==='function') window.fitEmbeddedTamaGame(); }catch(e){}
+    try{ if(typeof window.fitTamaGame==='function') window.fitTamaGame(); }catch(e){}
+    try{ if(typeof window.stage43ReturnQuestToTamagotchi==='function' && window.__stage54Calling !== true){ /* do not recurse */ } }catch(e){}
+  }
+  function repeatFit(){
+    [0,16,34,80,160,320,650,1100].forEach(ms=>setTimeout(refitTama,ms));
+  }
+
+  const oldEnterTama = window.waaEnterTamagotchiGame;
+  window.waaEnterTamagotchiGame = function(){
+    try{ body.classList.remove('stage53PetbotMenu','waaTamaMenu','waaFullscreenMenu','petbotBuildingFullScreen','gameExpandedFromTama','waaFullscreenGame'); }catch(e){}
+    try{ body.classList.add('petbotOpen','waaTamaGame','tamaGameEmbedded','tamaLiteRender33'); }catch(e){}
+    repeatForceQuest();
+    let result;
+    try{ result = oldEnterTama ? oldEnterTama.apply(this, arguments) : undefined; }catch(err){ console.warn('Stage 54 old Tamagotchi enter failed', err); }
+    repeatForceQuest();
+    repeatFit();
+    return result;
+  };
+  try{ window.stage43ReturnQuestToTamagotchi = window.stage42ReturnQuestToTamagotchi = window.stage37ReturnExpandedQuestToTamagotchi = window.waaEnterTamagotchiGame; }catch(e){}
+
+  const oldHandle = window.handlePetbotGameAction;
+  window.handlePetbotGameAction = function(action){
+    if(action==='backToTamagotchi' || action==='returnQuestToTamagotchi'){
+      return window.waaEnterTamagotchiGame();
+    }
+    if(action==='expandEmbedded'){
+      try{ body.classList.remove('stage53PetbotMenu','waaTamaMenu'); }catch(e){}
+    }
+    if(oldHandle) return oldHandle.apply(this, arguments);
+  };
+  try{ handlePetbotGameAction = window.handlePetbotGameAction; }catch(e){}
+
+  window.addEventListener('message', function(e){
+    if(e.origin!==location.origin) return;
+    const data=e.data||{};
+    if(data.type==='waa-petbot-game-action' && (data.action==='backToTamagotchi'||data.action==='returnQuestToTamagotchi')){
+      try{ e.stopImmediatePropagation(); }catch(_e){}
+      setTimeout(()=>window.waaEnterTamagotchiGame(),0);
+    }
+  }, true);
+
+  // If older code leaves us with the toy open but a white/blank LCD, keep forcing the PetBot iframe into quest-control mode.
+  let ticks=0;
+  const guard=setInterval(function(){
+    ticks++;
+    if(body.classList.contains('waaTamaGame') || body.classList.contains('tamaGameEmbedded')){
+      repeatForceQuest();
+      refitTama();
+    }
+    if(ticks>40) clearInterval(guard);
+  },250);
+  console.info('Stage 54 loaded: Tamagotchi return forces quest-control LCD before fitting game, preventing blank white screen.');
+})();
+</script>
+
 </body>
 </html>
