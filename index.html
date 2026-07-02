@@ -5361,5 +5361,76 @@ This replaces the confusing old start route visually:
 })();
 </script>
 
+
+<!-- ============================================================
+FIX 20260702D: TAMAGOTCHI LCD POLISH
+This does not change game logic. It only removes edit/debug outlines while
+in Tamagotchi mode and gives the LCD a cleaner game crop.
+============================================================ -->
+<style id="fix-20260702d-tamagotchi-lcd-polish-css">
+  body.waaTamaStartMode .editableTarget,
+  body.waaTamaStartMode .selectedEditTarget{
+    outline:none!important;
+    box-shadow:none!important;
+  }
+  body.waaTamaStartMode .dragHint,
+  body.waaTamaStartMode .axFrameDebug,
+  body.waaTamaStartMode #axFrameDebug,
+  body.waaTamaStartMode .character.spriteMissing::before,
+  body.waaTamaStartMode .character.spriteMissing::after{
+    display:none!important;
+    visibility:hidden!important;
+  }
+  body.waaTamaStartMode #waaTamaStartScreen{
+    left:20.9%!important;
+    top:39.2%!important;
+    width:58.2%!important;
+    height:27.4%!important;
+    border-radius:9% / 12%!important;
+  }
+</style>
+<script id="fix-20260702d-tamagotchi-lcd-polish-script">
+(function(){
+  function fitTamaPolish(){
+    if(!document.body.classList.contains('waaTamaStartMode')) return;
+    var game=document.getElementById('game');
+    var screen=document.getElementById('waaTamaStartScreen');
+    if(!game || !screen) return;
+    var r=screen.getBoundingClientRect();
+    if(!r.width || !r.height) return;
+    var GAME_W=1920, GAME_H=1080;
+    var scale=Math.max(r.width/920, r.height/540);
+    scale=Math.max(.22, Math.min(.58, scale));
+    var cropW=Math.min(GAME_W, r.width/scale);
+    var cropH=Math.min(GAME_H, r.height/scale);
+    var playerDesign=150;
+    try{
+      if(typeof cssNumber==='function') playerDesign=cssNumber('--playerX',150);
+      if(typeof player!=='undefined' && player && Number.isFinite(Number(player.x))) playerDesign+=Number(player.x);
+    }catch(e){}
+    var cropLeft=Math.max(0, Math.min(GAME_W-cropW, playerDesign-255));
+    var cropTop=Math.max(0, Math.min(GAME_H-cropH, GAME_H-cropH-38));
+    game.style.setProperty('position','absolute','important');
+    game.style.setProperty('left','0px','important');
+    game.style.setProperty('top','0px','important');
+    game.style.setProperty('width',GAME_W+'px','important');
+    game.style.setProperty('height',GAME_H+'px','important');
+    game.style.setProperty('min-width',GAME_W+'px','important');
+    game.style.setProperty('min-height',GAME_H+'px','important');
+    game.style.setProperty('transform-origin','0 0','important');
+    game.style.setProperty('transform','translate3d('+(-cropLeft*scale)+'px,'+(-cropTop*scale)+'px,0) scale('+scale+')','important');
+    game.style.setProperty('visibility','visible','important');
+    game.style.setProperty('display','block','important');
+    game.style.setProperty('pointer-events','none','important');
+    game.style.setProperty('clip-path','none','important');
+    game.style.setProperty('-webkit-clip-path','none','important');
+  }
+  window.waaPolishTamagotchiLCD=fitTamaPolish;
+  window.addEventListener('load',function(){ [250,600,1000,1600].forEach(function(ms){ setTimeout(fitTamaPolish,ms); }); });
+  window.addEventListener('resize',function(){ setTimeout(fitTamaPolish,80); });
+  setInterval(fitTamaPolish,800);
+})();
+</script>
+
 </body>
 </html>
