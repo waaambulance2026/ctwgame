@@ -638,6 +638,7 @@ function render(){
   else if(state.screen==='pet') html=renderPetSelect();
   else if(state.screen==='petHome') html=renderPetHome();
   else if(state.screen==='petActions') html=renderPetActions();
+  else if(state.screen==='welcomeBoard') html=renderWelcomeBoard();
   else if(state.screen==='menu') html=renderMenu();
   else if(state.screen==='care') html=renderCarePanel();
   else if(state.screen==='stats') html=renderStats();
@@ -709,6 +710,16 @@ function renderStats(){
 function renderSimplePanel(title,msg,items){
   const list=Array.isArray(items)?items:[];
   return top(title,'')+`<div class="body"><div class="panelList">${list.length?list.slice(0,20).map(item=>`<div class="panelItem">${esc(rowLabel(item))}</div>`).join(''):`<div class="panelItem">${esc(msg)}</div>`}</div></div>`;
+}
+function renderWelcomeBoard(){
+  const lines=[
+    ['🎮 Controls','Walk with Left/Right or A/D. Jump with Space, W or Up.'],
+    ['🪧 Tutorial Town','Read signs, visit each stop, then return to the quest.'],
+    ['🏡 Habitat','Shows owned pets and habitat rooms from PetBot.'],
+    ['🐾 Pet Shop','Choose a pet first, then choose the item and amount.'],
+    ['🎣 Hook-a-Waaambulance','Try the hook game, then carry on to Quest Starter.']
+  ];
+  return top('WELCOME BOARD','Tutorial')+`<div class="body"><div class="panelHead">Welcome to the Waaambulance tutorial.</div><div class="panelList welcomeBoardList">${lines.map(r=>`<div class="panelItem"><b>${esc(r[0])}</b><small>${esc(r[1])}</small></div>`).join('')}</div></div>`;
 }
 function renderPanel(title){
   const kind=String(state.panelKind||title).toLowerCase().replace(/[^a-z]/g,'');
@@ -917,10 +928,9 @@ function renderHabitatPanel(){
   if(layers.length)writeCachedHabitatLayers(layers);
   if((!layers.length||state.panelLoading)&&readCachedHabitatLayers().length)layers=readCachedHabitatLayers();
   const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
-  const hasPetImage=layers.some(l=>/petLayer|fallbackPet/.test(String(l&&l.cls||'')));
-  const emojiFallback=!hasPetImage?`<div class="habitatPetEmoji">${esc(pet.emoji||emojiFor(pet.pet||pet.category))}</div>`:'';
+  // Stage 36: do not draw emoji pets in Habitat. Show real image layers only.
   const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'Default habitat')}</div>` : '';
-  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${emojiFallback}${empty}</div></div></div>`;
+  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
   const url=itemImage(it);
@@ -1634,6 +1644,7 @@ function handleBack(){
   if(state.screen==='pet'){state.screen='menu';render();return;}
   if(state.screen==='petHome'){state.screen='pet';render();return;}
   if(state.screen==='petActions'){state.screen='petHome';render();return;}
+  if(state.screen==='welcomeBoard'){state.screen='petActions';render();return;}
   if(state.screen==='care'){state.screen='petActions';render();return;}
   if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopStep='items';render();return;}
@@ -1713,6 +1724,7 @@ function petbotOpenParentScreen(screen){
   state._pendingParentScreen='';
   state.panelActionMsg='';
   state.panelMessage='';
+  if(screen==='welcomeBoard' || screen==='welcome' || screen==='tutorial') { state.screen='welcomeBoard'; state.panelActionMsg=''; state.panelMessage=''; render(); return true; }
   if(screen==='shop') { openShopPanel(); return true; }
   if(screen==='habitat') { openDataPanel('habitat'); return true; }
   if(screen==='hook') { openDataPanel('hook'); return true; }
@@ -1796,7 +1808,7 @@ window.addEventListener('message',e=>{
   };
   const oldHandleBack34=handleBack;
   handleBack=function(){
-    if(state.returnToQuest && ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu'].includes(state.screen)){
+    if(state.returnToQuest && ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','welcomeBoard'].includes(state.screen)){
       if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
       petbotReturnToQuest34();
       return;
@@ -1865,6 +1877,25 @@ window.addEventListener('message',e=>{
     if(oldReturn) return oldReturn();
     sendParent('waa-petbot-game-action',{action:'returnToQuest'});
   };
+})();
+
+
+// STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
+(function(){
+  function showQuestFromParent(){
+    try{
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+      state.returnToQuest=false;
+      render();
+    }catch(e){ console.warn('Stage 37 quest LCD restore failed',e); }
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active') showQuestFromParent();
+    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(showQuestFromParent,0);
+  },true);
 })();
 
 render();

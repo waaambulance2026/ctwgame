@@ -1303,7 +1303,7 @@ body.gameExpandedFromTama #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=135&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=137&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -3856,7 +3856,7 @@ window.addEventListener('keyup',function(e){
     if(p==='habitat') return 'habitat';
     if(p==='hookWaaambulance') return 'hook';
     if(p==='questStarter') return 'games';
-    if(p==='welcomeBoard') return 'petHome';
+    if(p==='welcomeBoard') return 'welcomeBoard';
     return 'petActions';
   }
   function postPetbotOpen(place,label){
@@ -4290,7 +4290,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=135&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=137&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -4658,7 +4658,7 @@ window.addEventListener('keyup',function(e){
     if(place==='habitat') return 'habitat';
     if(place==='hookWaaambulance') return 'hook';
     if(place==='questStarter') return 'games';
-    if(place==='welcomeBoard') return 'petHome';
+    if(place==='welcomeBoard') return 'welcomeBoard';
     return 'petActions';
   }
   function postToPetbot(msg){
@@ -4908,6 +4908,105 @@ window.addEventListener('keyup',function(e){
 
   // Refit once after the caption is moved to body, otherwise the LCD variables can be stale.
   setTimeout(()=>{try{ if(body.classList.contains('tamaGameEmbedded') && typeof fitEmbeddedTamaGame==='function') fitEmbeddedTamaGame(); }catch(e){}},80);
+})();
+
+
+// STAGE 37: return from full-screen quest back into the Tamagotchi LCD without losing the quest screen.
+// Fixes: after pressing the siren/full-screen quest view, Back/Escape/Tamagotchi should re-embed the live quest in the Tamagotchi,
+// not reopen Pet Home or leave the LCD blank.
+(function(){
+  const d=document;
+  const body=d.body;
+  function q(id){return d.getElementById(id);}
+  function stopMove(){
+    try{keys.left=false;keys.right=false;}catch(e){}
+    try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(false); }catch(e){}
+  }
+  function ensureReturnButton(){
+    let btn=q('stage37TamaReturnBtn');
+    if(!btn){
+      btn=d.createElement('button');
+      btn.id='stage37TamaReturnBtn';
+      btn.type='button';
+      btn.textContent='↩ Tamagotchi';
+      btn.setAttribute('aria-label','Return quest to Tamagotchi');
+      body.appendChild(btn);
+      btn.addEventListener('click',function(e){
+        e.preventDefault(); e.stopPropagation();
+        window.stage37ReturnExpandedQuestToTamagotchi();
+      },true);
+      btn.addEventListener('touchend',function(e){
+        e.preventDefault(); e.stopPropagation();
+        window.stage37ReturnExpandedQuestToTamagotchi();
+      },{capture:true,passive:false});
+    }
+    return btn;
+  }
+  ensureReturnButton();
+  const st=d.createElement('style');
+  st.textContent=`
+    #stage37TamaReturnBtn{display:none;position:fixed;left:calc(env(safe-area-inset-left) + 12px);top:calc(env(safe-area-inset-top) + 12px);z-index:2147483647;border:0;border-radius:999px;padding:10px 14px;background:linear-gradient(180deg,#ffffff,#ffe9f7);color:#24152e;font-weight:1000;font-size:14px;box-shadow:0 8px 22px rgba(0,0,0,.24);cursor:pointer;}
+    body.gameExpandedFromTama #stage37TamaReturnBtn{display:block!important;}
+    body.petbotOpen.tamaGameEmbedded #stage37TamaReturnBtn{display:none!important;}
+  `;
+  d.head.appendChild(st);
+
+  function tellPetbotQuestScreen(){
+    const frame=q('petbotDockFrame')||q('petbotFrame');
+    const msg={type:'waa-parent-quest-active',mode:'Tutorial Town',embedded:true,t:Date.now()};
+    [40,120,300,650,1100].forEach(ms=>setTimeout(()=>{
+      try{ frame && frame.contentWindow && frame.contentWindow.postMessage(msg,location.origin); }catch(e){}
+    },ms));
+  }
+
+  window.stage37ReturnExpandedQuestToTamagotchi=function(){
+    if(!body.classList.contains('gameExpandedFromTama')) return false;
+    stopMove();
+    const dock=q('petbotDock');
+    const start=q('startScreen');
+    try{ if(start) start.classList.add('hidden'); }catch(e){}
+    try{ if(typeof playing!=='undefined') playing=true; if(typeof paused!=='undefined') paused=false; }catch(e){}
+    try{ body.classList.remove('gameExpandedFromTama','tamagotchiLanding'); }catch(e){}
+    try{ body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33'); }catch(e){}
+    try{ if(dock){ dock.classList.remove('hidden'); dock.classList.add('fullscreen'); } }catch(e){}
+    try{ sessionStorage.setItem('waaQuestReturnMode','embedded'); window.waaQuestReturnMode='embedded'; }catch(e){}
+    tellPetbotQuestScreen();
+    [20,90,220,500,900].forEach(ms=>setTimeout(()=>{
+      try{ if(typeof window.fitEmbeddedTamaGame==='function') window.fitEmbeddedTamaGame(); }catch(e){}
+    },ms));
+    try{ if(typeof stage27ShowCaption==='function') stage27ShowCaption('Back inside Tamagotchi',1500); }catch(e){}
+    try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
+    return true;
+  };
+
+  const previousOpenPetbotFull=window.openPetbotFull;
+  window.openPetbotFull=function(){
+    // When the live quest is currently expanded, this means "put the quest back in the Tamagotchi".
+    // Do not use the old openPetbotFull path here because it posts waa-parent-return-to-tamagotchi,
+    // which reset the iframe to Pet Home and made the quest disappear from the LCD.
+    if(body.classList.contains('gameExpandedFromTama')){
+      return window.stage37ReturnExpandedQuestToTamagotchi();
+    }
+    return previousOpenPetbotFull ? previousOpenPetbotFull.apply(this,arguments) : undefined;
+  };
+
+  window.addEventListener('keydown',function(e){
+    if(!body.classList.contains('gameExpandedFromTama')) return;
+    if(e.key==='Escape' || e.code==='Backspace'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      window.stage37ReturnExpandedQuestToTamagotchi();
+    }
+  },true);
+
+  let sawBrowserFullscreen=false;
+  window.addEventListener('fullscreenchange',function(){
+    if(!body.classList.contains('gameExpandedFromTama')) return;
+    if(d.fullscreenElement){ sawBrowserFullscreen=true; return; }
+    if(sawBrowserFullscreen){
+      sawBrowserFullscreen=false;
+      setTimeout(()=>{ try{ window.stage37ReturnExpandedQuestToTamagotchi(); }catch(e){} },80);
+    }
+  });
 })();
 
 </script>
