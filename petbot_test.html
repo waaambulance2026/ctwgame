@@ -2053,6 +2053,62 @@ render();
   }
 })();
 
+
+// STAGE 41: keep LCD in quest mode after returning and make pacifier jump on press.
+(function(){
+  function sendQuestAction41(action){ try{sendParent('waa-petbot-game-action',{action});}catch(e){} }
+  function showQuestScreen41(){
+    try{
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+      state.returnToQuest=false;
+      document.documentElement.classList.remove('cssFullscreen');
+      document.body.classList.remove('cssFullscreen');
+      render();
+    }catch(e){console.warn('Stage 41 quest LCD restore failed',e);}
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
+      showQuestScreen41();
+      try{e.stopImmediatePropagation();}catch(_e){}
+    }
+  },true);
+  window.questJump=questJump=function(){
+    if(state.screen==='questGame'){ sendQuestAction41('jumpOnly'); return; }
+  };
+  const oldHandleSelect41=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
+  window.handleSelect=handleSelect=function(){
+    if(state.screen==='questGame'){ sendQuestAction41('jumpOnly'); return; }
+    if(oldHandleSelect41) return oldHandleSelect41.apply(this,arguments);
+  };
+  const btn=document.getElementById('btnSelect');
+  if(btn && !btn.__stage41JumpBound){
+    btn.__stage41JumpBound=true;
+    const go=function(e){
+      if(state.screen==='questGame'){
+        try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+        sendQuestAction41('jumpOnly');
+      }
+    };
+    btn.addEventListener('pointerdown',go,{capture:true});
+    btn.addEventListener('mousedown',go,{capture:true});
+    btn.addEventListener('touchstart',go,{capture:true,passive:false});
+    btn.addEventListener('click',go,{capture:true});
+    btn.addEventListener('touchend',go,{capture:true,passive:false});
+  }
+  document.addEventListener('keydown',function(e){
+    if(state.screen!=='questGame')return;
+    const code=e.code||'';
+    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){
+      if(e.target&&e.target.tagName==='INPUT')return;
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(!e.repeat)sendQuestAction41('jumpOnly');
+    }
+  },true);
+})();
+
 </script>
 </body>
 </html>
