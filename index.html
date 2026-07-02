@@ -31,7 +31,7 @@ SAFE PLACES TO EDIT YOURSELF:
 6) PLACE_IMAGES
    Cloudinary image links for buildings, signs, tokens and hazards.
 
-7) VIEW MODE CONTROLLER v64
+7) VIEW MODE CONTROLLER v65
    Fullscreen view and Tamagotchi view only.
 
 DO NOT EDIT:
@@ -6324,7 +6324,7 @@ body.gameExpandedFromTama .tamaGameCaption.show{
 </script>
 
 <!-- ============================================================
-VIEW MODE CONTROLLER v64 - RESPONSIVE FULLSCREEN / TAMAGOTCHI ONLY
+VIEW MODE CONTROLLER v65 - RESPONSIVE FULLSCREEN / TAMAGOTCHI ONLY
 
 THIS IS THE ONLY SECTION TO EDIT FOR SCREEN VIEW PROBLEMS.
 
@@ -6338,7 +6338,7 @@ Simple settings inside this section:
 
 For most devices, use "fit" first.
 ============================================================ -->
-<style id="waa-view-mode-controller-v64-css">
+<style id="waa-view-mode-controller-v65-css">
   /* Remove ugly black bars: when the 1920x1080 game has spare side space,
      the page behind it uses the same sky colour/image. */
   html, body{
@@ -6357,6 +6357,63 @@ For most devices, use "fit" first.
   body.night.gameExpandedFromTama,
   body.night.waa-view-full-game{
     background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat fixed!important;
+  }
+
+
+  /* Responsive backdrop:
+     In FIT mode the 1920x1080 game may not cover very wide screens.
+     This paints matching sky/hills/ground behind the game so the spare side
+     space looks like the same world instead of odd blank sky or dark bars. */
+  #waaResponsiveBackdrop{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+    overflow:hidden;
+    display:block;
+    background:#79d9ff;
+  }
+  body.night #waaResponsiveBackdrop{background:#12113b;}
+  #waaResponsiveBackdrop .waaBackLayer{
+    position:absolute;
+    left:0;
+    right:0;
+    pointer-events:none;
+    background-repeat:repeat-x;
+  }
+  #waaResponsiveBackdrop .waaBackSky{
+    inset:0;
+    background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png');
+    background-size:cover;
+    background-position:center center;
+    background-repeat:no-repeat;
+  }
+  body.night #waaResponsiveBackdrop .waaBackSky{
+    background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png');
+  }
+  #waaResponsiveBackdrop .waaBackHills{
+    height:var(--waa-backdrop-hills-h,376px);
+    bottom:var(--waa-backdrop-hills-bottom,69px);
+    background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_hills.png');
+    background-size:auto 100%,auto 100%;
+    background-position:center bottom,center bottom;
+  }
+  body.night #waaResponsiveBackdrop .waaBackHills{
+    filter:brightness(.52) saturate(.95) hue-rotate(155deg);
+  }
+  #waaResponsiveBackdrop .waaBackGround{
+    height:var(--waa-backdrop-ground-h,638px);
+    bottom:var(--waa-backdrop-ground-bottom,-101px);
+    background-image:url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground_cut.png'),url('https://res.cloudinary.com/dpwlfmhia/image/upload/day_ground.png');
+    background-size:auto 100%,auto 100%;
+    background-position:center bottom,center bottom;
+  }
+  body.night #waaResponsiveBackdrop .waaBackGround{
+    filter:brightness(.58) saturate(.95) hue-rotate(155deg);
+  }
+  body.petbotOpen.tamaGameEmbedded #waaResponsiveBackdrop,
+  body.petbotOpen.waa-view-petbot-menu #waaResponsiveBackdrop{
+    display:none!important;
   }
   body.gameExpandedFromTama::before,
   body.waa-view-full-game::before{
@@ -6486,7 +6543,7 @@ For most devices, use "fit" first.
   }
 </style>
 
-<script id="waa-view-mode-controller-v64-script">
+<script id="waa-view-mode-controller-v65-script">
 (function(){
   const d = document;
   const body = d.body;
@@ -6547,6 +6604,27 @@ For most devices, use "fit" first.
     });
   }
 
+  function ensureResponsiveBackdrop(){
+    let back = q('waaResponsiveBackdrop');
+    if(!back){
+      back = d.createElement('div');
+      back.id = 'waaResponsiveBackdrop';
+      back.setAttribute('aria-hidden','true');
+      back.innerHTML = '<div class="waaBackLayer waaBackSky"></div><div class="waaBackLayer waaBackHills"></div><div class="waaBackLayer waaBackGround"></div>';
+      try{ body.insertBefore(back, q('game') || body.firstChild); }
+      catch(e){ body.appendChild(back); }
+    }
+    return back;
+  }
+
+  function updateBackdropVars(scale, vh, top){
+    const bottomGap = Math.max(0, vh - (top + H() * scale));
+    body.style.setProperty('--waa-backdrop-hills-h', (445 * scale) + 'px');
+    body.style.setProperty('--waa-backdrop-hills-bottom', (bottomGap + 82 * scale) + 'px');
+    body.style.setProperty('--waa-backdrop-ground-h', (757 * scale) + 'px');
+    body.style.setProperty('--waa-backdrop-ground-bottom', (bottomGap - 120 * scale) + 'px');
+  }
+
   // FULLSCREEN FIT SCRIPT
   // This scales the fixed 1920x1080 game to the browser.
   window.fitGameToScreen = function fitGameToScreenV63(){
@@ -6581,6 +6659,9 @@ For most devices, use "fit" first.
       body.style.setProperty('--waa-game-visible-width', (W()*scale)+'px');
       body.style.setProperty('--waa-game-visible-height', (H()*scale)+'px');
     }catch(e){}
+
+    ensureResponsiveBackdrop();
+    updateBackdropVars(scale, vh, top);
 
     imp(game,'position','fixed');
     imp(game,'left','0px');
@@ -6721,9 +6802,9 @@ For most devices, use "fit" first.
       ? getComputedStyle(mask).display + ' / ' + getComputedStyle(mask).visibility + ' / z=' + getComputedStyle(mask).zIndex
       : 'missing';
     box.textContent = [
-      'VIEW MODE DEBUG v64',
+      'VIEW MODE DEBUG v65',
       '',
-      'fullscreen mode: ' + FULLSCREEN_MODE + ' (smart = fit on wide screens, fill on narrow portrait screens)',
+      'fullscreen mode: ' + FULLSCREEN_MODE + ' (smart = fit wide screens, fill portrait screens)',
       'screen: ' + window.innerWidth + ' x ' + window.innerHeight,
       'body classes:',
       body.className,
@@ -6780,6 +6861,7 @@ For most devices, use "fit" first.
 
   window.addEventListener('load', function(){
     ensureDebugBox();
+    ensureResponsiveBackdrop();
     bindViewButtons();
     removeOldModeClasses();
     if(body.classList.contains('gameExpandedFromTama')) keepSmallToyVisible();
