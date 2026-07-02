@@ -7652,5 +7652,172 @@ body.waaTamaGame .tamaGameCaption.show{
 })();
 </script>
 
+
+<!-- STAGE 57: FULLSCREEN VIEWPORT ANCHOR REPAIR
+     Fullscreen game now fills the available browser viewport and keeps the floor/HUD/help visible.
+     Tamagotchi LCD sizing from Stage 55 remains unchanged. -->
+<style id="stage57-fullscreen-viewport-css">
+  body.waaFullscreenGame,
+  body.gameExpandedFromTama{
+    overflow:hidden!important;
+    background:#79d9ff!important;
+  }
+  body.waaFullscreenGame .hud,
+  body.gameExpandedFromTama .hud{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body.waaFullscreenGame .instructions,
+  body.gameExpandedFromTama .instructions{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body.waaFullscreenGame #petbotDock:not(.fullscreen),
+  body.gameExpandedFromTama #petbotDock:not(.fullscreen){
+    position:fixed!important;
+    right:calc(env(safe-area-inset-right) + 24px)!important;
+    top:calc(env(safe-area-inset-top) + 190px)!important;
+    width:clamp(94px,6.7vw,126px)!important;
+    height:clamp(126px,9vw,170px)!important;
+    min-width:94px!important;
+    min-height:126px!important;
+    max-width:126px!important;
+    max-height:170px!important;
+    z-index:360!important;
+  }
+  body.waaFullscreenGame .toast,
+  body.gameExpandedFromTama .toast{
+    z-index:380!important;
+    max-width:min(780px,80vw)!important;
+  }
+  @media(max-width:900px){
+    body.waaFullscreenGame #petbotDock:not(.fullscreen),
+    body.gameExpandedFromTama #petbotDock:not(.fullscreen){
+      right:10px!important;
+      top:calc(env(safe-area-inset-top) + 178px)!important;
+      width:86px!important;
+      height:116px!important;
+      min-width:86px!important;
+      min-height:116px!important;
+    }
+  }
+</style>
+<script id="stage57-fullscreen-viewport-override">
+(function(){
+  const DESIGN_W=1920, DESIGN_H=1080;
+  const d=document, body=document.body;
+  function q(id){return d.getElementById(id);}
+  function css(el,p,v){ if(el) el.style.setProperty(p,v,'important'); }
+  function releaseGame(){
+    const game=q('game'), mask=q('tamaGameMask33');
+    if(game && mask && game.parentElement===mask){
+      try{body.insertBefore(game, body.firstChild);}catch(e){body.appendChild(game);}
+    }
+    if(mask) css(mask,'display','none');
+    return game;
+  }
+  function placeInsideGame(el, left, top, width){
+    if(!el || !window.__waaFull57) return;
+    const m=window.__waaFull57;
+    css(el,'position','absolute');
+    css(el,'left',((left-m.left)/m.scale)+'px');
+    css(el,'top',((top-m.top)/m.scale)+'px');
+    if(width) css(el,'width',(width/m.scale)+'px');
+  }
+  function fitFull57(){
+    const game=releaseGame(); if(!game) return false;
+    const vw=innerWidth||d.documentElement.clientWidth||DESIGN_W;
+    const vh=innerHeight||d.documentElement.clientHeight||DESIGN_H;
+
+    // Fill the playable browser area and anchor to the bottom so the floor,
+    // buildings, character and lower controls do not get chopped off.
+    let scale=Math.max(vw/DESIGN_W, vh/DESIGN_H);
+    scale=Math.max(.45, Math.min(1.45, scale));
+    const left=(vw-DESIGN_W*scale)/2;
+    let top=vh-DESIGN_H*scale;
+    if(top>0) top=0;
+    window.__waaFull57={scale,left,top,vw,vh};
+
+    body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waaTamaGame','waaTamaMenu','waaFullscreenMenu','petbotBuildingFullScreen','stage53PetbotMenu');
+    body.classList.add('waaFullscreenGame','gameExpandedFromTama');
+    try{window.waaGameViewMode='expanded'; sessionStorage.setItem('waaQuestReturnMode','expanded');}catch(e){}
+
+    css(game,'position','fixed');
+    css(game,'left','0px');
+    css(game,'top','0px');
+    css(game,'width',DESIGN_W+'px');
+    css(game,'height',DESIGN_H+'px');
+    css(game,'min-width',DESIGN_W+'px');
+    css(game,'min-height',DESIGN_H+'px');
+    css(game,'display','block');
+    css(game,'visibility','visible');
+    css(game,'opacity','1');
+    css(game,'transform-origin','0 0');
+    css(game,'transform',`translate3d(${left}px, ${top}px, 0) scale(${scale})`);
+    css(game,'clip-path','none');
+    css(game,'-webkit-clip-path','none');
+    css(game,'border-radius','0');
+    css(game,'box-shadow','none');
+    css(game,'pointer-events','auto');
+    css(game,'z-index','10');
+
+    // Keep the UI in the visible browser viewport even though #game is scaled.
+    const hud=d.querySelector('.hud');
+    if(hud){
+      const hudW=Math.min(1160, Math.max(780, vw-430));
+      placeInsideGame(hud, (vw-hudW)/2, Math.max(18, Math.min(72, vh*.07)), hudW);
+      css(hud,'display','flex'); css(hud,'visibility','visible'); css(hud,'opacity','1'); css(hud,'transform','none');
+      css(hud,'min-height','58px');
+    }
+    const help=d.querySelector('.instructions');
+    if(help){
+      const helpW=Math.min(310, Math.max(230, vw*.18));
+      const helpLeft=Math.max(8, vw-helpW-170);
+      placeInsideGame(help, helpLeft, 18, helpW);
+      css(help,'display','block'); css(help,'visibility','visible'); css(help,'opacity','1'); css(help,'max-width',(helpW/scale)+'px');
+    }
+    const toast=d.querySelector('.toast');
+    if(toast){
+      const tw=Math.min(760, vw*.72);
+      placeInsideGame(toast, (vw-tw)/2, Math.max(96, Math.min(150, vh*.14)), tw);
+      css(toast,'transform','none');
+    }
+
+    const dock=q('petbotDock');
+    if(dock){
+      dock.classList.remove('hidden','fullscreen');
+      css(dock,'display','block'); css(dock,'visibility','visible'); css(dock,'opacity','1');
+      css(dock,'position','fixed'); css(dock,'left','auto'); css(dock,'bottom','auto');
+      css(dock,'top','calc(env(safe-area-inset-top) + 190px)');
+      css(dock,'right','calc(env(safe-area-inset-right) + 24px)');
+      css(dock,'width','clamp(94px,6.7vw,126px)');
+      css(dock,'height','clamp(126px,9vw,170px)');
+      css(dock,'background','transparent'); css(dock,'z-index','360');
+      const prev=dock.querySelector('.petbotDockPreview'); if(prev){css(prev,'display','grid');css(prev,'visibility','visible');css(prev,'opacity','1');}
+      const f=q('petbotDockFrame')||q('petbotFrame'); if(f) css(f,'display','none');
+    }
+
+    try{window.currentGameScale=scale; window.currentGameLeft=left; window.currentGameTop=top;}catch(e){}
+    return true;
+  }
+
+  window.waaFitFullGame=fitFull57;
+  window.fitFullGame57=fitFull57;
+  window.expandEmbeddedTamaGame=fitFull57;
+  const oldHandle=window.handlePetbotGameAction;
+  window.handlePetbotGameAction=function(action){
+    if(action==='expandEmbedded'||action==='fullscreen'||action==='openFullQuest') return fitFull57();
+    if(oldHandle) return oldHandle.apply(this, arguments);
+  };
+  try{handlePetbotGameAction=window.handlePetbotGameAction;}catch(e){}
+  addEventListener('resize',()=>{ if(body.classList.contains('waaFullscreenGame')||body.classList.contains('gameExpandedFromTama')) setTimeout(fitFull57,60); },{passive:true});
+  addEventListener('orientationchange',()=>{ if(body.classList.contains('waaFullscreenGame')||body.classList.contains('gameExpandedFromTama')) setTimeout(fitFull57,220); },{passive:true});
+  setTimeout(()=>{ if(body.classList.contains('waaFullscreenGame')||body.classList.contains('gameExpandedFromTama')) fitFull57(); },120);
+  console.info('Stage 57 loaded: fullscreen is bottom-anchored and viewport UI is kept visible.');
+})();
+</script>
+
 </body>
 </html>
