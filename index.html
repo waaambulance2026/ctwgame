@@ -1259,6 +1259,47 @@ body.gameExpandedFromTama #game{
 }
 
 </style>
+
+
+<style id="stage38-caption-top-css">
+/* STAGE 38: in-game quest text goes at the TOP, not over the bottom controls/sprites. */
+body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+  display:block!important;
+  position:fixed!important;
+  left:calc(var(--tama-lcd-left,50vw) + 8px)!important;
+  top:calc(var(--tama-lcd-top,50dvh) + 6px)!important;
+  bottom:auto!important;
+  width:calc(var(--tama-lcd-w,360px) - 16px)!important;
+  max-height:min(72px, calc(var(--tama-lcd-h,180px) * .34))!important;
+  transform:none!important;
+  z-index:2147483646!important;
+  padding:5px 8px!important;
+  border-radius:10px!important;
+  background:rgba(255,247,189,.96)!important;
+  color:#21142d!important;
+  font-size:clamp(10px,1vw,14px)!important;
+  line-height:1.05!important;
+  overflow:hidden!important;
+}
+body.gameExpandedFromTama .tamaGameCaption.show{
+  display:block!important;
+  position:fixed!important;
+  left:50vw!important;
+  top:calc(env(safe-area-inset-top) + 14px)!important;
+  bottom:auto!important;
+  width:min(780px,88vw)!important;
+  transform:translateX(-50%)!important;
+  z-index:2147483646!important;
+  max-height:24vh!important;
+  overflow:hidden!important;
+  padding:10px 14px!important;
+  border-radius:16px!important;
+  background:rgba(255,247,189,.96)!important;
+  color:#21142d!important;
+  font-size:clamp(14px,1.25vw,20px)!important;
+  line-height:1.15!important;
+}
+</style>
 </head>
 <!-- EDIT SECTION 07: BODY / VISIBLE PAGE STARTS HERE -->
 <body>
@@ -1303,7 +1344,7 @@ body.gameExpandedFromTama #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=137&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=139&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4290,7 +4331,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=137&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=139&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -5009,6 +5050,152 @@ window.addEventListener('keyup',function(e){
   });
 })();
 
+
+
+// STAGE 39: quest-end screen inside Tamagotchi / fullscreen quest.
+// The normal level-complete overlay is hidden in Tamagotchi lite render mode, so the game looked like the character just stopped.
+// This keeps the working Stage 38 flow, but shows the end-of-quest message at the TOP and lets Select/Enter/Space continue.
+(function(){
+  const d=document;
+  const body=d.body;
+  function q(id){return d.getElementById(id);}
+  function questShell(){return body.classList.contains('tamaGameEmbedded') || body.classList.contains('gameExpandedFromTama');}
+  function stopMove39(){
+    try{keys.left=false;keys.right=false;}catch(e){}
+    try{ if(typeof stage27SetMovingClass==='function') stage27SetMovingClass(false); }catch(e){}
+  }
+  function ensureStage39Box(){
+    let box=q('stage39QuestEndBox');
+    if(!box){
+      box=d.createElement('div');
+      box.id='stage39QuestEndBox';
+      box.innerHTML='<div id="stage39QuestEndText"></div><button id="stage39QuestEndBtn" type="button">Next quest</button>';
+      body.appendChild(box);
+      const btn=q('stage39QuestEndBtn');
+      if(btn){
+        btn.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();stage39ContinueQuest();},true);
+        btn.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();stage39ContinueQuest();},{capture:true,passive:false});
+      }
+    }
+    return box;
+  }
+  const st=d.createElement('style');
+  st.textContent=`
+    #stage39QuestEndBox{display:none;position:fixed;z-index:2147483647;box-sizing:border-box;text-align:center;pointer-events:auto;background:rgba(255,247,189,.97);color:#21142d;border-radius:12px;box-shadow:0 8px 20px rgba(0,0,0,.25), inset 0 0 0 2px rgba(255,255,255,.55);font-weight:1000;line-height:1.08;}
+    #stage39QuestEndText{font-size:clamp(10px,1vw,15px);padding:6px 8px 3px;}
+    #stage39QuestEndBtn{margin:0 0 6px;border:0;border-radius:999px;padding:5px 12px;background:linear-gradient(180deg,#fff,#d282c2);color:#21142d;font-weight:1000;font-size:clamp(10px,.95vw,14px);box-shadow:0 4px 10px rgba(0,0,0,.18);cursor:pointer;}
+    body.petbotOpen.tamaGameEmbedded #stage39QuestEndBox.show{display:block!important;left:calc(var(--tama-lcd-left,50vw) + 10px)!important;top:calc(var(--tama-lcd-top,50dvh) + 8px)!important;width:calc(var(--tama-lcd-w,360px) - 20px)!important;max-height:calc(var(--tama-lcd-h,180px) * .42)!important;overflow:hidden!important;}
+    body.gameExpandedFromTama #stage39QuestEndBox.show{display:block!important;left:50vw!important;top:calc(env(safe-area-inset-top) + 14px)!important;transform:translateX(-50%)!important;width:min(780px,88vw)!important;max-height:26vh!important;overflow:hidden!important;}
+    body.petbotOpen.tamaGameEmbedded #stage39QuestEndBox.show + .tamaGameCaption.show{display:none!important;}
+  `;
+  d.head.appendChild(st);
+
+  function setQuestEndBox(message,buttonText){
+    const box=ensureStage39Box();
+    const txt=q('stage39QuestEndText');
+    const btn=q('stage39QuestEndBtn');
+    if(txt) txt.textContent=message;
+    if(btn) btn.textContent=buttonText||'Next quest';
+    box.classList.add('show');
+    try{ if(typeof stage27ShowCaption==='function') stage27ShowCaption(message+'  Press Select/Enter.',4500); }catch(e){}
+  }
+  function hideQuestEndBox(){
+    const box=q('stage39QuestEndBox');
+    if(box) box.classList.remove('show');
+    const cap=q('tamaGameCaption');
+    if(cap) cap.classList.remove('show');
+  }
+  window.stage39ContinueQuest=function(){
+    if(!window.__stage39QuestWaiting) return false;
+    const complete=window.__stage39QuestWaiting;
+    window.__stage39QuestWaiting=null;
+    hideQuestEndBox();
+    stopMove39();
+    try{ q('levelScreen')?.classList.add('hidden'); q('endScreen')?.classList.add('hidden'); }catch(e){}
+    try{
+      if(complete.final){
+        score=0; lives=3; levelIndex=0; startLevel();
+      }else{
+        levelIndex=Math.min(levels.length-1, Number(levelIndex||0)+1);
+        startLevel();
+      }
+      if(body.classList.contains('tamaGameEmbedded') && typeof fitEmbeddedTamaGame==='function') setTimeout(fitEmbeddedTamaGame,60);
+      if(body.classList.contains('gameExpandedFromTama') && typeof fitGameToScreen==='function') setTimeout(fitGameToScreen,60);
+    }catch(err){ console.warn('Stage 39 continue failed',err); }
+    return true;
+  };
+
+  const oldLevelComplete=(typeof levelComplete==='function')?levelComplete:null;
+  window.levelComplete=levelComplete=function(){
+    stopMove39();
+    try{ playing=false; }catch(e){}
+    try{ objects.forEach(o=>o&&o.el&&o.el.remove()); objects=[]; }catch(e){}
+    if(questShell()){
+      const nextExists=Number(levelIndex||0)<levels.length-1;
+      window.__stage39QuestWaiting={final:!nextExists,t:Date.now()};
+      const current=(levels[levelIndex]&&levels[levelIndex].quest)||'Quest';
+      const next=nextExists?((levels[levelIndex+1]&&levels[levelIndex+1].quest)||'next quest'):'Tutorial Town';
+      const msg=nextExists ? ('Quest complete: '+current+'. Next: '+next+'.') : ('All test quests complete. Score: '+score+'.');
+      setQuestEndBox(msg,nextExists?'Next quest':'Restart quests');
+      return;
+    }
+    if(oldLevelComplete) return oldLevelComplete();
+  };
+
+  const oldEnd=(typeof end==='function')?end:null;
+  window.end=end=function(won){
+    stopMove39();
+    try{ playing=false; ended=true; }catch(e){}
+    if(questShell()){
+      window.__stage39QuestWaiting={final:true,t:Date.now()};
+      const msg=won ? ('All test quests complete. Score: '+score+'.') : ('Patrol over. Score: '+score+'.');
+      setQuestEndBox(msg,'Restart quests');
+      return;
+    }
+    if(oldEnd) return oldEnd(won);
+  };
+
+  const oldJump=(typeof jump==='function')?jump:null;
+  window.jump=jump=function(){
+    if(window.__stage39QuestWaiting && questShell()){
+      window.stage39ContinueQuest();
+      return;
+    }
+    if(oldJump) return oldJump.apply(this,arguments);
+  };
+
+  const oldTap=window.tapEmbeddedControl || (typeof tapEmbeddedControl==='function'?tapEmbeddedControl:null);
+  window.tapEmbeddedControl=tapEmbeddedControl=function(action){
+    if(window.__stage39QuestWaiting && (action==='selectOrJump'||action==='jump'||action==='jumpOnly'||action==='startSoloEmbedded'||action==='startPlatformEmbedded')){
+      window.stage39ContinueQuest();
+      return;
+    }
+    if(oldTap) return oldTap.apply(this,arguments);
+  };
+
+  const oldHandle=window.handlePetbotGameAction || (typeof handlePetbotGameAction==='function'?handlePetbotGameAction:null);
+  window.handlePetbotGameAction=handlePetbotGameAction=function(action){
+    if(window.__stage39QuestWaiting && ['selectOrJump','jump','jumpOnly','returnToQuest','resumeQuest','nextQuest'].includes(action)){
+      window.stage39ContinueQuest();
+      return;
+    }
+    if(oldHandle) return oldHandle.apply(this,arguments);
+  };
+
+  window.addEventListener('keydown',function(e){
+    if(!window.__stage39QuestWaiting || !questShell()) return;
+    if(e.code==='Enter'||e.code==='NumpadEnter'||e.code==='Space'){
+      e.preventDefault(); e.stopPropagation();
+      window.stage39ContinueQuest();
+    }
+  },true);
+
+  window.addEventListener('resize',function(){
+    if(window.__stage39QuestWaiting && body.classList.contains('tamaGameEmbedded')){
+      setTimeout(()=>{try{ if(typeof fitEmbeddedTamaGame==='function') fitEmbeddedTamaGame(); }catch(e){}},60);
+    }
+  },{passive:true});
+})();
 </script>
 </body>
 </html>

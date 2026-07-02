@@ -545,6 +545,12 @@ body.questPlaying .device{pointer-events:auto!important;}
 @media(max-width:520px){.petHome22{grid-template-columns:40% 60%!important;padding:3px 7px 5px!important}.petHome22Art .petImg{width:88%!important;height:88%!important}.stat22{padding:2px 4px!important}.stat22Bar{height:6px!important}}
 
 </style>
+
+<style id="stage38-habitat-css">
+/* STAGE 38: habitat loading/error text is a small top label, not a fake emoji pet. */
+.habitatLoadingCard{position:absolute;left:8px;right:8px;top:6px;z-index:160;padding:4px 7px;border-radius:10px;background:rgba(255,247,189,.90);color:#24152e;font-weight:1000;font-size:clamp(8px,.9vw,12px);line-height:1.05;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.18);}
+.habitatFullScreen .habitatPetEmoji{display:none!important;}
+</style>
 </head>
 <body>
 <div id="app">
@@ -1896,6 +1902,94 @@ window.addEventListener('message',e=>{
     if(d.type==='waa-parent-quest-active') showQuestFromParent();
     if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(showQuestFromParent,0);
   },true);
+})();
+
+
+// STAGE 38: restore real Habitat rendering while keeping emoji fallbacks out.
+// The old patch could cache the plain stripe default during loading, which then hid the real habitat.
+(function(){
+  function layerIsDefaultBg(l){
+    return !!(l && l.cls==='background' && String(l.url||'')===String(DEFAULT_HABITAT_BG||''));
+  }
+  function habitatHasRealArt(layers){
+    return (layers||[]).some(l=>l && l.url && !layerIsDefaultBg(l));
+  }
+  function habitatIsOnlyDefault(layers){
+    layers=(layers||[]).filter(Boolean);
+    return layers.length>0 && !habitatHasRealArt(layers);
+  }
+  function realHabitatCacheKey(){
+    const p=currentPet()||{};
+    return 'waa-habitat-layers-'+(state.player?.userId||'')+'-'+(p.code||p.userPetId||p.name||p.pet||'pet');
+  }
+  function readRealCachedHabitatLayers(){
+    try{
+      const raw=localStorage.getItem(realHabitatCacheKey())||'[]';
+      const layers=JSON.parse(raw)||[];
+      if(habitatIsOnlyDefault(layers)){
+        localStorage.removeItem(realHabitatCacheKey());
+        return [];
+      }
+      return Array.isArray(layers)?layers:[];
+    }catch(e){return []}
+  }
+  function writeRealCachedHabitatLayers(layers){
+    try{
+      if(habitatHasRealArt(layers)) localStorage.setItem(realHabitatCacheKey(),JSON.stringify((layers||[]).slice(0,12)));
+    }catch(e){}
+  }
+  readCachedHabitatLayers=readRealCachedHabitatLayers;
+  writeCachedHabitatLayers=writeRealCachedHabitatLayers;
+
+  function loadingCard(msg){
+    return `<div class="habitatLoadingCard">${esc(msg||'Loading habitat...')}</div>`;
+  }
+
+  renderHabitatPanel=function(){
+    const items=Array.isArray(state.panelItems)?state.panelItems:[];
+    const pet=currentPet()||{};
+    let layers=[];
+    const cached=readRealCachedHabitatLayers();
+
+    // While the sheet/API is still loading, show a real cached room if one exists.
+    // Do not build/cache the stripe default from an empty item list.
+    if(state.panelLoading && !items.length){
+      layers=cached;
+      const msg=layers.length?'Refreshing habitat...':'Loading habitat...';
+      return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${loadingCard(msg)}</div></div></div>`;
+    }
+
+    layers=buildHabitatLayers(items,pet);
+
+    // If buildHabitatLayers only produced the stripe default, prefer the last real habitat cache.
+    if(habitatIsOnlyDefault(layers) && cached.length){
+      layers=cached;
+    }else if(habitatHasRealArt(layers)){
+      writeRealCachedHabitatLayers(layers);
+    }
+
+    const onlyDefault=habitatIsOnlyDefault(layers);
+    const msg=state.panelLoading?'Loading habitat...':(state.panelMessage||'No habitat loadout image found yet.');
+    const label = (!layers.length || onlyDefault) ? loadingCard(msg) : '';
+
+    // No emoji pet fallback here. Real pet art is shown only if PetBot/Sheet provides an image URL.
+    return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${label}</div></div></div>`;
+  };
+
+  const oldOpenDataPanel38=openDataPanel;
+  openDataPanel=function(kind){
+    if(kind==='habitat'){
+      // Clear bad same-session default-cache before opening habitat.
+      try{
+        const hit=PANEL_CACHE.get(panelCacheKey('habitat'));
+        if(hit && Array.isArray(hit.items) && hit.items.length===1){
+          const raw=(hit.items[0]&&hit.items[0].raw)||{};
+          if(raw.__habitatRender && !(raw.layoutRows||[]).length && !(raw.catalogRows||[]).length) PANEL_CACHE.delete(panelCacheKey('habitat'));
+        }
+      }catch(e){}
+    }
+    return oldOpenDataPanel38(kind);
+  };
 })();
 
 render();
