@@ -3614,8 +3614,9 @@ function fitGameToScreen(){
   const vw = window.innerWidth || document.documentElement.clientWidth || DESIGN_W;
   const vh = window.innerHeight || document.documentElement.clientHeight || DESIGN_H;
 
-  // Full-screen cover mode: fills the screen.
-  const scale = Math.max(vw / DESIGN_W, vh / DESIGN_H);
+  // Full-screen fit mode: keeps the whole 1920x1080 game visible.
+  // Use Math.max only if you want the game to fill the browser by cropping edges.
+  const scale = Math.min(vw / DESIGN_W, vh / DESIGN_H);
 
   const designAspect = DESIGN_W / DESIGN_H;
   const viewAspect = vw / vh;
