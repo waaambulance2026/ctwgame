@@ -1751,6 +1751,108 @@ window.addEventListener('message',e=>{
     }
   }
 });
+
+
+
+// STAGE 35: one clean quest keyboard + Back-to-Quest handler.
+// Arrow/A and Right/D move. Space/Up/W jumps. Enter/E selects. Cross returns to quest after a building screen.
+(function(){
+  let leftHeld=false, rightHeld=false;
+  function inQuest(){return state && state.screen==='questGame';}
+  function send(action){sendParent('waa-petbot-game-action',{action});}
+  function rememberReturn(mode){
+    state.returnToQuest=true;
+    state.returnQuestMode=mode||state.returnQuestMode||'embedded';
+  }
+  function pendingReturnFromStorage(){
+    try{
+      const raw=localStorage.getItem('waaPendingPetbotScreen');
+      if(!raw)return;
+      const pack=JSON.parse(raw);
+      if(pack && pack.returnToQuest && Date.now()-Number(pack.t)<20000){
+        rememberReturn(pack.returnMode||'embedded');
+      }
+    }catch(e){}
+  }
+  pendingReturnFromStorage();
+  window.addEventListener('message',e=>{
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-open-screen' && d.returnToQuest){
+      rememberReturn(d.returnMode||'embedded');
+    }
+  },true);
+
+  function returnToQuest(){
+    leftHeld=false; rightHeld=false;
+    send('moveStop');
+    state.returnToQuest=false;
+    state.screen='questGame';
+    state.quest={...(state.quest||{}),started:true,embedded:true};
+    state.panelActionMsg='';
+    render();
+    send('returnToQuest');
+  }
+  window.petbotReturnToQuest35=returnToQuest;
+
+  const oldBack=handleBack;
+  handleBack=function(){
+    if(state.returnToQuest && ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','pet'].includes(state.screen)){
+      if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
+      returnToQuest();
+      return;
+    }
+    oldBack();
+  };
+
+  document.addEventListener('keydown',e=>{
+    if(!inQuest())return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(!leftHeld){leftHeld=true;rightHeld=false;send('moveLeftStart');}
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(!rightHeld){rightHeld=true;leftHeld=false;send('moveRightStart');}
+      return;
+    }
+    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(!e.repeat)send('jumpOnly');
+      return;
+    }
+    if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      if(!e.repeat)send('selectOrJump');
+      return;
+    }
+    if(code==='Escape'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      handleBack();
+      return;
+    }
+  },true);
+
+  document.addEventListener('keyup',e=>{
+    if(!inQuest())return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      leftHeld=false;
+      if(!rightHeld)send('moveStop');
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
+      rightHeld=false;
+      if(!leftHeld)send('moveStop');
+      return;
+    }
+  },true);
+})();
+
 render();
 })();
 </script>
