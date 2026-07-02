@@ -1995,116 +1995,57 @@ window.addEventListener('message',e=>{
 render();
 })();
 
-// STAGE 40: keep the PetBot LCD in quest-control mode and make the pacifier jump only.
+
+// STAGE 42: pacifier is jump-only in quest mode; siren uses CSS quest fullscreen only.
 (function(){
-  function sendQuestAction40(action){
-    try{sendParent('waa-petbot-game-action',{action});}catch(e){}
-  }
-  function showQuestScreen40(){
-    try{
-      state.screen='questGame';
-      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
-      state.returnToQuest=false;
-      render();
-    }catch(e){console.warn('Stage 40 quest LCD restore failed',e);}
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
-      showQuestScreen40();
-      try{e.stopImmediatePropagation();}catch(_e){}
-    }
-  },true);
-
-  // The middle pacifier/select button is the platform jump button while the quest is running.
-  const oldQuestJump40=window.questJump || (typeof questJump==='function'?questJump:null);
-  window.questJump=questJump=function(){
-    if(state.screen==='questGame'){
-      sendQuestAction40('jumpOnly');
-      return;
-    }
-    if(oldQuestJump40) return oldQuestJump40.apply(this,arguments);
-  };
-  const oldHandleSelect40=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
+  function sendQuest(action){try{sendParent('waa-petbot-game-action',{action});}catch(e){}}
+  function inQuest(){return state && state.screen==='questGame';}
+  window.questJump=questJump=function(){ if(inQuest()){sendQuest('jumpOnly');return;} };
+  const oldHandleSelect=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
   window.handleSelect=handleSelect=function(){
-    if(state.screen==='questGame'){
-      sendQuestAction40('jumpOnly');
-      return;
-    }
-    if(oldHandleSelect40) return oldHandleSelect40.apply(this,arguments);
+    if(inQuest()){sendQuest('jumpOnly');return;}
+    if(oldHandleSelect) return oldHandleSelect.apply(this,arguments);
   };
-
-  const btn=document.getElementById('btnSelect');
-  if(btn && !btn.__stage40JumpBound){
-    btn.__stage40JumpBound=true;
-    btn.addEventListener('click',function(e){
-      if(state.screen==='questGame'){
-        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-        sendQuestAction40('jumpOnly');
-      }
-    },true);
-    btn.addEventListener('touchend',function(e){
-      if(state.screen==='questGame'){
-        e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-        sendQuestAction40('jumpOnly');
-      }
-    },{capture:true,passive:false});
-  }
-})();
-
-
-// STAGE 41: keep LCD in quest mode after returning and make pacifier jump on press.
-(function(){
-  function sendQuestAction41(action){ try{sendParent('waa-petbot-game-action',{action});}catch(e){} }
-  function showQuestScreen41(){
-    try{
-      state.screen='questGame';
-      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
-      state.returnToQuest=false;
-      document.documentElement.classList.remove('cssFullscreen');
-      document.body.classList.remove('cssFullscreen');
-      render();
-    }catch(e){console.warn('Stage 41 quest LCD restore failed',e);}
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
-      showQuestScreen41();
-      try{e.stopImmediatePropagation();}catch(_e){}
-    }
-  },true);
-  window.questJump=questJump=function(){
-    if(state.screen==='questGame'){ sendQuestAction41('jumpOnly'); return; }
-  };
-  const oldHandleSelect41=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
-  window.handleSelect=handleSelect=function(){
-    if(state.screen==='questGame'){ sendQuestAction41('jumpOnly'); return; }
-    if(oldHandleSelect41) return oldHandleSelect41.apply(this,arguments);
-  };
-  const btn=document.getElementById('btnSelect');
-  if(btn && !btn.__stage41JumpBound){
-    btn.__stage41JumpBound=true;
+  const select=document.getElementById('btnSelect');
+  if(select && !select.__stage42JumpOnly){
+    select.__stage42JumpOnly=true;
     const go=function(e){
-      if(state.screen==='questGame'){
-        try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-        sendQuestAction41('jumpOnly');
-      }
+      if(!inQuest()) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+      sendQuest('jumpOnly');
     };
-    btn.addEventListener('pointerdown',go,{capture:true});
-    btn.addEventListener('mousedown',go,{capture:true});
-    btn.addEventListener('touchstart',go,{capture:true,passive:false});
-    btn.addEventListener('click',go,{capture:true});
-    btn.addEventListener('touchend',go,{capture:true,passive:false});
+    select.addEventListener('pointerdown',go,{capture:true});
+    select.addEventListener('mousedown',go,{capture:true});
+    select.addEventListener('touchstart',go,{capture:true,passive:false});
+    select.addEventListener('click',go,{capture:true});
+    select.addEventListener('touchend',go,{capture:true,passive:false});
   }
-  document.addEventListener('keydown',function(e){
-    if(state.screen!=='questGame')return;
-    const code=e.code||'';
-    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){
-      if(e.target&&e.target.tagName==='INPUT')return;
-      e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();
-      if(!e.repeat)sendQuestAction41('jumpOnly');
+  const siren=document.getElementById('btnSiren');
+  if(siren && !siren.__stage42QuestExpand){
+    siren.__stage42QuestExpand=true;
+    siren.addEventListener('pointerdown',function(e){
+      if(!inQuest()) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+      sendQuest('expandEmbedded');
+    },{capture:true});
+    siren.addEventListener('click',function(e){
+      if(!inQuest()) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+    },{capture:true});
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
+      try{
+        state.screen='questGame';
+        state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+        state.returnToQuest=false;
+        document.documentElement.classList.remove('cssFullscreen');
+        document.body.classList.remove('cssFullscreen');
+        render();
+        e.stopImmediatePropagation();
+      }catch(err){console.warn('Stage 42 quest screen restore failed',err);}
     }
   },true);
 })();
