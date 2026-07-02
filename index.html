@@ -4375,13 +4375,12 @@ window.addEventListener('keyup',function(e){
     resumeAfterPetbot();
     requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
   };
-  window.startTamagotchiLaunch = function(){
-    const start=byId('startScreen');
-    if(start) start.classList.add('hidden');
-    document.body.classList.add('tamagotchiLanding');
-    document.body.classList.add('petbotOpen');
-    window.openPetbotFull();
-  };
+ window.startTamagotchiLaunch = function(){
+  if(typeof window.startEmbeddedTamaGame === 'function'){
+    const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
+    window.startEmbeddedTamaGame(mode);
+  }
+ };
   window.togglePetbotDock = function(){
     if(dock.classList.contains('hidden')) dock.classList.remove('hidden');
     else window.openPetbotFull();
