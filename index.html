@@ -1303,7 +1303,7 @@ body.gameExpandedFromTama #game{
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=134&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=137&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4107,6 +4107,96 @@ fitGameToScreen();
   if(hide)hide.onclick=function(e){e.preventDefault();window.closePetbotFull();};
   const back=$id('petbotBackBtn');
   if(back)back.onclick=function(e){e.preventDefault();window.closePetbotFull();};
+})();
+
+
+// STAGE 37: Tamagotchi-first launch + all buildings/stops open inside the Tamagotchi.
+// This keeps the platform quest from opening the old normal-page shop/habitat overlays.
+(function(){
+  const d=document;
+  const body=d.body;
+  const $id=(id)=>d.getElementById(id);
+  const PLACE_TO_TAMA_SCREEN={
+    petShop:'shop',
+    habitat:'habitat',
+    hookWaaambulance:'hook',
+    questStarter:'games',
+    welcomeBoard:'petHome'
+  };
+
+  function postToPetbot(msg){
+    const frame=$id('petbotDockFrame')||$id('petbotFrame');
+    [20,100,260,620,1200,2200].forEach(ms=>setTimeout(()=>{
+      try{ frame && frame.contentWindow && frame.contentWindow.postMessage(msg,location.origin); }catch(e){}
+    },ms));
+  }
+
+  function hideOldPlaceOverlays(){
+    ['doorScreen','shopScreen','hookScreen','questStartScreen','welcomeInfoScreen','petPanel'].forEach(id=>{
+      try{ const el=$id(id); if(el) el.classList.add('hidden'); }catch(e){}
+    });
+  }
+
+  function showTamagotchiDock(){
+    const dock=$id('petbotDock');
+    if(dock){
+      dock.classList.remove('hidden');
+      dock.classList.add('fullscreen');
+      try{ dock.style.removeProperty('display'); }catch(e){}
+    }
+    body.classList.add('petbotOpen');
+    body.classList.remove('gameExpandedFromTama','tamagotchiLanding','tamaLiteRender33');
+  }
+
+  function routeStopToTamagotchi(o){
+    if(!o || o.kind!=='building')return false;
+    if(body.classList.contains('editMode'))return false;
+
+    const place=o.place||'';
+    const screen=PLACE_TO_TAMA_SCREEN[place]||'petActions';
+    const label=o.label || (typeof PLACE_LABELS!=='undefined' && PLACE_LABELS[place]) || place || 'Stop';
+    const returnMode=body.classList.contains('gameExpandedFromTama') ? 'expanded' : 'embedded';
+
+    try{ if(typeof keys!=='undefined'){ keys.left=false; keys.right=false; } }catch(e){}
+    try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
+    try{ if(o) o.opening=false; }catch(e){}
+    hideOldPlaceOverlays();
+    showTamagotchiDock();
+
+    try{ sessionStorage.setItem('waaQuestReturnMode',returnMode); }catch(e){}
+    try{ localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({screen,place,label,returnToQuest:true,returnMode,t:Date.now()})); }catch(e){}
+    window.waaQuestReturnMode=returnMode;
+
+    postToPetbot({type:'waa-parent-open-screen',screen,place,label,returnToQuest:true,returnMode});
+    try{ if(typeof showToast==='function') showToast(label+' opened in Tamagotchi'); }catch(e){}
+    try{ setTimeout(()=>{ const frame=$id('petbotDockFrame'); frame&&frame.focus&&frame.focus(); },80); }catch(e){}
+    return true;
+  }
+
+  window.openStopInTamagotchi37=routeStopToTamagotchi;
+
+  const previousOpenBuilding=(typeof window.openBuilding==='function')?window.openBuilding:null;
+  window.openBuilding=openBuilding=function(o){
+    if(o && o.kind==='building' && !body.classList.contains('editMode')){
+      return routeStopToTamagotchi(o);
+    }
+    return previousOpenBuilding ? previousOpenBuilding(o) : false;
+  };
+
+  // Make the site itself start as the Tamagotchi, not the normal platform menu.
+  function tamagotchiFirstLaunch(){
+    try{
+      if(body.classList.contains('editMode'))return;
+      hideOldPlaceOverlays();
+      if(typeof window.openPetbotFull==='function') window.openPetbotFull();
+      else showTamagotchiDock();
+      body.classList.add('petbotOpen');
+      const start=$id('startScreen'); if(start) start.classList.add('hidden');
+      postToPetbot({type:'waa-parent-open-screen',screen:'petHome',returnToQuest:false});
+    }catch(e){}
+  }
+  if(d.readyState==='loading') d.addEventListener('DOMContentLoaded',()=>setTimeout(tamagotchiFirstLaunch,80),{once:true});
+  else setTimeout(tamagotchiFirstLaunch,80);
 })();
 
 </script>
