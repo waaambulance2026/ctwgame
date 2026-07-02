@@ -8184,6 +8184,75 @@ Modes:
   setInterval(updateDebug,1000);
 })();
 </script>
+<style id="waa-final-tamagotchi-layer-fix">
+  /* Final layer fix:
+     The game mask must sit ABOVE the PetBot iframe/blue LCD,
+     but it is only the size of the LCD screen, so it should not cover the toy buttons.
+  */
+  body.petbotOpen.tamaGameEmbedded #tamaGameMask33 {
+    z-index: 2147483001 !important;
+    background: transparent !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
 
+  body.petbotOpen.tamaGameEmbedded #tamaGameMask33 #game {
+    z-index: 2 !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+  }
+
+  body.petbotOpen.tamaGameEmbedded #petbotDock {
+    z-index: 2147483000 !important;
+  }
+
+  body.petbotOpen.tamaGameEmbedded #petbotDock .petbotDockMiniLcd {
+    background: transparent !important;
+  }
+
+  body.petbotOpen.tamaGameEmbedded #petbotDock .petbotDockMiniLcd::before,
+  body.petbotOpen.tamaGameEmbedded #petbotDock .petbotDockMiniLcd .miniTitle,
+  body.petbotOpen.tamaGameEmbedded #petbotDock .petbotDockMiniLcd .miniPet,
+  body.petbotOpen.tamaGameEmbedded #petbotDock .petbotDockMiniLcd .miniBars {
+    display: none !important;
+  }
+</style>
+
+<script>
+(function(){
+  function forceTamagotchiLayerFix(){
+    if (!document.body.classList.contains('tamaGameEmbedded')) return;
+
+    const mask = document.getElementById('tamaGameMask33');
+    const game = document.getElementById('game');
+    const dock = document.getElementById('petbotDock');
+
+    if (mask) {
+      mask.style.setProperty('z-index', '2147483001', 'important');
+      mask.style.setProperty('background', 'transparent', 'important');
+      mask.style.setProperty('display', 'block', 'important');
+      mask.style.setProperty('visibility', 'visible', 'important');
+      mask.style.setProperty('opacity', '1', 'important');
+    }
+
+    if (game && mask && game.parentElement === mask) {
+      game.style.setProperty('z-index', '2', 'important');
+      game.style.setProperty('display', 'block', 'important');
+      game.style.setProperty('visibility', 'visible', 'important');
+      game.style.setProperty('opacity', '1', 'important');
+    }
+
+    if (dock) {
+      dock.style.setProperty('z-index', '2147483000', 'important');
+    }
+  }
+
+  setInterval(forceTamagotchiLayerFix, 250);
+  window.addEventListener('resize', forceTamagotchiLayerFix);
+  window.addEventListener('load', forceTamagotchiLayerFix);
+})();
+</script>
 </body>
 </html>
