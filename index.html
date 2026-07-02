@@ -32,6 +32,7 @@ SAFE PLACES TO EDIT YOURSELF:
    Cloudinary image links for buildings, signs, tokens and hazards.
 
 7) VIEW MODE CONTROLLER v67
+8) STAGE 69 removes the broken floating left Tamagotchi button
    Fullscreen view and Tamagotchi view only.
 
 DO NOT EDIT:
@@ -61,6 +62,17 @@ It only marks where the CSS/style part of the file begins.
 The first real editable CSS section is EDIT SECTION 03.
 ============================================================ -->
 <style>
+/* STAGE 69: permanently remove the old floating left Tamagotchi return buttons.
+   Use the HUD Tamagotchi button inside the game bar only. */
+#stage37TamaReturnBtn,
+#stage42TamaReturnBtn,
+#stage43TamaReturnBtn{
+  display:none !important;
+  visibility:hidden !important;
+  pointer-events:none !important;
+  opacity:0 !important;
+}
+
 /* EDIT SECTION 03: MASTER SIZING VARIABLES - easiest values to change safely */
 :root{
   --pink:#d282c2; --blue:#76C7D8; --yellow:#F5C542; --ink:#130b1d;
@@ -6829,6 +6841,33 @@ without cutting off the game.
     }catch(e){}
     return oldOpenPetbotFull ? oldOpenPetbotFull.apply(this,arguments) : undefined;
   };
+})();
+</script>
+
+
+
+<!-- STAGE 69: remove old left Tamagotchi buttons immediately if old patches recreate them. -->
+<script>
+(function(){
+  const IDS=['stage37TamaReturnBtn','stage42TamaReturnBtn','stage43TamaReturnBtn'];
+  function killOldLeftTamaButtons(){
+    IDS.forEach(id=>{
+      const el=document.getElementById(id);
+      if(el){
+        try{ el.remove(); }catch(e){
+          el.style.setProperty('display','none','important');
+          el.style.setProperty('visibility','hidden','important');
+          el.style.setProperty('pointer-events','none','important');
+          el.style.setProperty('opacity','0','important');
+        }
+      }
+    });
+  }
+  killOldLeftTamaButtons();
+  window.addEventListener('DOMContentLoaded',killOldLeftTamaButtons);
+  window.addEventListener('load',killOldLeftTamaButtons);
+  setInterval(killOldLeftTamaButtons,250);
+  try{ new MutationObserver(killOldLeftTamaButtons).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
 })();
 </script>
 
