@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Stage 35</title>
+<title>CTW PetBot Tamagotchi - Cleaned</title>
 <style>
 :root{
   --ink:#16223f;
@@ -567,6 +567,28 @@ body.questPlaying .device{pointer-events:auto!important;}
 <script>
 (function(){
 'use strict';
+
+/*
+  PETBOT_TEST.HTML - QUICK MAP
+
+  This file controls the Tamagotchi/PetBot screen only.
+  It should NOT decide where signs/buildings are placed in the platform quest.
+  That is handled by index.html.
+
+  Main sections below:
+  1. DATA LISTS: players, test pets, menus, care actions.
+  2. STATE: the current PetBot screen and selected pet.
+  3. RENDER FUNCTIONS: draw Login, Pets, Shop, Habitat, Hook, Quest screen.
+  4. LOADERS/API HELPERS: read pets, inventory, shop, habitat, hook data.
+  5. CONTROLS: left/right/select/siren/back buttons and keyboard.
+  6. PARENT MESSAGES: index.html can ask this file to open shop/habitat/hook/welcome.
+
+  Button rule:
+  - In normal PetBot screens, the pacifier/select button selects menu items.
+  - In questGame screen, the pacifier/select button is jump only.
+  - Enter/E is for opening signs/buildings in the platform quest.
+*/
+
 const SPREADSHEET_ID='1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
 const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const DEFAULT_HABITAT_BG='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png';
@@ -1663,11 +1685,11 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
-  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
+  // Keep this CSS-only.
+  // Real browser fullscreen inside an iframe can cause black-screen/flicker problems.
   try{
-    const el=document.documentElement;
-    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+    document.documentElement.classList.add('cssFullscreen');
+    document.body.classList.add('cssFullscreen');
   }catch(e){}
 }
 function notifyParent(){
@@ -1676,7 +1698,19 @@ function notifyParent(){
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
-$('btnSelect').addEventListener('click', e => {   e.preventDefault();    if (state.screen === 'questGame') {     sendParent('waa-petbot-game-action', { action: 'jumpOnly' });     return;   }    handleSelect(); });
+// Pacifier/select button.
+// Normal PetBot screens: Select.
+// Quest screen: Jump only. It must not open buildings/signs.
+$('btnSelect').addEventListener('click', e => {
+  e.preventDefault();
+
+  if (state.screen === 'questGame') {
+    sendParent('waa-petbot-game-action', {action:'jumpOnly'});
+    return;
+  }
+
+  handleSelect();
+});
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
   const stop=e=>{
@@ -1697,7 +1731,20 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
+// Siren button.
+// Quest screen: ask index.html to expand the platform quest.
+// PetBot screens: expand the Tamagotchi UI.
+$('btnSiren').addEventListener('click', e => {
+  e.preventDefault();
+
+  if (state.screen === 'questGame') {
+    sendParent('waa-petbot-game-action', {action:'expandEmbedded'});
+    return;
+  }
+
+  requestLocalFullscreen();
+  sendParent('waa-petbot-toggle-fullscreen');
+});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
@@ -1772,6 +1819,11 @@ window.addEventListener('message',e=>{
   const d=e.data||{};
   if(d.type==='waa-parent-return-to-tamagotchi'){
     try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(_e){}
+
+    // If index.html says the quest is still active, do not switch to Pet Home.
+    // Another handler below will keep the LCD in quest-control mode.
+    if(d.keepQuest) return;
+
     if(state.screen==='questGame'||state.screen==='games'){
       state.screen=currentPet()?'petHome':'menu';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
@@ -1995,117 +2047,9 @@ window.addEventListener('message',e=>{
 render();
 })();
 
-
-// STAGE 42: pacifier is jump-only in quest mode; siren uses CSS quest fullscreen only.
-(function(){
-  function sendQuest(action){try{sendParent('waa-petbot-game-action',{action});}catch(e){}}
-  function inQuest(){return state && state.screen==='questGame';}
-  window.questJump=questJump=function(){ if(inQuest()){sendQuest('jumpOnly');return;} };
-  const oldHandleSelect=window.handleSelect || (typeof handleSelect==='function'?handleSelect:null);
-  window.handleSelect=handleSelect=function(){
-    if(inQuest()){sendQuest('jumpOnly');return;}
-    if(oldHandleSelect) return oldHandleSelect.apply(this,arguments);
-  };
-  const select=document.getElementById('btnSelect');
-  if(select && !select.__stage42JumpOnly){
-    select.__stage42JumpOnly=true;
-    const go=function(e){
-      if(!inQuest()) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-      sendQuest('jumpOnly');
-    };
-    select.addEventListener('pointerdown',go,{capture:true});
-    select.addEventListener('mousedown',go,{capture:true});
-    select.addEventListener('touchstart',go,{capture:true,passive:false});
-    select.addEventListener('click',go,{capture:true});
-    select.addEventListener('touchend',go,{capture:true,passive:false});
-  }
-  const siren=document.getElementById('btnSiren');
-  if(siren && !siren.__stage42QuestExpand){
-    siren.__stage42QuestExpand=true;
-    siren.addEventListener('pointerdown',function(e){
-      if(!inQuest()) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-      sendQuest('expandEmbedded');
-    },{capture:true});
-    siren.addEventListener('click',function(e){
-      if(!inQuest()) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-    },{capture:true});
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active' || (d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest!==false)){
-      try{
-        state.screen='questGame';
-        state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
-        state.returnToQuest=false;
-        document.documentElement.classList.remove('cssFullscreen');
-        document.body.classList.remove('cssFullscreen');
-        render();
-        e.stopImmediatePropagation();
-      }catch(err){console.warn('Stage 42 quest screen restore failed',err);}
-    }
-  },true);
-})();
-
 </script>
 
-
-<script>
-// STAGE 43: prevent the PetBot iframe from going fullscreen while a quest is running.
-(function(){
-  function inQuest(){ return typeof state!=='undefined' && state && state.screen==='questGame'; }
-  function sendQuest(action){ try{ if(parent&&parent!==window) parent.postMessage({type:'waa-petbot-game-action',action},location.origin); }catch(e){} }
-  function clearLocalFullscreen(){
-    try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(e){}
-  }
-  const oldRequestLocal=window.requestLocalFullscreen;
-  window.requestLocalFullscreen=function(){ if(inQuest()){ clearLocalFullscreen(); sendQuest('expandEmbedded'); return; } return oldRequestLocal ? oldRequestLocal.apply(this,arguments) : undefined; };
-  const siren=document.getElementById('btnSiren');
-  if(siren){
-    const go=function(e){
-      if(!inQuest()) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-      clearLocalFullscreen();
-      sendQuest('expandEmbedded');
-    };
-    ['pointerdown','mousedown','touchstart','click','touchend'].forEach(ev=>siren.addEventListener(ev,go,{capture:true,passive:false}));
-  }
-  const select=document.getElementById('btnSelect');
-  if(select){
-    const jump=function(e){
-      if(!inQuest()) return;
-      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
-      sendQuest('jumpOnly');
-    };
-    ['pointerdown','mousedown','touchstart','click','touchend'].forEach(ev=>select.addEventListener(ev,jump,{capture:true,passive:false}));
-  }
-  const oldRender=window.render;
-  if(oldRender){
-    window.render=render=function(){
-      const result=oldRender.apply(this,arguments);
-      if(inQuest()) clearLocalFullscreen();
-      return result;
-    };
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin) return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active' || d.type==='waa-parent-return-to-tamagotchi'){
-      try{
-        clearLocalFullscreen();
-        state.screen='questGame';
-        state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
-        state.returnToQuest=false;
-        if(typeof render==='function') render();
-        e.stopImmediatePropagation();
-      }catch(err){console.warn('Stage 43 quest restore failed',err);}
-    }
-  },true);
-})();
-</script>
+<!-- Cleaned: removed old external Stage 42/43 patch scripts because they duplicated quest controls outside the main PetBot script. -->
 
 </body>
 </html>
