@@ -7469,9 +7469,16 @@ body.waaTamaGame .tamaGameCaption.show{
     const game=releaseGame55(); if(!game) return false;
     const vw=innerWidth||d.documentElement.clientWidth||DESIGN_W;
     const vh=innerHeight||d.documentElement.clientHeight||DESIGN_H;
-    const scale=Math.max(vw/DESIGN_W, vh/DESIGN_H);
+
+    /* Stage 56: full-game mode must FIT the browser viewport, not crop it.
+       The old cover scale used Math.max(), which looked full width but cut off UI
+       and made the help/widget placement feel wrong. This uses contain scaling so
+       the HUD, floor, character and buildings all stay inside the visible screen. */
+    let scale=Math.min(vw/DESIGN_W, vh/DESIGN_H);
+    scale=Math.max(.30, Math.min(1.35, scale));
     const left=(vw-DESIGN_W*scale)/2;
     const top=(vh-DESIGN_H*scale)/2;
+
     css(game,'position','fixed'); css(game,'left','0px'); css(game,'top','0px');
     css(game,'width',DESIGN_W+'px'); css(game,'height',DESIGN_H+'px'); css(game,'min-width',DESIGN_W+'px'); css(game,'min-height',DESIGN_H+'px');
     css(game,'display','block'); css(game,'visibility','visible'); css(game,'opacity','1');
@@ -7539,6 +7546,109 @@ body.waaTamaGame .tamaGameCaption.show{
   },{passive:true});
 
   console.info('Stage 55 loaded: Tamagotchi LCD uses a matching aspect crop and better full-game widget/help placement.');
+})();
+</script>
+
+
+
+<!-- STAGE 56: FULLSCREEN FIT REPAIR
+     Fullscreen now uses a safe contain fit so the HUD, help box, buildings and floor
+     stay visible. Tamagotchi LCD sizing from Stage 55 is left alone. -->
+<style id="stage56-fullscreen-fit-css">
+  body.waaFullscreenGame,
+  body.gameExpandedFromTama{
+    background:#79d9ff!important;
+    overflow:hidden!important;
+  }
+  body.waaFullscreenGame .hud,
+  body.gameExpandedFromTama .hud{
+    display:flex!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body.waaFullscreenGame .instructions,
+  body.gameExpandedFromTama .instructions{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
+  body.waaFullscreenGame #petbotDock:not(.fullscreen),
+  body.gameExpandedFromTama #petbotDock:not(.fullscreen){
+    top:calc(env(safe-area-inset-top) + 150px)!important;
+    right:calc(env(safe-area-inset-right) + 24px)!important;
+    width:clamp(98px,7vw,132px)!important;
+    height:clamp(132px,9.3vw,178px)!important;
+    min-width:98px!important;
+    min-height:132px!important;
+    max-width:132px!important;
+    max-height:178px!important;
+    z-index:260!important;
+  }
+  @media(max-width:900px){
+    body.waaFullscreenGame #petbotDock:not(.fullscreen),
+    body.gameExpandedFromTama #petbotDock:not(.fullscreen){
+      top:calc(env(safe-area-inset-top) + 214px)!important;
+      right:12px!important;
+      width:94px!important;
+      height:126px!important;
+      min-width:94px!important;
+      min-height:126px!important;
+    }
+  }
+</style>
+<script id="stage56-fullscreen-fit-override">
+(function(){
+  const DESIGN_W=1920, DESIGN_H=1080;
+  const d=document, body=document.body;
+  function q(id){return d.getElementById(id);} 
+  function css(el,p,v){ if(el) el.style.setProperty(p,v,'important'); }
+  function mask(){return q('tamaGameMask33');}
+  function releaseGame(){
+    const game=q('game'), m=mask();
+    if(game && m && game.parentElement===m){ try{body.insertBefore(game, body.firstChild);}catch(e){body.appendChild(game);} }
+    if(m) css(m,'display','none');
+    return game;
+  }
+  function fitFull56(){
+    const game=releaseGame(); if(!game) return false;
+    const vw=innerWidth||d.documentElement.clientWidth||DESIGN_W;
+    const vh=innerHeight||d.documentElement.clientHeight||DESIGN_H;
+    let scale=Math.min(vw/DESIGN_W, vh/DESIGN_H);
+    scale=Math.max(.30, Math.min(1.35, scale));
+    const left=(vw-DESIGN_W*scale)/2;
+    const top=(vh-DESIGN_H*scale)/2;
+    body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waaTamaGame','waaTamaMenu','waaFullscreenMenu','petbotBuildingFullScreen');
+    body.classList.add('waaFullscreenGame','gameExpandedFromTama');
+    css(game,'position','fixed'); css(game,'left','0px'); css(game,'top','0px');
+    css(game,'width',DESIGN_W+'px'); css(game,'height',DESIGN_H+'px');
+    css(game,'min-width',DESIGN_W+'px'); css(game,'min-height',DESIGN_H+'px');
+    css(game,'display','block'); css(game,'visibility','visible'); css(game,'opacity','1');
+    css(game,'transform-origin','0 0'); css(game,'transform',`translate3d(${left}px, ${top}px, 0) scale(${scale})`);
+    css(game,'clip-path','none'); css(game,'-webkit-clip-path','none'); css(game,'border-radius','0'); css(game,'box-shadow','none'); css(game,'pointer-events','auto'); css(game,'z-index','10');
+    try{window.currentGameScale=scale; window.currentGameLeft=left; window.currentGameTop=top; window.waaGameViewMode='expanded'; sessionStorage.setItem('waaQuestReturnMode','expanded');}catch(e){}
+    const dock=q('petbotDock');
+    if(dock){
+      dock.classList.remove('hidden','fullscreen');
+      css(dock,'display','block'); css(dock,'visibility','visible'); css(dock,'opacity','1'); css(dock,'position','fixed');
+      css(dock,'left','auto'); css(dock,'bottom','auto'); css(dock,'top','calc(env(safe-area-inset-top) + 150px)'); css(dock,'right','calc(env(safe-area-inset-right) + 24px)');
+      css(dock,'width','clamp(98px,7vw,132px)'); css(dock,'height','clamp(132px,9.3vw,178px)'); css(dock,'background','transparent'); css(dock,'z-index','260');
+      const prev=dock.querySelector('.petbotDockPreview'); if(prev){css(prev,'display','grid');css(prev,'visibility','visible');css(prev,'opacity','1');}
+      const f=q('petbotDockFrame')||q('petbotFrame'); if(f) css(f,'display','none');
+    }
+    const hud=d.querySelector('.hud'); if(hud){css(hud,'display','flex');css(hud,'visibility','visible');css(hud,'opacity','1');}
+    const help=d.querySelector('.instructions'); if(help){css(help,'display','block');css(help,'visibility','visible');css(help,'opacity','1');}
+    return true;
+  }
+  window.waaFitFullGame=fitFull56;
+  window.expandEmbeddedTamaGame=fitFull56;
+  const oldHandle=window.handlePetbotGameAction;
+  window.handlePetbotGameAction=function(action){
+    if(action==='expandEmbedded'||action==='fullscreen'||action==='openFullQuest') return fitFull56();
+    if(oldHandle) return oldHandle.apply(this, arguments);
+  };
+  try{handlePetbotGameAction=window.handlePetbotGameAction;}catch(e){}
+  addEventListener('resize',()=>{ if(body.classList.contains('waaFullscreenGame')||body.classList.contains('gameExpandedFromTama')) setTimeout(fitFull56,60); },{passive:true});
+  addEventListener('orientationchange',()=>{ if(body.classList.contains('waaFullscreenGame')||body.classList.contains('gameExpandedFromTama')) setTimeout(fitFull56,220); },{passive:true});
 })();
 </script>
 
