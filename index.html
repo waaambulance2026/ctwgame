@@ -2003,25 +2003,25 @@ const levels=[
       // No extra random lesson clutter: each board explains the next real stop.
       {at:-1723,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Welcome to Tutorial Town: walk, jump, then press Select near buildings.'},
+      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Welcome to Tutorial Town. Walk with Left/Right or A/D. Jump with Space, W, Arrow Up, or the pacifier. Read the boards first, then enter the buildings.'},
       {at:-980,kind:'token',tokenIndex:0,message:'Tutorial Token: collect by touching it properly.'},
       {at:-820,kind:'token',tokenIndex:1,message:'Hidden-ish token: exploration gets rewards.'},
 
-      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Select.'},
+      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop tutorial: this building will open the shop menu where players buy food, toys, medicine and pet items.'},
       {at:-332,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
-      {at:730,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
+      {at:730,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat tutorial: this building will open the habitat screen where owned pets and decorated rooms are shown.'},
       {at:1048,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: hop over the training cone.'},
+      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump tutorial: press Space, W, Arrow Up, or the pacifier to jump. Later this can teach hazards and movement.'},
       {at:1550,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
       {at:1760,kind:'token',tokenIndex:2,message:'Mushroom token collected.'},
 
-      {at:2100,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
+      {at:2100,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance tutorial: this building will become the prize mini-game. It should feel like hook-a-duck, not a shop list.'},
       {at:2411,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:3300,kind:'sign',title:'Secret',data:['🎁','Secret',0,''],message:'You found a secret already?! Bonus curiosity points.'},
-      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Selector: Tutorial Town first, Wrong Moon next.'},
+      {at:3300,kind:'sign',title:'Secret',data:['🎁','Secret',0,''],message:'Secret tutorial: this town can hide bonus rewards, clues, and small surprises for players who explore.'},
+      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Starter tutorial: this building will let players pick Tutorial Town, Wrong Moon, and later story quests.'},
       {at:3826,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
       {at:6200,kind:'finish'}
@@ -5522,6 +5522,358 @@ window.addEventListener('keyup',function(e){
     }
   },true);
   window.addEventListener('resize',()=>{ if(body.classList.contains('tamaGameEmbedded')) setTimeout(fitTamagotchi43,60); if(body.classList.contains('gameExpandedFromTama')) setTimeout(fitExpanded43,60); },{passive:true});
+})();
+</script>
+
+
+<script id="stage44-tutorial-town-split-clean">
+/*
+  STAGE 44: Tutorial Town split.
+  This is intentionally small and readable.
+
+  Rule:
+  - Signs / text boxes explain the tutorial.
+  - Buildings / doors open the real PetBot/Tamagotchi menu.
+  - Space / ArrowUp / W / pacifier = jump only.
+  - Enter / E = read the nearest sign OR open the nearest building.
+*/
+(function(){
+  const d = document;
+  const body = d.body;
+
+  function q(id){ return d.getElementById(id); }
+
+  function questShell(){
+    return body.classList.contains('tamaGameEmbedded') ||
+           body.classList.contains('gameExpandedFromTama');
+  }
+
+  function stopMoving(){
+    try{ keys.left = false; keys.right = false; }catch(e){}
+    try{ if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(false); }catch(e){}
+  }
+
+  function showHelpfulText(title, message, ms){
+    const text = (title ? (title + ': ') : '') + String(message || '');
+    try{
+      if(typeof stage27ShowCaption === 'function'){
+        stage27ShowCaption(text, ms || 5200);
+        return;
+      }
+    }catch(e){}
+    try{ if(typeof showToast === 'function') showToast(text); }catch(e){}
+  }
+
+  function titleFor(o){
+    return String((o && (o.title || o.label)) || 'Tutorial');
+  }
+
+  function messageFor(o){
+    if(!o) return 'Move closer and press Enter.';
+    if(o.message) return String(o.message);
+    if(o.place === 'petShop') return 'This opens the Pet Shop menu.';
+    if(o.place === 'habitat') return 'This opens the Habitat menu.';
+    if(o.place === 'hookWaaambulance') return 'This opens Hook-a-Waaambulance.';
+    if(o.place === 'questStarter') return 'This opens the Quest Starter.';
+    if(o.place === 'welcomeBoard') return 'This opens the Welcome Board.';
+    return 'Read this tutorial, then keep walking.';
+  }
+
+  // Text boxes/signs are tutorial explanations only.
+  // They should not open PetBot menus and they should not vanish after reading.
+  const previousInteractObject = window.interactObject || (typeof interactObject === 'function' ? interactObject : null);
+  window.interactObject = interactObject = function(o){
+    if(o && (o.kind === 'sign' || o.kind === 'task')){
+      o.read = true;
+      try{ o.el && o.el.classList.add('tutorialRead'); }catch(e){}
+      showHelpfulText(titleFor(o), messageFor(o), 5600);
+      return true;
+    }
+    return previousInteractObject ? previousInteractObject(o) : false;
+  };
+
+  function placeToScreen(place){
+    place = String(place || '');
+    if(place === 'petShop') return 'shop';
+    if(place === 'habitat') return 'habitat';
+    if(place === 'hookWaaambulance') return 'hook';
+    if(place === 'questStarter') return 'games';
+    if(place === 'welcomeBoard') return 'welcomeBoard';
+    return 'petActions';
+  }
+
+  function postPetbotScreen(place, label){
+    const screen = placeToScreen(place);
+    const frame = q('petbotDockFrame') || q('petbotFrame');
+    const msg = {
+      type: 'waa-parent-open-screen',
+      screen,
+      place,
+      label: label || place,
+      returnToQuest: true,
+      returnMode: body.classList.contains('gameExpandedFromTama') ? 'expanded' : 'embedded',
+      t: Date.now()
+    };
+
+    try{ localStorage.setItem('waaPendingPetbotScreen', JSON.stringify(msg)); }catch(e){}
+    [0, 90, 240, 520, 900, 1400].forEach(ms => setTimeout(() => {
+      try{ frame && frame.contentWindow && frame.contentWindow.postMessage(msg, location.origin); }catch(e){}
+    }, ms));
+  }
+
+  // Buildings open menus only. Signs/text boxes never use this path.
+  const previousOpenBuilding = window.openBuilding || (typeof openBuilding === 'function' ? openBuilding : null);
+  window.openBuilding = openBuilding = function(o){
+    if(o && o.kind === 'building' && questShell()){
+      if(o.__stage44Opening) return true;
+      o.__stage44Opening = true;
+      o.opening = true;
+
+      stopMoving();
+
+      const mode = body.classList.contains('gameExpandedFromTama') ? 'expanded' : 'embedded';
+      try{ window.waaQuestReturnMode = mode; sessionStorage.setItem('waaQuestReturnMode', mode); }catch(e){}
+
+      try{ body.classList.remove('tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33'); }catch(e){}
+      try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(e){}
+      try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
+
+      const label = o.label || o.place || 'Building';
+      postPetbotScreen(o.place, label);
+      showHelpfulText(label, 'opening menu...', 1600);
+
+      setTimeout(() => {
+        try{ o.opening = false; o.__stage44Opening = false; }catch(e){}
+      }, 900);
+      return true;
+    }
+
+    return previousOpenBuilding ? previousOpenBuilding(o) : false;
+  };
+
+  function objectRouteAt(o){
+    try{ if(Number.isFinite(Number(o && o.at))) return Number(o.at); }catch(e){}
+    try{
+      if(o && Number.isFinite(Number(o.x)) && typeof routeAtFromX === 'function'){
+        return routeAtFromX(Number(o.x), o.kind || 'building');
+      }
+    }catch(e){}
+    return NaN;
+  }
+
+  function currentRouteAt(){
+    try{
+      const base = (typeof cssNumber === 'function' ? cssNumber('--playerX',150) : 150);
+      const px = base + ((typeof player !== 'undefined' && player && Number(player.x)) || 0);
+      if(typeof routeAtFromX === 'function') return routeAtFromX(px, 'building');
+    }catch(e){}
+    try{ return Number(distance) || 0; }catch(e){ return 0; }
+  }
+
+  function isUsable(o){
+    return !!(o && !o.vanished && !o.opening && o.el &&
+      (o.kind === 'building' || o.kind === 'sign' || o.kind === 'task'));
+  }
+
+  function scoreObject(o, opts){
+    const wide = !!(opts && (opts.embedded || opts.expanded || questShell()));
+    let best = 999999;
+
+    try{
+      const r = o.el.getBoundingClientRect();
+      const playerEl = q('player');
+      let pcx = innerWidth / 2;
+      let pcy = innerHeight * .64;
+      if(playerEl){
+        const pr = playerEl.getBoundingClientRect();
+        pcx = pr.left + pr.width / 2;
+        pcy = pr.top + pr.height * .68;
+      }
+
+      const visible = r && r.width > 4 && r.height > 4 &&
+        r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
+
+      if(visible){
+        const cx = r.left + r.width / 2;
+        const cy = r.top + r.height / 2;
+        const dx = Math.abs(cx - pcx);
+        const dy = Math.abs(cy - pcy);
+        const isBuilding = o.kind === 'building';
+        const limitX = isBuilding ? (wide ? 470 : 330) : (wide ? 330 : 230);
+        const limitY = isBuilding ? (wide ? 420 : 280) : (wide ? 270 : 180);
+        if(dx <= limitX && dy <= limitY) best = Math.min(best, dx + dy * .30);
+      }
+    }catch(e){}
+
+    const at = objectRouteAt(o);
+    if(Number.isFinite(at)){
+      const dRoute = Math.abs(at - currentRouteAt());
+      const isBuilding = o.kind === 'building';
+      const limitRoute = isBuilding ? (wide ? 360 : 260) : (wide ? 250 : 180);
+      if(dRoute <= limitRoute) best = Math.min(best, dRoute * .42);
+    }
+
+    return best;
+  }
+
+  function nearestByKind(kindList, opts){
+    let best = null;
+    if(!Array.isArray(window.objects || objects)) return null;
+    const list = window.objects || objects;
+
+    for(const o of list){
+      if(!isUsable(o)) continue;
+      if(!kindList.includes(o.kind)) continue;
+      const score = scoreObject(o, opts || {});
+      if(score < 999998 && (!best || score < best.score)) best = {o, score};
+    }
+    return best;
+  }
+
+  // Enter/E should read nearby tutorial text first, then open a building.
+  // This stops the sign beside a building from opening the same PetBot menu.
+  function selectTutorialTownThing(opts){
+    try{
+      if(!playing || ended || body.classList.contains('editMode')) return false;
+      const start = q('startScreen');
+      if(start && !start.classList.contains('hidden')) return false;
+    }catch(e){}
+
+    const textStop = nearestByKind(['sign','task'], opts || {});
+    if(textStop && textStop.score <= 170){
+      return window.interactObject(textStop.o);
+    }
+
+    const building = nearestByKind(['building'], opts || {});
+    if(building && building.score <= 240){
+      return window.openBuilding(building.o);
+    }
+
+    // If a sign is still nearby but not perfect, prefer the tutorial over opening the wrong building.
+    if(textStop && textStop.score <= 260){
+      return window.interactObject(textStop.o);
+    }
+
+    try{ if(typeof showToast === 'function') showToast('Stand beside a sign or door, then press Enter.'); }catch(e){}
+    return false;
+  }
+
+  window.stage44SelectTutorialTownThing = selectTutorialTownThing;
+  window.selectNearestWorldStop = selectTutorialTownThing;
+  window.stage31SelectNearestWorldStop = selectTutorialTownThing;
+
+  window.enterNearbyBuilding = function(){
+    return selectTutorialTownThing({
+      embedded: body.classList.contains('tamaGameEmbedded'),
+      expanded: body.classList.contains('gameExpandedFromTama')
+    });
+  };
+
+  window.enterNearbyInteractable = function(){
+    return selectTutorialTownThing({
+      embedded: body.classList.contains('tamaGameEmbedded'),
+      expanded: body.classList.contains('gameExpandedFromTama')
+    });
+  };
+
+  const previousTapEmbedded = window.tapEmbeddedControl || (typeof tapEmbeddedControl === 'function' ? tapEmbeddedControl : null);
+  window.tapEmbeddedControl = tapEmbeddedControl = function(action){
+    try{
+      if(action === 'moveLeft' || action === 'moveLeftStart'){
+        keys.left = true; keys.right = false;
+        try{ if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true); }catch(e){}
+        if(action === 'moveLeft') setTimeout(() => {
+          try{ keys.left = false; if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(false); }catch(e){}
+        }, 240);
+        return;
+      }
+
+      if(action === 'moveRight' || action === 'moveRightStart'){
+        keys.right = true; keys.left = false;
+        try{ if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true); }catch(e){}
+        if(action === 'moveRight') setTimeout(() => {
+          try{ keys.right = false; if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(false); }catch(e){}
+        }, 240);
+        return;
+      }
+
+      if(action === 'moveStop'){
+        stopMoving();
+        return;
+      }
+
+      // Pacifier/jump button from PetBot is jump only.
+      if(action === 'jumpOnly'){
+        try{ if(typeof jump === 'function') jump(); }catch(e){}
+        return;
+      }
+
+      // Enter/E/select action opens signs/buildings.
+      if(action === 'selectOrJump' || action === 'openNearest'){
+        if(selectTutorialTownThing({embedded:body.classList.contains('tamaGameEmbedded'), expanded:body.classList.contains('gameExpandedFromTama')})) return;
+        return;
+      }
+
+      if(action === 'jump'){
+        try{ if(typeof jump === 'function') jump(); }catch(e){}
+        return;
+      }
+    }catch(e){
+      console.warn('Stage 44 Tamagotchi control failed', e);
+    }
+
+    if(previousTapEmbedded) return previousTapEmbedded(action);
+  };
+
+  // Keyboard rule in quest modes:
+  // Space/W/Up = jump. Enter/E = read sign or open building.
+  window.addEventListener('keydown', function(e){
+    if(!questShell() || e.repeat) return;
+    const code = e.code || '';
+
+    if(code === 'Space' || code === 'ArrowUp' || code === 'KeyW'){
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      try{ if(typeof jump === 'function') jump(); }catch(err){}
+      return;
+    }
+
+    if(code === 'Enter' || code === 'NumpadEnter' || code === 'KeyE'){
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      selectTutorialTownThing({
+        embedded: body.classList.contains('tamaGameEmbedded'),
+        expanded: body.classList.contains('gameExpandedFromTama')
+      });
+      return;
+    }
+  }, true);
+
+  // Make the text easier to see and keep it at the top.
+  const style = d.createElement('style');
+  style.id = 'stage44-tutorial-town-style';
+  style.textContent = `
+    .obj.lessonBlock.tutorialRead{opacity:.82;}
+    .obj.lessonBlock.tutorialRead::after{content:attr(data-title) " ✓"!important;}
+    body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+      top:calc(var(--tama-lcd-top,50dvh) + 6px)!important;
+      bottom:auto!important;
+      max-height:min(82px, calc(var(--tama-lcd-h,180px) * .40))!important;
+      white-space:normal!important;
+      overflow:hidden!important;
+    }
+    body.gameExpandedFromTama .tamaGameCaption.show{
+      top:calc(env(safe-area-inset-top) + 14px)!important;
+      bottom:auto!important;
+      white-space:normal!important;
+      max-height:25vh!important;
+    }
+  `;
+  d.head.appendChild(style);
+
+  console.info('Stage 44 Tutorial Town split loaded: signs show tutorial text, buildings open PetBot menus.');
 })();
 </script>
 
