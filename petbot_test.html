@@ -2140,5 +2140,97 @@ render();
 
 <!-- Cleaned: removed old external Stage 42/43 patch scripts because they duplicated quest controls outside the main PetBot script. -->
 
+
+
+<script>
+/* STAGE 47: keep building-open requests until after the user/pet has loaded.
+   Fixes: opening Hook/Pet Shop from Tutorial Town could land back on the main
+   "Owned Pets / Switch User" menu because the parent screen request expired
+   before login finished. */
+(function(){
+  function readPendingScreen47(){
+    let pending = '';
+    try{
+      const raw = localStorage.getItem('waaPendingPetbotScreen');
+      if(raw){
+        const pack = JSON.parse(raw);
+        if(pack && pack.screen && pack.t && Date.now() - Number(pack.t) < 5*60*1000){
+          pending = String(pack.screen || '');
+        }else{
+          localStorage.removeItem('waaPendingPetbotScreen');
+        }
+      }
+    }catch(e){}
+    return pending || String((window.state && state._pendingParentScreen) || '');
+  }
+
+  function rememberPendingScreen47(screen){
+    screen = String(screen || '').trim();
+    if(!screen) return;
+    try{ state._pendingParentScreen = screen; }catch(e){}
+    try{ localStorage.setItem('waaPendingPetbotScreen', JSON.stringify({screen:screen,t:Date.now()})); }catch(e){}
+  }
+
+  window.petbotApplyPendingScreen47 = function(){
+    try{
+      const screen = readPendingScreen47();
+      if(!screen) return false;
+      if(!state.player || !currentPet()){
+        rememberPendingScreen47(screen);
+        return false;
+      }
+      try{ localStorage.removeItem('waaPendingPetbotScreen'); }catch(e){}
+      state._pendingParentScreen = '';
+      if(screen === 'hook') { openHookPanel(); return true; }
+      if(screen === 'shop') { openShopPanel(); return true; }
+      if(screen === 'habitat') { openDataPanel('habitat'); return true; }
+      if(screen === 'inventory') { openDataPanel('inventory'); return true; }
+      if(screen === 'welcomeBoard' || screen === 'welcome' || screen === 'tutorial') { state.screen='welcomeBoard'; render(); return true; }
+      if(screen === 'games' || screen === 'quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
+      if(typeof petbotOpenParentScreen === 'function') return petbotOpenParentScreen(screen);
+      return false;
+    }catch(err){
+      try{ console.warn('[PetBot Stage47] pending screen failed', err); }catch(e){}
+      return false;
+    }
+  };
+
+  if(typeof petbotOpenParentScreen === 'function'){
+    const oldOpenParentScreen47 = petbotOpenParentScreen;
+    window.petbotOpenParentScreen = petbotOpenParentScreen = function(screen){
+      screen = String(screen || 'petHome');
+      if(!state.player || !currentPet()){
+        rememberPendingScreen47(screen);
+        return false;
+      }
+      return oldOpenParentScreen47(screen);
+    };
+  }
+
+  if(typeof startPlayer === 'function'){
+    const oldStartPlayer47 = startPlayer;
+    window.startPlayer = startPlayer = async function(player){
+      const result = await oldStartPlayer47(player);
+      setTimeout(window.petbotApplyPendingScreen47, 60);
+      setTimeout(window.petbotApplyPendingScreen47, 350);
+      setTimeout(window.petbotApplyPendingScreen47, 900);
+      return result;
+    };
+  }
+
+  window.addEventListener('message', function(e){
+    if(e.origin !== location.origin) return;
+    const d = e.data || {};
+    if(d.type === 'waa-parent-open-screen' && d.screen){
+      if(!state.player || !currentPet()) rememberPendingScreen47(d.screen);
+      setTimeout(window.petbotApplyPendingScreen47, 80);
+    }
+  }, true);
+
+  setTimeout(window.petbotApplyPendingScreen47, 300);
+  setTimeout(window.petbotApplyPendingScreen47, 1200);
+})();
+</script>
+
 </body>
 </html>
