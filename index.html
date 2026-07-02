@@ -4331,7 +4331,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=138&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=203&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -4376,16 +4376,10 @@ window.addEventListener('keyup',function(e){
     requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
   };
 window.startTamagotchiLaunch = function(){
-  if(typeof window.startEmbeddedTamaGame === 'function'){
-    const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
-    window.startEmbeddedTamaGame(mode);
-  }
+  if(typeof window.openPetbotFull === 'function') window.openPetbotFull();
 };
 window.togglePetbotDock = function(){
-  if(typeof window.startEmbeddedTamaGame === 'function'){
-    const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
-    window.startEmbeddedTamaGame(mode);
-  }
+  if(typeof window.openPetbotFull === 'function') window.openPetbotFull();
 };
 
   function backClick(e){
@@ -4409,10 +4403,7 @@ dock.addEventListener('click', function(e){
     e.preventDefault();
     e.stopPropagation();
 
-    if(typeof window.startEmbeddedTamaGame === 'function'){
-      const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
-      window.startEmbeddedTamaGame(mode);
-    }
+    if(typeof window.openPetbotFull === 'function') window.openPetbotFull();
   }
 });
   refreshMiniPet();
@@ -4426,13 +4417,7 @@ if(openBtn){
       return;
     }
 
-    if(typeof window.startEmbeddedTamaGame==='function'){
-      const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
-      window.startEmbeddedTamaGame(mode);
-      return;
-    }
-
-    console.warn('Tamagotchi game function not ready');
+    if(typeof window.openPetbotFull === 'function') window.openPetbotFull();
   });
 }
   window.addEventListener('keydown', function(e){
@@ -5180,7 +5165,7 @@ quest launch from that Tamagotchi.
   function ensurePetbotFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
     if(frame){
-      const wanted='petbot_test.html?v=142&embed=1&launch=1&choose=1';
+      const wanted='petbot_test.html?v=203&embed=1&launch=1&choose=1';
       try{
         const current=new URL(frame.getAttribute('src')||'',location.href);
         const next=new URL(wanted,location.href);
@@ -5238,6 +5223,109 @@ quest launch from that Tamagotchi.
   window.addEventListener('load',function(){
     setTimeout(function(){ enterTamagotchiMode(); },160);
   });
+})();
+</script>
+
+<!-- ============================================================
+FIX 20260702E: FORCE REAL PETBOT START AND BUTTON ROUTES
+Keeps startup and Tamagotchi buttons pointed at the real PetBot app.
+Quest starts only from the PetBot Games menu.
+============================================================ -->
+<style id="fix-20260702e-real-petbot-start-css">
+  body.petbotOpen:not(.tamaGameEmbedded) #game{
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-width:100vw!important;
+    min-height:100dvh!important;
+    z-index:2147483000!important;
+    transform:none!important;
+  }
+  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen .petbotDockFrame{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    border:0!important;
+  }
+</style>
+<script id="fix-20260702e-real-petbot-start-script">
+(function(){
+  const PETBOT_URL='petbot_test.html?v=203&embed=1&launch=1&choose=1';
+  function q(id){return document.getElementById(id);}
+  function setFrame(){
+    const frame=q('petbotDockFrame')||q('petbotFrame');
+    if(!frame) return;
+    try{
+      const current=new URL(frame.getAttribute('src')||'',location.href);
+      const wanted=new URL(PETBOT_URL,location.href);
+      if(current.pathname!==wanted.pathname || current.search!==wanted.search) frame.src=PETBOT_URL;
+    }catch(e){ frame.src=PETBOT_URL; }
+  }
+  function showPetbot(){
+    setFrame();
+    document.body.classList.remove('waaTamaStartMode','gameExpandedFromTama','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding');
+    document.body.classList.add('petbotOpen');
+    try{ if(typeof paused!=='undefined') paused=true; }catch(e){}
+    const start=q('startScreen'); if(start) start.classList.add('hidden');
+    const dock=q('petbotDock');
+    if(dock){
+      if(dock.parentElement!==document.body) document.body.appendChild(dock);
+      dock.classList.remove('hidden');
+      dock.classList.add('fullscreen');
+      ['display','visibility','opacity','position','inset','width','height','min-width','min-height','z-index','transform'].forEach(function(prop){
+        try{ dock.style.removeProperty(prop); }catch(e){}
+      });
+    }
+    const expand=q('petbotExpandBtn'); if(expand) expand.textContent='Back';
+    const hide=q('petbotHideBtn'); if(hide) hide.textContent='Close';
+    return true;
+  }
+  window.waaEnterTamagotchiMode=showPetbot;
+  window.startTamagotchiLaunch=showPetbot;
+  window.togglePetbotDock=showPetbot;
+  window.stage37ReturnExpandedQuestToTamagotchi=showPetbot;
+  function wireButtons(){
+    ['petBtn','menuPetBtn'].forEach(function(id){
+      const btn=q(id);
+      if(!btn || btn.__realPetbotStartBound) return;
+      btn.__realPetbotStartBound=true;
+      btn.onclick=function(e){ if(e){e.preventDefault();e.stopPropagation();} return showPetbot(); };
+      btn.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation(); showPetbot(); },true);
+      btn.addEventListener('touchend',function(e){ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation(); showPetbot(); },{capture:true,passive:false});
+    });
+    const dock=q('petbotDock');
+    if(dock && !dock.__realPetbotStartBound){
+      dock.__realPetbotStartBound=true;
+      dock.addEventListener('click',function(e){
+        if(e.target && e.target.closest && e.target.closest('.petbotDockBtn')) return;
+        if(!dock.classList.contains('fullscreen')){
+          e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+          showPetbot();
+        }
+      },true);
+    }
+  }
+  function start(){
+    wireButtons();
+    showPetbot();
+    [60,180,420,900,1600,2600].forEach(function(ms){setTimeout(function(){wireButtons(); if(!document.body.classList.contains('petbotOpen')) showPetbot();},ms);});
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',start,{once:true});
+  else start();
+  window.addEventListener('load',function(){setTimeout(start,80);},{once:true});
+  window.addEventListener('pageshow',function(){setTimeout(start,80);});
 })();
 </script>
 
