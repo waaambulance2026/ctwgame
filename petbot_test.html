@@ -1676,7 +1676,7 @@ function notifyParent(){
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
-$('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
+$('btnSelect').addEventListener('click', e => {   e.preventDefault();    if (state.screen === 'questGame') {     sendParent('waa-petbot-game-action', { action: 'jumpOnly' });     return;   }    handleSelect(); });
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
   const stop=e=>{
