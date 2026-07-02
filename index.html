@@ -31,7 +31,7 @@ SAFE PLACES TO EDIT YOURSELF:
 6) PLACE_IMAGES
    Cloudinary image links for buildings, signs, tokens and hazards.
 
-7) VIEW MODE CONTROLLER v62
+7) VIEW MODE CONTROLLER v63
    Fullscreen view and Tamagotchi view only.
 
 DO NOT EDIT:
@@ -6324,18 +6324,30 @@ body.gameExpandedFromTama .tamaGameCaption.show{
 </script>
 
 <!-- ============================================================
-VIEW MODE CONTROLLER v62 - FULLSCREEN / TAMAGOTCHI ONLY
+VIEW MODE CONTROLLER v63 - RESPONSIVE FULLSCREEN / TAMAGOTCHI ONLY
 
-This is the ONLY section to edit for view switching.
-Use this section for:
-- fullscreen game fit
-- Tamagotchi game fit
-- small Tamagotchi widget visibility
-- debug box
+THIS IS THE ONLY SECTION TO EDIT FOR SCREEN VIEW PROBLEMS.
 
-Do NOT add new Stage 63/64 patches below this.
+Simple settings inside this section:
+- FULLSCREEN_MODE = "fit"
+  Keeps the whole game visible on every screen.
+  Wide screens may have side space, but the side space is now sky instead of black.
+
+- FULLSCREEN_MODE = "fill"
+  Fills the whole screen, but crops some edges.
+
+For most devices, use "fit" first.
 ============================================================ -->
-<style id="waa-view-mode-controller-v62-css">
+<style id="waa-view-mode-controller-v63-css">
+  /* Remove ugly black bars: when the 1920x1080 game has spare side space,
+     the page behind it uses the same sky colour/image. */
+  html, body{
+    background:#79d9ff url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png') center center / cover no-repeat fixed!important;
+  }
+  body.night{
+    background:#12113b url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638223/night_sky.png') center center / cover no-repeat fixed!important;
+  }
+
   body.gameExpandedFromTama .hud,
   body.waa-view-full-game .hud{
     display:flex!important;
@@ -6350,6 +6362,8 @@ Do NOT add new Stage 63/64 patches below this.
     opacity:1!important;
   }
 
+  /* Keep the small Tamagotchi toy visible in fullscreen, but do not let it open
+     as a giant iframe unless we are actually in PetBot menu mode. */
   body.gameExpandedFromTama #petbotDock,
   body.gameExpandedFromTama #petbotDock.hidden,
   body.waa-view-full-game #petbotDock,
@@ -6402,14 +6416,30 @@ Do NOT add new Stage 63/64 patches below this.
     opacity:1!important;
   }
 
-  #waaViewModeDebug{
-    display:none;
+  /* Always-visible debug button so you do not have to remember Ctrl+Shift+D. */
+  #waaDebugBtn{
     position:fixed;
     left:10px;
     bottom:10px;
     z-index:2147483647;
-    max-width:min(620px,calc(100vw - 20px));
-    background:rgba(0,0,0,.78);
+    border:0;
+    border-radius:999px;
+    padding:8px 11px;
+    background:rgba(255,255,255,.90);
+    color:#21142d;
+    font:900 12px/1 Arial,Helvetica,sans-serif;
+    box-shadow:0 6px 18px rgba(0,0,0,.22);
+    cursor:pointer;
+  }
+
+  #waaViewModeDebug{
+    display:none;
+    position:fixed;
+    left:10px;
+    bottom:50px;
+    z-index:2147483647;
+    max-width:min(680px,calc(100vw - 20px));
+    background:rgba(0,0,0,.80);
     color:#fff;
     border:1px solid rgba(255,255,255,.35);
     border-radius:12px;
@@ -6432,13 +6462,20 @@ Do NOT add new Stage 63/64 patches below this.
       top:96px!important;
       right:10px!important;
     }
+    #waaDebugBtn{font-size:11px;padding:7px 9px;}
   }
 </style>
 
-<script id="waa-view-mode-controller-v62-script">
+<script id="waa-view-mode-controller-v63-script">
 (function(){
   const d = document;
   const body = d.body;
+
+  /* SIMPLE VIEW SETTINGS
+     fit  = whole game visible on all screen shapes, no cropping.
+     fill = fills browser, but crops edges.
+  */
+  const FULLSCREEN_MODE = 'fit';
 
   const OLD_MODE_CLASSES = [
     'stage52ModeFull','stage52ModeTama','stage53PetbotMenu','stage54Returning',
@@ -6491,9 +6528,8 @@ Do NOT add new Stage 63/64 patches below this.
   }
 
   // FULLSCREEN FIT SCRIPT
-  // Math.min = show the whole 1920x1080 game.
-  // Math.max = fill the screen but crop edges.
-  window.fitGameToScreen = function fitGameToScreenV62(){
+  // This scales the fixed 1920x1080 game to the browser.
+  window.fitGameToScreen = function fitGameToScreenV63(){
     const game = q('game');
     if(!game) return;
     if(body.classList.contains('tamaGameEmbedded')){
@@ -6503,11 +6539,19 @@ Do NOT add new Stage 63/64 patches below this.
 
     const vw = window.innerWidth || d.documentElement.clientWidth || W();
     const vh = window.innerHeight || d.documentElement.clientHeight || H();
-    const scale = Math.min(vw / W(), vh / H());
+    const fitScale = Math.min(vw / W(), vh / H());
+    const fillScale = Math.max(vw / W(), vh / H());
+    const scale = FULLSCREEN_MODE === 'fill' ? fillScale : fitScale;
+
     const left = (vw - W() * scale) / 2;
     const top = (vh - H() * scale) / 2;
 
     try{ currentGameScale = scale; currentGameLeft = left; currentGameTop = top; }catch(e){}
+    try{
+      body.style.setProperty('--waa-game-scale', String(scale));
+      body.style.setProperty('--waa-game-left', left+'px');
+      body.style.setProperty('--waa-game-top', top+'px');
+    }catch(e){}
 
     imp(game,'position','fixed');
     imp(game,'left','0px');
@@ -6543,8 +6587,8 @@ Do NOT add new Stage 63/64 patches below this.
     try{ if(typeof paused !== 'undefined') paused = false; }catch(e){}
     try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
     window.fitGameToScreen();
-    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); },80);
-    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); },260);
+    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); updateDebug(); },80);
+    setTimeout(()=>{ keepSmallToyVisible(); window.fitGameToScreen(); updateDebug(); },260);
   }
 
   function showTamagotchiGame(){
@@ -6575,8 +6619,8 @@ Do NOT add new Stage 63/64 patches below this.
 
   function bindViewButtons(){
     const petBtn = q('petBtn');
-    if(petBtn && !petBtn.__waaViewV62Bound){
-      petBtn.__waaViewV62Bound = true;
+    if(petBtn && !petBtn.__waaViewV63Bound){
+      petBtn.__waaViewV63Bound = true;
       petBtn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -6585,8 +6629,8 @@ Do NOT add new Stage 63/64 patches below this.
       }, true);
     }
     const menuPetBtn = q('menuPetBtn');
-    if(menuPetBtn && !menuPetBtn.__waaViewV62Bound){
-      menuPetBtn.__waaViewV62Bound = true;
+    if(menuPetBtn && !menuPetBtn.__waaViewV63Bound){
+      menuPetBtn.__waaViewV63Bound = true;
       menuPetBtn.addEventListener('click', function(e){
         e.preventDefault();
         e.stopPropagation();
@@ -6596,10 +6640,24 @@ Do NOT add new Stage 63/64 patches below this.
   }
 
   function ensureDebugBox(){
-    if(q('waaViewModeDebug')) return;
-    const box=d.createElement('div');
-    box.id='waaViewModeDebug';
-    body.appendChild(box);
+    if(!q('waaViewModeDebug')){
+      const box=d.createElement('div');
+      box.id='waaViewModeDebug';
+      body.appendChild(box);
+    }
+    if(!q('waaDebugBtn')){
+      const btn=d.createElement('button');
+      btn.id='waaDebugBtn';
+      btn.type='button';
+      btn.textContent='Debug';
+      btn.title='Show/hide view debug';
+      btn.addEventListener('click', function(e){
+        e.preventDefault();
+        body.classList.toggle('waaViewDebugOn');
+        updateDebug();
+      });
+      body.appendChild(btn);
+    }
   }
 
   function updateDebug(){
@@ -6617,8 +6675,10 @@ Do NOT add new Stage 63/64 patches below this.
       ? getComputedStyle(mask).display + ' / ' + getComputedStyle(mask).visibility + ' / z=' + getComputedStyle(mask).zIndex
       : 'missing';
     box.textContent = [
-      'VIEW MODE DEBUG v62',
+      'VIEW MODE DEBUG v63',
       '',
+      'fullscreen mode: ' + FULLSCREEN_MODE,
+      'screen: ' + window.innerWidth + ' x ' + window.innerHeight,
       'body classes:',
       body.className,
       '',
@@ -6627,7 +6687,7 @@ Do NOT add new Stage 63/64 patches below this.
       '',
       'dock: ' + dockText,
       'mask: ' + maskText
-    ].join('\\n');
+    ].join('\n');
   }
 
   window.waaShowFullGame = showFullGame;
@@ -6655,10 +6715,14 @@ Do NOT add new Stage 63/64 patches below this.
     updateDebug();
   }, {passive:true});
 
+  // Shortcuts: Ctrl+Shift+D, F2, or click the Debug button.
   d.addEventListener('keydown', function(e){
-    if(e.ctrlKey && e.shiftKey && (e.key || '').toLowerCase() === 'd'){
+    const key=(e.key || '').toLowerCase();
+    if((e.ctrlKey && e.shiftKey && key === 'd') || e.code === 'F2'){
       body.classList.toggle('waaViewDebugOn');
       updateDebug();
+      e.preventDefault();
+      e.stopPropagation();
     }
   }, true);
 
