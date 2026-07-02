@@ -7159,6 +7159,102 @@ This fixes the messy load state:
 })();
 </script>
 
+
+
+<!-- ============================================================
+STAGE 78: FIX CURRENT GITHUB START + TAMAGOTCHI LCD
+
+This fixes the current GitHub zip specifically:
+1) Always start on the main menu, not the Tamagotchi shell.
+2) The Tamagotchi LCD is solid white in petbot_device.png, so the game must sit ABOVE the device image but only over the LCD rectangle.
+3) The top Tamagotchi button still switches the platform game into the Tamagotchi screen.
+============================================================ -->
+<style id="stage78-current-github-fix-css">
+  /* The game is the LCD content, so it must be above the device picture. */
+  body.waaStage75TamaGame #game{
+    z-index:2147483005!important;
+    pointer-events:none!important;
+    border-radius:22px!important;
+    overflow:hidden!important;
+  }
+  body.waaStage75TamaGame #stage75TamaDevice{
+    z-index:2147483004!important;
+  }
+  body.waaStage75TamaGame #stage75FullGameBtn{
+    z-index:2147483007!important;
+  }
+  body.waaStartMenuOpen #stage75TamaOverlay,
+  body.waaStartMenuOpen #stage75FullGameBtn{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+</style>
+<script id="stage78-current-github-fix-js">
+(function(){
+  function q(id){return document.getElementById(id);}
+  function hideStage75Shell(){
+    document.body.classList.remove('waaStage75TamaGame','petbotOpen','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding','gameExpandedFromTama','stage43Expanded','waa-view-full-game');
+    const ov=q('stage75TamaOverlay');
+    const btn=q('stage75FullGameBtn');
+    if(ov){ov.style.display='none';ov.style.visibility='hidden';}
+    if(btn){btn.style.display='none';btn.style.visibility='hidden';}
+  }
+  window.stage78ShowStartMenu=function(){
+    hideStage75Shell();
+    document.body.classList.add('waaStartMenuOpen');
+    document.body.classList.remove('editMode');
+    document.querySelectorAll('.selectedEditTarget').forEach(el=>el.classList.remove('selectedEditTarget'));
+    const start=q('startScreen');
+    if(start) start.classList.remove('hidden');
+    const resume=q('resumeBtn');
+    if(resume) resume.style.display='none';
+    const quest=q('questName');
+    if(quest) quest.textContent='Main menu: choose a quest.';
+    try{ if(typeof playing!=='undefined') playing=false; if(typeof paused!=='undefined') paused=true; }catch(e){}
+  };
+
+  function leaveStartMenu(){
+    document.body.classList.remove('waaStartMenuOpen');
+    const start=q('startScreen');
+    if(start) start.classList.add('hidden');
+  }
+
+  function bindStartButtons(){
+    ['startSoloBtn','startTeamBtn','resumeBtn','menuBuildBtn'].forEach(id=>{
+      const el=q(id);
+      if(!el || el.__stage78LeaveBound) return;
+      el.__stage78LeaveBound=true;
+      el.addEventListener('click',leaveStartMenu,true);
+      el.addEventListener('touchend',leaveStartMenu,{capture:true,passive:true});
+    });
+  }
+
+  function bindTamagotchiButton(){
+    const pet=q('petBtn');
+    if(pet && !pet.__stage78TamaBound){
+      pet.__stage78TamaBound=true;
+      pet.onclick=function(e){
+        if(e){e.preventDefault();e.stopPropagation();}
+        leaveStartMenu();
+        if(typeof window.stage75EnterTamagotchiGame==='function') return window.stage75EnterTamagotchiGame();
+        return false;
+      };
+    }
+  }
+
+  window.addEventListener('load',function(){
+    bindStartButtons();
+    bindTamagotchiButton();
+    // Run after the old stage code has had time to make its mess, then force the correct start state.
+    setTimeout(window.stage78ShowStartMenu,120);
+    setTimeout(window.stage78ShowStartMenu,500);
+  });
+  setTimeout(function(){bindStartButtons();bindTamagotchiButton();},100);
+  setTimeout(function(){bindStartButtons();bindTamagotchiButton();},600);
+})();
+</script>
+
 </body>
 </html>
 
