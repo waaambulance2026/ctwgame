@@ -4375,16 +4375,18 @@ window.addEventListener('keyup',function(e){
     resumeAfterPetbot();
     requestAnimationFrame(()=>{ try{ fitGameToScreen(); }catch(e){} });
   };
- window.startTamagotchiLaunch = function(){
+window.startTamagotchiLaunch = function(){
   if(typeof window.startEmbeddedTamaGame === 'function'){
     const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
     window.startEmbeddedTamaGame(mode);
   }
- };
-  window.togglePetbotDock = function(){
-    if(dock.classList.contains('hidden')) dock.classList.remove('hidden');
-    else window.openPetbotFull();
-  };
+};
+window.togglePetbotDock = function(){
+  if(typeof window.startEmbeddedTamaGame === 'function'){
+    const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
+    window.startEmbeddedTamaGame(mode);
+  }
+};
 
   function backClick(e){
     if(e){ e.preventDefault(); e.stopPropagation(); }
@@ -4400,12 +4402,20 @@ window.addEventListener('keyup',function(e){
     backBtn.addEventListener('click', backClick);
     backBtn.addEventListener('touchend', backClick, {passive:false});
   }
-  dock.addEventListener('click', function(e){
-    if(e.target.closest('.petbotDockBtn')) return;
-    if(!dock.classList.contains('fullscreen')) window.openPetbotFull();
-  });
+dock.addEventListener('click', function(e){
+  if(e.target.closest('.petbotDockBtn')) return;
+
+  if(!dock.classList.contains('fullscreen')){
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(typeof window.startEmbeddedTamaGame === 'function'){
+      const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
+      window.startEmbeddedTamaGame(mode);
+    }
+  }
+});
   refreshMiniPet();
-  setTimeout(()=>{ try{ window.startTamagotchiLaunch(); }catch(e){} }, 80);
 if(openBtn){
   openBtn.addEventListener('click', function(e){
     e.preventDefault();
