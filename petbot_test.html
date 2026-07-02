@@ -1047,20 +1047,20 @@ async function startPlayer(player){
   try{
     if(player.test){
       const pets=TEST_PETS.map(p=>({...p}));
-      state.pets=pets.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded test pets';render();return;
+      state.pets=pets.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded test pets';render();return;
     }
     const cached=readCachedPets(player.userId);
     if(cached&&cached.length){
-      state.pets=cached.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
+      state.pets=cached.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
       loadUserPets(player.userId).then(fresh=>{
         if(!fresh||!fresh.length||!state.player||state.player.userId!==player.userId)return;
-        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);state.screen='menu';state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
+        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);state.screen='petHome';state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
       }).catch(e=>log('background refresh failed',e.message||e));
       return;
     }
     const pets=await loadUserPetsFast(player.userId);
     if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
-    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded '+pets.length+' pets';render();prefetchCurrentPetPanels();
+    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded '+pets.length+' pets';render();prefetchCurrentPetPanels();
     enrichPets(ready,player.userId).then(enriched=>{
       if(!enriched||!enriched.length||!state.player||state.player.userId!==player.userId)return;
       const updated=enriched.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,updated);state.pets=preservePetVisuals(updated);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);render();

@@ -5076,11 +5076,10 @@ if(openBtn){
 
 <!-- ============================================================
 FIX 20260702C: START IN REAL TAMAGOTCHI MODE
-This replaces the confusing old start route visually:
-- page starts with the live platform game inside petbot_device.png
-- the old right-side PetBot selector is hidden during game Tamagotchi mode
-- Full game expands the same running quest
-- HUD Tamagotchi returns the same running quest to the device
+This version starts with the real PetBot/Tamagotchi app, not the
+platform quest cropped into a fake shell. The user chooses who is
+playing inside petbot_test.html, then pets, shop, habitat, hook and
+quest launch from that Tamagotchi.
 ============================================================ -->
 <style id="fix-20260702c-tamagotchi-start-css">
   body.waaTamaStartMode{
@@ -5094,9 +5093,7 @@ This replaces the confusing old start route visually:
   body.waaTamaStartMode .helpBtn,
   body.waaTamaStartMode .builder,
   body.waaTamaStartMode .petPanel,
-  body.waaTamaStartMode #petbotDock,
-  body.waaTamaStartMode #petbotDockFrame,
-  body.waaTamaStartMode .petbotDockFrame,
+  body.waaTamaStartMode #waaTamaStartOverlay,
   body.waaTamaStartMode .petbotBackBtn,
   body.waaTamaStartMode #stage37TamaReturnBtn{
     display:none!important;
@@ -5169,166 +5166,52 @@ This replaces the confusing old start route visually:
 (function(){
   const d=document;
   const body=d.body;
-  const GAME_W=1920;
-  const GAME_H=1080;
-  let originalParent=null;
-  let originalNext=null;
-  let fitTimer=0;
-
   function q(id){return d.getElementById(id);}
-  function imp(el,prop,value){ if(el) el.style.setProperty(prop,value,'important'); }
-  function hasGameStarted(){
-    try{ if(typeof playing!=='undefined' && playing) return true; }catch(e){}
-    try{ if(sessionStorage.getItem('waa-game-started-this-tab')==='1') return true; }catch(e){}
-    const ss=q('startScreen');
-    if(ss && ss.classList.contains('hidden')) return true;
-    return false;
-  }
-
-  function ensureShell(){
-    let overlay=q('waaTamaStartOverlay');
-    if(!overlay){
-      overlay=d.createElement('div');
-      overlay.id='waaTamaStartOverlay';
-      overlay.innerHTML=`
-        <div id="waaTamaStartDevice" aria-label="Tamagotchi game mode">
-          <img id="waaTamaStartDeviceImg" src="petbot_device.png" alt="Tamagotchi device">
-          <div id="waaTamaStartScreen"></div>
-        </div>
-        <button id="waaTamaFullBtn20260702c" type="button">Full game</button>
-      `;
-      body.appendChild(overlay);
-      q('waaTamaFullBtn20260702c').addEventListener('click',function(e){
-        e.preventDefault(); e.stopPropagation(); enterFullGame();
-      },true);
-      q('waaTamaFullBtn20260702c').addEventListener('touchend',function(e){
-        e.preventDefault(); e.stopPropagation(); enterFullGame();
-      },{capture:true,passive:false});
-    }
-    return overlay;
-  }
-
-  function rememberOriginal(game){
-    if(!originalParent){
-      originalParent=game.parentNode;
-      originalNext=game.nextSibling;
+  function resetGameShell(){
+    try{ body.classList.remove('waaTamaStartMode','gameExpandedFromTama','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding'); }catch(e){}
+    const game=q('game');
+    if(game){
+      ['position','left','top','width','height','min-width','min-height','z-index','pointer-events','clip-path','-webkit-clip-path'].forEach(function(prop){
+        try{ game.style.removeProperty(prop); }catch(e){}
+      });
     }
   }
 
-  function moveGameToTama(){
-    const game=q('game');
-    const screen=q('waaTamaStartScreen');
-    if(!game || !screen) return;
-    rememberOriginal(game);
-    if(game.parentNode!==screen) screen.appendChild(game);
-  }
-
-  function releaseGame(){
-    const game=q('game');
-    if(!game || !originalParent) return;
-    if(game.parentNode!==originalParent){
-      try{ originalParent.insertBefore(game, originalNext && originalNext.parentNode===originalParent ? originalNext : null); }
-      catch(e){ originalParent.appendChild(game); }
-    }
-  }
-
-  function fitTamaGame(){
-    if(!body.classList.contains('waaTamaStartMode')) return;
-    const game=q('game');
-    const screen=q('waaTamaStartScreen');
-    if(!game || !screen) return;
-
-    const r=screen.getBoundingClientRect();
-    if(!r.width || !r.height) return;
-
-    // Crop to the playable left/bottom section so Ax and the ground are visible inside the tiny LCD.
-    let scale=Math.max(r.width/860, r.height/520);
-    scale=Math.max(.24, Math.min(.62, scale));
-    const cropW=Math.min(GAME_W, r.width/scale);
-    const cropH=Math.min(GAME_H, r.height/scale);
-    let playerDesign=150;
-    try{
-      if(typeof cssNumber==='function') playerDesign=cssNumber('--playerX',150);
-      if(typeof player!=='undefined' && player && Number.isFinite(Number(player.x))) playerDesign+=Number(player.x);
-    }catch(e){}
-    const cropLeft=Math.max(0, Math.min(GAME_W-cropW, playerDesign-210));
-    const cropTop=Math.max(0, Math.min(GAME_H-cropH, GAME_H-cropH-52));
-
-    imp(game,'position','absolute');
-    imp(game,'left','0px');
-    imp(game,'top','0px');
-    imp(game,'width',GAME_W+'px');
-    imp(game,'height',GAME_H+'px');
-    imp(game,'min-width',GAME_W+'px');
-    imp(game,'min-height',GAME_H+'px');
-    imp(game,'transform-origin','0 0');
-    imp(game,'transform','translate3d('+(-cropLeft*scale)+'px,'+(-cropTop*scale)+'px,0) scale('+scale+')');
-    imp(game,'visibility','visible');
-    imp(game,'display','block');
-    imp(game,'z-index','1');
-    imp(game,'pointer-events','none');
-    imp(game,'overflow','hidden');
-    imp(game,'clip-path','none');
-    imp(game,'-webkit-clip-path','none');
-  }
-
-  function scheduleFit(){
-    clearTimeout(fitTimer);
-    fitTimer=setTimeout(function(){ try{fitTamaGame();}catch(e){} },50);
-  }
-
-  function stopOldPetbotVisuals(){
-    const dock=q('petbotDock');
+  function ensurePetbotFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
-    try{ if(dock){ dock.classList.add('hidden'); dock.classList.remove('fullscreen'); imp(dock,'display','none'); imp(dock,'visibility','hidden'); } }catch(e){}
-    try{ if(frame){ imp(frame,'display','none'); imp(frame,'visibility','hidden'); imp(frame,'opacity','0'); } }catch(e){}
+    if(frame){
+      const wanted='petbot_test.html?v=142&embed=1&launch=1&choose=1';
+      try{
+        const current=new URL(frame.getAttribute('src')||'',location.href);
+        const next=new URL(wanted,location.href);
+        if(current.pathname!==next.pathname || current.search!==next.search) frame.src=wanted;
+      }catch(e){ frame.src=wanted; }
+    }
   }
 
-  function enterTamagotchiMode(opts){
-    opts=opts||{};
-    ensureShell();
+  function enterTamagotchiMode(){
+    resetGameShell();
+    ensurePetbotFrame();
     const ss=q('startScreen');
     try{ if(ss) ss.classList.add('hidden'); }catch(e){}
-    try{ body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33','gameExpandedFromTama','tamagotchiLanding'); }catch(e){}
-    body.classList.add('waaTamaStartMode');
-    stopOldPetbotVisuals();
-    moveGameToTama();
-
-    if(opts.startIfNeeded!==false && !hasGameStarted()){
-      try{ if(typeof startSoloQuest==='function') startSoloQuest(); }catch(e){ console.error('Could not start solo quest in Tamagotchi mode',e); }
+    if(typeof window.openPetbotFull==='function') window.openPetbotFull();
+    else {
+      const dock=q('petbotDock');
+      if(dock){ dock.classList.remove('hidden'); dock.classList.add('fullscreen'); }
+      body.classList.add('petbotOpen');
     }
-    try{ if(typeof playing!=='undefined') playing=true; if(typeof paused!=='undefined') paused=false; }catch(e){}
-    try{ sessionStorage.setItem('waa-game-started-this-tab','1'); }catch(e){}
-    [0,60,160,360,800].forEach(function(ms){setTimeout(function(){try{fitTamaGame();}catch(e){}},ms);});
     return true;
   }
 
   function enterFullGame(){
-    const game=q('game');
-    body.classList.remove('waaTamaStartMode','petbotOpen','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding');
+    resetGameShell();
+    try{ if(typeof playing==='undefined' || !playing) startSoloQuest(); }catch(e){ try{ startSoloQuest(); }catch(_e){} }
+    try{ if(typeof paused!=='undefined') paused=false; }catch(e){}
+    body.classList.remove('petbotOpen');
+    const dock=q('petbotDock');
+    if(dock) dock.classList.add('hidden');
     body.classList.add('gameExpandedFromTama');
-    releaseGame();
-    if(game){
-      imp(game,'position','fixed');
-      imp(game,'left','0px');
-      imp(game,'top','0px');
-      imp(game,'width',GAME_W+'px');
-      imp(game,'height',GAME_H+'px');
-      imp(game,'min-width','0px');
-      imp(game,'min-height','0px');
-      imp(game,'visibility','visible');
-      imp(game,'display','block');
-      imp(game,'z-index','1');
-      imp(game,'pointer-events','auto');
-      imp(game,'clip-path','none');
-      imp(game,'-webkit-clip-path','none');
-    }
-    const ss=q('startScreen');
-    try{ if(ss) ss.classList.add('hidden'); }catch(e){}
-    try{ if(typeof playing!=='undefined') playing=true; if(typeof paused!=='undefined') paused=false; }catch(e){}
     try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}
-    setTimeout(function(){try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}},80);
-    setTimeout(function(){try{ if(typeof fitGameToScreen==='function') fitGameToScreen(); }catch(e){}},260);
     return true;
   }
 
@@ -5338,7 +5221,7 @@ This replaces the confusing old start route visually:
     e.preventDefault();
     e.stopPropagation();
     if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-    enterTamagotchiMode({startIfNeeded:true});
+    enterTamagotchiMode();
     return false;
   }
 
@@ -5346,17 +5229,14 @@ This replaces the confusing old start route visually:
   window.waaEnterTamagotchiMode=enterTamagotchiMode;
   window.waaEnterFullGameFromTamagotchi=enterFullGame;
 
-  // Override the old Stage 37 function as well. The old one still used petbotOpen/tamaGameEmbedded.
-  window.stage37ReturnExpandedQuestToTamagotchi=function(){ return enterTamagotchiMode({startIfNeeded:false}); };
+  window.stage37ReturnExpandedQuestToTamagotchi=function(){ return enterTamagotchiMode(); };
 
   window.addEventListener('click',captureHudTamaButton,true);
   window.addEventListener('touchend',captureHudTamaButton,{capture:true,passive:false});
-  window.addEventListener('resize',scheduleFit);
-  window.addEventListener('orientationchange',function(){ setTimeout(scheduleFit,120); });
 
-  // Start the page in Tamagotchi mode. This is the expected default, not full-screen game.
+  // Start on the real Tamagotchi/PetBot user picker.
   window.addEventListener('load',function(){
-    setTimeout(function(){ enterTamagotchiMode({startIfNeeded:true}); },120);
+    setTimeout(function(){ enterTamagotchiMode(); },160);
   });
 })();
 </script>
