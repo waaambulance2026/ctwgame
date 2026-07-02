@@ -3090,7 +3090,7 @@ Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySet
 ['calPlaceAt','calPlaceW','calPlaceH','calPlaceY','calPlaceZ'].forEach(id=>{if($(id))$(id).addEventListener('input',readPlaceControls);});
 if($('placeSelect'))$('placeSelect').onchange=()=>{selectedPlace=$('placeSelect').value;syncPlaceControls();};
 if($('placeQuick'))$('placeQuick').onchange=()=>{const v=$('placeQuick').value;$('placeQuick').value='';if(v==='bringHere')bringSelectedPlaceHere();if(v==='groundSnap')snapSelectedPlaceToGround();};
-$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=()=>{ if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel(); };$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden'); if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel();};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
+$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=null; // STAGE72: top Tamagotchi button is handled by game-mode controller below. $('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden'); if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel();};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
 $('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;applySpriteTransform();};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;applySpriteTransform();};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
@@ -7018,6 +7018,143 @@ without cutting off the game.
   // Override public helpers so other old code cannot send this button to the Odin/PetBot screen.
   window.stage71ForceQuestIntoTamagotchi = forceQuestIntoTamagotchi;
   window.waaShowTamagotchiGame = forceQuestIntoTamagotchi;
+})();
+</script>
+
+
+
+<!-- STAGE 72: TOP TAMAGOTCHI BUTTON = GAME MODE ONLY
+     Exact bug fixed: the top HUD Tamagotchi button was still wired to openPetbotFull(),
+     which opens the PetBot/Odin screen. This section makes that button start the
+     platform game inside the Tamagotchi LCD instead. Buildings still open PetBot screens. -->
+<style id="stage72-tamagotchi-game-only-css">
+  /* In Tamagotchi GAME mode, do not show the PetBot iframe/pet home screen. */
+  body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockFrame{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+    pointer-events:none !important;
+  }
+
+  /* Show the toy shell, not the PetBot/Odin app. */
+  body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockPreview{
+    display:grid !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    position:absolute !important;
+    inset:0 !important;
+    place-items:center !important;
+    pointer-events:none !important;
+  }
+
+  body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockPreview img{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    width:100% !important;
+    height:100% !important;
+    object-fit:contain !important;
+    object-position:center center !important;
+  }
+
+  /* Hide the mini pet preview LCD, because the real quest is the LCD content now. */
+  body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .petbotDockMiniLcd{
+    display:none !important;
+    visibility:hidden !important;
+    opacity:0 !important;
+  }
+
+  /* Make sure the live quest mask is visible and not behind the pet iframe. */
+  body.petbotOpen.tamaGameEmbedded #tamaGameMask33{
+    display:block !important;
+    visibility:visible !important;
+    opacity:1 !important;
+    z-index:2147482999 !important;
+  }
+</style>
+
+<script id="stage72-tamagotchi-game-only-script">
+(function(){
+  const d=document;
+  const body=d.body;
+  function q(id){return d.getElementById(id);}
+  function stop(e){
+    try{e.preventDefault();}catch(_){}
+    try{e.stopPropagation();}catch(_){}
+    try{e.stopImmediatePropagation();}catch(_){}
+  }
+  function hidePetbotAppScreen(){
+    const dock=q('petbotDock');
+    const frame=q('petbotDockFrame');
+    const petPanel=q('petPanel');
+    const start=q('startScreen');
+    if(start) start.classList.add('hidden');
+    if(petPanel) petPanel.classList.add('hidden');
+    if(dock){
+      dock.classList.remove('hidden');
+      dock.classList.add('fullscreen');
+    }
+    if(frame){
+      frame.style.setProperty('display','none','important');
+      frame.style.setProperty('visibility','hidden','important');
+      frame.style.setProperty('opacity','0','important');
+      frame.style.setProperty('pointer-events','none','important');
+    }
+    body.classList.remove('tamagotchiLanding','waa-view-petbot-menu','petbotBuildingFullScreen','tamaMenuOpenFromQuest');
+  }
+  function showTamagotchiGame(e){
+    stop(e);
+    hidePetbotAppScreen();
+    try{playing=true;}catch(_){}
+    try{paused=false;}catch(_){}
+    body.classList.remove('gameExpandedFromTama','stage43Expanded','waa-view-full-game','waa-view-petbot-menu');
+    body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waa-view-tama-game');
+
+    // Start/keep the live platform quest, then fit it into the Tamagotchi LCD.
+    try{ startEmbeddedTamaGame('solo'); }catch(_){}
+    hidePetbotAppScreen();
+    body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waa-view-tama-game');
+
+    [0,60,160,360,800,1400].forEach(ms=>setTimeout(function(){
+      hidePetbotAppScreen();
+      try{ if(typeof fitEmbeddedTamaGame==='function') fitEmbeddedTamaGame(); }catch(_){}
+      try{ if(typeof updateMiniTamagotchiDock==='function') updateMiniTamagotchiDock(); }catch(_){}
+    },ms));
+    return false;
+  }
+  function replaceTopButton(){
+    const old=q('petBtn');
+    if(!old || old.__stage72GameButton) return;
+    const fresh=old.cloneNode(true);
+    fresh.__stage72GameButton=true;
+    fresh.onclick=null;
+    fresh.addEventListener('click',showTamagotchiGame,true);
+    fresh.addEventListener('touchend',showTamagotchiGame,{capture:true,passive:false});
+    old.parentNode.replaceChild(fresh,old);
+  }
+  function bind(){
+    replaceTopButton();
+    const btn=q('petBtn');
+    if(btn){
+      btn.onclick=null;
+      btn.addEventListener('click',showTamagotchiGame,true);
+      btn.addEventListener('touchend',showTamagotchiGame,{capture:true,passive:false});
+    }
+  }
+  d.addEventListener('click',function(e){
+    const target=e.target && e.target.closest && e.target.closest('#petBtn');
+    if(target) showTamagotchiGame(e);
+  },true);
+  d.addEventListener('touchend',function(e){
+    const target=e.target && e.target.closest && e.target.closest('#petBtn');
+    if(target) showTamagotchiGame(e);
+  },{capture:true,passive:false});
+  bind();
+  window.addEventListener('DOMContentLoaded',bind);
+  window.addEventListener('load',bind);
+  setInterval(bind,500);
+  window.stage72ShowTamagotchiGame=showTamagotchiGame;
+  window.waaShowTamagotchiGame=showTamagotchiGame;
 })();
 </script>
 
