@@ -2051,5 +2051,61 @@ render();
 })();
 
 </script>
+
+
+<script>
+// STAGE 43: prevent the PetBot iframe from going fullscreen while a quest is running.
+(function(){
+  function inQuest(){ return typeof state!=='undefined' && state && state.screen==='questGame'; }
+  function sendQuest(action){ try{ if(parent&&parent!==window) parent.postMessage({type:'waa-petbot-game-action',action},location.origin); }catch(e){} }
+  function clearLocalFullscreen(){
+    try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(e){}
+  }
+  const oldRequestLocal=window.requestLocalFullscreen;
+  window.requestLocalFullscreen=function(){ if(inQuest()){ clearLocalFullscreen(); sendQuest('expandEmbedded'); return; } return oldRequestLocal ? oldRequestLocal.apply(this,arguments) : undefined; };
+  const siren=document.getElementById('btnSiren');
+  if(siren){
+    const go=function(e){
+      if(!inQuest()) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+      clearLocalFullscreen();
+      sendQuest('expandEmbedded');
+    };
+    ['pointerdown','mousedown','touchstart','click','touchend'].forEach(ev=>siren.addEventListener(ev,go,{capture:true,passive:false}));
+  }
+  const select=document.getElementById('btnSelect');
+  if(select){
+    const jump=function(e){
+      if(!inQuest()) return;
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+      sendQuest('jumpOnly');
+    };
+    ['pointerdown','mousedown','touchstart','click','touchend'].forEach(ev=>select.addEventListener(ev,jump,{capture:true,passive:false}));
+  }
+  const oldRender=window.render;
+  if(oldRender){
+    window.render=render=function(){
+      const result=oldRender.apply(this,arguments);
+      if(inQuest()) clearLocalFullscreen();
+      return result;
+    };
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin) return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active' || d.type==='waa-parent-return-to-tamagotchi'){
+      try{
+        clearLocalFullscreen();
+        state.screen='questGame';
+        state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+        state.returnToQuest=false;
+        if(typeof render==='function') render();
+        e.stopImmediatePropagation();
+      }catch(err){console.warn('Stage 43 quest restore failed',err);}
+    }
+  },true);
+})();
+</script>
+
 </body>
 </html>
