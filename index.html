@@ -7060,6 +7060,105 @@ This fixes the actual fault:
 })();
 </script>
 
+
+
+<!-- ============================================================
+STAGE 76: CLEAN START SCREEN FIX
+
+This fixes the messy load state:
+- The game must not start with the player/edit box visible and no menu.
+- The main menu should show first.
+- The editor selection outline must only show while Build/Edit is open.
+- The small Tamagotchi toy is hidden while the main menu is open.
+============================================================ -->
+<style id="stage76-clean-start-css">
+  body:not(.editMode) .selectedEditTarget{
+    outline:none!important;
+    box-shadow:none!important;
+  }
+  body.waaStartMenuOpen #petbotDock{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  body.waaStartMenuOpen #game{
+    pointer-events:none!important;
+  }
+</style>
+<script id="stage76-clean-start-js">
+(function(){
+  function q(id){ return document.getElementById(id); }
+  function cleanEditorMarks(){
+    document.body.classList.remove('editMode');
+    document.querySelectorAll('.selectedEditTarget').forEach(el=>el.classList.remove('selectedEditTarget'));
+  }
+  function showMainMenuOnce(){
+    const body=document.body;
+    const start=q('startScreen');
+    // Do not open the menu on top of actual Tamagotchi or PetBot screens.
+    if(body.classList.contains('waaStage75TamaGame') || body.classList.contains('petbotOpen') || body.classList.contains('tamaGameEmbedded')) return;
+    cleanEditorMarks();
+    try{ if(typeof playing !== 'undefined') playing=false; }catch(e){}
+    try{ if(typeof paused !== 'undefined') paused=true; }catch(e){}
+    if(start) start.classList.remove('hidden');
+    body.classList.add('waaStartMenuOpen');
+    const resume=q('resumeBtn');
+    if(resume) resume.style.display='none';
+    const quest=q('questName');
+    if(quest) quest.textContent='Main menu: choose a quest.';
+  }
+  function leaveMainMenu(){
+    document.body.classList.remove('waaStartMenuOpen');
+    cleanEditorMarks();
+    try{ const start=q('startScreen'); if(start) start.classList.add('hidden'); }catch(e){}
+  }
+
+  const oldStartGame=window.startGame;
+  if(typeof oldStartGame === 'function'){
+    window.startGame=function(){
+      leaveMainMenu();
+      return oldStartGame.apply(this,arguments);
+    };
+  }
+  const oldResumeGame=window.resumeGame;
+  if(typeof oldResumeGame === 'function'){
+    window.resumeGame=function(){
+      leaveMainMenu();
+      return oldResumeGame.apply(this,arguments);
+    };
+  }
+  const oldOpenBuilder=window.openBuilder;
+  if(typeof oldOpenBuilder === 'function'){
+    window.openBuilder=function(){
+      document.body.classList.remove('waaStartMenuOpen');
+      return oldOpenBuilder.apply(this,arguments);
+    };
+  }
+  const oldStage75Tama=window.stage75EnterTamagotchiGame;
+  if(typeof oldStage75Tama === 'function'){
+    window.stage75EnterTamagotchiGame=function(){
+      leaveMainMenu();
+      return oldStage75Tama.apply(this,arguments);
+    };
+  }
+
+  ['startSoloBtn','startTeamBtn','resumeBtn','menuBuildBtn','petBtn'].forEach(id=>{
+    setTimeout(()=>{
+      const el=q(id);
+      if(!el || el.__stage76Bound) return;
+      el.__stage76Bound=true;
+      el.addEventListener('click',function(){ document.body.classList.remove('waaStartMenuOpen'); cleanEditorMarks(); },true);
+      el.addEventListener('touchend',function(){ document.body.classList.remove('waaStartMenuOpen'); cleanEditorMarks(); },{capture:true,passive:true});
+    },0);
+  });
+
+  window.addEventListener('load',function(){
+    setTimeout(showMainMenuOnce,60);
+    setTimeout(showMainMenuOnce,260);
+  });
+})();
+</script>
+
 </body>
 </html>
 
