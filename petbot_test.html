@@ -544,6 +544,22 @@ body.questPlaying .device{pointer-events:auto!important;}
 .hookFullScreen .hookPrizeImage{z-index:5!important;border-radius:10px!important;background-size:contain!important;background-repeat:no-repeat!important;background-color:rgba(255,255,255,.7)!important;}
 @media(max-width:520px){.petHome22{grid-template-columns:40% 60%!important;padding:3px 7px 5px!important}.petHome22Art .petImg{width:88%!important;height:88%!important}.stat22{padding:2px 4px!important}.stat22Bar{height:6px!important}}
 
+
+
+/* STAGE 46: Hook-a-Waaambulance matches the working Discord PetBot flow.
+   The GIF is the game. The backend chooses/logs the Waaambulance and any bonus item. */
+.hookFullScreen .hookPond{background:none!important;overflow:hidden!important;}
+.hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;}
+.hookFullScreen .hookFloatPrize,.hookFullScreen .hookPrize{display:none!important;}
+.hookFullScreen .hookLine,.hookFullScreen .hookWave{position:absolute!important;z-index:3!important;}
+.hookResultBox{position:absolute!important;z-index:8!important;left:3%!important;right:3%!important;bottom:2%!important;max-height:40%!important;overflow:hidden!important;border-radius:10px!important;background:rgba(255,255,255,.90)!important;color:#16223f!important;padding:4px 5px!important;font-weight:1000!important;text-align:center!important;font-size:clamp(7px,.78vw,10px)!important;line-height:1.08!important;box-shadow:0 4px 10px rgba(0,0,0,.16)!important;}
+.hookResultPics{display:flex!important;justify-content:center!important;align-items:center!important;gap:5px!important;margin-bottom:2px!important;}
+.hookResultPic{width:27%!important;height:36px!important;border-radius:8px!important;background:center/contain no-repeat rgba(255,255,255,.70)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.18)!important;}
+.hookResultPic.bonus{width:20%!important;height:30px!important;}
+.hookResultName{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.hookResultText{white-space:normal!important;overflow:hidden!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;}
+.hookCostLine{position:absolute!important;z-index:4!important;left:4%!important;right:4%!important;top:3%!important;border-radius:999px!important;background:rgba(255,255,255,.78)!important;color:#16223f!important;text-align:center!important;font-weight:1000!important;font-size:clamp(7px,.74vw,10px)!important;padding:2px 5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+
 </style>
 
 <style id="stage38-habitat-css">
@@ -649,7 +665,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookInfo:null,hookResult:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -961,22 +977,54 @@ function renderHabitatPanel(){
   return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
-  const url=itemImage(it);
-  if(url)return `<div class="hookFloatPrize ${cls}" style="background-image:url('${esc(url)}')"></div>`;
-  return `<div class="hookFloatPrize noImg ${cls}">${emoji}</div>`;
+  // Stage 46: kept only for old cached screens. Hook no longer uses floating sheet prizes.
+  return '';
+}
+function hookTextHtml(text){
+  return esc(String(text||'')).replace(/\n+/g,'<br>');
+}
+function hookPickedName(data){
+  return pick(data||{},['hook_name','name','prize_name','hook_key'],'Waaambulance') || 'Waaambulance';
+}
+function hookPickedImage(data){
+  return cleanImageUrl(pick(data||{},['image_url','hook_image_url','hook_image','prize_image','collection_image_url','display_image_url'],''));
+}
+function hookBonusName(data){
+  const raw=pick(data||{},['care_prize_name','prize_item_name','item_name','item_earned','reward_item_name'],'');
+  const v=String(raw||'').trim();
+  if(!v || /^none$/i.test(v))return '';
+  return v;
+}
+function hookBonusImage(data){
+  return cleanImageUrl(pick(data||{},['care_prize_image_url','prize_item_image_url','item_image_url','reward_item_image_url','bonus_image_url'],''));
 }
 function renderHookGamePanel(){
-  const items=Array.isArray(state.panelItems)?state.panelItems:[];
-  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
-  const selected=state.hookPrize||items[idx]||{};
-  const loading=state.panelLoading;
-  const floats=[0,1,2,3,4,5].map((n)=>items[(idx+n)%Math.max(1,items.length)]||{});
-  const wonUrl=state.hookPrize&&itemImage(state.hookPrize);
-  const prizeImg=wonUrl?`<div class="hookPrizeImage" style="background-image:url('${esc(wonUrl)}')"></div>`:'';
-  const prizeName=itemTitle(selected);
-  const prizeTitle=loading?'Loading prize pool...':(state.panelActionMsg|| (selected&&prizeName!=='Item'?('Prize: '+prizeName):'Pacifier casts the hook'));
-  const floatHtml=floats.map((it,i)=>hookPrizeFloatHtml(it,'p'+((i%4)+1),'🚑')).join('');
-  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="hook_a_waaambulance.gif?v=stage25" alt="Hook-a-Waaambulance game">${floatHtml}<div class="hookLine"></div><div class="hookWave"></div>${prizeImg||'<div class="hookPrize">🚑</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
+  const loading=!!state.panelLoading;
+  const info=state.hookInfo||{};
+  const result=state.hookResult||null;
+  const gif=cleanImageUrl(pick(info,['spin_gif_url','game_image_url','image_url'],'')) || 'hook_a_waaambulance.gif?v=stage46';
+  const cost=pick(info,['play_cost','cost'],'');
+  const coins=pick(info,['user_coins','wallet_after','wallet_before'],'');
+  const canPlay=info && info.can_play===false ? false : true;
+  let topLine='Press pacifier to cast the hook';
+  if(loading) topLine='Loading Hook-a-Waaambulance...';
+  else if(canPlay===false) topLine=info.response||'Hook is not ready yet';
+  else if(cost!==''||coins!=='') topLine=`Cost ${cost||'?'} · Coins ${coins||'?'}`;
+
+  let pics='';
+  let name='Hook-a-Waaambulance';
+  let body=state.panelActionMsg || (loading?'Loading...':(canPlay===false?(info.response||'Not ready yet'):'Pacifier casts the hook'));
+  if(result){
+    name=hookPickedName(result);
+    const hookImg=hookPickedImage(result);
+    const bonusName=hookBonusName(result);
+    const bonusImg=hookBonusImage(result);
+    pics=`<div class="hookResultPics">${hookImg?`<div class="hookResultPic" title="${esc(name)}" style="background-image:url('${esc(hookImg)}')"></div>`:''}${bonusImg?`<div class="hookResultPic bonus" title="${esc(bonusName)}" style="background-image:url('${esc(bonusImg)}')"></div>`:''}</div>`;
+    body=result.hook_result_text||result.result_text||result.response||('You hooked '+name);
+    if(bonusName && !String(body).toLowerCase().includes(String(bonusName).toLowerCase())) body += '\nBonus prize: '+bonusName;
+    if(result.wallet_after!==undefined && result.wallet_after!=='' && !String(body).toLowerCase().includes('wallet')) body += '\nCoins now: '+result.wallet_after;
+  }
+  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="${esc(gif)}" alt="Hook-a-Waaambulance game"><div class="hookCostLine">${esc(topLine)}</div><div class="hookLine"></div><div class="hookWave"></div><div class="hookResultBox">${pics}<div class="hookResultName">${esc(name)}</div><div class="hookResultText">${hookTextHtml(body)}</div></div></div></div></div>`;
 }
 
 function renderCarePanel(){
@@ -1352,7 +1400,7 @@ function preservePetVisuals(freshPets){
 }
 function prefetchCurrentPetPanels(){
   if(!state.player||state.player.test||!currentPet())return;
-  ['inventory','shop','habitat','hook'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
+  ['inventory','shop','habitat'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
 }
 function isRealInventoryRow(row){
   const title=String(pick(row,['item_name','name','label','title','display_name'],'')).trim();
@@ -1576,9 +1624,9 @@ function loadShopItemsForTarget(){
 }
 
 function openDataPanel(kind){
+  if(kind==='hook') return openHookPanel();
   const cached=getCachedPanelItems(kind);
-  const instant=(kind==='hook'&&!cached)?FAST_HOOK_ITEMS:[];
-  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||instant;state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):(kind==='hook'?'Pacifier casts the hook':'Loading '+kind+'...');if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
+  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):('Loading '+kind+'...');preloadPanelImages(state.panelItems);render();
   cachedLoadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
     state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');preloadPanelImages(items);render();
@@ -1587,8 +1635,37 @@ function openDataPanel(kind){
     state.panelItems=cached||[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
   });
 }
+async function openHookPanel(){
+  state.screen='hook';
+  state.panelKind='hook';
+  state.panelItems=[];
+  state.panelIndex=0;
+  state.hookPrize=null;
+  state.hookResult=null;
+  state.hookInfo=null;
+  state.hookCasting=false;
+  state.panelLoading=true;
+  state.panelActionMsg='Loading Hook-a-Waaambulance...';
+  state.panelMessage='Loading Hook-a-Waaambulance...';
+  render();
+  try{
+    const p=currentPet()||{};
+    const data=await postPetbotAction({mode:'get_hook_waaambulance',user_id:state.player?.userId||'',user_name:state.player?.name||'',pet_code:p.code||'',selected_pet_code:p.code||'',include_media:true});
+    if(state.screen!=='hook')return;
+    state.hookInfo=data||{};
+    state.panelLoading=false;
+    state.panelActionMsg=(data&&data.response)||'Press pacifier to cast the hook';
+    render();
+  }catch(e){
+    if(state.screen!=='hook')return;
+    state.panelLoading=false;
+    state.panelActionMsg='Hook failed to load: '+(e.message||e);
+    render();
+  }
+}
 async function activatePanelItem(){
   const kind=state.panelKind;
+  if(kind==='hook') return playHook();
   if(kind==='shop'&&state.shopStep==='pet')return loadShopItemsForTarget();
   const item=(state.panelItems||[])[state.panelIndex||0];
   if(!item){state.panelActionMsg='Nothing selected';render();return;}
@@ -1598,7 +1675,6 @@ async function activatePanelItem(){
     if(state.shopStep==='qty')return buySelectedItem(state.shopSelected||item);
   }
   if(kind==='inventory') return useSelectedItem(item);
-  if(kind==='hook') return playHook(item);
   if(kind==='habitat'){state.panelActionMsg='Viewing '+itemTitle(item);render();return;}
 }
 async function postPetbotAction(payload){
@@ -1633,30 +1709,43 @@ async function useSelectedItem(item){
     await openPanelReload('inventory');
   }catch(e){state.panelActionMsg='Use not enabled yet: '+(e.message||e);render();}
 }
-async function playHook(item){
-  const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
-  const prize=weightedPrize(pool) || item || FAST_HOOK_ITEMS[0] || {item_name:'Mystery Waaambulance prize',price:15};
-  state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
-  await new Promise(r=>setTimeout(r,180));
-  state.hookCasting=false;
-  state.panelActionMsg='You hooked '+itemTitle(prize);
+async function playHook(){
+  if(state.hookCasting)return;
+  const p=currentPet()||{};
+  state.hookCasting=true;
+  state.hookResult=null;
+  state.panelActionMsg='Casting hook...';
   render();
-  // Save in the background so the mini game does not feel frozen. If the backend returns
-  // the real PetBot prize, replace the local prize with that response.
-  (async()=>{
+  try{
+    const data=await postPetbotAction({
+      mode:'complete_hook_waaambulance',
+      user_id:state.player?.userId||'',
+      user_name:state.player?.name||'',
+      pet_code:p.code||'',
+      selected_pet_code:p.code||'',
+      pet_name:p.name||'',
+      include_media:true
+    });
+    if(state.screen!=='hook')return;
+    state.hookCasting=false;
+    state.hookResult=data||{};
+    state.hookPrize=data||{};
+    state.panelActionMsg=(data&&data.response)||'You caught a Waaambulance!';
+    clearPanelCache('inventory');
+    clearPanelCache('hook');
+    render();
+    // Refresh the ready/cost line after the cast, but keep the result visible.
     try{
-      let data=null, lastErr=null;
-      for(const mode of ['play_hook_waaambulance','cast_hook_waaambulance','complete_hook_waaambulance']){
-        try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',selected_pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});break;}
-        catch(err){lastErr=err;}
-      }
-      if(!data)throw lastErr||new Error('hook save failed');
-      if(state.screen!=='hook')return;
-      state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('Saved: '+itemTitle(prize));
-      const realPrize={...prize,raw:{...(prize.raw||{}),...data},item_name:data.hook_name||data.prize_name||data.item_earned||itemTitle(prize),item_id:data.hook_key||data.prize_key||prize.item_id,image_url:data.image_url||data.hook_image_url||data.prize_image||prize.image_url};
-      state.hookPrize=realPrize; clearPanelCache('inventory'); clearPanelCache('hook'); render();
-    }catch(e){ if(state.screen==='hook'){ state.panelActionMsg='You hooked '+itemTitle(prize)+' · check inventory after refresh'; render(); } }
-  })();
+      const info=await postPetbotAction({mode:'get_hook_waaambulance',user_id:state.player?.userId||'',user_name:state.player?.name||'',pet_code:p.code||'',selected_pet_code:p.code||'',include_media:true});
+      if(state.screen==='hook'){state.hookInfo=info||state.hookInfo;render();}
+    }catch(_e){}
+  }catch(e){
+    if(state.screen==='hook'){
+      state.hookCasting=false;
+      state.panelActionMsg='Hook could not save: '+(e.message||e);
+      render();
+    }
+  }
 }
 async function openPanelReload(kind){
   state.panelKind=kind;state.panelLoading=true;render();
