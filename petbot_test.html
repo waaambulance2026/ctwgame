@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Cleaned</title>
+<title>CTW PetBot Tamagotchi - Stage 35</title>
 <style>
 :root{
   --ink:#16223f;
@@ -544,32 +544,6 @@ body.questPlaying .device{pointer-events:auto!important;}
 .hookFullScreen .hookPrizeImage{z-index:5!important;border-radius:10px!important;background-size:contain!important;background-repeat:no-repeat!important;background-color:rgba(255,255,255,.7)!important;}
 @media(max-width:520px){.petHome22{grid-template-columns:40% 60%!important;padding:3px 7px 5px!important}.petHome22Art .petImg{width:88%!important;height:88%!important}.stat22{padding:2px 4px!important}.stat22Bar{height:6px!important}}
 
-
-
-/* STAGE 46: Hook-a-Waaambulance matches the working Discord PetBot flow.
-   The GIF is the game. The backend chooses/logs the Waaambulance and any bonus item. */
-.hookFullScreen .hookPond{background:none!important;overflow:hidden!important;}
-.hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;}
-.hookFullScreen .hookFloatPrize,.hookFullScreen .hookPrize{display:none!important;}
-.hookFullScreen .hookLine,.hookFullScreen .hookWave{position:absolute!important;z-index:3!important;}
-.hookResultBox{position:absolute!important;z-index:8!important;left:3%!important;right:3%!important;bottom:2%!important;max-height:40%!important;overflow:hidden!important;border-radius:10px!important;background:rgba(255,255,255,.90)!important;color:#16223f!important;padding:4px 5px!important;font-weight:1000!important;text-align:center!important;font-size:clamp(7px,.78vw,10px)!important;line-height:1.08!important;box-shadow:0 4px 10px rgba(0,0,0,.16)!important;}
-.hookResultPics{display:flex!important;justify-content:center!important;align-items:center!important;gap:5px!important;margin-bottom:2px!important;}
-.hookResultPic{width:27%!important;height:36px!important;border-radius:8px!important;background:center/contain no-repeat rgba(255,255,255,.70)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.18)!important;}
-.hookResultPic.bonus{width:20%!important;height:30px!important;}
-.hookResultName{white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-.hookResultText{white-space:normal!important;overflow:hidden!important;display:-webkit-box!important;-webkit-line-clamp:3!important;-webkit-box-orient:vertical!important;}
-.hookCostLine{position:absolute!important;z-index:4!important;left:4%!important;right:4%!important;top:3%!important;border-radius:999px!important;background:rgba(255,255,255,.78)!important;color:#16223f!important;text-align:center!important;font-weight:1000!important;font-size:clamp(7px,.74vw,10px)!important;padding:2px 5px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
-
-
-
-/* STAGE 49: Hook screen uses the real GIF as the game.
-   The old generated hook line/wave looked like a road/scrolling strip, so it is hidden. */
-.hookFullScreen .hookPond{background:#67d7f2!important;overflow:hidden!important;}
-.hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;object-position:center center!important;z-index:0!important;display:block!important;}
-.hookFullScreen .hookLine,.hookFullScreen .hookWave,.hookFullScreen .hookFloatPrize,.hookFullScreen .hookPrize{display:none!important;}
-.hookFullScreen .hookResultBox{z-index:8!important;bottom:2%!important;max-height:38%!important;}
-.hookFullScreen .hookCostLine{z-index:7!important;}
-
 </style>
 
 <style id="stage38-habitat-css">
@@ -593,28 +567,6 @@ body.questPlaying .device{pointer-events:auto!important;}
 <script>
 (function(){
 'use strict';
-
-/*
-  PETBOT_TEST.HTML - QUICK MAP
-
-  This file controls the Tamagotchi/PetBot screen only.
-  It should NOT decide where signs/buildings are placed in the platform quest.
-  That is handled by index.html.
-
-  Main sections below:
-  1. DATA LISTS: players, test pets, menus, care actions.
-  2. STATE: the current PetBot screen and selected pet.
-  3. RENDER FUNCTIONS: draw Login, Pets, Shop, Habitat, Hook, Quest screen.
-  4. LOADERS/API HELPERS: read pets, inventory, shop, habitat, hook data.
-  5. CONTROLS: left/right/select/siren/back buttons and keyboard.
-  6. PARENT MESSAGES: index.html can ask this file to open shop/habitat/hook/welcome.
-
-  Button rule:
-  - In normal PetBot screens, the pacifier/select button selects menu items.
-  - In questGame screen, the pacifier/select button is jump only.
-  - Enter/E is for opening signs/buildings in the platform quest.
-*/
-
 const SPREADSHEET_ID='1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
 const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
 const DEFAULT_HABITAT_BG='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png';
@@ -675,7 +627,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookInfo:null,hookResult:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -987,56 +939,22 @@ function renderHabitatPanel(){
   return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
 }
 function hookPrizeFloatHtml(it,cls,emoji){
-  // Stage 46: kept only for old cached screens. Hook no longer uses floating sheet prizes.
-  return '';
-}
-function hookTextHtml(text){
-  return esc(String(text||'')).replace(/\n+/g,'<br>');
-}
-function hookPickedName(data){
-  return pick(data||{},['hook_name','name','prize_name','hook_key'],'Waaambulance') || 'Waaambulance';
-}
-function hookPickedImage(data){
-  return cleanImageUrl(pick(data||{},['image_url','hook_image_url','hook_image','prize_image','collection_image_url','display_image_url'],''));
-}
-function hookBonusName(data){
-  const raw=pick(data||{},['care_prize_name','prize_item_name','item_name','item_earned','reward_item_name'],'');
-  const v=String(raw||'').trim();
-  if(!v || /^none$/i.test(v))return '';
-  return v;
-}
-function hookBonusImage(data){
-  return cleanImageUrl(pick(data||{},['care_prize_image_url','prize_item_image_url','item_image_url','reward_item_image_url','bonus_image_url'],''));
+  const url=itemImage(it);
+  if(url)return `<div class="hookFloatPrize ${cls}" style="background-image:url('${esc(url)}')"></div>`;
+  return `<div class="hookFloatPrize noImg ${cls}">${emoji}</div>`;
 }
 function renderHookGamePanel(){
-  const loading=!!state.panelLoading;
-  const info=state.hookInfo||{};
-  const result=state.hookResult||null;
-  // Stage 49: the Hook screen background must be the actual Hook-a-Waaambulance GIF.
-  // Do not use backend image_url here because that can be a static caught-prize image.
-  const gif=cleanImageUrl(pick(info,['spin_gif_url','hook_gif_url','hook_spin_gif_url','gif_url'],'')) || 'hook_a_waaambulance.gif?v=stage49';
-  const cost=pick(info,['play_cost','cost'],'');
-  const coins=pick(info,['user_coins','wallet_after','wallet_before'],'');
-  const canPlay=info && info.can_play===false ? false : true;
-  let topLine='Press pacifier to cast the hook';
-  if(loading) topLine='Loading Hook-a-Waaambulance...';
-  else if(canPlay===false) topLine=info.response||'Hook is not ready yet';
-  else if(cost!==''||coins!=='') topLine=`Cost ${cost||'?'} · Coins ${coins||'?'}`;
-
-  let pics='';
-  let name='Hook-a-Waaambulance';
-  let body=state.panelActionMsg || (loading?'Loading...':(canPlay===false?(info.response||'Not ready yet'):'Pacifier casts the hook'));
-  if(result){
-    name=hookPickedName(result);
-    const hookImg=hookPickedImage(result);
-    const bonusName=hookBonusName(result);
-    const bonusImg=hookBonusImage(result);
-    pics=`<div class="hookResultPics">${hookImg?`<div class="hookResultPic" title="${esc(name)}" style="background-image:url('${esc(hookImg)}')"></div>`:''}${bonusImg?`<div class="hookResultPic bonus" title="${esc(bonusName)}" style="background-image:url('${esc(bonusImg)}')"></div>`:''}</div>`;
-    body=result.hook_result_text||result.result_text||result.response||('You hooked '+name);
-    if(bonusName && !String(body).toLowerCase().includes(String(bonusName).toLowerCase())) body += '\nBonus prize: '+bonusName;
-    if(result.wallet_after!==undefined && result.wallet_after!=='' && !String(body).toLowerCase().includes('wallet')) body += '\nCoins now: '+result.wallet_after;
-  }
-  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="${esc(gif)}" alt="Hook-a-Waaambulance game"><div class="hookCostLine">${esc(topLine)}</div><div class="hookResultBox">${pics}<div class="hookResultName">${esc(name)}</div><div class="hookResultText">${hookTextHtml(body)}</div></div></div></div></div>`;
+  const items=Array.isArray(state.panelItems)?state.panelItems:[];
+  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
+  const selected=state.hookPrize||items[idx]||{};
+  const loading=state.panelLoading;
+  const floats=[0,1,2,3,4,5].map((n)=>items[(idx+n)%Math.max(1,items.length)]||{});
+  const wonUrl=state.hookPrize&&itemImage(state.hookPrize);
+  const prizeImg=wonUrl?`<div class="hookPrizeImage" style="background-image:url('${esc(wonUrl)}')"></div>`:'';
+  const prizeName=itemTitle(selected);
+  const prizeTitle=loading?'Loading prize pool...':(state.panelActionMsg|| (selected&&prizeName!=='Item'?('Prize: '+prizeName):'Pacifier casts the hook'));
+  const floatHtml=floats.map((it,i)=>hookPrizeFloatHtml(it,'p'+((i%4)+1),'🚑')).join('');
+  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="hook_a_waaambulance.gif?v=stage25" alt="Hook-a-Waaambulance game">${floatHtml}<div class="hookLine"></div><div class="hookWave"></div>${prizeImg||'<div class="hookPrize">🚑</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
 }
 
 function renderCarePanel(){
@@ -1136,7 +1054,7 @@ async function startPlayer(player){
       state.pets=cached.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='menu';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
       loadUserPets(player.userId).then(fresh=>{
         if(!fresh||!fresh.length||!state.player||state.player.userId!==player.userId)return;
-        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);if(state.screen==='loading'||state.screen==='menu'||state.screen==='login'||state.screen==='password'){state.screen='menu';}state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
+        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);state.screen='menu';state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
       }).catch(e=>log('background refresh failed',e.message||e));
       return;
     }
@@ -1412,7 +1330,7 @@ function preservePetVisuals(freshPets){
 }
 function prefetchCurrentPetPanels(){
   if(!state.player||state.player.test||!currentPet())return;
-  ['inventory','shop','habitat'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
+  ['inventory','shop','habitat','hook'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
 }
 function isRealInventoryRow(row){
   const title=String(pick(row,['item_name','name','label','title','display_name'],'')).trim();
@@ -1636,9 +1554,9 @@ function loadShopItemsForTarget(){
 }
 
 function openDataPanel(kind){
-  if(kind==='hook') return openHookPanel();
   const cached=getCachedPanelItems(kind);
-  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||[];state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):('Loading '+kind+'...');preloadPanelImages(state.panelItems);render();
+  const instant=(kind==='hook'&&!cached)?FAST_HOOK_ITEMS:[];
+  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||instant;state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):(kind==='hook'?'Pacifier casts the hook':'Loading '+kind+'...');if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
   cachedLoadPanelData(kind).then(items=>{
     if(state.panelKind!==kind)return;
     state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');preloadPanelImages(items);render();
@@ -1647,37 +1565,8 @@ function openDataPanel(kind){
     state.panelItems=cached||[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
   });
 }
-async function openHookPanel(){
-  state.screen='hook';
-  state.panelKind='hook';
-  state.panelItems=[];
-  state.panelIndex=0;
-  state.hookPrize=null;
-  state.hookResult=null;
-  state.hookInfo=null;
-  state.hookCasting=false;
-  state.panelLoading=true;
-  state.panelActionMsg='Loading Hook-a-Waaambulance...';
-  state.panelMessage='Loading Hook-a-Waaambulance...';
-  render();
-  try{
-    const p=currentPet()||{};
-    const data=await postPetbotAction({mode:'get_hook_waaambulance',user_id:state.player?.userId||'',user_name:state.player?.name||'',pet_code:p.code||'',selected_pet_code:p.code||'',include_media:true});
-    if(state.screen!=='hook')return;
-    state.hookInfo=data||{};
-    state.panelLoading=false;
-    state.panelActionMsg=(data&&data.response)||'Press pacifier to cast the hook';
-    render();
-  }catch(e){
-    if(state.screen!=='hook')return;
-    state.panelLoading=false;
-    state.panelActionMsg='Hook failed to load: '+(e.message||e);
-    render();
-  }
-}
 async function activatePanelItem(){
   const kind=state.panelKind;
-  if(kind==='hook') return playHook();
   if(kind==='shop'&&state.shopStep==='pet')return loadShopItemsForTarget();
   const item=(state.panelItems||[])[state.panelIndex||0];
   if(!item){state.panelActionMsg='Nothing selected';render();return;}
@@ -1687,6 +1576,7 @@ async function activatePanelItem(){
     if(state.shopStep==='qty')return buySelectedItem(state.shopSelected||item);
   }
   if(kind==='inventory') return useSelectedItem(item);
+  if(kind==='hook') return playHook(item);
   if(kind==='habitat'){state.panelActionMsg='Viewing '+itemTitle(item);render();return;}
 }
 async function postPetbotAction(payload){
@@ -1721,43 +1611,30 @@ async function useSelectedItem(item){
     await openPanelReload('inventory');
   }catch(e){state.panelActionMsg='Use not enabled yet: '+(e.message||e);render();}
 }
-async function playHook(){
-  if(state.hookCasting)return;
-  const p=currentPet()||{};
-  state.hookCasting=true;
-  state.hookResult=null;
-  state.panelActionMsg='Casting hook...';
+async function playHook(item){
+  const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
+  const prize=weightedPrize(pool) || item || FAST_HOOK_ITEMS[0] || {item_name:'Mystery Waaambulance prize',price:15};
+  state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
+  await new Promise(r=>setTimeout(r,180));
+  state.hookCasting=false;
+  state.panelActionMsg='You hooked '+itemTitle(prize);
   render();
-  try{
-    const data=await postPetbotAction({
-      mode:'complete_hook_waaambulance',
-      user_id:state.player?.userId||'',
-      user_name:state.player?.name||'',
-      pet_code:p.code||'',
-      selected_pet_code:p.code||'',
-      pet_name:p.name||'',
-      include_media:true
-    });
-    if(state.screen!=='hook')return;
-    state.hookCasting=false;
-    state.hookResult=data||{};
-    state.hookPrize=data||{};
-    state.panelActionMsg=(data&&data.response)||'You caught a Waaambulance!';
-    clearPanelCache('inventory');
-    clearPanelCache('hook');
-    render();
-    // Refresh the ready/cost line after the cast, but keep the result visible.
+  // Save in the background so the mini game does not feel frozen. If the backend returns
+  // the real PetBot prize, replace the local prize with that response.
+  (async()=>{
     try{
-      const info=await postPetbotAction({mode:'get_hook_waaambulance',user_id:state.player?.userId||'',user_name:state.player?.name||'',pet_code:p.code||'',selected_pet_code:p.code||'',include_media:true});
-      if(state.screen==='hook'){state.hookInfo=info||state.hookInfo;render();}
-    }catch(_e){}
-  }catch(e){
-    if(state.screen==='hook'){
-      state.hookCasting=false;
-      state.panelActionMsg='Hook could not save: '+(e.message||e);
-      render();
-    }
-  }
+      let data=null, lastErr=null;
+      for(const mode of ['play_hook_waaambulance','cast_hook_waaambulance','complete_hook_waaambulance']){
+        try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',selected_pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});break;}
+        catch(err){lastErr=err;}
+      }
+      if(!data)throw lastErr||new Error('hook save failed');
+      if(state.screen!=='hook')return;
+      state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('Saved: '+itemTitle(prize));
+      const realPrize={...prize,raw:{...(prize.raw||{}),...data},item_name:data.hook_name||data.prize_name||data.item_earned||itemTitle(prize),item_id:data.hook_key||data.prize_key||prize.item_id,image_url:data.image_url||data.hook_image_url||data.prize_image||prize.image_url};
+      state.hookPrize=realPrize; clearPanelCache('inventory'); clearPanelCache('hook'); render();
+    }catch(e){ if(state.screen==='hook'){ state.panelActionMsg='You hooked '+itemTitle(prize)+' · check inventory after refresh'; render(); } }
+  })();
 }
 async function openPanelReload(kind){
   state.panelKind=kind;state.panelLoading=true;render();
@@ -1786,11 +1663,11 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // Keep this CSS-only.
-  // Real browser fullscreen inside an iframe can cause black-screen/flicker problems.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
   try{
-    document.documentElement.classList.add('cssFullscreen');
-    document.body.classList.add('cssFullscreen');
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
 function notifyParent(){
@@ -1799,19 +1676,7 @@ function notifyParent(){
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
-// Pacifier/select button.
-// Normal PetBot screens: Select.
-// Quest screen: Jump only. It must not open buildings/signs.
-$('btnSelect').addEventListener('click', e => {
-  e.preventDefault();
-
-  if (state.screen === 'questGame') {
-    sendParent('waa-petbot-game-action', {action:'jumpOnly'});
-    return;
-  }
-
-  handleSelect();
-});
+$('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
   const stop=e=>{
@@ -1832,20 +1697,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-// Siren button.
-// Quest screen: ask index.html to expand the platform quest.
-// PetBot screens: expand the Tamagotchi UI.
-$('btnSiren').addEventListener('click', e => {
-  e.preventDefault();
-
-  if (state.screen === 'questGame') {
-    sendParent('waa-petbot-game-action', {action:'expandEmbedded'});
-    return;
-  }
-
-  requestLocalFullscreen();
-  sendParent('waa-petbot-toggle-fullscreen');
-});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
@@ -1920,11 +1772,6 @@ window.addEventListener('message',e=>{
   const d=e.data||{};
   if(d.type==='waa-parent-return-to-tamagotchi'){
     try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(_e){}
-
-    // If index.html says the quest is still active, do not switch to Pet Home.
-    // Another handler below will keep the LCD in quest-control mode.
-    if(d.keepQuest) return;
-
     if(state.screen==='questGame'||state.screen==='games'){
       state.screen=currentPet()?'petHome':'menu';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
@@ -2147,192 +1994,6 @@ window.addEventListener('message',e=>{
 
 render();
 })();
-
 </script>
-
-<!-- Cleaned: removed old external Stage 42/43 patch scripts because they duplicated quest controls outside the main PetBot script. -->
-
-
-
-<script>
-/* STAGE 47: keep building-open requests until after the user/pet has loaded.
-   Fixes: opening Hook/Pet Shop from Tutorial Town could land back on the main
-   "Owned Pets / Switch User" menu because the parent screen request expired
-   before login finished. */
-(function(){
-  function readPendingScreen47(){
-    let pending = '';
-    try{
-      const raw = localStorage.getItem('waaPendingPetbotScreen');
-      if(raw){
-        const pack = JSON.parse(raw);
-        if(pack && pack.screen && pack.t && Date.now() - Number(pack.t) < 5*60*1000){
-          pending = String(pack.screen || '');
-        }else{
-          localStorage.removeItem('waaPendingPetbotScreen');
-        }
-      }
-    }catch(e){}
-    return pending || String((window.state && state._pendingParentScreen) || '');
-  }
-
-  function rememberPendingScreen47(screen){
-    screen = String(screen || '').trim();
-    if(!screen) return;
-    try{ state._pendingParentScreen = screen; }catch(e){}
-    try{ localStorage.setItem('waaPendingPetbotScreen', JSON.stringify({screen:screen,t:Date.now()})); }catch(e){}
-  }
-
-  window.petbotApplyPendingScreen47 = function(){
-    try{
-      const screen = readPendingScreen47();
-      if(!screen) return false;
-      if(!state.player || !currentPet()){
-        rememberPendingScreen47(screen);
-        return false;
-      }
-      try{ localStorage.removeItem('waaPendingPetbotScreen'); }catch(e){}
-      state._pendingParentScreen = '';
-      if(screen === 'hook') { openHookPanel(); return true; }
-      if(screen === 'shop') { openShopPanel(); return true; }
-      if(screen === 'habitat') { openDataPanel('habitat'); return true; }
-      if(screen === 'inventory') { openDataPanel('inventory'); return true; }
-      if(screen === 'welcomeBoard' || screen === 'welcome' || screen === 'tutorial') { state.screen='welcomeBoard'; render(); return true; }
-      if(screen === 'games' || screen === 'quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
-      if(typeof petbotOpenParentScreen === 'function') return petbotOpenParentScreen(screen);
-      return false;
-    }catch(err){
-      try{ console.warn('[PetBot Stage47] pending screen failed', err); }catch(e){}
-      return false;
-    }
-  };
-
-  if(typeof petbotOpenParentScreen === 'function'){
-    const oldOpenParentScreen47 = petbotOpenParentScreen;
-    window.petbotOpenParentScreen = petbotOpenParentScreen = function(screen){
-      screen = String(screen || 'petHome');
-      if(!state.player || !currentPet()){
-        rememberPendingScreen47(screen);
-        return false;
-      }
-      return oldOpenParentScreen47(screen);
-    };
-  }
-
-  if(typeof startPlayer === 'function'){
-    const oldStartPlayer47 = startPlayer;
-    window.startPlayer = startPlayer = async function(player){
-      const result = await oldStartPlayer47(player);
-      setTimeout(window.petbotApplyPendingScreen47, 60);
-      setTimeout(window.petbotApplyPendingScreen47, 350);
-      setTimeout(window.petbotApplyPendingScreen47, 900);
-      return result;
-    };
-  }
-
-  window.addEventListener('message', function(e){
-    if(e.origin !== location.origin) return;
-    const d = e.data || {};
-    if(d.type === 'waa-parent-open-screen' && d.screen){
-      if(!state.player || !currentPet()) rememberPendingScreen47(d.screen);
-      setTimeout(window.petbotApplyPendingScreen47, 80);
-    }
-  }, true);
-
-  setTimeout(window.petbotApplyPendingScreen47, 300);
-  setTimeout(window.petbotApplyPendingScreen47, 1200);
-})();
-</script>
-
-
-<script>
-/* STAGE 48: stop background pet refresh from kicking the user back to the
-   default Owned Pets / Switch User menu after a building screen has opened. */
-(function(){
-  function wantedScreen48(){
-    try{
-      const raw=localStorage.getItem('waaPendingPetbotScreen');
-      if(!raw) return '';
-      const pack=JSON.parse(raw);
-      if(pack && pack.screen && pack.t && Date.now()-Number(pack.t)<5*60*1000) return String(pack.screen||'');
-    }catch(e){}
-    try{return String(state._pendingParentScreen||'');}catch(e){return '';}
-  }
-  function isBuildingScreen48(s){return ['hook','shop','habitat','inventory','welcomeBoard','games','quest','care','petActions'].includes(String(s||''));}
-  const originalRender48 = window.render;
-  if(typeof originalRender48 === 'function'){
-    window.render = render = function(){
-      try{
-        const wanted=wantedScreen48();
-        if(wanted && state && state.player && currentPet && currentPet() && state.screen==='menu'){
-          // A background refresh just tried to repaint the menu. Put the requested building back.
-          setTimeout(function(){try{ if(typeof window.petbotApplyPendingScreen47==='function') window.petbotApplyPendingScreen47(); }catch(e){}}, 0);
-        }
-      }catch(e){}
-      return originalRender48.apply(this, arguments);
-    };
-  }
-  // Extra retry points because cached pet refresh can finish after the first Hook open.
-  [1500,2500,4000].forEach(function(ms){setTimeout(function(){try{ if(typeof window.petbotApplyPendingScreen47==='function') window.petbotApplyPendingScreen47(); }catch(e){}},ms);});
-})();
-</script>
-
-
-<!-- STAGE 53: do not switch to blank quest LCD unless the parent actually started a quest. -->
-<script id="stage53-quest-guard-script">
-(function(){
-  function questLiveRecent(){
-    try{
-      const t=Number(localStorage.getItem('waaQuestIsLive')||0);
-      return t && Date.now()-t < 1000*60*60;
-    }catch(e){return false;}
-  }
-  function isMenuScreen(){
-    try{return ['login','password','loading','menu','pet','petHome','petActions','shop','habitat','hook','inventory','care','games','welcomeBoard','stats','quests'].includes(state.screen);}catch(e){return true;}
-  }
-  function openNormalMenu(screen){
-    try{localStorage.removeItem('waaPendingPetbotScreen'); localStorage.removeItem('waaQuestIsLive');}catch(e){}
-    try{document.documentElement.classList.remove('questPlaying'); document.body.classList.remove('questPlaying');}catch(e){}
-    screen=String(screen||'menu');
-    try{
-      if(!state.player){ state.screen='login'; render(); return; }
-      if(screen==='shop'){ openShopPanel(); return; }
-      if(screen==='habitat'){ openDataPanel('habitat'); return; }
-      if(screen==='hook'){ openDataPanel('hook'); return; }
-      if(screen==='inventory'){ openDataPanel('inventory'); return; }
-      if(screen==='care'){ state.screen='care'; state.panelIndex=0; render(); return; }
-      if(screen==='games'){ state.screen='games'; state.gameIndex=0; render(); return; }
-      if(screen==='welcomeBoard'){ state.screen='welcomeBoard'; render(); return; }
-      state.screen=currentPet && currentPet() ? 'petHome' : 'menu';
-      render();
-    }catch(e){console.warn('Stage 53 PetBot menu open failed',e);}
-  }
-  // Capture this before the older Stage 37 listener turns the LCD into a transparent/blank quest screen.
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin) return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-petbot-menu'){
-      e.stopImmediatePropagation();
-      openNormalMenu(d.screen||'menu');
-      return;
-    }
-    if(d.type==='waa-parent-quest-active'){
-      const allow=questLiveRecent() && (!isMenuScreen() || state.screen==='questGame' || d.forceQuest===true);
-      if(!allow){
-        e.stopImmediatePropagation();
-        if(state.screen==='questGame') openNormalMenu('menu');
-        return;
-      }
-    }
-    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest && !questLiveRecent()){
-      e.stopImmediatePropagation();
-      openNormalMenu('menu');
-      return;
-    }
-  },true);
-  console.info('Stage 53 PetBot quest guard loaded.');
-})();
-</script>
-
 </body>
 </html>
