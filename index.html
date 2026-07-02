@@ -3069,7 +3069,7 @@ Object.keys(settingMap).forEach(id=>$(id).addEventListener('input',()=>{applySet
 ['calPlaceAt','calPlaceW','calPlaceH','calPlaceY','calPlaceZ'].forEach(id=>{if($(id))$(id).addEventListener('input',readPlaceControls);});
 if($('placeSelect'))$('placeSelect').onchange=()=>{selectedPlace=$('placeSelect').value;syncPlaceControls();};
 if($('placeQuick'))$('placeQuick').onchange=()=>{const v=$('placeQuick').value;$('placeQuick').value='';if(v==='bringHere')bringSelectedPlaceHere();if(v==='groundSnap')snapSelectedPlaceToGround();};
-$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=()=>{ if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel(); };$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden'); if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel();};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
+$('resetSettingsBtn').onclick=resetCorrect;$('saveCloudBtn').onclick=()=>saveCloud();$('loadCloudBtn').onclick=()=>loadCloud(false);$('closeBuilderBtn').onclick=closeBuilder;$('closeBuilderTop').onclick=closeBuilder;$('buildBtn').onclick=openBuilder;$('menuBuildBtn').onclick=()=>{$('startScreen').classList.add('hidden');openBuilder()};$('menuBtn').onclick=openMenu;$('resumeBtn').onclick=resumeGame;$('petBtn').onclick=()=>{   if(document.body.classList.contains('gameExpandedFromTama') && typeof window.stage37ReturnExpandedQuestToTamagotchi==='function'){     window.stage37ReturnExpandedQuestToTamagotchi();     return;   }    if(typeof window.startEmbeddedTamaGame==='function'){     const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';     window.startEmbeddedTamaGame(mode);     return;   }    console.warn('Tamagotchi game function not ready'); };$('menuPetBtn').onclick=()=>{$('startScreen').classList.add('hidden'); if(typeof openPetbotFull==='function') openPetbotFull(); else openPetPanel();};$('closePetBtn').onclick=closePetPanel;function applyCharacterChoices(){mainFlip=Number($('mainFlipSelect')?.value)||1;buddyFlip=Number($('buddyFlipSelect')?.value)||1;setPair($('mainSelect').value,$('buddySelect').value);}
 $('applyCharsBtn').onclick=applyCharacterChoices;$('soloBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;setPair(main,'none');};$('teamBtn').onclick=()=>{buddyFlip=Number($('buddyFlipSelect')?.value)||buddyFlip;const members=teamSelectionFromMenu();setPair(members[0],members[1]||'none',members[2]||'none',members[3]||'none');};if($('mainFlipSelect'))$('mainFlipSelect').onchange=()=>{mainFlip=Number($('mainFlipSelect').value)||1;applySpriteTransform();};if($('buddyFlipSelect'))$('buddyFlipSelect').onchange=()=>{buddyFlip=Number($('buddyFlipSelect').value)||1;applySpriteTransform();};
 function fillSpriteUrlInputs(){
   $('axIdleUrl').value=SPRITE_PATTERNS.ax.idle;$('axWalkUrl').value=SPRITE_PATTERNS.ax.walk;$('axJumpUrl').value=SPRITE_PATTERNS.ax.jump;
@@ -4407,12 +4407,25 @@ window.addEventListener('keyup',function(e){
   });
   refreshMiniPet();
   setTimeout(()=>{ try{ window.startTamagotchiLaunch(); }catch(e){} }, 80);
-  if(openBtn){
-    openBtn.addEventListener('click', function(e){
-      e.preventDefault(); e.stopPropagation();
-      window.openPetbotFull();
-    });
-  }
+if(openBtn){
+  openBtn.addEventListener('click', function(e){
+    e.preventDefault();
+    e.stopPropagation();
+
+    if(document.body.classList.contains('gameExpandedFromTama') && typeof window.stage37ReturnExpandedQuestToTamagotchi==='function'){
+      window.stage37ReturnExpandedQuestToTamagotchi();
+      return;
+    }
+
+    if(typeof window.startEmbeddedTamaGame==='function'){
+      const mode = document.body.classList.contains('teamMode') ? 'team' : 'solo';
+      window.startEmbeddedTamaGame(mode);
+      return;
+    }
+
+    console.warn('Tamagotchi game function not ready');
+  });
+}
   window.addEventListener('keydown', function(e){
     if(e.key === 'Escape' && dock.classList.contains('fullscreen')) window.closePetbotFull();
   });
