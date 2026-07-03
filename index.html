@@ -35,6 +35,7 @@ Search the EDIT SECTION name first.
 <!-- Level 1 object upgrade: image items, vanish-on-collect, Mario-style stomp hazards, level-building checklist support. -->
 <!-- ============================================================
 SAFE REVERTED FIX BUILD
+Step-1 tidy patch applied: preserves Stage 37 live quest return instead of letting later PetBot-start patches overwrite it.
 This file is based on the version you put back, not the broken cleaned file.
 Only safe comments/status text were corrected here; the working game code structure is preserved.
 Key search terms:
@@ -5214,7 +5215,11 @@ quest launch from that Tamagotchi.
   window.waaEnterTamagotchiMode=enterTamagotchiMode;
   window.waaEnterFullGameFromTamagotchi=enterFullGame;
 
-  window.stage37ReturnExpandedQuestToTamagotchi=function(){ return enterTamagotchiMode(); };
+  // Keep the Stage 37 live-quest return function if it already exists.
+  // Do not overwrite it with PetBot home, or fullscreen quest return goes missing.
+  if(typeof window.stage37ReturnExpandedQuestToTamagotchi!=='function'){
+    window.stage37ReturnExpandedQuestToTamagotchi=function(){ return enterTamagotchiMode(); };
+  }
 
   window.addEventListener('click',captureHudTamaButton,true);
   window.addEventListener('touchend',captureHudTamaButton,{capture:true,passive:false});
@@ -5302,11 +5307,15 @@ Quest starts only from the PetBot Games menu.
       },ms);
     });
   }
-  window.openPetbotFull=showPetbot;
+  // Do not overwrite the Stage 37 openPetbotFull wrapper.
+  // That wrapper knows how to return an expanded quest back into the Tamagotchi LCD.
+  if(typeof window.openPetbotFull!=='function') window.openPetbotFull=showPetbot;
   window.waaEnterTamagotchiMode=showPetbot;
   window.startTamagotchiLaunch=showPetbot;
   window.togglePetbotDock=showPetbot;
-  window.stage37ReturnExpandedQuestToTamagotchi=showPetbot;
+  // Do not replace the live quest return route with PetBot Home.
+  // If no Stage 37 return exists, fall back to opening PetBot.
+  if(typeof window.stage37ReturnExpandedQuestToTamagotchi!=='function') window.stage37ReturnExpandedQuestToTamagotchi=showPetbot;
   function wireButtons(){
     ['petBtn','menuPetBtn'].forEach(function(id){
       const btn=q(id);
