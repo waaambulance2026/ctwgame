@@ -5060,15 +5060,15 @@ if(openBtn){
 </script>
 
 <!-- ============================================================
-CTW MODE MANAGER 20260703D
+CTW MODE MANAGER 20260703E
 Clean replacement for the stacked 20260702C / 20260702E / 20260702D mode patches.
 This is the only bottom-of-file section that should control:
 - opening the real PetBot/Tamagotchi app
 - returning expanded quest back into the Tamagotchi LCD
 - not overriding shop/habitat/hook return-to-quest routes
 ============================================================ -->
-<style id="ctw-mode-manager-20260703d-css">
-  body.petbotOpen:not(.tamaGameEmbedded) #game{
+<style id="ctw-mode-manager-20260703e-css">
+  body.petbotOpen:not(.tamaGameEmbedded):not(.gameExpandedFromTama) #game{
     visibility:hidden!important;
     pointer-events:none!important;
   }
@@ -5108,7 +5108,7 @@ This is the only bottom-of-file section that should control:
     display:none!important;
   }
 </style>
-<script id="ctw-mode-manager-20260703d-script">
+<script id="ctw-mode-manager-20260703e-script">
 (function(){
   'use strict';
 
@@ -5295,12 +5295,111 @@ This is the only bottom-of-file section that should control:
   window.togglePetbotDock=showPetbotHome;
   if(stage37Return)window.stage37ReturnExpandedQuestToTamagotchi=stage37Return;
 
+
+  // 20260703E: Fullscreen quest safety.
+  // Some mobile/iframe taps send "waa-petbot-toggle-fullscreen" instead of the
+  // cleaner "expandEmbedded" game action. The old message listener turns that
+  // into PetBot home, which leaves a blank Tamagotchi shell. This intercepts it
+  // before the old listener can run.
+  const stageStartEmbedded=window.startEmbeddedTamaGame;
+  const stageExpandEmbedded=window.expandEmbeddedTamaGame;
+
+  function normalizeExpandedQuest(){
+    const g=q('game');
+    const dk=dock();
+    const start=q('startScreen');
+
+    try{if(start)start.classList.add('hidden');}catch(e){}
+    try{if(typeof paused!=='undefined')paused=false; if(typeof playing!=='undefined')playing=true;}catch(e){}
+
+    body.classList.remove('petbotOpen','tamaGameEmbedded','tamaLiteRender33','tamagotchiLanding','waaTamaStartMode');
+    body.classList.add('gameExpandedFromTama');
+
+    if(dk){
+      dk.classList.add('hidden');
+      dk.classList.remove('fullscreen');
+    }
+
+    releaseGameFromMask();
+
+    if(g){
+      g.style.setProperty('visibility','visible','important');
+      g.style.setProperty('opacity','1','important');
+      g.style.setProperty('display','block','important');
+      g.style.setProperty('pointer-events','auto','important');
+      g.style.setProperty('z-index','9999','important');
+    }
+
+    [0,40,120,280,650].forEach(ms=>setTimeout(()=>{
+      try{if(typeof fitGameToScreen==='function')fitGameToScreen();}catch(e){}
+    },ms));
+  }
+
+  function expandLiveQuestFromTama(){
+    stopMove();
+    try{if(document.fullscreenElement && document.exitFullscreen)document.exitFullscreen().catch(()=>{});}catch(e){}
+
+    // Use the Stage 33 expander if it exists because it knows how to release
+    // the #game element from the LCD mask and scale it to the device.
+    if(stageExpandEmbedded && stageExpandEmbedded!==expandLiveQuestFromTama){
+      try{stageExpandEmbedded.apply(window,arguments);}catch(e){console.warn('Stage expand failed; normalising manually',e);}
+    }
+
+    normalizeExpandedQuest();
+    try{if(typeof stage27ShowCaption==='function')stage27ShowCaption('Full screen quest',1500);}catch(e){}
+    return true;
+  }
+
+  function startLiveQuestInTama(kind){
+    if(stageStartEmbedded && stageStartEmbedded!==startLiveQuestInTama){
+      try{stageStartEmbedded.call(window,kind||'solo');}catch(e){console.warn('Stage start embedded failed',e);}
+    }
+    body.classList.remove('gameExpandedFromTama','waaTamaStartMode');
+    body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33');
+    const dk=dock();
+    if(dk){dk.classList.remove('hidden');dk.classList.add('fullscreen');}
+    try{if(typeof paused!=='undefined')paused=false; if(typeof playing!=='undefined')playing=true;}catch(e){}
+    [0,60,180,420].forEach(ms=>setTimeout(()=>{
+      try{if(typeof fitEmbeddedTamaGame==='function')fitEmbeddedTamaGame();}catch(e){}
+    },ms));
+    return true;
+  }
+
+  window.expandEmbeddedTamaGame=expandLiveQuestFromTama;
+  window.startEmbeddedTamaGame=startLiveQuestInTama;
+
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const data=e.data||{};
+
+    if(data.type==='waa-petbot-toggle-fullscreen'){
+      if(body.classList.contains('tamaGameEmbedded')){
+        try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+        expandLiveQuestFromTama();
+        return;
+      }
+      if(body.classList.contains('gameExpandedFromTama')){
+        try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+        if(typeof window.stage37ReturnExpandedQuestToTamagotchi==='function')window.stage37ReturnExpandedQuestToTamagotchi();
+        return;
+      }
+    }
+
+    if(data.type==='waa-petbot-game-action' && data.action==='expandEmbedded'){
+      try{e.preventDefault();e.stopPropagation();e.stopImmediatePropagation();}catch(_e){}
+      expandLiveQuestFromTama();
+      return;
+    }
+  },true);
+
   window.ctwModeManager={
     showPetbotHome,
     closePetbotHome,
     wireButtons,
-    version:'20260703D',
-    note:'Clean bottom mode manager. Removed 20260702C/E/D duplicate patches.'
+    version:'20260703E',
+    expandLiveQuestFromTama,
+    startLiveQuestInTama,
+    note:'Clean bottom mode manager plus fullscreen quest safety. Removed 20260702C/E/D duplicate patches.'
   };
 
   function start(){
