@@ -2111,5 +2111,30 @@ render();
   },500);
 })();
 </script>
+<style id="fix-20260705-transparent-quest-iframe">
+  html.questPlaying,
+  body.questPlaying,
+  body.questPlaying #app,
+  body.questPlaying .device,
+  body.questPlaying .lcd,
+  body.questPlaying .questGameGlass{
+    background:transparent!important;
+    box-shadow:none!important;
+  }
+  body.questPlaying .device::after,
+  body.questPlaying .lcd::before,
+  body.questPlaying .lcd::after,
+  body.questPlaying .questGameGlass{
+    display:none!important;
+  }
+  body.questPlaying .top,
+  body.questPlaying .body{
+    display:none!important;
+  }
+  body.questPlaying .hit{
+    display:block!important;
+    pointer-events:auto!important;
+  }
+</style>
 </body>
 </html>
