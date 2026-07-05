@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>CTW PetBot Tamagotchi - Message Only</title>
+<title>CTW PetBot Tamagotchi - Stage 35</title>
 <style>
 :root{
   --ink:#16223f;
@@ -382,6 +382,9 @@ body.questPlaying .lcd:before{opacity:.04!important;}
 
 
 /* Stage 19: stop the screens fighting and make the LCD controls readable. */
+html.cssFullscreen,body.cssFullscreen{width:100%!important;height:100%!important;overflow:hidden!important;background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 38%,#dff7ff 100%)!important;}
+html.cssFullscreen #app,body.cssFullscreen #app{position:fixed!important;inset:0!important;display:grid!important;place-items:center!important;}
+html.cssFullscreen .device,body.cssFullscreen .device{width:min(99vw,calc(99dvh * .6667))!important;max-height:99dvh!important;}
 .petHomeTop{grid-template-columns:42% 58%!important;gap:4px!important;}
 .petHomePet .petImg{width:100%!important;height:100%!important;max-width:108%!important;max-height:108%!important;top:52%!important;}
 .petHomeStats .stat{grid-template-columns:14px 1fr 24px!important;font-size:clamp(6px,.72vw,9px)!important;padding:2px 4px!important;}
@@ -1659,10 +1662,13 @@ function handleBack(){
   state.screen='petActions';render();
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
-function sendFullscreenToggleToParent(){
-  // PetBot is message-only now.
-  // It does not resize the page and it does not call browser requestFullscreen().
-  sendParent('waa-petbot-toggle-fullscreen');
+function requestLocalFullscreen(){
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
+  try{
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+  }catch(e){}
 }
 function notifyParent(){
   const p=currentPet(); if(!p)return;
@@ -1691,7 +1697,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { sendFullscreenToggleToParent(); }});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
@@ -1765,7 +1771,7 @@ window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
   const d=e.data||{};
   if(d.type==='waa-parent-return-to-tamagotchi'){
-    try{document.documentElement.classList.remove('questPlaying');document.body.classList.remove('questPlaying');}catch(_e){}
+    try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(_e){}
     if(state.screen==='questGame'||state.screen==='games'){
       state.screen=currentPet()?'petHome':'menu';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
@@ -1992,8 +1998,8 @@ window.addEventListener('message',e=>{
 (function(){
   function showRealPetbotHome(){
     try{
-      document.documentElement.classList.remove('questPlaying');
-      document.body.classList.remove('questPlaying');
+      document.documentElement.classList.remove('cssFullscreen','questPlaying');
+      document.body.classList.remove('cssFullscreen','questPlaying');
       state.returnToQuest=false;
       state.returnQuestMode='';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
