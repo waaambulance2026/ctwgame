@@ -1663,9 +1663,12 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // CSS fullscreen only. Do not call browser requestFullscreen() here.
-  // The parent index.html is the only place that decides the visible mode.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
+  try{
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+  }catch(e){}
 }
 function notifyParent(){
   const p=currentPet(); if(!p)return;
@@ -1694,7 +1697,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); sendParent('waa-petbot-toggle-fullscreen');});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
@@ -1885,19 +1888,8 @@ window.addEventListener('message',e=>{
 
 // STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
 (function(){
-  function writeQuestHeartbeat(){
-    try{
-      const t=String(Date.now());
-      sessionStorage.setItem('waaQuestActiveAt',t);
-      localStorage.setItem('waaQuestActiveAt',t);
-      localStorage.removeItem('waaQuestActive');
-    }catch(_e){}
-  }
   function showQuestFromParent(){
     try{
-      state.parentQuestActive=true;
-      state.parentQuestActiveAt=Date.now();
-      writeQuestHeartbeat();
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
       state.returnToQuest=false;
@@ -2004,62 +1996,10 @@ window.addEventListener('message',e=>{
 // The quest LCD is only for embedded platform play; when the parent asks for PetBot
 // home, render a real user/pet screen so the device is not blank.
 (function(){
-  function recentQuestHeartbeat(){
-    try{
-      const raw=sessionStorage.getItem('waaQuestActiveAt') || localStorage.getItem('waaQuestActiveAt') || '0';
-      const t=Number(raw);
-      return !!(t && Date.now()-t<2500);
-    }catch(e){return false;}
-  }
-  function writeQuestHeartbeat(){
-    try{
-      const t=String(Date.now());
-      sessionStorage.setItem('waaQuestActiveAt',t);
-      localStorage.setItem('waaQuestActiveAt',t);
-      localStorage.removeItem('waaQuestActive');
-    }catch(_e){}
-  }
-  function clearQuestHeartbeat(){
-    try{
-      sessionStorage.removeItem('waaQuestActiveAt');
-      localStorage.removeItem('waaQuestActiveAt');
-      localStorage.removeItem('waaQuestActive');
-    }catch(_e){}
-  }
-  function parentStillInQuestMode(){
-    try{
-      if(recentQuestHeartbeat()) return true;
-      if(state && (state.screen==='questGame' || (state.parentQuestActive && Date.now()-Number(state.parentQuestActiveAt||0)<6000))) return true;
-      if(parent && parent!==window && parent.document){
-        const b=parent.document.body;
-        if(b && (b.classList.contains('waaFs40Embedded') || b.classList.contains('waaFs40Expanded') || b.classList.contains('tamaGameEmbedded') || b.classList.contains('gameExpandedFromTama'))) return true;
-      }
-    }catch(e){}
-    return false;
-  }
-
-  function keepQuestScreen(){
-    try{
-      state.parentQuestActive=true;
-      state.parentQuestActiveAt=Date.now();
-      writeQuestHeartbeat();
-      state.screen='questGame';
-      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
-      state.returnToQuest=false;
-      render();
-    }catch(e){}
-  }
-
   function showRealPetbotHome(){
     try{
-      if(parentStillInQuestMode()){
-        keepQuestScreen();
-        return;
-      }
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
-      clearQuestHeartbeat();
-      state.parentQuestActive=false;
       state.returnToQuest=false;
       state.returnQuestMode='';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
@@ -2093,96 +2033,5 @@ window.addEventListener('message',e=>{
 render();
 })();
 </script>
-
-<script id="fix-20260705-final-petbot-quest-lock">
-(function(){
-  function recentQuestHeartbeat(){
-    try{
-      const raw=sessionStorage.getItem('waaQuestActiveAt') || localStorage.getItem('waaQuestActiveAt') || '0';
-      const t=Number(raw);
-      return !!(t && Date.now()-t<2500);
-    }catch(e){return false;}
-  }
-  function writeQuestHeartbeat(){
-    try{
-      const t=String(Date.now());
-      sessionStorage.setItem('waaQuestActiveAt',t);
-      localStorage.setItem('waaQuestActiveAt',t);
-      localStorage.removeItem('waaQuestActive');
-    }catch(_e){}
-  }
-  try{localStorage.removeItem('waaQuestActive');}catch(_e){}
-  function parentQuestLocked(){
-    if(recentQuestHeartbeat()) return true;
-    try{
-      if(parent && parent!==window && parent.document){
-        const b=parent.document.body;
-        return !!(b && (
-          b.classList.contains('waaFs40Embedded') ||
-          b.classList.contains('waaFs40Expanded') ||
-          b.classList.contains('tamaGameEmbedded') ||
-          b.classList.contains('gameExpandedFromTama')
-        ));
-      }
-    }catch(e){}
-    return false;
-  }
-  function forceQuestControls(){
-    try{
-      writeQuestHeartbeat();
-      state.parentQuestActive=true;
-      state.parentQuestActiveAt=Date.now();
-      state.returnToQuest=false;
-      state.returnQuestMode='';
-      state.screen='questGame';
-      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
-      document.documentElement.classList.add('questPlaying');
-      document.body.classList.add('questPlaying');
-      render();
-    }catch(e){}
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active'){
-      writeQuestHeartbeat();
-      forceQuestControls();
-      try{e.stopImmediatePropagation();}catch(_e){}
-    }
-    if(d.type==='waa-parent-show-petbot-home' && parentQuestLocked()){
-      forceQuestControls();
-      try{e.stopImmediatePropagation();}catch(_e){}
-    }
-  },true);
-  setInterval(function(){
-    if(parentQuestLocked() && state && state.screen!=='questGame') forceQuestControls();
-  },500);
-})();
-</script>
-<style id="fix-20260705-transparent-quest-iframe">
-  html.questPlaying,
-  body.questPlaying,
-  body.questPlaying #app,
-  body.questPlaying .device,
-  body.questPlaying .lcd,
-  body.questPlaying .questGameGlass{
-    background:transparent!important;
-    box-shadow:none!important;
-  }
-  body.questPlaying .device::after,
-  body.questPlaying .lcd::before,
-  body.questPlaying .lcd::after,
-  body.questPlaying .questGameGlass{
-    display:none!important;
-  }
-  body.questPlaying .top,
-  body.questPlaying .body{
-    display:none!important;
-  }
-  body.questPlaying .hit{
-    display:block!important;
-    pointer-events:auto!important;
-  }
-</style>
 </body>
 </html>

@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=20260705stalequestclear1&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=204&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4598,8 +4598,12 @@ window.addEventListener('message',function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
   if(d.type === 'waa-petbot-toggle-fullscreen'){
-    // The final fullscreen router at the end of the file owns this message.
-    // Leaving this older handler active makes the mode flip twice.
+    // Stage 19: this is a CSS fullscreen first. Browser Fullscreen API can be blocked
+    // when the click started inside an iframe, so the game must still visibly expand.
+    try{ document.body.classList.remove('gameExpandedFromTama'); }catch(err){}
+    try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(err){}
+    // Browser fullscreen disabled on purpose.
+    // CSS fullscreen is used instead so users do not get trapped needing Esc.
     return;
   }
   if(d.type === 'waa-petbot-close'){
@@ -5752,7 +5756,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=20260705stalequestclear1&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=204&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -6048,7 +6052,7 @@ if(openBtn){
   };
   window.expandEmbeddedTamaGame = expandEmbeddedTamaGame = function(){
     stopMove();
-    // CSS fullscreen only: do not call document.exitFullscreen().
+    try{ if(d.fullscreenElement && d.exitFullscreen) d.exitFullscreen().catch(()=>{}); }catch(e){}
     fitExpandedCss();
     try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
     try{ showToast('Full screen quest: Space jumps. Enter opens buildings.'); }catch(e){}
@@ -6476,7 +6480,15 @@ if(openBtn){
     }
   },true);
 
-  // CSS fullscreen only: no browser fullscreenchange listener needed.
+  let sawBrowserFullscreen=false;
+  window.addEventListener('fullscreenchange',function(){
+    if(!body.classList.contains('gameExpandedFromTama')) return;
+    if(d.fullscreenElement){ sawBrowserFullscreen=true; return; }
+    if(sawBrowserFullscreen){
+      sawBrowserFullscreen=false;
+      setTimeout(()=>{ try{ window.stage37ReturnExpandedQuestToTamagotchi(); }catch(e){} },80);
+    }
+  });
 })();
 
 </script>
@@ -6515,7 +6527,7 @@ Browser fullscreen is disabled in this cleaned copy.
   function ensurePetbotFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
     if(frame){
-      const wanted='petbot_test.html?v=20260705stalequestclear1&embed=1&launch=1&choose=1';
+      const wanted='petbot_test.html?v=204&embed=1&launch=1&choose=1';
       try{
         const current=new URL(frame.getAttribute('src')||'',location.href);
         const next=new URL(wanted,location.href);
@@ -6585,7 +6597,7 @@ Browser fullscreen is disabled in this cleaned copy.
 <!-- PART 3D: REAL PETBOT MENU OPENER SCRIPT -->
 <script id="fix-20260702e-real-petbot-start-script">
 (function(){
-  const PETBOT_URL='petbot_test.html?v=20260705stalequestclear1&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
   function q(id){return document.getElementById(id);}
   function setFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
@@ -6808,7 +6820,7 @@ Do not put level data or sprite links here.
   body.waaFs40Embedded #tamaGameMask33{
     display:block!important;
     position:fixed!important;
-    z-index:2147483600!important;
+    z-index:2147482999!important;
     overflow:hidden!important;
     background:#79d9ff!important;
     border-radius:18px!important;
@@ -6958,7 +6970,7 @@ Do not put level data or sprite links here.
   const root=d.documentElement;
   const DESIGN_W=1920;
   const DESIGN_H=1080;
-  const PETBOT_URL='petbot_test.html?v=20260705stalequestclear1&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
   const FS_CLASSES=['waaFs40Petbot','waaFs40Embedded','waaFs40Expanded','petbotOpen','tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','tamagotchiLanding','waaTamaStartMode'];
   const LEGACY_STYLE_PROPS=['position','left','right','top','bottom','inset','width','height','min-width','min-height','max-width','max-height','z-index','transform','transform-origin','display','visibility','opacity','pointer-events','clip-path','-webkit-clip-path','border-radius','box-shadow'];
   const game=d.getElementById('game');
@@ -6974,20 +6986,6 @@ Do not put level data or sprite links here.
   function q(id){ return d.getElementById(id); }
   function setImp(el,prop,val){ if(el) el.style.setProperty(prop,val,'important'); }
   function removeInline(el,props){ if(!el) return; props.forEach(function(prop){ try{ el.style.removeProperty(prop); }catch(e){} }); }
-  function setQuestLock(on){
-    try{
-      if(on){
-        const t=String(Date.now());
-        sessionStorage.setItem('waaQuestActiveAt',t);
-        localStorage.setItem('waaQuestActiveAt',t);
-        localStorage.removeItem('waaQuestActive');
-      }else{
-        sessionStorage.removeItem('waaQuestActiveAt');
-        localStorage.removeItem('waaQuestActiveAt');
-        localStorage.removeItem('waaQuestActive');
-      }
-    }catch(e){}
-  }
   function isQuestMode(){ return currentMode==='embedded' || currentMode==='expanded' || body.classList.contains('waaFs40Embedded') || body.classList.contains('waaFs40Expanded'); }
   function isExpanded(){ return currentMode==='expanded' || body.classList.contains('waaFs40Expanded'); }
   function isEmbedded(){ return currentMode==='embedded' || body.classList.contains('waaFs40Embedded'); }
@@ -7043,15 +7041,6 @@ Do not put level data or sprite links here.
     try{
       if(typeof stage27ShowCaption==='function') stage27ShowCaption(String(msg||''),ms||1800);
       else if(typeof showToast==='function') showToast(String(msg||''));
-    }catch(e){}
-  }
-
-  function hideCaption(){
-    try{
-      const cap=q('tamaGameCaption');
-      if(cap) cap.classList.remove('show');
-      if(window.__stage35CaptionTimer) clearTimeout(window.__stage35CaptionTimer);
-      if(window.stage27ShowCaption && window.stage27ShowCaption.t) clearTimeout(window.stage27ShowCaption.t);
     }catch(e){}
   }
 
@@ -7166,7 +7155,6 @@ Do not put level data or sprite links here.
     currentMode='petbot';
     clearModes();
     releaseGame();
-    hideCaption();
     fixFrameUrl();
     body.classList.add('petbotOpen','waaFs40Petbot');
     dock.classList.remove('hidden');
@@ -7187,7 +7175,6 @@ Do not put level data or sprite links here.
   function setEmbedded(kind,opts){
     opts=opts||{};
     currentMode='embedded';
-    setQuestLock(true);
     clearModes();
     fixFrameUrl();
     body.classList.add('petbotOpen','tamaGameEmbedded','tamaLiteRender33','waaFs40Embedded');
@@ -7204,7 +7191,6 @@ Do not put level data or sprite links here.
   function setExpanded(opts){
     opts=opts||{};
     currentMode='expanded';
-    setQuestLock(true);
     clearModes();
     releaseGame();
     body.classList.add('gameExpandedFromTama','waaFs40Expanded');
@@ -7214,7 +7200,6 @@ Do not put level data or sprite links here.
     try{ if(typeof paused!=='undefined') paused=false; if(typeof playing!=='undefined') playing=true; }catch(e){}
     try{ const ss=q('startScreen'); if(ss) ss.classList.add('hidden'); }catch(e){}
     fitExpanded();
-    postToPetbot({type:'waa-parent-quest-active',mode:'expanded',kind:document.body.classList.contains('teamMode')?'team':'solo',t:Date.now()});
     [80,220,520,1000].forEach(function(ms){ setTimeout(fitExpanded,ms); });
     keepModeSoon();
     return true;
@@ -7225,15 +7210,7 @@ Do not put level data or sprite links here.
     [90,260,620,1200,1900,2800].forEach(function(ms){
       setTimeout(function(){
         if(currentMode!==mode) return;
-        try{
-          if(mode==='embedded'){
-            fitEmbedded();
-            postToPetbot({type:'waa-parent-quest-active',mode:'embedded',kind:document.body.classList.contains('teamMode')?'team':'solo',t:Date.now()});
-          }else if(mode==='expanded'){
-            fitExpanded();
-            postToPetbot({type:'waa-parent-quest-active',mode:'expanded',kind:document.body.classList.contains('teamMode')?'team':'solo',t:Date.now()});
-          }
-        }
+        try{ if(mode==='embedded') fitEmbedded(); else if(mode==='expanded') fitExpanded(); }
         catch(e){}
       },ms);
     });
@@ -7293,19 +7270,24 @@ Do not put level data or sprite links here.
     const label=o.label||o.place||'Building';
     try{ localStorage.setItem('waaPendingPetbotScreen',JSON.stringify({screen:screen,place:o.place,label:label,returnToQuest:true,returnMode:mode,t:Date.now()})); }catch(e){}
     setPetbotMenu({fromQuest:true,screen:screen,place:o.place,label:label,returnMode:mode});
-    hideCaption();
+    visibleCaption(label+' opened',1400);
     return true;
   }
 
   function tryNativeFullscreen(){
-    // CSS fullscreen only. Do not call browser requestFullscreen().
-    // The browser fullscreen API causes the Esc banner/trap shown in testing.
-    return false;
+    try{
+      if(d.fullscreenElement) return;
+      const el=d.documentElement;
+      const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+      if(fn) Promise.resolve(fn.call(el)).catch(function(){});
+    }catch(e){}
   }
 
   function exitNativeFullscreen(){
-    // CSS fullscreen only. Do not call browser exitFullscreen().
-    return false;
+    try{
+      const fn=d.exitFullscreen||d.webkitExitFullscreen||d.msExitFullscreen;
+      if(d.fullscreenElement && fn) Promise.resolve(fn.call(d)).catch(function(){});
+    }catch(e){}
   }
 
   function cloneButton(id,handler){
@@ -7369,7 +7351,6 @@ Do not put level data or sprite links here.
 
   window.openPetbotFull=openPetbotFull=function(){
     if(isExpanded()) return window.stage37ReturnExpandedQuestToTamagotchi();
-    if(isEmbedded()) return setExpanded({start:false});
     return setPetbotMenu();
   };
 
@@ -7386,8 +7367,8 @@ Do not put level data or sprite links here.
   };
 
   window.startEmbeddedTamaGame=startEmbeddedTamaGame=function(kind){ return setEmbedded(kind||'solo',{start:true}); };
-  window.stopEmbeddedTamaGame=stopEmbeddedTamaGame=function(){ currentMode=''; setQuestLock(false); clearModes(); releaseGame(); ensureBodyLock(false); exitNativeFullscreen(); return true; };
-  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
+  window.stopEmbeddedTamaGame=stopEmbeddedTamaGame=function(){ currentMode=''; clearModes(); releaseGame(); ensureBodyLock(false); exitNativeFullscreen(); return true; };
+  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); tryNativeFullscreen(); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
   window.stage37ReturnExpandedQuestToTamagotchi=function(){ if(!isExpanded()) return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); exitNativeFullscreen(); return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); };
   window.waaResumeQuestFromPetbot=function(mode){ return returnToQuest(mode); };
   window.waaEnterTamagotchiMode=function(){ return setPetbotMenu(); };
@@ -7406,7 +7387,7 @@ Do not put level data or sprite links here.
   window.handlePetbotGameAction=handlePetbotGameAction=function(action){
     if(action==='startSoloEmbedded' || action==='startPlatformEmbedded') return setEmbedded('solo',{start:true});
     if(action==='startTeamEmbedded') return setEmbedded('team',{start:true});
-    if(action==='expandEmbedded') { setExpanded({start:false}); return true; }
+    if(action==='expandEmbedded') { setExpanded({start:false}); tryNativeFullscreen(); return true; }
     if(action==='returnToQuest' || action==='resumeQuest') return returnToQuest(getQuestReturnMode());
     if(action==='stopEmbedded') return window.stopEmbeddedTamaGame();
     if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){
@@ -7415,23 +7396,12 @@ Do not put level data or sprite links here.
     if(previousAction) return previousAction(action);
   };
 
-  function handlePetbotFullscreenToggle(){
-    // One parent-controlled fullscreen route:
-    // - embedded quest -> expanded page quest
-    // - expanded page quest -> embedded Tamagotchi quest
-    // - PetBot/menu screens -> CSS PetBot fullscreen/menu
-    if(isEmbedded()){ setExpanded({start:false}); return true; }
-    if(isExpanded()){ return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); }
-    setPetbotMenu();
-    return true;
-  }
-
   window.addEventListener('message',function(e){
     if(e.origin!==location.origin) return;
     const msg=e.data||{};
     if(!msg || !msg.type) return;
     if(msg.type==='waa-petbot-game-action') window.handlePetbotGameAction(msg.action);
-    if(msg.type==='waa-petbot-toggle-fullscreen') handlePetbotFullscreenToggle();
+    if(msg.type==='waa-petbot-toggle-fullscreen') setPetbotMenu();
     if(msg.type==='waa-petbot-close') window.closePetbotFull();
     if(msg.type==='waa-parent-return-to-quest') returnToQuest(getQuestReturnMode());
   },true);
@@ -7454,7 +7424,6 @@ Do not put level data or sprite links here.
   window.addEventListener('orientationchange',function(){ setTimeout(scheduleFit,120); },{passive:true});
   window.addEventListener('fullscreenchange',scheduleFit);
 
-  // 20260705 CSS-ONLY NOTE: no browser requestFullscreen calls are allowed in the final router.
   wireControls();
 
   // Final load state: real PetBot/Tamagotchi menu first, then quest only when PetBot asks for it.
@@ -7469,71 +7438,6 @@ Do not put level data or sprite links here.
       else if(isExpanded()) fitExpanded();
     },ms);
   });
-})();
-</script>
-
-<!-- 20260705 final quest lock: keep PetBot from returning to pet home while the platform quest is active. -->
-<script id="fix-20260705-final-quest-lock">
-(function(){
-  const d=document;
-  const body=d.body;
-  function q(id){return d.getElementById(id);}
-  function questOn(){
-    return body.classList.contains('waaFs40Embedded') ||
-      body.classList.contains('waaFs40Expanded') ||
-      body.classList.contains('tamaGameEmbedded') ||
-      body.classList.contains('gameExpandedFromTama');
-  }
-  function lock(on){
-    try{
-      if(on){
-        const t=String(Date.now());
-        sessionStorage.setItem('waaQuestActiveAt',t);
-        localStorage.setItem('waaQuestActiveAt',t);
-        localStorage.removeItem('waaQuestActive');
-      }else{
-        sessionStorage.removeItem('waaQuestActiveAt');
-        localStorage.removeItem('waaQuestActiveAt');
-        localStorage.removeItem('waaQuestActive');
-      }
-    }catch(e){}
-  }
-  function postQuestActive(){
-    const frame=q('petbotDockFrame')||q('petbotFrame');
-    if(!frame || !frame.contentWindow) return;
-    try{
-      frame.contentWindow.postMessage({
-        type:'waa-parent-quest-active',
-        mode:body.classList.contains('waaFs40Expanded')?'expanded':'embedded',
-        kind:body.classList.contains('teamMode')?'team':'solo',
-        t:Date.now()
-      },location.origin);
-    }catch(e){}
-  }
-  const oldStop=window.stopEmbeddedTamaGame;
-  window.stopEmbeddedTamaGame=stopEmbeddedTamaGame=function(){
-    lock(false);
-    return oldStop ? oldStop.apply(this,arguments) : true;
-  };
-  const oldClose=window.closePetbotFull;
-  window.closePetbotFull=closePetbotFull=function(){
-    if(questOn()){
-      lock(true);
-      postQuestActive();
-    }
-    return oldClose ? oldClose.apply(this,arguments) : true;
-  };
-  lock(false);
-  setInterval(function(){
-    if(questOn()){
-      lock(true);
-      postQuestActive();
-      try{
-        const cap=q('tamaGameCaption');
-        if(cap && !body.classList.contains('waaFs40Embedded') && !body.classList.contains('waaFs40Expanded')) cap.classList.remove('show');
-      }catch(e){}
-    }
-  },700);
 })();
 </script>
 
