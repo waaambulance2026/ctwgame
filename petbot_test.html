@@ -1663,12 +1663,10 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  // 20260705 fix:
+  // PetBot does not request browser fullscreen itself.
+  // It only asks the parent index.html to switch CSS fullscreen mode.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
-  try{
-    const el=document.documentElement;
-    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
-  }catch(e){}
 }
 function notifyParent(){
   const p=currentPet(); if(!p)return;
@@ -1697,7 +1695,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen');});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{

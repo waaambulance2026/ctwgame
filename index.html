@@ -6052,7 +6052,7 @@ if(openBtn){
   };
   window.expandEmbeddedTamaGame = expandEmbeddedTamaGame = function(){
     stopMove();
-    try{ if(d.fullscreenElement && d.exitFullscreen) d.exitFullscreen().catch(()=>{}); }catch(e){}
+    // CSS fullscreen only: do not call document.exitFullscreen().
     fitExpandedCss();
     try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
     try{ showToast('Full screen quest: Space jumps. Enter opens buildings.'); }catch(e){}
@@ -6480,15 +6480,7 @@ if(openBtn){
     }
   },true);
 
-  let sawBrowserFullscreen=false;
-  window.addEventListener('fullscreenchange',function(){
-    if(!body.classList.contains('gameExpandedFromTama')) return;
-    if(d.fullscreenElement){ sawBrowserFullscreen=true; return; }
-    if(sawBrowserFullscreen){
-      sawBrowserFullscreen=false;
-      setTimeout(()=>{ try{ window.stage37ReturnExpandedQuestToTamagotchi(); }catch(e){} },80);
-    }
-  });
+  // CSS fullscreen only: no browser fullscreenchange listener needed.
 })();
 
 </script>
@@ -7275,19 +7267,15 @@ Do not put level data or sprite links here.
   }
 
   function tryNativeFullscreen(){
-    try{
-      if(d.fullscreenElement) return;
-      const el=d.documentElement;
-      const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-      if(fn) Promise.resolve(fn.call(el)).catch(function(){});
-    }catch(e){}
+    // 20260705 fix:
+    // Use CSS fullscreen only. Native browser fullscreen is deliberately disabled
+    // because iframe postMessage routes are often blocked by browsers.
+    return false;
   }
 
   function exitNativeFullscreen(){
-    try{
-      const fn=d.exitFullscreen||d.webkitExitFullscreen||d.msExitFullscreen;
-      if(d.fullscreenElement && fn) Promise.resolve(fn.call(d)).catch(function(){});
-    }catch(e){}
+    // CSS fullscreen only. Nothing native to exit.
+    return false;
   }
 
   function cloneButton(id,handler){
@@ -7368,8 +7356,8 @@ Do not put level data or sprite links here.
 
   window.startEmbeddedTamaGame=startEmbeddedTamaGame=function(kind){ return setEmbedded(kind||'solo',{start:true}); };
   window.stopEmbeddedTamaGame=stopEmbeddedTamaGame=function(){ currentMode=''; clearModes(); releaseGame(); ensureBodyLock(false); exitNativeFullscreen(); return true; };
-  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); tryNativeFullscreen(); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
-  window.stage37ReturnExpandedQuestToTamagotchi=function(){ if(!isExpanded()) return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); exitNativeFullscreen(); return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); };
+  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
+  window.stage37ReturnExpandedQuestToTamagotchi=function(){ if(!isExpanded()) return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); };
   window.waaResumeQuestFromPetbot=function(mode){ return returnToQuest(mode); };
   window.waaEnterTamagotchiMode=function(){ return setPetbotMenu(); };
   window.startTamagotchiLaunch=function(){ return setPetbotMenu(); };
@@ -7387,7 +7375,7 @@ Do not put level data or sprite links here.
   window.handlePetbotGameAction=handlePetbotGameAction=function(action){
     if(action==='startSoloEmbedded' || action==='startPlatformEmbedded') return setEmbedded('solo',{start:true});
     if(action==='startTeamEmbedded') return setEmbedded('team',{start:true});
-    if(action==='expandEmbedded') { setExpanded({start:false}); tryNativeFullscreen(); return true; }
+    if(action==='expandEmbedded') { setExpanded({start:false}); return true; }
     if(action==='returnToQuest' || action==='resumeQuest') return returnToQuest(getQuestReturnMode());
     if(action==='stopEmbedded') return window.stopEmbeddedTamaGame();
     if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){
@@ -7396,12 +7384,22 @@ Do not put level data or sprite links here.
     if(previousAction) return previousAction(action);
   };
 
+  function handlePetbotFullscreenToggle(){
+    // One parent-controlled fullscreen route:
+    // - embedded quest -> expanded page quest
+    // - expanded page quest -> embedded Tamagotchi quest
+    // - PetBot/menu screens -> CSS PetBot fullscreen/menu
+    if(isEmbedded()) return setExpanded({start:false});
+    if(isExpanded()) return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false});
+    return setPetbotMenu();
+  }
+
   window.addEventListener('message',function(e){
     if(e.origin!==location.origin) return;
     const msg=e.data||{};
     if(!msg || !msg.type) return;
     if(msg.type==='waa-petbot-game-action') window.handlePetbotGameAction(msg.action);
-    if(msg.type==='waa-petbot-toggle-fullscreen') setPetbotMenu();
+    if(msg.type==='waa-petbot-toggle-fullscreen') handlePetbotFullscreenToggle();
     if(msg.type==='waa-petbot-close') window.closePetbotFull();
     if(msg.type==='waa-parent-return-to-quest') returnToQuest(getQuestReturnMode());
   },true);
