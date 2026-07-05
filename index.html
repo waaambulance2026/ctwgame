@@ -6820,7 +6820,8 @@ Do not put level data or sprite links here.
   body.waaFs40Embedded #tamaGameMask33{
     display:block!important;
     position:fixed!important;
-    z-index:2147482999!important;
+    /* LCD QUEST VISIBILITY FIX: the playable game must sit ABOVE the fullscreen PetBot iframe. */
+    z-index:2147483400!important;
     overflow:hidden!important;
     background:#79d9ff!important;
     border-radius:18px!important;
@@ -6935,39 +6936,6 @@ Do not put level data or sprite links here.
     display:none!important;
   }
 
-  /* FINAL VISIBILITY GUARD:
-     In expanded quest fullscreen, the playable game must not stay hidden,
-     clipped inside the Tamagotchi LCD, or covered by the PetBot iframe. */
-  body.waaFs40Expanded #game,
-  body.gameExpandedFromTama #game{
-    visibility:visible!important;
-    opacity:1!important;
-    display:block!important;
-    position:fixed!important;
-    left:0!important;
-    top:0!important;
-    width:1920px!important;
-    height:1080px!important;
-    min-width:1920px!important;
-    min-height:1080px!important;
-    max-width:none!important;
-    max-height:none!important;
-    clip-path:none!important;
-    -webkit-clip-path:none!important;
-    border-radius:0!important;
-    pointer-events:auto!important;
-    z-index:2147482500!important;
-  }
-
-  body.waaFs40Expanded #petbotDock,
-  body.gameExpandedFromTama #petbotDock,
-  body.waaFs40Expanded .petbotDockFrame,
-  body.gameExpandedFromTama .petbotDockFrame{
-    display:none!important;
-    visibility:hidden!important;
-    pointer-events:none!important;
-  }
-
   body.waaFs40Embedded .tamaGameCaption.show{
     display:block!important;
     position:fixed!important;
@@ -6994,6 +6962,25 @@ Do not put level data or sprite links here.
     width:min(780px,88vw)!important;
     transform:translateX(-50%)!important;
     z-index:2147483646!important;
+  }
+
+
+  /* LCD QUEST VISIBILITY FIX 20260705:
+     When PetBot is already fullscreen and Quest starts, the iframe was above the game.
+     The game was running, but the LCD looked blank. Keep only the LCD game mask above the iframe. */
+  body.waaFs40Embedded #tamaGameMask33{
+    z-index:2147483400!important;
+    pointer-events:none!important;
+  }
+  body.waaFs40Embedded #tamaGameMask33 #game{
+    z-index:1!important;
+    visibility:visible!important;
+    opacity:1!important;
+    display:block!important;
+  }
+  body.waaFs40Embedded #petbotDock,
+  body.waaFs40Embedded #petbotDockFrame{
+    z-index:2147483000!important;
   }
 </style>
 <script id="fix-20260705-final-fullscreen-router-script">
@@ -7418,8 +7405,10 @@ Do not put level data or sprite links here.
 
   const previousAction=window.handlePetbotGameAction || (typeof handlePetbotGameAction==='function'?handlePetbotGameAction:null);
   window.handlePetbotGameAction=handlePetbotGameAction=function(action){
-    if(action==='startSoloEmbedded' || action==='startPlatformEmbedded') return setEmbedded('solo',{start:true});
-    if(action==='startTeamEmbedded') return setEmbedded('team',{start:true});
+    // LCD QUEST VISIBILITY FIX: any quest-start action from the fullscreen PetBot must enter embedded LCD mode.
+    // Do not fall through to older handlers that close PetBot or start the normal full-page quest.
+    if(action==='startSolo' || action==='startPlatform' || action==='startSoloEmbedded' || action==='startPlatformEmbedded') return setEmbedded('solo',{start:true});
+    if(action==='startTeam' || action==='startTeamEmbedded') return setEmbedded('team',{start:true});
     if(action==='expandEmbedded') { setExpanded({start:false}); tryNativeFullscreen(); return true; }
     if(action==='returnToQuest' || action==='resumeQuest') return returnToQuest(getQuestReturnMode());
     if(action==='stopEmbedded') return window.stopEmbeddedTamaGame();
@@ -7434,44 +7423,26 @@ Do not put level data or sprite links here.
     const msg=e.data||{};
     if(!msg || !msg.type) return;
 
-    // IMPORTANT:
-    // This final router runs in capture mode and must stop the same message
-    // reaching older PetBot listeners later in the file. Those older listeners
-    // can reopen PetBot or hide #game after this router has made it visible.
     if(msg.type==='waa-petbot-game-action'){
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      return window.handlePetbotGameAction(msg.action);
+      const action=msg.action||'';
+      // Quest-start actions must be owned here, otherwise older listeners also run and can hide the LCD game.
+      if(action==='startSolo' || action==='startPlatform' || action==='startSoloEmbedded' || action==='startPlatformEmbedded' || action==='startTeam' || action==='startTeamEmbedded'){
+        e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        return window.handlePetbotGameAction(action);
+      }
+      return window.handlePetbotGameAction(action);
     }
 
     if(msg.type==='waa-petbot-toggle-fullscreen'){
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      if(isEmbedded()){
-        setExpanded({start:false});
-        tryNativeFullscreen();
-        visibleCaption('Full screen quest',1400);
-        return;
-      }
-      if(isExpanded()){
-        window.stage37ReturnExpandedQuestToTamagotchi();
-        return;
-      }
+      e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+      if(isEmbedded()) { setExpanded({start:false}); tryNativeFullscreen(); return; }
+      if(isExpanded()) { window.stage37ReturnExpandedQuestToTamagotchi(); return; }
       setPetbotMenu();
       return;
     }
 
-    if(msg.type==='waa-petbot-close'){
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      return window.closePetbotFull();
-    }
-
-    if(msg.type==='waa-parent-return-to-quest'){
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      return returnToQuest(getQuestReturnMode());
-    }
+    if(msg.type==='waa-petbot-close') { window.closePetbotFull(); return; }
+    if(msg.type==='waa-parent-return-to-quest') { returnToQuest(getQuestReturnMode()); return; }
   },true);
 
   window.addEventListener('keydown',function(e){
