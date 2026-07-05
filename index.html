@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=204&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=20260705-reset-fix-1&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5756,7 +5756,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=204&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=20260705-reset-fix-1&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -6052,7 +6052,7 @@ if(openBtn){
   };
   window.expandEmbeddedTamaGame = expandEmbeddedTamaGame = function(){
     stopMove();
-    try{ if(d.fullscreenElement && d.exitFullscreen) d.exitFullscreen().catch(()=>{}); }catch(e){}
+    // CSS fullscreen only: do not call browser exitFullscreen here.
     fitExpandedCss();
     try{ window.focus(); body.setAttribute('tabindex','-1'); body.focus({preventScroll:true}); }catch(e){}
     try{ showToast('Full screen quest: Space jumps. Enter opens buildings.'); }catch(e){}
@@ -6527,7 +6527,7 @@ Browser fullscreen is disabled in this cleaned copy.
   function ensurePetbotFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
     if(frame){
-      const wanted='petbot_test.html?v=204&embed=1&launch=1&choose=1';
+      const wanted='petbot_test.html?v=20260705-reset-fix-1&embed=1&launch=1&choose=1';
       try{
         const current=new URL(frame.getAttribute('src')||'',location.href);
         const next=new URL(wanted,location.href);
@@ -6597,7 +6597,7 @@ Browser fullscreen is disabled in this cleaned copy.
 <!-- PART 3D: REAL PETBOT MENU OPENER SCRIPT -->
 <script id="fix-20260702e-real-petbot-start-script">
 (function(){
-  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=20260705-reset-fix-1&embed=1&launch=1&choose=1';
   function q(id){return document.getElementById(id);}
   function setFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
@@ -6738,6 +6738,7 @@ function showPetbot(){
 
 <!-- ==========================================================
 PART 3Z: FINAL FULLSCREEN ROUTER PATCH 20260705
+RESET FIX 20260705: edited directly, not another bridge/patch
 
 This is the last fullscreen authority in this file.
 It fixes the real behaviour, not just the guide text.
@@ -6899,10 +6900,15 @@ Do not put level data or sprite links here.
     display:none!important;
   }
 
-  body.waaFs40Expanded .hud{
-    display:flex!important;
-    visibility:visible!important;
-    opacity:1!important;
+  body.waaFs40Expanded .hud,
+  body.waaFs40Expanded .instructions,
+  body.waaFs40Expanded .helpBtn,
+  body.waaFs40Expanded #petBtn,
+  body.waaFs40Expanded #menuPetBtn{
+    display:none!important;
+    visibility:hidden!important;
+    opacity:0!important;
+    pointer-events:none!important;
   }
 
   body.waaFs40Expanded .touch{
@@ -6962,6 +6968,34 @@ Do not put level data or sprite links here.
     transform:translateX(-50%)!important;
     z-index:2147483646!important;
   }
+
+  /* RESET FIX 20260705: keep the real quest layers visible in fullscreen quest mode. */
+  body.waaFs40Expanded #game,
+  body.waaFs40Embedded #game{
+    background:#79d9ff!important;
+    overflow:hidden!important;
+  }
+
+  body.waaFs40Expanded #game .sky,
+  body.waaFs40Expanded #game .hills,
+  body.waaFs40Expanded #game .groundDecor,
+  body.waaFs40Expanded #game .underFloor,
+  body.waaFs40Expanded #game .platform,
+  body.waaFs40Expanded #game #buildingObjects,
+  body.waaFs40Expanded #game #worldObjects,
+  body.waaFs40Expanded #game .character,
+  body.waaFs40Embedded #game .sky,
+  body.waaFs40Embedded #game .hills,
+  body.waaFs40Embedded #game .groundDecor,
+  body.waaFs40Embedded #game .underFloor,
+  body.waaFs40Embedded #game .platform,
+  body.waaFs40Embedded #game #buildingObjects,
+  body.waaFs40Embedded #game #worldObjects,
+  body.waaFs40Embedded #game .character{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+  }
 </style>
 <script id="fix-20260705-final-fullscreen-router-script">
 (function(){
@@ -6970,7 +7004,7 @@ Do not put level data or sprite links here.
   const root=d.documentElement;
   const DESIGN_W=1920;
   const DESIGN_H=1080;
-  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=20260705-reset-fix-1&embed=1&launch=1&choose=1';
   const FS_CLASSES=['waaFs40Petbot','waaFs40Embedded','waaFs40Expanded','petbotOpen','tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','tamagotchiLanding','waaTamaStartMode'];
   const LEGACY_STYLE_PROPS=['position','left','right','top','bottom','inset','width','height','min-width','min-height','max-width','max-height','z-index','transform','transform-origin','display','visibility','opacity','pointer-events','clip-path','-webkit-clip-path','border-radius','box-shadow'];
   const game=d.getElementById('game');
@@ -7275,19 +7309,11 @@ Do not put level data or sprite links here.
   }
 
   function tryNativeFullscreen(){
-    try{
-      if(d.fullscreenElement) return;
-      const el=d.documentElement;
-      const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-      if(fn) Promise.resolve(fn.call(el)).catch(function(){});
-    }catch(e){}
+    // CSS fullscreen only. Do not call browser requestFullscreen.
   }
 
   function exitNativeFullscreen(){
-    try{
-      const fn=d.exitFullscreen||d.webkitExitFullscreen||d.msExitFullscreen;
-      if(d.fullscreenElement && fn) Promise.resolve(fn.call(d)).catch(function(){});
-    }catch(e){}
+    // CSS fullscreen only. Do not call browser exitFullscreen.
   }
 
   function cloneButton(id,handler){
