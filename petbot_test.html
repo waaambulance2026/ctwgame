@@ -1901,6 +1901,7 @@ window.addEventListener('message',e=>{
     try{
       state.parentQuestActive=true;
       state.parentQuestActiveAt=Date.now();
+      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
       state.returnToQuest=false;
@@ -2009,6 +2010,7 @@ window.addEventListener('message',e=>{
 (function(){
   function parentStillInQuestMode(){
     try{
+      if(localStorage.getItem('waaQuestActive')==='1') return true;
       if(state && (state.screen==='questGame' || (state.parentQuestActive && Date.now()-Number(state.parentQuestActiveAt||0)<6000))) return true;
       if(parent && parent!==window && parent.document){
         const b=parent.document.body;
@@ -2022,6 +2024,7 @@ window.addEventListener('message',e=>{
     try{
       state.parentQuestActive=true;
       state.parentQuestActiveAt=Date.now();
+      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
       state.returnToQuest=false;
@@ -2069,6 +2072,55 @@ window.addEventListener('message',e=>{
 })();
 
 render();
+})();
+</script>
+
+<script id="fix-20260705-final-petbot-quest-lock">
+(function(){
+  function parentQuestLocked(){
+    try{ if(localStorage.getItem('waaQuestActive')==='1') return true; }catch(e){}
+    try{
+      if(parent && parent!==window && parent.document){
+        const b=parent.document.body;
+        return !!(b && (
+          b.classList.contains('waaFs40Embedded') ||
+          b.classList.contains('waaFs40Expanded') ||
+          b.classList.contains('tamaGameEmbedded') ||
+          b.classList.contains('gameExpandedFromTama')
+        ));
+      }
+    }catch(e){}
+    return false;
+  }
+  function forceQuestControls(){
+    try{
+      state.parentQuestActive=true;
+      state.parentQuestActiveAt=Date.now();
+      state.returnToQuest=false;
+      state.returnQuestMode='';
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
+      document.documentElement.classList.add('questPlaying');
+      document.body.classList.add('questPlaying');
+      render();
+    }catch(e){}
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active'){
+      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
+      forceQuestControls();
+      try{e.stopImmediatePropagation();}catch(_e){}
+    }
+    if(d.type==='waa-parent-show-petbot-home' && parentQuestLocked()){
+      forceQuestControls();
+      try{e.stopImmediatePropagation();}catch(_e){}
+    }
+  },true);
+  setInterval(function(){
+    if(parentQuestLocked() && state && state.screen!=='questGame') forceQuestControls();
+  },500);
 })();
 </script>
 </body>
