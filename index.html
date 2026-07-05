@@ -4598,12 +4598,8 @@ window.addEventListener('message',function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
   if(d.type === 'waa-petbot-toggle-fullscreen'){
-    // Stage 19: this is a CSS fullscreen first. Browser Fullscreen API can be blocked
-    // when the click started inside an iframe, so the game must still visibly expand.
-    try{ document.body.classList.remove('gameExpandedFromTama'); }catch(err){}
-    try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(err){}
-    // Browser fullscreen disabled on purpose.
-    // CSS fullscreen is used instead so users do not get trapped needing Esc.
+    // The final fullscreen router at the end of the file owns this message.
+    // Leaving this older handler active makes the mode flip twice.
     return;
   }
   if(d.type === 'waa-petbot-close'){
@@ -7339,6 +7335,7 @@ Do not put level data or sprite links here.
 
   window.openPetbotFull=openPetbotFull=function(){
     if(isExpanded()) return window.stage37ReturnExpandedQuestToTamagotchi();
+    if(isEmbedded()) return setExpanded({start:false});
     return setPetbotMenu();
   };
 
