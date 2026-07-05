@@ -7274,21 +7274,15 @@ Do not put level data or sprite links here.
     return true;
   }
 
-  function tryNativeFullscreen(){
-    try{
-      if(d.fullscreenElement) return;
-      const el=d.documentElement;
-      const fn=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-      if(fn) Promise.resolve(fn.call(el)).catch(function(){});
-    }catch(e){}
-  }
+function tryNativeFullscreen(){
+  // CSS fullscreen only.
+  // Do not use browser requestFullscreen here.
+}
 
-  function exitNativeFullscreen(){
-    try{
-      const fn=d.exitFullscreen||d.webkitExitFullscreen||d.msExitFullscreen;
-      if(d.fullscreenElement && fn) Promise.resolve(fn.call(d)).catch(function(){});
-    }catch(e){}
-  }
+function exitNativeFullscreen(){
+  // CSS fullscreen only.
+  // Do not use browser exitFullscreen here.
+}
 
   function cloneButton(id,handler){
     const old=q(id);
