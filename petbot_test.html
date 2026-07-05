@@ -1899,6 +1899,8 @@ window.addEventListener('message',e=>{
 (function(){
   function showQuestFromParent(){
     try{
+      state.parentQuestActive=true;
+      state.parentQuestActiveAt=Date.now();
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
       state.returnToQuest=false;
@@ -2005,10 +2007,37 @@ window.addEventListener('message',e=>{
 // The quest LCD is only for embedded platform play; when the parent asks for PetBot
 // home, render a real user/pet screen so the device is not blank.
 (function(){
+  function parentStillInQuestMode(){
+    try{
+      if(state && (state.screen==='questGame' || (state.parentQuestActive && Date.now()-Number(state.parentQuestActiveAt||0)<6000))) return true;
+      if(parent && parent!==window && parent.document){
+        const b=parent.document.body;
+        if(b && (b.classList.contains('waaFs40Embedded') || b.classList.contains('waaFs40Expanded') || b.classList.contains('tamaGameEmbedded') || b.classList.contains('gameExpandedFromTama'))) return true;
+      }
+    }catch(e){}
+    return false;
+  }
+
+  function keepQuestScreen(){
+    try{
+      state.parentQuestActive=true;
+      state.parentQuestActiveAt=Date.now();
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
+      state.returnToQuest=false;
+      render();
+    }catch(e){}
+  }
+
   function showRealPetbotHome(){
     try{
+      if(parentStillInQuestMode()){
+        keepQuestScreen();
+        return;
+      }
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
+      state.parentQuestActive=false;
       state.returnToQuest=false;
       state.returnQuestMode='';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
