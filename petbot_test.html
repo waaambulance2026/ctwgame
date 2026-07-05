@@ -1663,11 +1663,17 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  // IMPORTANT 20260705B:
+  // Use CSS fullscreen only inside the Tamagotchi iframe.
+  // Real requestFullscreen() puts the iframe into the browser top layer,
+  // which hides the parent quest game when Quest starts after PetBot fullscreen.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
+}
+function exitLocalFullscreen(){
+  try{document.documentElement.classList.remove('cssFullscreen');document.body.classList.remove('cssFullscreen');}catch(e){}
   try{
-    const el=document.documentElement;
-    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
+    const fn=document.exitFullscreen||document.webkitExitFullscreen||document.msExitFullscreen;
+    if(document.fullscreenElement && fn){ const r=fn.call(document); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
 function notifyParent(){
@@ -1885,6 +1891,16 @@ window.addEventListener('message',e=>{
   };
 })();
 
+
+
+// Parent asks the iframe to leave local fullscreen before rendering the platform quest in the parent LCD mask.
+window.addEventListener('message',function(e){
+  if(e.origin!==location.origin)return;
+  const d=e.data||{};
+  if(d.type==='waa-parent-exit-local-fullscreen'){
+    exitLocalFullscreen();
+  }
+},true);
 
 // STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
 (function(){
