@@ -1663,11 +1663,11 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // CSS fullscreen only. The parent index.html controls the full-page layout.
-  // Do not call browser requestFullscreen from inside the iframe.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
   try{
-    document.documentElement.classList.add('cssFullscreen');
-    document.body.classList.add('cssFullscreen');
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
 function notifyParent(){
@@ -1703,8 +1703,8 @@ $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')r
 document.addEventListener('keydown',e=>{
   if(state.screen==='questGame'){
     const code=e.code||'';
-    if(code==='ArrowLeft'||code==='KeyA'){e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'moveLeftStart'});return;}
-    if(code==='ArrowRight'||code==='KeyD'){e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'moveRightStart'});return;}
+    if(code==='ArrowLeft'||code==='KeyA'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveLeftStart'});return;}
+    if(code==='ArrowRight'||code==='KeyD'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveRightStart'});return;}
     if(code==='Space'||code==='ArrowUp'||code==='KeyW'){if(e.target&&e.target.tagName==='INPUT')return;e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'jumpOnly'});return;}
     if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'selectOrJump'});return;}
     if(code==='Escape'){e.preventDefault();handleBack();return;}
