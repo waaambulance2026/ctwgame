@@ -7487,5 +7487,103 @@ Do not put level data or sprite links here.
   }, 250);
 })();
 </script>
+  <script id="waa-final-lcd-camera-force">
+(function(){
+  const DESIGN_W = 1920;
+  const DESIGN_H = 1080;
+
+  function q(id){
+    return document.getElementById(id);
+  }
+
+  function setImp(el, prop, val){
+    if(el) el.style.setProperty(prop, val, 'important');
+  }
+
+  function numberFromCss(name, fallback){
+    const raw = getComputedStyle(document.documentElement).getPropertyValue(name);
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : fallback;
+  }
+
+  function forceLcdCamera(){
+    const body = document.body;
+    const game = q('game');
+    const mask = q('tamaGameMask33');
+
+    if(!game || !mask) return;
+
+    const inTamaQuest =
+      body.classList.contains('tamaGameEmbedded') ||
+      body.classList.contains('waaFs40Embedded');
+
+    if(!inTamaQuest) return;
+
+    if(game.parentNode !== mask){
+      mask.appendChild(game);
+    }
+
+    const r = mask.getBoundingClientRect();
+    if(!r.width || !r.height) return;
+
+    setImp(mask, 'display', 'block');
+    setImp(mask, 'position', 'fixed');
+    setImp(mask, 'overflow', 'hidden');
+    setImp(mask, 'z-index', '2147483001');
+    setImp(mask, 'pointer-events', 'none');
+    setImp(mask, 'background', '#79d9ff');
+
+    let scale = Math.max(r.width / 820, r.height / 500);
+    scale = Math.max(0.24, Math.min(0.70, scale));
+
+    const cropW = Math.min(DESIGN_W, r.width / scale);
+    const cropH = Math.min(DESIGN_H, r.height / scale);
+
+    let playerX = numberFromCss('--playerX', 150);
+
+    try{
+      if(window.player && Number.isFinite(Number(window.player.x))){
+        playerX += Number(window.player.x);
+      }
+    }catch(e){}
+
+    const cropLeft = Math.max(0, Math.min(DESIGN_W - cropW, playerX - 230));
+    const cropTop = Math.max(0, Math.min(DESIGN_H - cropH, DESIGN_H - cropH - 60));
+
+    setImp(game, 'display', 'block');
+    setImp(game, 'visibility', 'visible');
+    setImp(game, 'opacity', '1');
+    setImp(game, 'position', 'absolute');
+    setImp(game, 'left', '0px');
+    setImp(game, 'top', '0px');
+    setImp(game, 'width', DESIGN_W + 'px');
+    setImp(game, 'height', DESIGN_H + 'px');
+    setImp(game, 'min-width', DESIGN_W + 'px');
+    setImp(game, 'min-height', DESIGN_H + 'px');
+    setImp(game, 'max-width', 'none');
+    setImp(game, 'max-height', 'none');
+    setImp(game, 'transform-origin', '0 0');
+    setImp(game, 'transform', 'translate3d(' + (-cropLeft * scale) + 'px,' + (-cropTop * scale) + 'px,0) scale(' + scale + ')');
+    setImp(game, 'clip-path', 'none');
+    setImp(game, '-webkit-clip-path', 'none');
+    setImp(game, 'border-radius', '0');
+    setImp(game, 'box-shadow', 'none');
+    setImp(game, 'pointer-events', 'none');
+    setImp(game, 'z-index', '1');
+  }
+
+  window.waaForceLcdCamera = forceLcdCamera;
+
+  [0, 80, 200, 500, 1000, 1600].forEach(function(ms){
+    setTimeout(forceLcdCamera, ms);
+  });
+
+  setInterval(forceLcdCamera, 250);
+
+  window.addEventListener('resize', function(){
+    setTimeout(forceLcdCamera, 80);
+  });
+})();
+</script>
 </body>
 </html>
