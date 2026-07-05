@@ -1885,11 +1885,19 @@ window.addEventListener('message',e=>{
 
 // STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
 (function(){
+  function writeQuestHeartbeat(){
+    try{
+      const t=String(Date.now());
+      sessionStorage.setItem('waaQuestActiveAt',t);
+      localStorage.setItem('waaQuestActiveAt',t);
+      localStorage.removeItem('waaQuestActive');
+    }catch(_e){}
+  }
   function showQuestFromParent(){
     try{
       state.parentQuestActive=true;
       state.parentQuestActiveAt=Date.now();
-      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
+      writeQuestHeartbeat();
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
       state.returnToQuest=false;
@@ -1996,9 +2004,31 @@ window.addEventListener('message',e=>{
 // The quest LCD is only for embedded platform play; when the parent asks for PetBot
 // home, render a real user/pet screen so the device is not blank.
 (function(){
+  function recentQuestHeartbeat(){
+    try{
+      const raw=sessionStorage.getItem('waaQuestActiveAt') || localStorage.getItem('waaQuestActiveAt') || '0';
+      const t=Number(raw);
+      return !!(t && Date.now()-t<2500);
+    }catch(e){return false;}
+  }
+  function writeQuestHeartbeat(){
+    try{
+      const t=String(Date.now());
+      sessionStorage.setItem('waaQuestActiveAt',t);
+      localStorage.setItem('waaQuestActiveAt',t);
+      localStorage.removeItem('waaQuestActive');
+    }catch(_e){}
+  }
+  function clearQuestHeartbeat(){
+    try{
+      sessionStorage.removeItem('waaQuestActiveAt');
+      localStorage.removeItem('waaQuestActiveAt');
+      localStorage.removeItem('waaQuestActive');
+    }catch(_e){}
+  }
   function parentStillInQuestMode(){
     try{
-      if(localStorage.getItem('waaQuestActive')==='1') return true;
+      if(recentQuestHeartbeat()) return true;
       if(state && (state.screen==='questGame' || (state.parentQuestActive && Date.now()-Number(state.parentQuestActiveAt||0)<6000))) return true;
       if(parent && parent!==window && parent.document){
         const b=parent.document.body;
@@ -2012,7 +2042,7 @@ window.addEventListener('message',e=>{
     try{
       state.parentQuestActive=true;
       state.parentQuestActiveAt=Date.now();
-      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
+      writeQuestHeartbeat();
       state.screen='questGame';
       state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest',started:true,embedded:true};
       state.returnToQuest=false;
@@ -2028,6 +2058,7 @@ window.addEventListener('message',e=>{
       }
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
+      clearQuestHeartbeat();
       state.parentQuestActive=false;
       state.returnToQuest=false;
       state.returnQuestMode='';
@@ -2065,8 +2096,24 @@ render();
 
 <script id="fix-20260705-final-petbot-quest-lock">
 (function(){
+  function recentQuestHeartbeat(){
+    try{
+      const raw=sessionStorage.getItem('waaQuestActiveAt') || localStorage.getItem('waaQuestActiveAt') || '0';
+      const t=Number(raw);
+      return !!(t && Date.now()-t<2500);
+    }catch(e){return false;}
+  }
+  function writeQuestHeartbeat(){
+    try{
+      const t=String(Date.now());
+      sessionStorage.setItem('waaQuestActiveAt',t);
+      localStorage.setItem('waaQuestActiveAt',t);
+      localStorage.removeItem('waaQuestActive');
+    }catch(_e){}
+  }
+  try{localStorage.removeItem('waaQuestActive');}catch(_e){}
   function parentQuestLocked(){
-    try{ if(localStorage.getItem('waaQuestActive')==='1') return true; }catch(e){}
+    if(recentQuestHeartbeat()) return true;
     try{
       if(parent && parent!==window && parent.document){
         const b=parent.document.body;
@@ -2082,6 +2129,7 @@ render();
   }
   function forceQuestControls(){
     try{
+      writeQuestHeartbeat();
       state.parentQuestActive=true;
       state.parentQuestActiveAt=Date.now();
       state.returnToQuest=false;
@@ -2097,7 +2145,7 @@ render();
     if(e.origin!==location.origin)return;
     const d=e.data||{};
     if(d.type==='waa-parent-quest-active'){
-      try{localStorage.setItem('waaQuestActive','1');}catch(_e){}
+      writeQuestHeartbeat();
       forceQuestControls();
       try{e.stopImmediatePropagation();}catch(_e){}
     }
