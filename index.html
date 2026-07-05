@@ -4,29 +4,210 @@
 
 <head>
   <!-- ==========================================================
-  WAAAMBULANCE INDEX GUIDE - READ THIS FIRST
+WAAAMBULANCE INDEX GUIDE - READ THIS FIRST
 
-  This index is split into 3 big parts:
+The index file has 3 big parts:
 
-  PART 1 = STYLE / LOOKS
-  - CSS only.
-  - Colours, sizes, layers, menus, Tamagotchi look, mobile layout.
-  - Do NOT put level data, sprite links, or JavaScript functions here.
+PART 1 = STYLE / LOOKS
+This controls how the game looks.
 
-  PART 2 = HTML / PAGE PIECES
-  - The visible boxes, buttons, screens and panels.
-  - Safe edits: visible words, button text, menu titles, popup text.
-  - Do NOT randomly rename IDs like game, score, petBtn, startScreen.
+PART 2 = PAGE PIECES
+This controls what boxes, buttons, screens and panels exist.
 
-  PART 3 = JAVASCRIPT / GAME BRAIN
-  - Movement, jumping, sprites, levels, Tamagotchi controls, save/load.
-  - Safe edit areas: sprite paths, animation speeds, frame counts, level data.
-  - Do NOT randomly edit functions unless you know what they do.
+PART 3 = GAME BRAIN
+This controls what happens when the game runs.
 
-  FULLSCREEN NOTE:
-  This cleaned copy uses CSS fullscreen only.
-  Browser requestFullscreen() is disabled so players are not trapped needing Esc.
-  ========================================================== -->
+Easy rule:
+PART 1 = how it looks
+PART 2 = what is on the page
+PART 3 = how it works
+
+------------------------------------------------------------
+PART 1 — CSS / LOOKS
+------------------------------------------------------------
+
+Part 1 controls the design of the game.
+
+It controls:
+- colours
+- sizes
+- sky
+- hills
+- ground
+- player display
+- buddy display
+- objects
+- buildings
+- menus
+- editor panel
+- Tamagotchi display
+- mobile layout
+
+Part 1 does NOT control the real game rules.
+Do not put level data here.
+Do not put sprite image links here.
+Do not put JavaScript functions here.
+
+PART 1 SAFE EDIT AREAS
+
+PART 1A = main settings box
+Use this for colours, player size, buddy size, floor height, sky position, hills position, ground position, token height, hazard height and layer order.
+
+PART 1B = page reset
+Usually do not touch this. It stops scrollbars and makes the page fill the screen.
+
+PART 1C = main game world
+Use this for sky, night sky, hills, ground and the floor line.
+
+PART 1D = HUD / top bar
+Use this if the top menu bar looks wrong.
+
+PART 1E = character display
+Use this if Ax, Pura, buddy shadows or sprite boxes look wrong.
+
+PART 1F = objects and buildings
+Use this for tokens, hazards, tutorial boards, buildings, glow and door popups.
+
+PART 1G = menus and overlays
+Use this for start menu, win screen, lose screen, toast messages and mobile buttons.
+
+PART 1H = builder/editor panel
+Use this for the Build/Edit panel design.
+
+PART 1I / 1J = Tamagotchi / PetBot
+Use this if the Tamagotchi is too high, too small, cropped badly or fullscreen looks wrong.
+
+PART 1K = debug box
+Usually leave this alone.
+
+PART 1L = mobile fixes
+Use this for phone and tablet layout problems.
+
+------------------------------------------------------------
+PART 2 — HTML / PAGE PIECES
+------------------------------------------------------------
+
+Part 2 is the visible stuff that exists on the page.
+
+This starts around:
+<body>
+<div id="game">
+ Part 2 creates the page pieces that CSS styles and JavaScript controls.
+
+It contains:
+- game area
+- sky layer
+- hills layer
+- ground layer
+- building container
+- world object container
+- HUD buttons
+- instructions box
+- admin builder panel
+- pet panel
+- start menu
+- welcome board
+- pet shop screen
+- habitat screen
+- Hook-a-Waaambulance screen
+- quest starter screen
+- level complete screen
+- end screen
+
+Safe to edit:
+- visible words
+- button text
+- menu titles
+- welcome board text
+- shop placeholder text
+- quest starter text
+
+Do NOT randomly change ID names like:
+id="game"
+id="score"
+id="lives"
+id="petBtn"
+id="buildBtn"
+id="startScreen"
+id="questStartScreen"
+
+The JavaScript uses those IDs to find things.
+
+------------------------------------------------------------
+PART 3 — JAVASCRIPT / GAME BRAIN
+------------------------------------------------------------
+
+Part 3 is the working brain of the game.
+
+This starts around:
+EDIT SECTION 15: JAVASCRIPT STARTS HERE
+ the script tag
+  Part 3 controls:
+- buttons
+- movement
+- jumping
+- score
+- lives
+- levels
+- sprites
+- animation frames
+- building entry
+- quest screens
+- Tamagotchi fullscreen
+- saving/loading layout
+- mobile scaling
+- collision checks
+
+Safe edit areas:
+
+EDIT SECTION 17: SPRITE PATHS
+Use this for Ax, Pura, Owl and Unicorn image links.
+
+EDIT SECTION 18A: ANIMATION SPEEDS
+Lower numbers = faster animation.
+Higher numbers = slower animation.
+
+EDIT SECTION 18B: FRAME COUNTS + CHARACTER SIZE LOCK
+Use this for frame counts and stopping characters changing size.
+
+EDIT SECTION 20: LEVEL DATA
+Use this for Tutorial Town, Wrong Moon, tokens, hazards, buildings and level distance.
+
+EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
+Use this to plan the route:
+at = where something appears
+kind = what type of thing it is
+
+------------------------------------------------------------
+QUICK EDIT MAP
+------------------------------------------------------------
+
+Colours = PART 1A
+Player position = PART 1A
+Buddy position = PART 1A
+Sky / hills / ground = PART 1C
+Top bar design = PART 1D
+Character display box = PART 1E
+Token / building style = PART 1F
+Menu design = PART 1G
+Builder design = PART 1H
+Tamagotchi look = PART 1I / 1J
+Mobile layout = PART 1L
+
+Button wording = PART 2
+Welcome board wording = PART 2
+Pet shop popup text = PART 2
+
+Sprite image links = PART 3, Section 17
+Animation speed = PART 3, Section 18A
+Frame count = PART 3, Section 18B
+Tutorial level route = PART 3, Section 20 / 20B
+Tokens / hazards / buildings = PART 3, Section 20 / 20B
+
+FULLSCREEN NOTE:
+This cleaned copy uses CSS fullscreen only.
+Browser requestFullscreen() is disabled so players are not trapped needing Esc.
+========================================================== -->
 
   <!-- ==========================================================
   PART 1: PAGE SETUP + CSS
@@ -2231,7 +2412,7 @@ Do NOT put level data here.Do NOT put sprite image links here.Do NOT put JavaScr
 
 
   <!-- ==========================================================
-  PART 1M: TAMAGOTCHI / PETBOT CSS PATCHES
+  PART 1I / 1J EXTRA: TAMAGOTCHI / PETBOT CSS
 
   These are still CSS only, so they belong in PART 1.
   They control the Tamagotchi start screen, PetBot fullscreen look,
@@ -2246,11 +2427,10 @@ Do NOT put level data here.Do NOT put sprite image links here.Do NOT put JavaScr
   Do NOT put JavaScript functions here.
   ========================================================== -->
 <!-- ============================================================
-FIX 20260702C: START IN REAL TAMAGOTCHI MODE
-This version starts with the real PetBot/Tamagotchi app, not the
-platform quest cropped into a fake shell. The user chooses who is
-playing inside petbot_test.html, then pets, shop, habitat, hook and
-quest launch from that Tamagotchi.
+PART 1J EXTRA: REAL TAMAGOTCHI START SCREEN
+This CSS starts the page in the real PetBot/Tamagotchi app.
+The player chooses who is playing inside petbot_test.html.
+Pets, shop, habitat, Hook-a-Waaambulance and quest launch from the Tamagotchi.
 ============================================================ -->
 <style id="fix-20260702c-tamagotchi-start-css">
   body.waaTamaStartMode{
@@ -2334,10 +2514,9 @@ quest launch from that Tamagotchi.
   }
 </style>
 <!-- ============================================================
-FIX 20260702E: PETBOT MENU OPENER
-This is the main Tamagotchi menu route.
-It opens the real PetBot app/menus in CSS fullscreen.
-Quest starts only from the PetBot Games menu.
+PART 1J EXTRA: PETBOT MENU OPENER
+This CSS opens the real PetBot app/menus in CSS fullscreen.
+Quest starts from the PetBot Games menu.
 Browser fullscreen is NOT used in this cleaned copy.
 ============================================================ -->
 <style id="fix-20260702e-real-petbot-start-css">
@@ -2370,9 +2549,9 @@ Browser fullscreen is NOT used in this cleaned copy.
   }
 </style>
 <!-- ============================================================
-FIX 20260702D: TAMAGOTCHI LCD POLISH
-This does not change game logic. It only removes edit/debug outlines while
-in Tamagotchi mode and gives the LCD a cleaner game crop.
+PART 1J EXTRA: TAMAGOTCHI LCD POLISH
+This is CSS only. It removes edit/debug outlines in Tamagotchi mode
+and gives the LCD a cleaner game crop.
 ============================================================ -->
 <style id="fix-20260702d-tamagotchi-lcd-polish-css">
   body.waaTamaStartMode .editableTarget,
@@ -2396,7 +2575,7 @@ in Tamagotchi mode and gives the LCD a cleaner game crop.
     border-radius:9% / 12%!important;
   }
 </style>
-<!-- RESTORED CHECK FIX: quest caption/text visibility for Tamagotchi + fullscreen quest mode -->
+<!-- PART 1J EXTRA: QUEST CAPTION TEXT FOR TAMAGOTCHI AND FULLSCREEN QUEST MODE -->
 <style id="clean-restored-caption-css">
   .tamaGameCaption{
     display:none;
@@ -2543,6 +2722,8 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>🎣 Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>🎟️ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>🏆 Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
   <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
+</div>
+ </script>
 </div>
 <!-- ==========================================================
 PART 3: JAVASCRIPT / GAME BRAIN
@@ -4939,7 +5120,7 @@ fitGameToScreen();
 // expandEmbeddedTamaGame() now uses CSS fullscreen only.
 // It does NOT call browser requestFullscreen() in this cleaned copy.
 // ==========================================================
-// STAGE 27: reliable building select, visible Tamagotchi quest text, and smoother moving state.
+// PART 3 EXTRA: reliable building select, visible Tamagotchi quest text, and smoother moving state.
 function stage27EnsureCaption(){
   let cap=document.getElementById('tamaGameCaption');
   if(!cap){cap=document.createElement('div');cap.id='tamaGameCaption';cap.className='tamaGameCaption';cap.setAttribute('aria-live','polite');document.body.appendChild(cap);}
@@ -5116,7 +5297,7 @@ window.addEventListener('keyup',function(e){
 })();
 
 
-// STAGE 28: open real Tamagotchi screens from quest buildings and make selection route-based.
+// PART 3 EXTRA: open real Tamagotchi screens from quest buildings and make selection route-based.
 (function(){
   const oldOpenBuilding = (typeof openBuilding === 'function') ? openBuilding : null;
   function q$(id){return document.getElementById(id)}
@@ -5256,7 +5437,7 @@ window.addEventListener('keyup',function(e){
 
 
 
-// STAGE 32: actual quest-mode repair — fullscreen fit, building select, and smoother walking.
+// PART 3 EXTRA: quest-mode repair — fullscreen fit, building select, and smoother walking.
 (function(){
   function q(id){return document.getElementById(id)}
   function questShell(){return document.body.classList.contains('tamaGameEmbedded') || document.body.classList.contains('gameExpandedFromTama')}
@@ -5670,7 +5851,7 @@ if(openBtn){
 })();
 
 
-// STAGE 33: stable Tamagotchi quest viewport + CSS fullscreen mode reset.
+// PART 3 EXTRA: stable Tamagotchi quest viewport + CSS fullscreen mode reset.
 // This patch stops the Tamagotchi quest from clipping/scaling the whole game with clip-path.
 // Instead it puts the game inside a real LCD viewport with overflow hidden, which is much lighter.
 (function(){
@@ -5928,7 +6109,7 @@ if(openBtn){
 })();
 
 
-// STAGE 34: final quest control/router patch.
+// PART 3 EXTRA: final quest control/router patch.
 // Fixes: keyboard walking inside Tamagotchi/fullscreen, visible LCD captions, and Back-to-Quest after opening shop/habitat/hook.
 (function(){
   const d=document;
@@ -6087,7 +6268,7 @@ if(openBtn){
 })();
 
 
-// STAGE 35: keep the Stage 34 near-working version, but fix the remaining Tamagotchi quest issues.
+// PART 3 EXTRA: keep the near-working version, but fix the remaining Tamagotchi quest issues.
 // - Captions are moved out of the scaled game layer so tutorial/sign text is visible inside the LCD.
 // - Building opens are made one-shot so duplicate click/Enter handlers do not fight each other.
 // - Parent Back/Escape returns to the quest when a shop/habitat/hook screen was opened from the quest.
@@ -6212,7 +6393,7 @@ if(openBtn){
 // It is NOT the normal PetBot menu opener.
 // Normal PetBot menu opening is in the 20260702E PetBot route script.
 // ==========================================================
-// STAGE 37: return from full-screen quest back into the Tamagotchi LCD without losing the quest screen.
+// PART 3 EXTRA: return from full-screen quest back into the Tamagotchi LCD without losing the quest screen.
 // Fixes: after pressing the siren/full-screen quest view, Back/Escape/Tamagotchi should re-embed the live quest in the Tamagotchi,
 // not reopen Pet Home or leave the LCD blank.
 (function(){
@@ -6315,16 +6496,6 @@ if(openBtn){
 
 
 <!-- ==========================================================
-PART 3B: LATE JAVASCRIPT FIXES
-
-These scripts are still JavaScript, so they belong with PART 3.
-They are kept after the main game script so they can safely patch the final behaviour.
-
-This does NOT change what the scripts do.
-========================================================== -->
-
-
-<!-- ==========================================================
 PART 3B: TAMAGOTCHI / PETBOT ROUTE SCRIPTS
 
 These scripts sit after the main game brain because they override or extend
@@ -6337,6 +6508,7 @@ Important:
 
 Browser fullscreen is disabled in this cleaned copy.
 ========================================================== -->
+<!-- PART 3C: REAL TAMAGOTCHI START SCRIPT -->
 <script id="fix-20260702c-tamagotchi-start-script">
 (function(){
   const d=document;
@@ -6422,6 +6594,7 @@ Browser fullscreen is disabled in this cleaned copy.
 
 
 
+<!-- PART 3D: REAL PETBOT MENU OPENER SCRIPT -->
 <script id="fix-20260702e-real-petbot-start-script">
 (function(){
   const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
@@ -6512,6 +6685,7 @@ function showPetbot(){
 
 
 
+<!-- PART 3E: TAMAGOTCHI LCD POLISH SCRIPT -->
 <script id="fix-20260702d-tamagotchi-lcd-polish-script">
 (function(){
   function fitTamaPolish(){
