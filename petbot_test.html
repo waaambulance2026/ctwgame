@@ -1663,20 +1663,8 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // Ask the same-origin parent for native fullscreen during the actual button click.
-  // The parent still applies CSS fullscreen as a fallback if the browser blocks this.
-  try{
-    if(parent && parent!==window && parent.document){
-      const pdoc=parent.document;
-      const pel=pdoc.documentElement;
-      const hasParentFs=pdoc.fullscreenElement || pdoc.webkitFullscreenElement || pdoc.msFullscreenElement;
-      const pfn=pel && (pel.requestFullscreen || pel.webkitRequestFullscreen || pel.msRequestFullscreen);
-      if(!hasParentFs && pfn){
-        const r=pfn.call(pel);
-        if(r && r.catch) r.catch(()=>{});
-      }
-    }
-  }catch(e){}
+  // CSS fullscreen only. Do not call browser requestFullscreen() here.
+  // The parent index.html is the only place that decides the visible mode.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
 }
 function notifyParent(){
@@ -1706,7 +1694,7 @@ function bindQuestHoldButton(id,startAction){
 bindQuestHoldButton('btnPrev','moveLeftStart');
 bindQuestHoldButton('btnNext','moveRightStart');
 $('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
-$('btnSiren').addEventListener('click',e=>{e.preventDefault(); requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen');});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); sendParent('waa-petbot-toggle-fullscreen');});
 $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
@@ -2123,30 +2111,5 @@ render();
   },500);
 })();
 </script>
-<style id="fix-20260705-transparent-quest-iframe">
-  html.questPlaying,
-  body.questPlaying,
-  body.questPlaying #app,
-  body.questPlaying .device,
-  body.questPlaying .lcd,
-  body.questPlaying .questGameGlass{
-    background:transparent!important;
-    box-shadow:none!important;
-  }
-  body.questPlaying .device::after,
-  body.questPlaying .lcd::before,
-  body.questPlaying .lcd::after,
-  body.questPlaying .questGameGlass{
-    display:none!important;
-  }
-  body.questPlaying .top,
-  body.questPlaying .body{
-    display:none!important;
-  }
-  body.questPlaying .hit{
-    display:block!important;
-    pointer-events:auto!important;
-  }
-</style>
 </body>
 </html>

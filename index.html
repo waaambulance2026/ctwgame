@@ -1,4 +1,4 @@
-﻿<!doctype html>
+<!doctype html>
 
 <html lang="en">
 
@@ -23,7 +23,7 @@ PART 2 = what is on the page
 PART 3 = how it works
 
 ------------------------------------------------------------
-PART 1 â€” CSS / LOOKS
+PART 1 — CSS / LOOKS
 ------------------------------------------------------------
 
 Part 1 controls the design of the game.
@@ -84,7 +84,7 @@ PART 1L = mobile fixes
 Use this for phone and tablet layout problems.
 
 ------------------------------------------------------------
-PART 2 â€” HTML / PAGE PIECES
+PART 2 — HTML / PAGE PIECES
 ------------------------------------------------------------
 
 Part 2 is the visible stuff that exists on the page.
@@ -134,7 +134,7 @@ id="questStartScreen"
 The JavaScript uses those IDs to find things.
 
 ------------------------------------------------------------
-PART 3 â€” JAVASCRIPT / GAME BRAIN
+PART 3 — JAVASCRIPT / GAME BRAIN
 ------------------------------------------------------------
 
 Part 3 is the working brain of the game.
@@ -2665,11 +2665,11 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
 <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
 <div id="game">
   <div class="layer sky editableTarget" id="skyLayer" data-layer="sky"></div><div class="layer hills editableTarget" id="hillLayer" data-layer="hills"></div><div id="buildingObjects"></div><div class="underFloor"></div><div class="layer groundDecor editableTarget" id="groundLayer" data-layer="ground"></div><div class="platform editableTarget" id="platform" data-layer="platform"></div>
-  <header class="hud"><div class="title"><strong>ðŸš‘ Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Tamagotchi</button><button class="pill purple" id="buildBtn">Build/Edit ðŸ› ï¸</button><button class="pill" id="modeBtn">Night ðŸŒ™</button></div></header>
-  <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p><b>Move:</b> A/D or arrow keys. <b>Jump:</b> Space, W or â†‘. <b>Enter:</b> stand near a glowing building and press Enter. Menu opens Solo/Team, Tamagotchi and Admin Builder.</p></aside>
+  <header class="hud"><div class="title"><strong>🚑 Ax + Pura Waaambulance Quests</strong><span id="questName">Main menu: choose a quest.</span></div><div class="stats"><button class="pill hudMenu" id="menuBtn">Menu</button><span class="pill gold">Score: <b id="score">0</b></span><span class="pill pink">Lives: <b id="lives">3</b></span><span class="pill blue">Level: <b id="level">1</b></span><span class="pill">Distance: <b id="distance">0</b>m</span><button class="pill" id="swapBtn">Swap</button><button class="pill" id="pauseBtn">Pause</button><button class="pill purple" id="petBtn">Tamagotchi</button><button class="pill purple" id="buildBtn">Build/Edit 🛠️</button><button class="pill" id="modeBtn">Night 🌙</button></div></header>
+  <aside class="instructions hidden" id="instructions"><h2>Quest help</h2><p><b>Move:</b> A/D or arrow keys. <b>Jump:</b> Space, W or ↑. <b>Enter:</b> stand near a glowing building and press Enter. Menu opens Solo/Team, Tamagotchi and Admin Builder.</p></aside>
   <!-- EDIT SECTION 09: ADMIN BUILDER PANEL - sliders, sprite paths, save/load controls -->
   <aside class="builder hidden" id="builder">
-    <div class="panelHead"><div><h2>ðŸ› ï¸ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save. Editor pauses play; Close resumes walking.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
+    <div class="panelHead"><div><h2>🛠️ Admin Builder</h2><p>Simple editing: pick what you want, drag it on the game, then save. Editor pauses play; Close resumes walking.</p></div><button class="miniClose" id="closeBuilderTop">Close</button></div>
     <div class="builderHelp"><b>How to edit:</b> choose Environment for sky/ground/floor, Objects for buildings/items, Characters for who is playing, Sprites for image paths, then Save. Dragging snaps to an 8px grid so buildings line up more cleanly.</div>
     <div class="quickTabs"><button data-tab="layout" class="active">Environment / Objects</button><button data-tab="chars">Characters</button><button data-tab="sprites">Sprites</button><button data-tab="save">Save / Load</button></div>
     <div id="tab-layout" class="tabBody active">
@@ -2689,38 +2689,38 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- EDIT SECTION 10: PETBOT TAMAGOTCHI PANEL - loads owned pets and Sheet 51 images -->
   <aside class="petPanel hidden" id="petPanel">
     <div class="tamaShell">
-      <div class="tamaTop"><div><h2>ðŸ¾ PetBot Tamagotchi</h2><p>Your owned pets come from PetBot. Pictures come from Sheet 51.</p></div><button class="miniClose" id="closePetBtn">Close</button></div>
+      <div class="tamaTop"><div><h2>🐾 PetBot Tamagotchi</h2><p>Your owned pets come from PetBot. Pictures come from Sheet 51.</p></div><button class="miniClose" id="closePetBtn">Close</button></div>
       <div class="petFormGrid"><label>User<select id="userSelect"><option value="1214671839205396481">Ryan</option><option value="1407957358683885670">Ashely</option></select></label><label>Or paste Discord user ID<input id="userIdInput" placeholder="optional Discord user ID"></label><label style="grid-column:1/-1">Owned pet<select id="petSelect"></select></label></div>
       <div class="tamaScreen" id="tamaScreen">
         <div class="petPreview empty" id="petPreview">No pet loaded yet</div>
-        <div class="petInfo"><h3 id="petTitle">No pet selected</h3><p id="petSub">Press Reload live.</p><div class="petBadges"><span class="petBadge" id="petCodeBadge">code â€”</span><span class="petBadge green" id="petLevelBadge">level â€”</span><span class="petBadge blue" id="petImageBadge">Sheet 51 image</span></div><div class="petStats"><label>Hunger</label><div class="bar"><span id="hungerBar"></span></div><label>Happiness</label><div class="bar"><span id="happyBar"></span></div><label>Energy</label><div class="bar"><span id="energyBar"></span></div></div></div>
+        <div class="petInfo"><h3 id="petTitle">No pet selected</h3><p id="petSub">Press Reload live.</p><div class="petBadges"><span class="petBadge" id="petCodeBadge">code —</span><span class="petBadge green" id="petLevelBadge">level —</span><span class="petBadge blue" id="petImageBadge">Sheet 51 image</span></div><div class="petStats"><label>Hunger</label><div class="bar"><span id="hungerBar"></span></div><label>Happiness</label><div class="bar"><span id="happyBar"></span></div><label>Energy</label><div class="bar"><span id="energyBar"></span></div></div></div>
       </div>
-      <div class="petSizeControls"><label>Pet game size<input id="petSizeRange" type="range" min="45" max="240" value="115"><span id="petSizeVal">115px</span></label><label>Pet facing<select id="petFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select></label></div><div class="tamaControls"><button class="warn" id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button><button id="feedVisualBtn">ðŸ” Feed visual</button><button id="playVisualBtn">ðŸ§¸ Play visual</button><button id="restVisualBtn">ðŸ’¤ Rest visual</button><button id="healVisualBtn">ðŸ’Š Heal visual</button></div>
+      <div class="petSizeControls"><label>Pet game size<input id="petSizeRange" type="range" min="45" max="240" value="115"><span id="petSizeVal">115px</span></label><label>Pet facing<select id="petFlipSelect"><option value="1">Normal</option><option value="-1">Flip left/right</option></select></label></div><div class="tamaControls"><button class="warn" id="reloadPetsBtn">Reload live</button><button class="good" id="usePetBtn">Use pet as player</button><button id="feedVisualBtn">🍔 Feed visual</button><button id="playVisualBtn">🧸 Play visual</button><button id="restVisualBtn">💤 Rest visual</button><button id="healVisualBtn">💊 Heal visual</button></div>
       <div class="statusBox petStatusLine" id="petStatus">PetBot ready.</div>
     </div>
   </aside>
 
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
-    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>â™¡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=20260705questlayer2&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=204&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
     </div>
   </div>
-  <button class="petbotBackBtn" id="petbotBackBtn" type="button" aria-label="Back to game">â† Back to game</button>
+  <button class="petbotBackBtn" id="petbotBackBtn" type="button" aria-label="Back to game">← Back to game</button>
 
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
-  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="tamaGameCaption" id="tamaGameCaption" aria-live="polite"></div><div class="axFrameDebug" id="axFrameDebug">Ax frame: â€”</div><div class="dragHint" id="dragHint">drag selected layer</div>
-  <div class="touch"><button id="touchLeft">â†</button><button id="touchJump">â†‘</button><button id="touchRight">â†’</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
+  <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="tamaGameCaption" id="tamaGameCaption" aria-live="polite"></div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
+  <div class="touch"><button id="touchLeft">←</button><button id="touchJump">↑</button><button id="touchRight">→</button><button id="touchJump2" class="wide">JUMP / WEE-WOO</button></div><button class="pill helpBtn" id="helpBtn">?</button>
   <!-- EDIT SECTION 12: START MENU / LEVEL COMPLETE / GAME OVER SCREENS -->
-  <div class="overlay hidden" id="startScreen"><div class="modal menuModal"><h1>ðŸš‘ Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters â€” it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> â€” pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Tamagotchi</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
+  <div class="overlay hidden" id="startScreen"><div class="modal menuModal"><h1>🚑 Waaambulance Quest Dash</h1><p>Choose Solo or build your own team. Team can be 1, 2, 3 or 4 characters — it no longer forces all four.</p><div class="soloPickerBox"><label>Solo character</label><select id="soloCharacterSelect"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></div><div class="teamPickerBox"><p><b>Team characters</b> — pick up to 4. Leave a slot as None if you do not want that many.</p><div class="teamPickerGrid"><label>1 Main<select id="teamSlot1Select"><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>2 Follower<select id="teamSlot2Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>3 Follower<select id="teamSlot3Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label><label>4 Follower<select id="teamSlot4Select"><option value="none">None</option><option value="ax">Ax</option><option value="pura">Pura</option><option value="owl">Owl</option><option value="unicorn">Unicorn</option><option value="pet">Selected Pet</option></select></label></div></div><div class="choiceRow"><button id="resumeBtn" class="secondary">Resume game</button><button id="startSoloBtn">Solo Quest</button><button id="startTeamBtn" class="good">Start Team Quest</button><button id="menuPetBtn" class="secondary">Tamagotchi</button><button id="menuBuildBtn" class="dark">Admin Builder</button></div><p style="font-size:13px;opacity:.85;margin-top:12px">Controls: arrows/space. Menu pauses the game and brings this screen back.</p></div></div>
   <div class="overlay hidden" id="doorScreen"><div class="doorModal"><h1 id="doorTitle">Opening...</h1><img id="doorBigImg" src="https://res.cloudinary.com/dpwlfmhia/image/upload/v1782174047/door_1.png" alt="Opening door"></div></div>
-  <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>ðŸ¾ Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Later it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>ðŸ” Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>ðŸ§¸ Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>ðŸ¡ Habitat items</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>ðŸ’Š Care extras</strong><span>Healing, rest and training items will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
-  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>ðŸª§ Welcome Board</h1><p><b>How to play:</b> move with Right/D and Left/A. Jump with Space, W or Arrow Up.</p><p><b>Tutorial route:</b> Controls â†’ Pet Shop â†’ Habitat â†’ Jump Practice â†’ Hook-a-Waaambulance â†’ Quest Starter â†’ Finish.</p><p><b>Buildings:</b> stand near a glowing building, then press Enter or tap/click it. Yellow boards tell you what the next stop does.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
-  <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>ðŸŽ£ Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>ðŸŽŸï¸ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>ðŸ† Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
-  <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>ðŸ—ºï¸ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
+  <div class="overlay hidden" id="shopScreen"><div class="modal"><h1>🐾 Pet Shop</h1><p>This screen is ready for the Discord App upgrade. Later it can read PetBot shop stock, coins and buying from the Worker/API.</p><div class="shopGrid"><div class="shopCard"><strong>🍔 Food</strong><span>PetBot food items will load here.</span></div><div class="shopCard"><strong>🧸 Toys</strong><span>Play and happiness items will load here.</span></div><div class="shopCard"><strong>🏡 Habitat items</strong><span>Decor and habitat items will load here.</span></div><div class="shopCard"><strong>💊 Care extras</strong><span>Healing, rest and training items will load here.</span></div></div><button id="closeShopBtn">Close Pet Shop</button></div></div>
+  <div class="overlay hidden" id="welcomeInfoScreen"><div class="modal"><h1>🪧 Welcome Board</h1><p><b>How to play:</b> move with Right/D and Left/A. Jump with Space, W or Arrow Up.</p><p><b>Tutorial route:</b> Controls → Pet Shop → Habitat → Jump Practice → Hook-a-Waaambulance → Quest Starter → Finish.</p><p><b>Buildings:</b> stand near a glowing building, then press Enter or tap/click it. Yellow boards tell you what the next stop does.</p><button id="closeWelcomeBtn">Close Welcome Board</button></div></div>
+  <div class="overlay hidden" id="hookScreen"><div class="modal"><h1>🎣 Hook-a-Waaambulance</h1><p>This is now its own place instead of being inside the Pet Shop menu. Later this screen can open the hook-a-duck style prize game.</p><div class="shopGrid"><div class="shopCard"><strong>🎟️ Tickets</strong><span>Show tickets and entry cost here.</span></div><div class="shopCard"><strong>🏆 Prizes</strong><span>Load prize pool from your bot/sheet here.</span></div></div><button id="closeHookBtn">Close Hook-a-Waaambulance</button></div></div>
+  <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
  </script>
@@ -2941,8 +2941,8 @@ function spriteFallbackLabel(char){
   return labels[char]||String(char||'SPRITE').toUpperCase();
 }
 function spriteFallbackEmoji(char){
-  const emojis={ax:'ðŸš‘',pura:'ðŸ¾',owl:'ðŸ¦‰',unicorn:'ðŸ¦„',pet:'ðŸ¾'};
-  return emojis[char]||'â”';
+  const emojis={ax:'🚑',pura:'🐾',owl:'🦉',unicorn:'🦄',pet:'🐾'};
+  return emojis[char]||'❔';
 }
 function fallbackSpriteDataUri(char,action){
   const label=spriteFallbackLabel(char);
@@ -3394,17 +3394,17 @@ const levels=[
 
     // Tutorial no longer spams random item blocks. These are kept for later optional rewards.
     tokens:[
-      ['ðŸ•¹ï¸','Controls reward',40,''],
-      ['ðŸ›ï¸','Pet Shop reward',60,''],
-      ['ðŸ¡','Habitat reward',80,''],
-      ['ðŸŽŸï¸','Hook reward',100,''],
-      ['â­','Quest reward',120,'']
+      ['🕹️','Controls reward',40,''],
+      ['🛍️','Pet Shop reward',60,''],
+      ['🏡','Habitat reward',80,''],
+      ['🎟️','Hook reward',100,''],
+      ['⭐','Quest reward',120,'']
     ],
 
     hazards:[
-      ['ðŸŸ«','Training puddle',0,''],
-      ['ðŸš§','Jump cone',0,''],
-      ['âš ï¸','Slow down sign',0,'']
+      ['🟫','Training puddle',0,''],
+      ['🚧','Jump cone',0,''],
+      ['⚠️','Slow down sign',0,'']
     ],
 
     plan:[
@@ -3412,25 +3412,25 @@ const levels=[
       // No extra random lesson clutter: each board explains the next real stop.
       {at:-1723,kind:'building',place:'welcomeBoard',data:['',PLACE_LABELS.welcomeBoard,0,PLACE_IMAGES.welcomeBoard],message:'Opening Welcome Board...'},
 
-      {at:-1220,kind:'sign',title:'Controls',data:['ðŸŽ®','Controls',0,''],message:'Welcome to Tutorial Town: walk, jump, then press Select near buildings.'},
+      {at:-1220,kind:'sign',title:'Controls',data:['🎮','Controls',0,''],message:'Welcome to Tutorial Town: walk, jump, then press Select near buildings.'},
       {at:-980,kind:'token',tokenIndex:0,message:'Tutorial Token: collect by touching it properly.'},
       {at:-820,kind:'token',tokenIndex:1,message:'Hidden-ish token: exploration gets rewards.'},
 
-      {at:-620,kind:'sign',title:'Pet Shop',data:['ðŸ¾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Select.'},
+      {at:-620,kind:'sign',title:'Pet Shop',data:['🐾','Pet Shop',0,''],message:'Pet Shop: buy pet food, toys and care items. Stand near the glowing shop and press Select.'},
       {at:-332,kind:'building',place:'petShop',data:['',PLACE_LABELS.petShop,0,PLACE_IMAGES.petShop],message:'Opening Pet Shop...'},
 
-      {at:730,kind:'sign',title:'Habitat',data:['ðŸ¡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
+      {at:730,kind:'sign',title:'Habitat',data:['🏡','Habitat',0,''],message:'Habitat: opens Pet Care/Tamagotchi so pets can be viewed and cared for.'},
       {at:1048,kind:'building',place:'habitat',data:['',PLACE_LABELS.habitat,0,PLACE_IMAGES.habitat],message:'Opening Habitat...'},
 
-      {at:1500,kind:'sign',title:'Jump',data:['â¬†ï¸','Jump',0,''],message:'Jump practice: hop over the training cone.'},
+      {at:1500,kind:'sign',title:'Jump',data:['⬆️','Jump',0,''],message:'Jump practice: hop over the training cone.'},
       {at:1550,kind:'hazard',hazardIndex:1,message:'Training cone: jump over it or stomp it from above.'},
       {at:1760,kind:'token',tokenIndex:2,message:'Mushroom token collected.'},
 
-      {at:2100,kind:'sign',title:'Hook Game',data:['ðŸŽ£','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
+      {at:2100,kind:'sign',title:'Hook Game',data:['🎣','Hook Game',0,''],message:'Hook-a-Waaambulance: prize mini-game stop. It is separate from the Pet Shop.'},
       {at:2411,kind:'building',place:'hookWaaambulance',data:['',PLACE_LABELS.hookWaaambulance,0,PLACE_IMAGES.hookWaaambulance],message:'Opening Hook-a-Waaambulance...'},
 
-      {at:3300,kind:'sign',title:'Secret',data:['ðŸŽ','Secret',0,''],message:'You found a secret already?! Bonus curiosity points.'},
-      {at:3500,kind:'sign',title:'Quest Pick',data:['ðŸ—ºï¸','Quest Pick',0,''],message:'Quest Selector: Tutorial Town first, Wrong Moon next.'},
+      {at:3300,kind:'sign',title:'Secret',data:['🎁','Secret',0,''],message:'You found a secret already?! Bonus curiosity points.'},
+      {at:3500,kind:'sign',title:'Quest Pick',data:['🗺️','Quest Pick',0,''],message:'Quest Selector: Tutorial Town first, Wrong Moon next.'},
       {at:3826,kind:'building',place:'questStarter',data:['',PLACE_LABELS.questStarter,0,PLACE_IMAGES.questStarter],message:'Opening Quest Starter...'},
 
       {at:6200,kind:'finish'}
@@ -3443,29 +3443,29 @@ const levels=[
     goal:3000,
 
     tokens:[
-      ['ðŸŒ™','Moon crumb',70,'v1781638223/moon_crumb.png'],
-      ['â­','Wrong star',100,'v1781638223/wrong_star.png'],
-      ['ðŸ”®','Moon wobble',120,'v1781638223/moon_wobble.png'],
-      ['ðŸ§¿','Sky evidence',140,'v1781638223/sky_evidence.png']
+      ['🌙','Moon crumb',70,'v1781638223/moon_crumb.png'],
+      ['⭐','Wrong star',100,'v1781638223/wrong_star.png'],
+      ['🔮','Moon wobble',120,'v1781638223/moon_wobble.png'],
+      ['🧿','Sky evidence',140,'v1781638223/sky_evidence.png']
     ],
 
     hazards:[
-      ['ðŸŒš','Wrong moon glare',0,'v1781638223/moon_glare.png'],
-      ['ðŸ“¢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],
-      ['ðŸ•³ï¸','Tiny doom hole',0,'v1781638223/doom_hole.png'],
-      ['ðŸ—¯ï¸','Moon argument',0,'v1781638223/moon_argument.png']
+      ['🌚','Wrong moon glare',0,'v1781638223/moon_glare.png'],
+      ['📢','Dramatic prophecy',0,'v1781638223/dramatic_prophecy.png'],
+      ['🕳️','Tiny doom hole',0,'v1781638223/doom_hole.png'],
+      ['🗯️','Moon argument',0,'v1781638223/moon_argument.png']
     ],
 
     plan:[
-      {at:80,kind:'sign',data:['ðŸª§','Wrong Moon board',0,''],message:'Wrong Moon Quest: collect sky evidence and avoid moon drama.'},
+      {at:80,kind:'sign',data:['🪧','Wrong Moon board',0,''],message:'Wrong Moon Quest: collect sky evidence and avoid moon drama.'},
       {at:260,kind:'token',tokenIndex:0},
       {at:470,kind:'hazard',hazardIndex:0},
       {at:700,kind:'token',tokenIndex:1},
-      {at:930,kind:'task',data:['ðŸ”Ž','Check moon clue',150,''],message:'Moon clue checked. Something is definitely wrong.'},
+      {at:930,kind:'task',data:['🔎','Check moon clue',150,''],message:'Moon clue checked. Something is definitely wrong.'},
       {at:1160,kind:'hazard',hazardIndex:1},
       {at:1420,kind:'token',tokenIndex:2},
       {at:1700,kind:'hazard',hazardIndex:2},
-      {at:2000,kind:'task',data:['âœ…','Confirm sky evidence',250,''],message:'Sky evidence confirmed. Head to the finish.'},
+      {at:2000,kind:'task',data:['✅','Confirm sky evidence',250,''],message:'Sky evidence confirmed. Head to the finish.'},
       {at:2300,kind:'token',tokenIndex:3},
       {at:2650,kind:'finish'}
     ]
@@ -3477,17 +3477,17 @@ const levels=[
     goal:2500,
 
     tokens:[
-      ['ðŸƒ','Damp leaf',50,'v1781797065/swamp_leaf.png'],
-      ['ðŸª™','Frog swamp coin',90,'v1781797065/swamp_coin.png'],
-      ['ðŸ§­','Muddy compass',110,'v1781797065/swamp_compass.png'],
-      ['âœ¨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']
+      ['🍃','Damp leaf',50,'v1781797065/swamp_leaf.png'],
+      ['🪙','Frog swamp coin',90,'v1781797065/swamp_coin.png'],
+      ['🧭','Muddy compass',110,'v1781797065/swamp_compass.png'],
+      ['✨','Swamp sparkle',120,'v1781797065/swamp_sparkle.png']
     ],
 
     hazards:[
-      ['ðŸŸ«','Mud splat',0,'v1781797065/monster_mud.png'],
-      ['ðŸŒ','Suspicious snail',0,'v1781797065/evil_snail.png'],
-      ['ðŸ§¦','Wet sock',0,'v1781797065/wet_sock.png'],
-      ['ðŸ¦´','Bog bone',0,'v1781797065/bog_bone.png']
+      ['🟫','Mud splat',0,'v1781797065/monster_mud.png'],
+      ['🐌','Suspicious snail',0,'v1781797065/evil_snail.png'],
+      ['🧦','Wet sock',0,'v1781797065/wet_sock.png'],
+      ['🦴','Bog bone',0,'v1781797065/bog_bone.png']
     ]
   }
 ];
@@ -3503,17 +3503,17 @@ function levelPlan(){
   const l=levels[levelIndex];
   if(Array.isArray(l.plan)&&l.plan.length)return l.plan;
   return [
-    {at:80,kind:'sign',data:['ðŸª§','Quest board',0,''],message:`${l.quest}: start the patrol and look for clues.`},
+    {at:80,kind:'sign',data:['🪧','Quest board',0,''],message:`${l.quest}: start the patrol and look for clues.`},
     {at:230,kind:'token',tokenIndex:0},
-    {at:390,kind:'task',data:['ðŸ”Ž','Inspect the swamp clue',150,''],message:'Clue inspected. The swamp is being suspicious.'},
+    {at:390,kind:'task',data:['🔎','Inspect the swamp clue',150,''],message:'Clue inspected. The swamp is being suspicious.'},
     {at:560,kind:'hazard',hazardIndex:0},
-    {at:760,kind:'sign',data:['âž¡ï¸','Jump warning',0,''],message:'Jump or stomp the bad objects. Do not just walk into drama.'},
+    {at:760,kind:'sign',data:['➡️','Jump warning',0,''],message:'Jump or stomp the bad objects. Do not just walk into drama.'},
     {at:940,kind:'token',tokenIndex:1},
     {at:1140,kind:'hazard',hazardIndex:1},
-    {at:1380,kind:'task',data:['ðŸ§°','Repair the clue scanner',180,''],message:'Scanner fixed. Very professional.'},
+    {at:1380,kind:'task',data:['🧰','Repair the clue scanner',180,''],message:'Scanner fixed. Very professional.'},
     {at:1640,kind:'token',tokenIndex:2},
     {at:1880,kind:'hazard',hazardIndex:2},
-    {at:2120,kind:'task',data:['âœ…','Confirm the swamp evidence',250,''],message:'Evidence confirmed. Head for the finish.'},
+    {at:2120,kind:'task',data:['✅','Confirm the swamp evidence',250,''],message:'Evidence confirmed. Head for the finish.'},
     {at:2380,kind:'token',tokenIndex:3}
   ];
 }
@@ -3522,8 +3522,8 @@ function pickPlannedData(entry){
   if(entry.data)return entry.data;
   if(entry.kind==='hazard')return level.hazards[Number(entry.hazardIndex)||0]||level.hazards[0];
   if(entry.kind==='token')return level.tokens[Number(entry.tokenIndex)||0]||level.tokens[0];
-  if(entry.kind==='finish')return ['ðŸ','Finish flag',0,'v1781797065/finish_flag.png'];
-  return ['â”',entry.label||'Level object',Number(entry.points)||0,entry.image||''];
+  if(entry.kind==='finish')return ['🏁','Finish flag',0,'v1781797065/finish_flag.png'];
+  return ['❔',entry.label||'Level object',Number(entry.points)||0,entry.image||''];
 }
 function buildingLayout(place){return PLACE_LAYOUT[place]||PLACE_LAYOUT.petShop||{at:0,width:220,height:180,yOffset:18,z:48}}
 
@@ -3778,7 +3778,7 @@ function addObjectImage(el,data){
 function makeObject(kind,x){
   const level=levels[levelIndex];
   const isFinish=kind==='finish';
-  const data=isFinish?['ðŸ','Finish flag',0,'v1781797065/finish_flag.png']:(kind==='hazard'?level.hazards[Math.floor(Math.random()*level.hazards.length)]:level.tokens[Math.floor(Math.random()*level.tokens.length)]);
+  const data=isFinish?['🏁','Finish flag',0,'v1781797065/finish_flag.png']:(kind==='hazard'?level.hazards[Math.floor(Math.random()*level.hazards.length)]:level.tokens[Math.floor(Math.random()*level.tokens.length)]);
   const el=document.createElement('div');
   el.className='obj '+(isFinish?'finish':kind);
   addObjectImage(el,data);
@@ -3824,25 +3824,25 @@ function openBuilding(o){
     if(o.place==='welcomeBoard'){
       const welcome=$('welcomeInfoScreen');
       if(welcome)welcome.classList.remove('hidden');
-      showToast('ðŸª§ Welcome Board opened');
+      showToast('🪧 Welcome Board opened');
     }else if(o.place==='habitat'){
       const panel=$('petPanel');
       if(panel)panel.classList.remove('hidden');
       const reloadBtn=$('reloadPetsBtn');
       if(reloadBtn)reloadBtn.click();
-      showToast('ðŸ¡ Habitat opened from PetBot');
+      showToast('🏡 Habitat opened from PetBot');
     }else if(o.place==='petShop'){
       const shop=$('shopScreen');
       if(shop)shop.classList.remove('hidden');
-      showToast('ðŸ¾ Pet Shop opened');
+      showToast('🐾 Pet Shop opened');
     }else if(o.place==='hookWaaambulance'){
       const hook=$('hookScreen');
       if(hook)hook.classList.remove('hidden');
-      showToast('ðŸŽ£ Hook-a-Waaambulance opened');
+      showToast('🎣 Hook-a-Waaambulance opened');
     }else if(o.place==='questStarter'){
       const qs=$('questStartScreen');
       if(qs)qs.classList.remove('hidden');
-      showToast('ðŸ—ºï¸ Quest Starter opened');
+      showToast('🗺️ Quest Starter opened');
     }
 
     o.opening=false;
@@ -3919,7 +3919,7 @@ function collide(o){
   if(o.kind==='token'){
     o.hit=true;
     score+=o.points;
-    showToast(`âœ¨ Collected ${o.label}! +${o.points}`);
+    showToast(`✨ Collected ${o.label}! +${o.points}`);
     vanishObject(o,'collected',220);
   }else if(o.kind==='hazard'){
     if(canStomp(o)){
@@ -3928,7 +3928,7 @@ function collide(o){
       player.vy=13.5;
       player.jump=Math.max(player.jump,18);
       player.grounded=false;
-      showToast(`ðŸ’¥ Stomped ${o.label}! +200`);
+      showToast(`💥 Stomped ${o.label}! +200`);
       vanishObject(o,'stomped',240);
     }else{
       o.hit=true;
@@ -4571,12 +4571,12 @@ function updateMiniTamagotchiDock(){
   if(!title || !pet) return;
   const p=currentPet || window.petbotIframePet || null;
   const name=(p && p.name) ? p.name : 'PetBot';
-  title.textContent=name.length>10 ? name.slice(0,9)+'â€¦' : name;
+  title.textContent=name.length>10 ? name.slice(0,9)+'…' : name;
   const img=currentPetImage || (p && (p.url || p.image_url || p.cloudinary_image_url)) || '';
   if(img){
     pet.innerHTML='<img src="'+String(img).replace(/"/g,'&quot;')+'" alt="">';
   } else {
-    pet.innerHTML='<span>â™¡</span>';
+    pet.innerHTML='<span>♡</span>';
   }
   if(bars){
     const vals=[p?.hunger,p?.happy,p?.energy].map(v=>Math.max(0.08,pct(v||0)/100));
@@ -4804,8 +4804,8 @@ async function selectPet(){
   if(!p){$('petPreview').classList.add('empty');$('petPreview').textContent='No pet loaded yet';$('petTitle').textContent='No pet loaded';$('petSub').textContent='Choose a pet or press Reload live.';updateMiniTamagotchiDock();return}
   currentPet=p;currentPetImage='';updateMiniTamagotchiDock();
   $('petTitle').textContent=p.name||'Unnamed pet';
-  $('petSub').textContent=(p.pet||'pet')+(p.code?' â€¢ code '+p.code:'')+(p.level?' â€¢ level '+p.level:'');
-  $('petCodeBadge').textContent='code '+(p.code||'â€”');$('petLevelBadge').textContent='level '+(p.level||'â€”');setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);
+  $('petSub').textContent=(p.pet||'pet')+(p.code?' • code '+p.code:'')+(p.level?' • level '+p.level:'');
+  $('petCodeBadge').textContent='code '+(p.code||'—');$('petLevelBadge').textContent='level '+(p.level||'—');setBar('hungerBar',p.hunger);setBar('happyBar',p.happy);setBar('energyBar',p.energy);
   $('petPreview').classList.add('empty');$('petPreview').innerHTML='<span>Finding Sheet 51 image...</span>';
   $('petImageBadge').textContent='Checking Sheet 51';$('petImageBadge').className='petBadge blue';
   setPetLoading(true,'Finding Sheet 51 image for '+(p.name||'this pet')+' ...');
@@ -4828,7 +4828,7 @@ async function selectPet(){
         if(face.includes('right')||face==='1')petFlip=1;
         if($('petFlipSelect'))$('petFlipSelect').value=String(petFlip);
         $('petPreview').classList.remove('empty');$('petPreview').innerHTML='<img src="'+candidate+'" alt="pet">';
-        $('petImageBadge').textContent='Sheet 51 image âœ“';$('petImageBadge').className='petBadge green';
+        $('petImageBadge').textContent='Sheet 51 image ✓';$('petImageBadge').className='petBadge green';
         setPetLoading(false,p.name+' loaded with Sheet 51 image.');
       }catch(imgErr){
         currentPetImage='';
@@ -4863,7 +4863,7 @@ function isDeviceNightTime(){
 function setDayNightMode(useNight){
   document.body.classList.toggle('night',!!useNight);
   const btn=$('modeBtn');
-  if(btn)btn.textContent=useNight?'Day â˜€ï¸':'Night ðŸŒ™';
+  if(btn)btn.textContent=useNight?'Day ☀️':'Night 🌙';
 }
 function initAutoDayNight(){
   setDayNightMode(isDeviceNightTime());
@@ -5001,7 +5001,7 @@ clearBrowserGameSaves();resetCorrect();applySettings(USER_EXACT_LAYOUT_SETTINGS)
 if(location.search.includes('axframes=1')){
   document.body.classList.add('axFrameDebugOn');
   const axDbg=$('axFrameDebug');
-  if(axDbg) axDbg.textContent='Ax frame debug ON â€” idle/walk/jump';
+  if(axDbg) axDbg.textContent='Ax frame debug ON — idle/walk/jump';
 }
 
 // Auto day/night after layout reset so it is not overwritten.
@@ -5433,7 +5433,7 @@ window.addEventListener('keyup',function(e){
 
 
 
-// PART 3 EXTRA: quest-mode repair â€” fullscreen fit, building select, and smoother walking.
+// PART 3 EXTRA: quest-mode repair — fullscreen fit, building select, and smoother walking.
 (function(){
   function q(id){return document.getElementById(id)}
   function questShell(){return document.body.classList.contains('tamaGameEmbedded') || document.body.classList.contains('gameExpandedFromTama')}
@@ -5752,7 +5752,7 @@ window.addEventListener('keyup',function(e){
   }
   function petbotFrameUrl(){
     // The iframe now asks who is playing first. Later Discord Activity can pass the real Discord user_id here.
-    return 'petbot_test.html?v=20260705questlayer2&embed=1&launch=1&choose=1';
+    return 'petbot_test.html?v=204&embed=1&launch=1&choose=1';
   }
   function syncPetbotFrameUser(){
     try{
@@ -6406,7 +6406,7 @@ if(openBtn){
       btn=d.createElement('button');
       btn.id='stage37TamaReturnBtn';
       btn.type='button';
-      btn.textContent='â†© Tamagotchi';
+      btn.textContent='↩ Tamagotchi';
       btn.setAttribute('aria-label','Return quest to Tamagotchi');
       body.appendChild(btn);
       btn.addEventListener('click',function(e){
@@ -6515,7 +6515,7 @@ Browser fullscreen is disabled in this cleaned copy.
   function ensurePetbotFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
     if(frame){
-      const wanted='petbot_test.html?v=20260705questlayer2&embed=1&launch=1&choose=1';
+      const wanted='petbot_test.html?v=204&embed=1&launch=1&choose=1';
       try{
         const current=new URL(frame.getAttribute('src')||'',location.href);
         const next=new URL(wanted,location.href);
@@ -6585,7 +6585,7 @@ Browser fullscreen is disabled in this cleaned copy.
 <!-- PART 3D: REAL PETBOT MENU OPENER SCRIPT -->
 <script id="fix-20260702e-real-petbot-start-script">
 (function(){
-  const PETBOT_URL='petbot_test.html?v=20260705questlayer2&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
   function q(id){return document.getElementById(id);}
   function setFrame(){
     const frame=q('petbotDockFrame')||q('petbotFrame');
@@ -6958,7 +6958,7 @@ Do not put level data or sprite links here.
   const root=d.documentElement;
   const DESIGN_W=1920;
   const DESIGN_H=1080;
-  const PETBOT_URL='petbot_test.html?v=20260705questlayer2&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
   const FS_CLASSES=['waaFs40Petbot','waaFs40Embedded','waaFs40Expanded','petbotOpen','tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','tamagotchiLanding','waaTamaStartMode'];
   const LEGACY_STYLE_PROPS=['position','left','right','top','bottom','inset','width','height','min-width','min-height','max-width','max-height','z-index','transform','transform-origin','display','visibility','opacity','pointer-events','clip-path','-webkit-clip-path','border-radius','box-shadow'];
   const game=d.getElementById('game');
@@ -7290,27 +7290,14 @@ Do not put level data or sprite links here.
   }
 
   function tryNativeFullscreen(){
-    try{
-      const hasFs=d.fullscreenElement || d.webkitFullscreenElement || d.msFullscreenElement;
-      if(hasFs) return true;
-      const el=d.documentElement;
-      const fn=el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-      if(fn) Promise.resolve(fn.call(el)).catch(function(){});
-      return !!fn;
-    }catch(e){
-      return false;
-    }
+    // CSS fullscreen only. Do not call browser requestFullscreen().
+    // The browser fullscreen API causes the Esc banner/trap shown in testing.
+    return false;
   }
 
   function exitNativeFullscreen(){
-    try{
-      const hasFs=d.fullscreenElement || d.webkitFullscreenElement || d.msFullscreenElement;
-      const fn=d.exitFullscreen || d.webkitExitFullscreen || d.msExitFullscreen;
-      if(hasFs && fn) Promise.resolve(fn.call(d)).catch(function(){});
-      return !!(hasFs && fn);
-    }catch(e){
-      return false;
-    }
+    // CSS fullscreen only. Do not call browser exitFullscreen().
+    return false;
   }
 
   function cloneButton(id,handler){
@@ -7329,7 +7316,7 @@ Do not put level data or sprite links here.
       btn=d.createElement('button');
       btn.id='stage40TamaReturnBtn';
       btn.type='button';
-      btn.textContent='â†© Tamagotchi';
+      btn.textContent='↩ Tamagotchi';
       btn.setAttribute('aria-label','Return quest to Tamagotchi');
       body.appendChild(btn);
     }
@@ -7392,7 +7379,7 @@ Do not put level data or sprite links here.
 
   window.startEmbeddedTamaGame=startEmbeddedTamaGame=function(kind){ return setEmbedded(kind||'solo',{start:true}); };
   window.stopEmbeddedTamaGame=stopEmbeddedTamaGame=function(){ currentMode=''; setQuestLock(false); clearModes(); releaseGame(); ensureBodyLock(false); exitNativeFullscreen(); return true; };
-  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); tryNativeFullscreen(); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
+  window.expandEmbeddedTamaGame=expandEmbeddedTamaGame=function(){ setExpanded({start:false}); visibleCaption('Full screen quest: Space jumps. Enter opens buildings.',1800); return true; };
   window.stage37ReturnExpandedQuestToTamagotchi=function(){ if(!isExpanded()) return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); exitNativeFullscreen(); return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); };
   window.waaResumeQuestFromPetbot=function(mode){ return returnToQuest(mode); };
   window.waaEnterTamagotchiMode=function(){ return setPetbotMenu(); };
@@ -7425,10 +7412,9 @@ Do not put level data or sprite links here.
     // - embedded quest -> expanded page quest
     // - expanded page quest -> embedded Tamagotchi quest
     // - PetBot/menu screens -> CSS PetBot fullscreen/menu
-    if(isEmbedded()){ setExpanded({start:false}); tryNativeFullscreen(); return true; }
-    if(isExpanded()){ exitNativeFullscreen(); return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); }
+    if(isEmbedded()){ setExpanded({start:false}); return true; }
+    if(isExpanded()){ return setEmbedded(document.body.classList.contains('teamMode')?'team':'solo',{start:false}); }
     setPetbotMenu();
-    tryNativeFullscreen();
     return true;
   }
 
@@ -7460,6 +7446,7 @@ Do not put level data or sprite links here.
   window.addEventListener('orientationchange',function(){ setTimeout(scheduleFit,120); },{passive:true});
   window.addEventListener('fullscreenchange',scheduleFit);
 
+  // 20260705 CSS-ONLY NOTE: no browser requestFullscreen calls are allowed in the final router.
   wireControls();
 
   // Final load state: real PetBot/Tamagotchi menu first, then quest only when PetBot asks for it.
