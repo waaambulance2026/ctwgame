@@ -1663,12 +1663,11 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // CSS FULLSCREEN ONLY.
-  // The parent index.html handles the full-page layout.
-  // Do not call browser requestFullscreen from inside the iframe.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
   try{
-    document.documentElement.classList.add('cssFullscreen');
-    document.body.classList.add('cssFullscreen');
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
 function notifyParent(){
@@ -2031,54 +2030,8 @@ window.addEventListener('message',e=>{
   },true);
 })();
 
-window.__petbotBridgeApi={
-  forceQuestControls:function(mode){
-    state.parentQuestActive=true;
-    state.parentQuestActiveAt=Date.now();
-    state.returnToQuest=false;
-    state.returnQuestMode='';
-    state.screen='questGame';
-    state.quest={
-      ...(state.quest||{}),
-      mode:mode || (state.quest&&state.quest.mode) || 'Solo Quest',
-      started:true,
-      embedded:true
-    };
-    document.documentElement.classList.add('questPlaying');
-    document.body.classList.add('questPlaying');
-    render();
-  },
-  showRealPetbotHome:function(){
-    document.documentElement.classList.remove('cssFullscreen','questPlaying');
-    document.body.classList.remove('cssFullscreen','questPlaying');
-    state.parentQuestActive=false;
-    state.returnToQuest=false;
-    state.returnQuestMode='';
-    state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
-    if(state.player && currentPet()){
-      state.screen='petHome';
-    }else if(state.player && state.pets && state.pets.length){
-      state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
-      state.screen='petHome';
-    }else{
-      state.screen='login';
-      state.player=null;
-      state.pets=[];
-      state.petIndex=0;
-      state.password='';
-      state.error='';
-      state.message='Choose player';
-    }
-    render();
-  },
-  isQuest:function(){
-    return state && state.screen==='questGame';
-  }
-};
-
 render();
 })();
 </script>
-<script src="waa-bridge.js?v=20260705-one-bridge-3"></script>
 </body>
 </html>
