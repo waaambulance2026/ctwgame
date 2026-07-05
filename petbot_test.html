@@ -1663,9 +1663,20 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // 20260705 fix:
-  // PetBot does not request browser fullscreen itself.
-  // It only asks the parent index.html to switch CSS fullscreen mode.
+  // Ask the same-origin parent for native fullscreen during the actual button click.
+  // The parent still applies CSS fullscreen as a fallback if the browser blocks this.
+  try{
+    if(parent && parent!==window && parent.document){
+      const pdoc=parent.document;
+      const pel=pdoc.documentElement;
+      const hasParentFs=pdoc.fullscreenElement || pdoc.webkitFullscreenElement || pdoc.msFullscreenElement;
+      const pfn=pel && (pel.requestFullscreen || pel.webkitRequestFullscreen || pel.msRequestFullscreen);
+      if(!hasParentFs && pfn){
+        const r=pfn.call(pel);
+        if(r && r.catch) r.catch(()=>{});
+      }
+    }
+  }catch(e){}
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
 }
 function notifyParent(){
