@@ -2204,7 +2204,249 @@ Do NOT put level data here.Do NOT put sprite image links here.Do NOT put JavaScr
     }
   </style>
 
+
+  <!-- ==========================================================
+  PART 1M: LATE CSS FIXES MOVED INTO PART 1
+
+  These were originally at the bottom of the file.
+  They are CSS only, so they belong in PART 1 with the other style rules.
+
+  This does NOT change the game logic.
+  ========================================================== -->
+<!-- ============================================================
+FIX 20260702C: START IN REAL TAMAGOTCHI MODE
+This version starts with the real PetBot/Tamagotchi app, not the
+platform quest cropped into a fake shell. The user chooses who is
+playing inside petbot_test.html, then pets, shop, habitat, hook and
+quest launch from that Tamagotchi.
+============================================================ -->
+<style id="fix-20260702c-tamagotchi-start-css">
+  body.waaTamaStartMode{
+    background:#111127!important;
+    overflow:hidden!important;
+  }
+  body.waaTamaStartMode #startScreen,
+  body.waaTamaStartMode .hud,
+  body.waaTamaStartMode .instructions,
+  body.waaTamaStartMode .touch,
+  body.waaTamaStartMode .helpBtn,
+  body.waaTamaStartMode .builder,
+  body.waaTamaStartMode .petPanel,
+  body.waaTamaStartMode #waaTamaStartOverlay,
+  body.waaTamaStartMode .petbotBackBtn,
+  body.waaTamaStartMode #stage37TamaReturnBtn{
+    display:none!important;
+    visibility:hidden!important;
+  }
+  #waaTamaStartOverlay{
+    position:fixed!important;
+    inset:0!important;
+    z-index:2147483200!important;
+    display:none;
+    align-items:center!important;
+    justify-content:center!important;
+    background:radial-gradient(circle at 50% 44%,#1b1b3f 0%,#111127 48%,#090918 100%)!important;
+    overflow:hidden!important;
+  }
+  body.waaTamaStartMode #waaTamaStartOverlay{display:flex!important;}
+  #waaTamaStartDevice{
+    position:relative!important;
+    width:min(58vw,calc(92dvh * 0.6667))!important;
+    height:auto!important;
+    aspect-ratio:1024/1536!important;
+    min-width:330px!important;
+    max-width:690px!important;
+    filter:drop-shadow(0 22px 36px rgba(0,0,0,.42))!important;
+  }
+  #waaTamaStartDeviceImg{
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    object-fit:contain!important;
+    z-index:1!important;
+    pointer-events:none!important;
+    user-select:none!important;
+  }
+  #waaTamaStartScreen{
+    position:absolute!important;
+    left:21.18%!important;
+    top:39.52%!important;
+    width:57.24%!important;
+    height:26.63%!important;
+    z-index:2!important;
+    overflow:hidden!important;
+    border-radius:8% / 11%!important;
+    background:#79d9ff!important;
+    box-shadow:inset 0 0 0 2px rgba(20,30,60,.18)!important;
+  }
+  #waaTamaFullBtn20260702c{
+    position:fixed!important;
+    z-index:2147483300!important;
+    right:calc(env(safe-area-inset-right) + 16px)!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    border:0!important;
+    border-radius:999px!important;
+    padding:12px 18px!important;
+    background:linear-gradient(180deg,#ffffff,#ffe9f7)!important;
+    color:#24152e!important;
+    font-weight:1000!important;
+    font-size:16px!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.28)!important;
+    cursor:pointer!important;
+  }
+  body:not(.waaTamaStartMode) #waaTamaFullBtn20260702c{display:none!important;}
+  @media(max-width:820px){
+    #waaTamaStartDevice{width:min(88vw,calc(94dvh * 0.6667))!important;min-width:260px!important;}
+    #waaTamaFullBtn20260702c{padding:10px 14px!important;font-size:14px!important;}
+  }
+</style>
+<!-- ============================================================
+FIX 20260702E: FORCE REAL PETBOT START AND BUTTON ROUTES
+Keeps startup and Tamagotchi buttons pointed at the real PetBot app.
+Quest starts only from the PetBot Games menu.
+============================================================ -->
+<style id="fix-20260702e-real-petbot-start-css">
+  body.petbotOpen:not(.tamaGameEmbedded) #game{
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:fixed!important;
+    inset:0!important;
+    width:100vw!important;
+    height:100dvh!important;
+    min-width:100vw!important;
+    min-height:100dvh!important;
+    z-index:2147483000!important;
+    transform:none!important;
+  }
+  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen .petbotDockFrame{
+    display:block!important;
+    visibility:visible!important;
+    opacity:1!important;
+    position:absolute!important;
+    inset:0!important;
+    width:100%!important;
+    height:100%!important;
+    border:0!important;
+  }
+</style>
+<!-- ============================================================
+FIX 20260702D: TAMAGOTCHI LCD POLISH
+This does not change game logic. It only removes edit/debug outlines while
+in Tamagotchi mode and gives the LCD a cleaner game crop.
+============================================================ -->
+<style id="fix-20260702d-tamagotchi-lcd-polish-css">
+  body.waaTamaStartMode .editableTarget,
+  body.waaTamaStartMode .selectedEditTarget{
+    outline:none!important;
+    box-shadow:none!important;
+  }
+  body.waaTamaStartMode .dragHint,
+  body.waaTamaStartMode .axFrameDebug,
+  body.waaTamaStartMode #axFrameDebug,
+  body.waaTamaStartMode .character.spriteMissing::before,
+  body.waaTamaStartMode .character.spriteMissing::after{
+    display:none!important;
+    visibility:hidden!important;
+  }
+  body.waaTamaStartMode #waaTamaStartScreen{
+    left:20.9%!important;
+    top:39.2%!important;
+    width:58.2%!important;
+    height:27.4%!important;
+    border-radius:9% / 12%!important;
+  }
+</style>
+<!-- RESTORED CHECK FIX: quest caption/text visibility for Tamagotchi + fullscreen quest mode -->
+<style id="clean-restored-caption-css">
+  .tamaGameCaption{
+    display:none;
+    position:fixed;
+    left:var(--tama-lcd-left,50vw);
+    top:calc(var(--tama-lcd-top,50dvh) + 8px);
+    width:var(--tama-lcd-w,360px);
+    min-height:26px;
+    transform:none;
+    z-index:2147483646;
+    pointer-events:none;
+    text-align:center;
+    padding:5px 10px;
+    border-radius:999px;
+    background:rgba(255,247,189,.96);
+    color:#21142d;
+    font-weight:1000;
+    font-size:clamp(11px,1.45vw,17px);
+    line-height:1.12;
+    box-shadow:0 8px 18px rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.45);
+    text-shadow:none;
+  }
+  body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left,50vw) + 8px)!important;
+    top:calc(var(--tama-lcd-top,50dvh) + 6px)!important;
+    bottom:auto!important;
+    width:calc(var(--tama-lcd-w,360px) - 16px)!important;
+    max-height:min(72px, calc(var(--tama-lcd-h,180px) * .34))!important;
+    transform:none!important;
+    z-index:2147483646!important;
+    padding:5px 8px!important;
+    border-radius:10px!important;
+    background:rgba(255,247,189,.96)!important;
+    color:#21142d!important;
+    font-size:clamp(10px,1vw,14px)!important;
+    line-height:1.05!important;
+    overflow:hidden!important;
+  }
+  body.gameExpandedFromTama .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    bottom:auto!important;
+    width:min(780px,88vw)!important;
+    transform:translateX(-50%)!important;
+    z-index:2147483646!important;
+    max-height:24vh!important;
+    overflow:hidden!important;
+    padding:10px 14px!important;
+    border-radius:16px!important;
+    background:rgba(255,247,189,.96)!important;
+    color:#21142d!important;
+    font-size:clamp(14px,1.25vw,20px)!important;
+    line-height:1.15!important;
+  }
+</style>
 </head>
+
+
+<!-- ==========================================================
+PART 2: HTML / PAGE PIECES
+
+This part creates the visible page pieces.
+
+This part contains:
+- the game area
+- sky / hills / ground layer containers
+- HUD buttons
+- Admin Builder panel
+- PetBot / Tamagotchi containers
+- menus, screens and popups
+
+Safe edits here:
+- visible words
+- button text
+- menu titles
+- popup text
+
+Do NOT randomly rename IDs here.
+JavaScript in PART 3 uses the IDs to find buttons and screens.
+========================================================== -->
 
 <body>
 <!-- EDIT SECTION 08: GAME LAYERS, HUD, BUILDER, PET CARE AND SCREENS -->
@@ -2268,6 +2510,35 @@ Do NOT put level data here.Do NOT put sprite image links here.Do NOT put JavaScr
   <div class="overlay hidden" id="questStartScreen"><div class="modal"><h1>🗺️ Quest Starter</h1><p>Choose which quest to start. This is the building that will become your quest selector.</p><div class="choiceRow"><button data-quest-level="0">Tutorial Town</button><button data-quest-level="1">Wrong Moon</button><button data-quest-level="2">Swamp Monster</button></div><button id="closeQuestStarterBtn">Close Quest Starter</button></div></div>
   <div class="overlay hidden" id="levelScreen"><div class="modal"><h1 id="levelTitle">Level complete</h1><p id="levelText">The quest chaos continues.</p><button id="nextLevelBtn">Next level</button></div></div><div class="overlay hidden" id="endScreen"><div class="modal"><h1 id="endTitle">Patrol over</h1><p id="endText">The Waaambulance is being dramatic.</p><button id="restartBtn">Restart</button></div></div>
 </div>
+<!-- ==========================================================
+PART 3: JAVASCRIPT / GAME BRAIN
+
+This part controls how the game works.
+
+This part controls:
+- buttons
+- movement
+- jumping
+- score and lives
+- levels
+- sprite paths
+- animation frames
+- building entry
+- quest screens
+- Tamagotchi / PetBot fullscreen
+- save/load
+- mobile scaling
+- collisions
+
+Safe edit areas:
+- EDIT SECTION 17: SPRITE PATHS
+- EDIT SECTION 18A: ANIMATION SPEEDS
+- EDIT SECTION 18B: FRAME COUNTS + CHARACTER SIZE LOCK
+- EDIT SECTION 20: LEVEL DATA
+- EDIT SECTION 20B: PROPER LEVEL PLAN BUILDER
+
+Do NOT randomly edit functions unless you know what they do.
+========================================================== -->
 <!-- EDIT SECTION 15: JAVASCRIPT STARTS HERE - GAME LOGIC BELOW -->
 <script>
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
@@ -5963,94 +6234,17 @@ if(openBtn){
 
 </script>
 
-<!-- ============================================================
-FIX 20260702C: START IN REAL TAMAGOTCHI MODE
-This version starts with the real PetBot/Tamagotchi app, not the
-platform quest cropped into a fake shell. The user chooses who is
-playing inside petbot_test.html, then pets, shop, habitat, hook and
-quest launch from that Tamagotchi.
-============================================================ -->
-<style id="fix-20260702c-tamagotchi-start-css">
-  body.waaTamaStartMode{
-    background:#111127!important;
-    overflow:hidden!important;
-  }
-  body.waaTamaStartMode #startScreen,
-  body.waaTamaStartMode .hud,
-  body.waaTamaStartMode .instructions,
-  body.waaTamaStartMode .touch,
-  body.waaTamaStartMode .helpBtn,
-  body.waaTamaStartMode .builder,
-  body.waaTamaStartMode .petPanel,
-  body.waaTamaStartMode #waaTamaStartOverlay,
-  body.waaTamaStartMode .petbotBackBtn,
-  body.waaTamaStartMode #stage37TamaReturnBtn{
-    display:none!important;
-    visibility:hidden!important;
-  }
-  #waaTamaStartOverlay{
-    position:fixed!important;
-    inset:0!important;
-    z-index:2147483200!important;
-    display:none;
-    align-items:center!important;
-    justify-content:center!important;
-    background:radial-gradient(circle at 50% 44%,#1b1b3f 0%,#111127 48%,#090918 100%)!important;
-    overflow:hidden!important;
-  }
-  body.waaTamaStartMode #waaTamaStartOverlay{display:flex!important;}
-  #waaTamaStartDevice{
-    position:relative!important;
-    width:min(58vw,calc(92dvh * 0.6667))!important;
-    height:auto!important;
-    aspect-ratio:1024/1536!important;
-    min-width:330px!important;
-    max-width:690px!important;
-    filter:drop-shadow(0 22px 36px rgba(0,0,0,.42))!important;
-  }
-  #waaTamaStartDeviceImg{
-    position:absolute!important;
-    inset:0!important;
-    width:100%!important;
-    height:100%!important;
-    object-fit:contain!important;
-    z-index:1!important;
-    pointer-events:none!important;
-    user-select:none!important;
-  }
-  #waaTamaStartScreen{
-    position:absolute!important;
-    left:21.18%!important;
-    top:39.52%!important;
-    width:57.24%!important;
-    height:26.63%!important;
-    z-index:2!important;
-    overflow:hidden!important;
-    border-radius:8% / 11%!important;
-    background:#79d9ff!important;
-    box-shadow:inset 0 0 0 2px rgba(20,30,60,.18)!important;
-  }
-  #waaTamaFullBtn20260702c{
-    position:fixed!important;
-    z-index:2147483300!important;
-    right:calc(env(safe-area-inset-right) + 16px)!important;
-    top:calc(env(safe-area-inset-top) + 14px)!important;
-    border:0!important;
-    border-radius:999px!important;
-    padding:12px 18px!important;
-    background:linear-gradient(180deg,#ffffff,#ffe9f7)!important;
-    color:#24152e!important;
-    font-weight:1000!important;
-    font-size:16px!important;
-    box-shadow:0 10px 24px rgba(0,0,0,.28)!important;
-    cursor:pointer!important;
-  }
-  body:not(.waaTamaStartMode) #waaTamaFullBtn20260702c{display:none!important;}
-  @media(max-width:820px){
-    #waaTamaStartDevice{width:min(88vw,calc(94dvh * 0.6667))!important;min-width:260px!important;}
-    #waaTamaFullBtn20260702c{padding:10px 14px!important;font-size:14px!important;}
-  }
-</style>
+
+
+<!-- ==========================================================
+PART 3B: LATE JAVASCRIPT FIXES
+
+These scripts are still JavaScript, so they belong with PART 3.
+They are kept after the main game script so they can safely patch the final behaviour.
+
+This does NOT change what the scripts do.
+========================================================== -->
+
 <script id="fix-20260702c-tamagotchi-start-script">
 (function(){
   const d=document;
@@ -6134,40 +6328,8 @@ quest launch from that Tamagotchi.
 })();
 </script>
 
-<!-- ============================================================
-FIX 20260702E: FORCE REAL PETBOT START AND BUTTON ROUTES
-Keeps startup and Tamagotchi buttons pointed at the real PetBot app.
-Quest starts only from the PetBot Games menu.
-============================================================ -->
-<style id="fix-20260702e-real-petbot-start-css">
-  body.petbotOpen:not(.tamaGameEmbedded) #game{
-    visibility:hidden!important;
-    pointer-events:none!important;
-  }
-  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    position:fixed!important;
-    inset:0!important;
-    width:100vw!important;
-    height:100dvh!important;
-    min-width:100vw!important;
-    min-height:100dvh!important;
-    z-index:2147483000!important;
-    transform:none!important;
-  }
-  body.petbotOpen:not(.tamaGameEmbedded) #petbotDock.fullscreen .petbotDockFrame{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    position:absolute!important;
-    inset:0!important;
-    width:100%!important;
-    height:100%!important;
-    border:0!important;
-  }
-</style>
+
+
 <script id="fix-20260702e-real-petbot-start-script">
 (function(){
   const PETBOT_URL='petbot_test.html?v=204&embed=1&launch=1&choose=1';
@@ -6253,33 +6415,8 @@ Quest starts only from the PetBot Games menu.
 </script>
 
 
-<!-- ============================================================
-FIX 20260702D: TAMAGOTCHI LCD POLISH
-This does not change game logic. It only removes edit/debug outlines while
-in Tamagotchi mode and gives the LCD a cleaner game crop.
-============================================================ -->
-<style id="fix-20260702d-tamagotchi-lcd-polish-css">
-  body.waaTamaStartMode .editableTarget,
-  body.waaTamaStartMode .selectedEditTarget{
-    outline:none!important;
-    box-shadow:none!important;
-  }
-  body.waaTamaStartMode .dragHint,
-  body.waaTamaStartMode .axFrameDebug,
-  body.waaTamaStartMode #axFrameDebug,
-  body.waaTamaStartMode .character.spriteMissing::before,
-  body.waaTamaStartMode .character.spriteMissing::after{
-    display:none!important;
-    visibility:hidden!important;
-  }
-  body.waaTamaStartMode #waaTamaStartScreen{
-    left:20.9%!important;
-    top:39.2%!important;
-    width:58.2%!important;
-    height:27.4%!important;
-    border-radius:9% / 12%!important;
-  }
-</style>
+
+
 <script id="fix-20260702d-tamagotchi-lcd-polish-script">
 (function(){
   function fitTamaPolish(){
@@ -6325,66 +6462,8 @@ in Tamagotchi mode and gives the LCD a cleaner game crop.
 
 
 
-<!-- RESTORED CHECK FIX: quest caption/text visibility for Tamagotchi + fullscreen quest mode -->
-<style id="clean-restored-caption-css">
-  .tamaGameCaption{
-    display:none;
-    position:fixed;
-    left:var(--tama-lcd-left,50vw);
-    top:calc(var(--tama-lcd-top,50dvh) + 8px);
-    width:var(--tama-lcd-w,360px);
-    min-height:26px;
-    transform:none;
-    z-index:2147483646;
-    pointer-events:none;
-    text-align:center;
-    padding:5px 10px;
-    border-radius:999px;
-    background:rgba(255,247,189,.96);
-    color:#21142d;
-    font-weight:1000;
-    font-size:clamp(11px,1.45vw,17px);
-    line-height:1.12;
-    box-shadow:0 8px 18px rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.45);
-    text-shadow:none;
-  }
-  body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
-    display:block!important;
-    position:fixed!important;
-    left:calc(var(--tama-lcd-left,50vw) + 8px)!important;
-    top:calc(var(--tama-lcd-top,50dvh) + 6px)!important;
-    bottom:auto!important;
-    width:calc(var(--tama-lcd-w,360px) - 16px)!important;
-    max-height:min(72px, calc(var(--tama-lcd-h,180px) * .34))!important;
-    transform:none!important;
-    z-index:2147483646!important;
-    padding:5px 8px!important;
-    border-radius:10px!important;
-    background:rgba(255,247,189,.96)!important;
-    color:#21142d!important;
-    font-size:clamp(10px,1vw,14px)!important;
-    line-height:1.05!important;
-    overflow:hidden!important;
-  }
-  body.gameExpandedFromTama .tamaGameCaption.show{
-    display:block!important;
-    position:fixed!important;
-    left:50vw!important;
-    top:calc(env(safe-area-inset-top) + 14px)!important;
-    bottom:auto!important;
-    width:min(780px,88vw)!important;
-    transform:translateX(-50%)!important;
-    z-index:2147483646!important;
-    max-height:24vh!important;
-    overflow:hidden!important;
-    padding:10px 14px!important;
-    border-radius:16px!important;
-    background:rgba(255,247,189,.96)!important;
-    color:#21142d!important;
-    font-size:clamp(14px,1.25vw,20px)!important;
-    line-height:1.15!important;
-  }
-</style>
+
+
 
 </body>
 </html>
