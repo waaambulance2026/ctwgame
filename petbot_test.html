@@ -1663,11 +1663,11 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // CSS fullscreen only.
-  // Do NOT call browser requestFullscreen() from inside PetBot.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
   try{
-    document.documentElement.classList.add('cssFullscreen');
-    document.body.classList.add('cssFullscreen');
+    const el=document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
 function notifyParent(){
@@ -2031,33 +2031,6 @@ window.addEventListener('message',e=>{
 })();
 
 render();
-})();
-</script>
-  <script id="petbot-debug-state">
-(function(){
-  const box = document.createElement('div');
-  box.id = 'petbotDebugStateBox';
-  box.style.cssText = `
-    position:fixed;
-    right:8px;
-    bottom:8px;
-    z-index:999999;
-    background:rgba(255,255,255,.9);
-    color:#111;
-    font:11px/1.25 monospace;
-    padding:6px;
-    border-radius:8px;
-    pointer-events:none;
-    white-space:pre-wrap;
-  `;
-  document.body.appendChild(box);
-
-  setInterval(function(){
-    box.textContent =
-      'PETBOT html=' + document.documentElement.className +
-      '\\nbody=' + document.body.className +
-      '\\nfullscreen=' + (document.fullscreenElement ? document.fullscreenElement.id || document.fullscreenElement.tagName : 'none');
-  }, 250);
 })();
 </script>
 </body>
