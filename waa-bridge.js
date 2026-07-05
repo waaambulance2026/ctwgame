@@ -1,7 +1,7 @@
 (function(){
   'use strict';
 
-  const VERSION='20260705-one-bridge-2';
+  const VERSION='20260705-one-bridge-3';
   const PETBOT_URL='petbot_test.html?v='+VERSION+'&embed=1&launch=1&choose=1';
 
   function q(id){return document.getElementById(id);}
@@ -47,20 +47,29 @@
       const style=document.createElement('style');
       style.id='waa-one-bridge-parent-css';
       style.textContent=[
-        /* Fullscreen quest should have only ONE Tamagotchi return button.
-           Keep the final router's stage40 return button, hide the normal HUD PetBot button. */
-        'body.questFullscreen #petBtn,body.waaFs40Expanded #petBtn,body.gameExpandedFromTama #petBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
-        'body.questFullscreen #stage37TamaReturnBtn,body.waaFs40Expanded #stage37TamaReturnBtn,body.gameExpandedFromTama #stage37TamaReturnBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
-        'body.questFullscreen .petbotBackBtn,body.waaFs40Expanded .petbotBackBtn,body.gameExpandedFromTama .petbotBackBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
-        'body.questFullscreen #stage40TamaReturnBtn,body.waaFs40Expanded #stage40TamaReturnBtn,body.gameExpandedFromTama #stage40TamaReturnBtn{display:block!important;visibility:visible!important;opacity:1!important;}',
+        'html.waaFs40Lock,body.waaFs40Lock{width:100%!important;height:100%!important;overflow:hidden!important;}',
 
-        /* When the quest is expanded, make sure the platform-game art layers stay visible.
-           This prevents the walk state falling back to a plain blue game background. */
+        /* PetBot menu mode: hide platform game, show Tamagotchi iframe. */
+        'body.petbot #game,body.waaFs40Petbot #game{visibility:hidden!important;pointer-events:none!important;}',
+        'body.petbot #petbotDock,body.waaFs40Petbot #petbotDock{display:grid!important;visibility:visible!important;}',
+
+        /* Fullscreen quest mode: game only, no HUD and no extra Tamagotchi buttons. */
+        'body.questFullscreen .hud,body.waaFs40Expanded .hud,body.gameExpandedFromTama .hud{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
+        'body.questFullscreen #petBtn,body.waaFs40Expanded #petBtn,body.gameExpandedFromTama #petBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
+        'body.questFullscreen #stage37TamaReturnBtn,body.waaFs40Expanded #stage37TamaReturnBtn,body.gameExpandedFromTama #stage37TamaReturnBtn,body.questFullscreen #stage40TamaReturnBtn,body.waaFs40Expanded #stage40TamaReturnBtn,body.gameExpandedFromTama #stage40TamaReturnBtn,body.questFullscreen .petbotBackBtn,body.waaFs40Expanded .petbotBackBtn,body.gameExpandedFromTama .petbotBackBtn{display:none!important;visibility:hidden!important;pointer-events:none!important;}',
+        '#waaQuestReturnBtn{display:none;position:fixed;left:calc(env(safe-area-inset-left) + 14px);top:calc(env(safe-area-inset-top) + 14px);z-index:2147483647;border:2px solid rgba(255,255,255,.95);border-radius:999px;padding:12px 16px;background:linear-gradient(180deg,#fff,#ffeafd);color:#24152e;font-weight:1000;font-size:16px;box-shadow:0 10px 26px rgba(0,0,0,.25);cursor:pointer;}',
+        'body.questFullscreen #waaQuestReturnBtn,body.waaFs40Expanded #waaQuestReturnBtn,body.gameExpandedFromTama #waaQuestReturnBtn{display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;}',
+
+        /* Keep the actual platform scene visible while walking. */
         'body.questFullscreen #game,body.waaFs40Expanded #game,body.gameExpandedFromTama #game{display:block!important;visibility:visible!important;opacity:1!important;background:#79d9ff!important;overflow:hidden!important;}',
         'body.questFullscreen .sky,body.questFullscreen .hills,body.questFullscreen .groundDecor,body.questFullscreen .platform,body.questFullscreen .underFloor,body.waaFs40Expanded .sky,body.waaFs40Expanded .hills,body.waaFs40Expanded .groundDecor,body.waaFs40Expanded .platform,body.waaFs40Expanded .underFloor,body.gameExpandedFromTama .sky,body.gameExpandedFromTama .hills,body.gameExpandedFromTama .groundDecor,body.gameExpandedFromTama .platform,body.gameExpandedFromTama .underFloor{display:block!important;visibility:visible!important;opacity:1!important;}',
         'body.questFullscreen #buildingObjects,body.questFullscreen #worldObjects,body.waaFs40Expanded #buildingObjects,body.waaFs40Expanded #worldObjects,body.gameExpandedFromTama #buildingObjects,body.gameExpandedFromTama #worldObjects{display:block!important;visibility:visible!important;opacity:1!important;}',
         'body.questFullscreen #player,body.questFullscreen #shadow,body.waaFs40Expanded #player,body.waaFs40Expanded #shadow,body.gameExpandedFromTama #player,body.gameExpandedFromTama #shadow{display:flex!important;visibility:visible!important;opacity:1!important;}',
-        'body.questFullscreen #shadow,body.waaFs40Expanded #shadow,body.gameExpandedFromTama #shadow{display:block!important;}'
+        'body.questFullscreen #shadow,body.waaFs40Expanded #shadow,body.gameExpandedFromTama #shadow{display:block!important;}',
+
+        /* In embedded mode, PetBot shell stays visible and game is clipped by old Tamagotchi LCD fitter. */
+        'body.questEmbedded #petbotDock,body.waaFs40Embedded #petbotDock{display:grid!important;visibility:visible!important;}',
+        'body.questEmbedded #game,body.waaFs40Embedded #game,body.tamaGameEmbedded #game{display:block!important;visibility:visible!important;opacity:1!important;}'
       ].join('\n');
       document.head.appendChild(style);
     }
@@ -70,6 +79,60 @@
     function dock(){return q('petbotDock');}
     function frame(){return q('petbotDockFrame') || q('petbotFrame');}
     function game(){return q('game');}
+
+    function setImportant(el,prop,val){
+      if(el) el.style.setProperty(prop,val,'important');
+    }
+
+    function fitFullQuest(){
+      const g=game();
+      if(!g) return;
+      const DESIGN_W=1920, DESIGN_H=1080;
+      const vw=window.innerWidth || document.documentElement.clientWidth || DESIGN_W;
+      const vh=window.innerHeight || document.documentElement.clientHeight || DESIGN_H;
+      const scale=Math.max(vw/DESIGN_W, vh/DESIGN_H);
+      const left=(vw - DESIGN_W*scale)/2;
+      const top=vh - DESIGN_H*scale;
+      setImportant(g,'position','fixed');
+      setImportant(g,'left','0px');
+      setImportant(g,'top','0px');
+      setImportant(g,'width',DESIGN_W+'px');
+      setImportant(g,'height',DESIGN_H+'px');
+      setImportant(g,'min-width',DESIGN_W+'px');
+      setImportant(g,'min-height',DESIGN_H+'px');
+      setImportant(g,'transform-origin','0 0');
+      setImportant(g,'transform','translate3d('+left+'px,'+top+'px,0) scale('+scale+')');
+      setImportant(g,'clip-path','none');
+      setImportant(g,'-webkit-clip-path','none');
+      setImportant(g,'display','block');
+      setImportant(g,'visibility','visible');
+      setImportant(g,'opacity','1');
+      setImportant(g,'pointer-events','auto');
+      setImportant(g,'z-index','2147482500');
+      try{window.currentGameScale=scale;window.currentGameLeft=left;window.currentGameTop=top;}catch(e){}
+    }
+
+    function ensureReturnButton(){
+      let btn=q('waaQuestReturnBtn');
+      if(!btn){
+        btn=document.createElement('button');
+        btn.id='waaQuestReturnBtn';
+        btn.type='button';
+        btn.textContent='↩ Tamagotchi';
+        btn.setAttribute('aria-label','Return quest to Tamagotchi');
+        document.body.appendChild(btn);
+      }
+      if(!btn.__waaBridgeBound){
+        btn.__waaBridgeBound=true;
+        const go=function(e){
+          if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
+          returnQuest();
+        };
+        btn.addEventListener('click',go,true);
+        btn.addEventListener('touchend',go,{capture:true,passive:false});
+      }
+      return btn;
+    }
 
     function fixFrameUrl(){
       const f=frame();
@@ -121,6 +184,7 @@
       }
 
       if(mode==='petbot'){
+        const rb=q('waaQuestReturnBtn'); if(rb) rb.style.display='none';
         clearQuestHeartbeat();
         document.body.classList.add('petbotOpen','waaFs40Petbot');
         postPetbot({type:'waa-parent-show-petbot-home'});
@@ -147,6 +211,7 @@
       setGameFixed(true);
 
       if(mode==='questEmbedded'){
+        const rb=q('waaQuestReturnBtn'); if(rb) rb.style.display='none';
         document.documentElement.classList.add('waaFs40Lock');
         document.body.classList.add('waaFs40Lock','petbotOpen','tamaGameEmbedded','tamaLiteRender33','waaFs40Embedded');
         try{ if(typeof window.fitEmbeddedTamaGame==='function') window.fitEmbeddedTamaGame(); }catch(e){}
@@ -158,7 +223,9 @@
         document.documentElement.classList.add('waaFs40Lock');
         document.body.classList.add('waaFs40Lock','gameExpandedFromTama','waaFs40Expanded');
         if(d) d.classList.add('hidden');
-        try{ if(typeof window.fitGameToScreen==='function') window.fitGameToScreen(); }catch(e){}
+        ensureReturnButton();
+        fitFullQuest();
+        [60,180,420,900].forEach(function(ms){setTimeout(fitFullQuest,ms);});
         postPetbot({type:'waa-parent-quest-active',mode:'expanded',kind:state.questKind,t:Date.now()});
         return true;
       }
@@ -251,6 +318,10 @@
         returnQuest();
       }
     },true);
+
+
+    window.addEventListener('resize',function(){ if(state.mode==='questFullscreen') fitFullQuest(); },{passive:true});
+    window.addEventListener('orientationchange',function(){ setTimeout(function(){ if(state.mode==='questFullscreen') fitFullQuest(); },120); },{passive:true});
 
     setInterval(function(){
       if(state.mode==='questEmbedded' || state.mode==='questFullscreen'){

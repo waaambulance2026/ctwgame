@@ -63,3 +63,7 @@ function placeToScreen(place){
 Do not use a permanent `localStorage` value to mean "quest is active".
 
 The bridge uses a short heartbeat named `waaQuestActiveAt`. If the parent quest stops sending the heartbeat, PetBot returns to normal instead of staying on a blank transparent screen.
+
+
+CORRECTED NOTE 20260705-one-bridge-3:
+The old inline FINAL FULLSCREEN ROUTER was removed from index.html. Do not add it back. Fullscreen / Tamagotchi / quest switching now belongs in waa-bridge.js only.
