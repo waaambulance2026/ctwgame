@@ -2635,6 +2635,642 @@ and gives the LCD a cleaner game crop.
     line-height:1.15!important;
   }
 </style>
+<style id="combined-petbot-scoped-css-20260705">
+
+/* ==========================================================
+PART 1J-COMBINED: PETBOT DIRECT-IN-INDEX CSS
+This is the PetBot app scoped inside #petbotDockFrame.
+It replaces the old iframe display, but does not style the whole page.
+========================================================== */
+.petbotDockFrame.combinedPetbotFrame{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:none;
+  border:0;
+  background:transparent;
+  overflow:hidden;
+}
+.petbotDock.fullscreen .petbotDockFrame.combinedPetbotFrame{
+  display:block!important;
+}
+.combinedPetbotFrame{
+  --ink:#16223f;
+  --pink:#f7b5dc;
+  --blue:#9feaff;
+  --lcd:#dff7fb;
+  --lcd2:#bfe9ee;
+  --shadow:rgba(18,20,45,.25);
+}
+.combinedPetbotFrame *{box-sizing:border-box}
+.combinedPetbotFrame,.combinedPetbotFrame{width:100%;height:100%;margin:0;overflow:hidden;background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 38%,#dff7ff 100%);font-family:Verdana,Arial,sans-serif;color:var(--ink);touch-action:manipulation;user-select:none}
+.combinedPetbotFrame{display:grid;place-items:center}
+.combinedPetbotFrame #app{position:fixed;inset:0;display:grid;place-items:center;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+.combinedPetbotFrame .device{position:relative;width:min(94vw,calc(98vh * 0.6667));aspect-ratio:2/3;filter:drop-shadow(0 18px 30px var(--shadow));background:none}
+.combinedPetbotFrame .device::after{content:"";position:absolute;inset:0;background:url('petbot_device.png') center/contain no-repeat;z-index:12;pointer-events:none}
+.combinedPetbotFrame .lcd{position:absolute;z-index:2;left:20.6%;top:39.2%;width:58%;height:27%;border-radius:6%/10%;overflow:hidden;background:linear-gradient(180deg,var(--lcd),var(--lcd2));box-shadow:inset 0 0 0 2px rgba(21,34,63,.35),inset 0 0 22px rgba(255,255,255,.9);display:flex;flex-direction:column;isolation:isolate}
+.combinedPetbotFrame .lcd:before{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(255,255,255,.25),transparent 18%,transparent 82%,rgba(255,255,255,.20)),repeating-linear-gradient(0deg,rgba(0,0,0,.055) 0 1px,transparent 1px 4px);opacity:.45;pointer-events:none;z-index:5}
+.combinedPetbotFrame .top{height:18%;min-height:19px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:4px;padding:2px 6px;font-weight:900;font-size:clamp(8px,1.02vw,13px);background:rgba(255,255,255,.25);letter-spacing:.02em;position:relative;z-index:6}
+.combinedPetbotFrame .top span:nth-child(2){white-space:nowrap}
+.combinedPetbotFrame .top span:last-child{text-align:right}
+.combinedPetbotFrame .body{position:relative;flex:1;min-height:0;padding:5px 6px;display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:4}
+.combinedPetbotFrame .hint{font-size:clamp(6px,.72vw,10px);font-weight:800;opacity:.7;text-align:center;line-height:1.1;margin-top:2px}
+.combinedPetbotFrame .small{font-size:clamp(7px,.78vw,10px);font-weight:800;opacity:.8}
+.combinedPetbotFrame .bigText{font-size:clamp(11px,1.45vw,20px);font-weight:1000;text-align:center;line-height:1.12}
+.combinedPetbotFrame .row{display:flex;gap:4px;align-items:center;justify-content:center;flex-wrap:wrap}
+.combinedPetbotFrame .choiceList{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.combinedPetbotFrame .choice{display:grid;grid-template-columns:auto 1fr;gap:5px;align-items:center;padding:5px 7px;border:1.5px solid rgba(22,34,63,.35);background:rgba(255,255,255,.24);border-radius:9px;font-weight:1000;font-size:clamp(9px,1.08vw,14px);line-height:1.05}
+.combinedPetbotFrame .choice.active{background:rgba(255,255,255,.67);outline:2px solid rgba(22,34,63,.42)}
+.combinedPetbotFrame .choice small{display:block;font-size:.72em;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.combinedPetbotFrame .passwordCard{width:94%;max-width:260px;background:rgba(255,255,255,.35);border:1.5px solid rgba(22,34,63,.35);border-radius:12px;padding:7px;text-align:center;font-weight:1000}
+.combinedPetbotFrame .passwordCard input{width:94%;margin:5px auto;display:block;border:1.5px solid rgba(22,34,63,.5);border-radius:9px;padding:6px 5px;text-align:center;font-weight:1000;background:rgba(255,255,255,.88);color:#111;font-size:16px;user-select:text}
+.combinedPetbotFrame .screenBtn{border:1.5px solid rgba(22,34,63,.35);border-radius:999px;background:rgba(255,255,255,.88);font-weight:1000;padding:5px 12px;color:var(--ink)}
+.combinedPetbotFrame .error{color:#9b1a56;font-size:clamp(7px,.8vw,11px);min-height:1.15em;font-weight:900}
+.combinedPetbotFrame .loader{width:34px;height:34px;border-radius:50%;border:4px solid rgba(22,34,63,.16);border-top-color:rgba(22,34,63,.8);animation:spin .8s linear infinite;margin:3px auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.combinedPetbotFrame .petStage{position:absolute;inset:15% 4% 38% 4%;overflow:hidden}
+.combinedPetbotFrame .petImg{position:absolute;left:50%;top:50%;width:76%;height:76%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 7px 6px rgba(35,37,62,.20))}
+.combinedPetbotFrame .petEmoji{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,70px)}
+.combinedPetbotFrame .petName{position:absolute;left:4px;right:4px;bottom:29%;text-align:center;font-size:clamp(10px,1.25vw,16px);font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combinedPetbotFrame .stats{position:absolute;left:7px;right:7px;bottom:5px;display:grid;gap:2px}
+.combinedPetbotFrame .stat{display:grid;grid-template-columns:16px 1fr 24px;gap:3px;align-items:center;font-size:clamp(6px,.72vw,9px);font-weight:900}
+.combinedPetbotFrame .bar{height:6px;border-radius:999px;background:rgba(255,255,255,.35);box-shadow:inset 0 0 0 1px rgba(22,34,63,.25);overflow:hidden}
+.combinedPetbotFrame .bar i{display:block;height:100%;width:50%;border-radius:999px;background:rgba(22,34,63,.55)}
+.combinedPetbotFrame .bar.h i{background:#ff7899}
+.combinedPetbotFrame .bar.j i{background:#ffbd59}
+.combinedPetbotFrame .bar.e i{background:#6ddf9e}
+.combinedPetbotFrame .bar.hp i{background:#75c7ff}
+.combinedPetbotFrame .details{position:absolute;left:4px;right:4px;bottom:24%;font-size:clamp(7px,.82vw,11px);font-weight:900;text-align:center;opacity:.82;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combinedPetbotFrame .msg{font-size:clamp(8px,.82vw,12px);font-weight:900;text-align:center;opacity:.8;margin-top:2px}
+.combinedPetbotFrame .menuGrid{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%}
+.combinedPetbotFrame .menuItem{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.24);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(8px,.9vw,12px);min-height:36px;display:flex;flex-direction:column;justify-content:center}
+.combinedPetbotFrame .menuItem.active{background:rgba(255,255,255,.70);outline:2px solid rgba(22,34,63,.35)}
+.combinedPetbotFrame .menuItem b{font-size:1.25em}
+.combinedPetbotFrame .panelList{width:100%;height:100%;overflow:auto;padding-right:2px;font-size:clamp(7px,.85vw,11px);font-weight:900}
+.combinedPetbotFrame .panelItem{border:1px solid rgba(22,34,63,.24);border-radius:8px;background:rgba(255,255,255,.28);padding:4px;margin:3px 0}
+.combinedPetbotFrame .debug{position:fixed;left:8px;bottom:8px;right:8px;max-height:26vh;overflow:auto;background:rgba(255,255,255,.88);border:1px solid rgba(22,34,63,.25);border-radius:10px;padding:8px;font:12px/1.25 monospace;display:none;user-select:text}
+.combinedPetbotFrame .hit{position:absolute;border:0;background:transparent;outline:none;z-index:30;cursor:pointer;color:transparent;-webkit-tap-highlight-color:transparent}
+.combinedPetbotFrame .hit:focus-visible{outline:2px solid rgba(255,255,255,.9);outline-offset:2px;border-radius:999px}
+.combinedPetbotFrame .hit.siren{left:31%;top:6.5%;width:38%;height:12%;border-radius:18px}
+.combinedPetbotFrame .hit.exit{left:43%;top:15%;width:14%;height:10.5%;border-radius:50%}
+.combinedPetbotFrame .hit.prev{left:13.6%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
+.combinedPetbotFrame .hit.select{left:38%;top:70.8%;width:24%;height:16.2%;border-radius:50%}
+.combinedPetbotFrame .hit.next{left:70.2%;top:67.8%;width:16.2%;height:13.8%;border-radius:42%}
+@media (max-width:520px){.combinedPetbotFrame .device{width:min(99vw,calc(99vh * .6667))}
+.combinedPetbotFrame .body{padding:3px 5px}
+.combinedPetbotFrame .choice{padding:4px 6px}
+.combinedPetbotFrame .stats{gap:1px}
+.combinedPetbotFrame .stat{grid-template-columns:14px 1fr 21px}
+.combinedPetbotFrame .bar{height:5px}
+.combinedPetbotFrame .menuGrid{gap:3px}
+.combinedPetbotFrame .menuItem{padding:4px 3px;min-height:30px}}
+.combinedPetbotFrame /* Stage 2 polish: the toy shell sits above the LCD,.combinedPetbotFrame no written button instructions. */
+.hint{display:none!important}
+.combinedPetbotFrame .top{height:16%;min-height:17px;padding:2px 6px;font-size:clamp(7px,.88vw,11px)}
+.combinedPetbotFrame .body.petBody{justify-content:flex-start;padding:3px 7px 5px;gap:1px}
+.combinedPetbotFrame .petBody .petStage{position:relative;inset:auto;width:100%;flex:1 1 auto;min-height:58px;max-height:92px;overflow:visible;margin-top:0}
+.combinedPetbotFrame .petBody .petName{position:static;width:100%;font-size:clamp(10px,1.18vw,15px);line-height:1.05;margin-top:1px;text-align:center;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combinedPetbotFrame .petBody .details{position:static;width:100%;font-size:clamp(6px,.75vw,9px);line-height:1.05;text-align:center;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0 0 1px}
+.combinedPetbotFrame .petBody .stats{position:static;width:100%;display:grid;gap:1px;margin-top:1px}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:13px 1fr 20px;font-size:clamp(5px,.65vw,8px);gap:2px}
+.combinedPetbotFrame .petBody .bar{height:5px}
+.combinedPetbotFrame .menuGrid{gap:5px}
+.combinedPetbotFrame .menuItem{min-height:39px}
+.combinedPetbotFrame .passwordCard{margin-top:4px}
+.combinedPetbotFrame .passwordCard input{font-size:15px}
+.combinedPetbotFrame /* Stage 3 pet screen polish: keep text away from shell edges,.combinedPetbotFrame show name/level in header,.combinedPetbotFrame stats in 2x2 blocks. */
+.lcd{left:21.8%;top:39.9%;width:56.4%;height:25.9%;}
+.combinedPetbotFrame .top{grid-template-columns:1fr;height:15%;min-height:16px;padding:2px 12px;background:rgba(255,255,255,.18);}
+.combinedPetbotFrame .top span:first-child,.combinedPetbotFrame .top span:last-child{display:none!important}
+.combinedPetbotFrame .top span:nth-child(2){display:block;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:clamp(8px,1vw,12px);}
+.combinedPetbotFrame .body.petBody{padding:2px 8px 5px;gap:1px;justify-content:flex-start}
+.combinedPetbotFrame .petBody .petStage{width:100%;flex:1 1 auto;min-height:48px;max-height:88px;margin:0;overflow:visible}
+.combinedPetbotFrame .petBody .petName{display:none!important}
+.combinedPetbotFrame .petBody .details{font-size:clamp(6px,.72vw,9px);line-height:1.05;margin:0 0 2px;text-align:center;opacity:.78}
+.combinedPetbotFrame .petBody .stats{display:grid!important;grid-template-columns:1fr 1fr;gap:2px 3px;width:100%;margin-top:auto;position:static}
+.combinedPetbotFrame .petBody .stat{display:grid;grid-template-columns:12px 1fr 18px;align-items:center;gap:2px;padding:2px 3px;border-radius:7px;background:rgba(255,255,255,.23);box-shadow:inset 0 0 0 1px rgba(22,34,63,.12);font-size:clamp(5px,.62vw,8px);line-height:1}
+.combinedPetbotFrame .petBody .bar{height:5px}
+.combinedPetbotFrame .petBody .petImg{max-width:92%;max-height:92%}
+@media (max-width:520px){.combinedPetbotFrame .lcd{left:21.8%;top:39.9%;width:56.4%;height:25.9%}
+.combinedPetbotFrame .top{padding:1px 10px}
+.combinedPetbotFrame .petBody .stats{gap:2px}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:11px 1fr 16px;padding:2px}
+.combinedPetbotFrame .petBody .bar{height:4px}}
+.combinedPetbotFrame /* Stage 4: bigger pet,.combinedPetbotFrame readable 2x2 stat blocks,.combinedPetbotFrame real menu panels. */
+.body.petBody{padding:3px 10px 7px!important;gap:2px!important}
+.combinedPetbotFrame .petBody .petStage{min-height:78px!important;max-height:118px!important;flex:1 1 66%!important;margin-top:0!important}
+.combinedPetbotFrame .petBody .details{font-size:clamp(7px,.86vw,11px)!important;line-height:1.08!important;margin:0 0 2px!important;opacity:.82!important}
+.combinedPetbotFrame .petBody .stats{grid-template-columns:1fr 1fr!important;gap:4px!important;width:100%!important;margin-top:auto!important}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:16px 1fr 24px!important;gap:4px!important;padding:4px 5px!important;border-radius:9px!important;background:rgba(255,255,255,.42)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.22),0 1px 3px rgba(22,34,63,.10)!important;font-size:clamp(8px,.92vw,12px)!important;line-height:1!important}
+.combinedPetbotFrame .petBody .bar{height:8px!important;background:rgba(255,255,255,.62)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.32)!important}
+.combinedPetbotFrame .petBody .petImg{max-width:112%!important;max-height:112%!important}
+.combinedPetbotFrame .menuGrid.main4{grid-template-columns:1fr 1fr;gap:7px;width:98%;margin:auto}
+.combinedPetbotFrame .menuGrid.main4 .menuItem{min-height:50px;font-size:clamp(10px,1.08vw,15px);border-radius:11px;background:rgba(255,255,255,.36)}
+.combinedPetbotFrame .panelHead{font-weight:1000;text-align:center;font-size:clamp(8px,.95vw,12px);margin-bottom:3px;opacity:.82}
+.combinedPetbotFrame .panelGrid{width:100%;height:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;overflow:auto;padding:1px 2px 3px}
+.combinedPetbotFrame .panelCard{border:1.5px solid rgba(22,34,63,.25);border-radius:9px;background:rgba(255,255,255,.34);padding:5px 4px;text-align:center;font-weight:1000;font-size:clamp(7px,.86vw,11px);line-height:1.08;min-height:38px;display:flex;flex-direction:column;justify-content:center}
+.combinedPetbotFrame .panelCard.active{background:rgba(255,255,255,.75);outline:2px solid rgba(22,34,63,.30)}
+.combinedPetbotFrame .panelCard small{display:block;font-size:.82em;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:520px){.combinedPetbotFrame .petBody .petStage{min-height:68px!important}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:14px 1fr 21px!important;padding:3px!important;font-size:clamp(7px,.9vw,11px)!important}
+.combinedPetbotFrame .petBody .bar{height:7px!important}
+.combinedPetbotFrame .menuGrid.main4 .menuItem{min-height:42px}}
+.combinedPetbotFrame /* Stage 6: remove placeholder mini-game. Games now launch the real Waaambulance platform game. */
+.lcd{left:21.2%!important;top:39.4%!important;width:57.6%!important;height:27.1%!important;border-radius:7%/11%!important}
+.combinedPetbotFrame .top{height:13%!important;min-height:14px!important;padding:1px 14px!important}
+.combinedPetbotFrame .top span:nth-child(2){font-size:clamp(9px,1.15vw,14px)!important;font-weight:1000!important}
+.combinedPetbotFrame .body.petBody{padding:1px 12px 7px!important;gap:1px!important}
+.combinedPetbotFrame .petBody .petStage{min-height:100px!important;max-height:150px!important;flex:1 1 72%!important;overflow:visible!important}
+.combinedPetbotFrame .petBody .petImg{width:128%!important;height:128%!important;max-width:150%!important;max-height:150%!important}
+.combinedPetbotFrame .petBody .petEmoji{font-size:clamp(54px,8vw,95px)!important}
+.combinedPetbotFrame .petBody .details{font-size:clamp(7px,.84vw,10px)!important;margin-top:0!important;margin-bottom:2px!important}
+.combinedPetbotFrame .petBody .stats{grid-template-columns:1fr 1fr!important;gap:5px!important;margin-top:auto!important}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:20px 1fr 30px!important;padding:5px 6px!important;border-radius:10px!important;background:rgba(255,255,255,.62)!important;font-size:clamp(9px,1.02vw,13px)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.28),0 1px 4px rgba(22,34,63,.12)!important}
+.combinedPetbotFrame .petBody .bar{height:10px!important;background:rgba(255,255,255,.84)!important}
+.combinedPetbotFrame .panelGrid.shopGrid,.combinedPetbotFrame .panelGrid.invGrid{grid-template-columns:1fr!important;gap:4px!important}
+.combinedPetbotFrame .panelCard.shopCard,.combinedPetbotFrame .panelCard.invCard{min-height:32px!important;text-align:left!important;display:grid!important;grid-template-columns:auto 1fr auto!important;gap:5px!important;align-items:center!important;padding:5px 6px!important}
+.combinedPetbotFrame .panelCard .priceTag{font-weight:1000;white-space:nowrap}
+.combinedPetbotFrame .questGame{width:100%;height:100%;display:flex;flex-direction:column;gap:3px;align-items:stretch;justify-content:space-between}
+.combinedPetbotFrame .questStage{position:relative;flex:1;min-height:82px;border:1.5px solid rgba(22,34,63,.25);border-radius:10px;overflow:hidden;background:linear-gradient(#bcecff 0 55%,#75c77e 56% 74%,#8a5a3b 75% 100%)}
+.combinedPetbotFrame .questPet{position:absolute;bottom:22%;left:42%;width:44px;height:44px;background:center/contain no-repeat;filter:drop-shadow(0 4px 3px rgba(0,0,0,.25));transition:left .16s linear,bottom .16s ease;display:flex;align-items:center;justify-content:center;font-size:34px}
+.combinedPetbotFrame .questPet.jump{bottom:48%}
+.combinedPetbotFrame .questObstacle{position:absolute;right:8%;bottom:23%;width:18px;height:28px;border-radius:7px 7px 3px 3px;background:#ff7b9e;box-shadow:inset 0 0 0 2px rgba(22,34,63,.16)}
+.combinedPetbotFrame .questHud{font-size:clamp(8px,.9vw,12px);font-weight:1000;text-align:center;display:flex;justify-content:space-between;gap:4px}
+.combinedPetbotFrame .questControls{display:grid;grid-template-columns:1fr 1fr;gap:4px;font-size:clamp(7px,.8vw,10px);font-weight:900;text-align:center;opacity:.75}
+@media (max-width:520px){.combinedPetbotFrame .petBody .petStage{min-height:82px!important}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:17px 1fr 25px!important;padding:4px!important;font-size:clamp(8px,1vw,11px)!important}
+.combinedPetbotFrame .petBody .bar{height:8px!important}
+
+}
+.combinedPetbotFrame /* Stage 6 readability polish */
+.petPic{transform:scale(1.18);}
+.combinedPetbotFrame .statGrid{gap:5px!important;}
+.combinedPetbotFrame .statCard{min-height:22px!important;padding:3px 5px!important;font-size:10px!important;background:rgba(255,255,255,.72)!important;border:1px solid rgba(22,34,63,.18)!important;}
+.combinedPetbotFrame .statCard b{font-size:10px!important;}
+.combinedPetbotFrame .statFill{height:7px!important;border-radius:999px!important;}
+.combinedPetbotFrame .panelHead{font-size:11px!important;}
+.combinedPetbotFrame /* Stage 7: no scrollbar panels,.combinedPetbotFrame real-game window,.combinedPetbotFrame habitat and Hook-a-Waaambulance menu. */
+.panelGrid,.combinedPetbotFrame .panelList{overflow:hidden!important;padding-right:0!important}
+.combinedPetbotFrame .menuGrid.main6{grid-template-columns:1fr 1fr!important;gap:3px!important}
+.combinedPetbotFrame .menuGrid.main6 .menuItem{min-height:32px!important;padding:4px 3px!important}
+.combinedPetbotFrame .panelGrid.shopGrid,.combinedPetbotFrame .panelGrid.invGrid,.combinedPetbotFrame .panelGrid.habitatGrid,.combinedPetbotFrame .panelGrid.hookGrid{grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:5px!important;overflow:hidden!important}
+.combinedPetbotFrame .panelCard.shopCard,.combinedPetbotFrame .panelCard.invCard,.combinedPetbotFrame .panelCard.habitatCard,.combinedPetbotFrame .panelCard.hookCard{min-height:42px!important;text-align:left!important;display:grid!important;grid-template-columns:auto 1fr!important;gap:5px!important;align-items:center!important;padding:5px 6px!important;overflow:hidden!important}
+.combinedPetbotFrame .panelCard .priceTag{grid-column:2;font-size:.9em;opacity:.9}
+.combinedPetbotFrame .panelHelp{font-size:clamp(6px,.75vw,9px);font-weight:900;text-align:center;opacity:.7;margin-top:2px}
+.combinedPetbotFrame .panelActionMsg{font-size:clamp(7px,.85vw,10px);font-weight:1000;text-align:center;color:#16223f;min-height:12px;margin-bottom:2px}
+.combinedPetbotFrame .lcd.gameLcd{background:transparent!important;box-shadow:none!important}
+.combinedPetbotFrame .lcd.gameLcd:before{opacity:.18!important}
+.combinedPetbotFrame .lcd.gameLcd .top{background:rgba(223,247,251,.72)!important;border-radius:8px;margin:2px 12px 0}
+.combinedPetbotFrame .realGameWindow{flex:1;width:100%;height:100%;border:2px solid rgba(22,34,63,.25);border-radius:10px;background:rgba(223,247,251,.15);display:grid;place-items:center;text-align:center;font-weight:1000;font-size:clamp(8px,.95vw,12px);color:#16223f}
+.combinedPetbotFrame .realGameWindow small{display:block;font-size:.8em;opacity:.75;margin-top:4px}
+.combinedPetbotFrame /* STAGE 8: correct pet size,.combinedPetbotFrame habitat preview,.combinedPetbotFrame Hook-a-Waa game,.combinedPetbotFrame and clear LCD game window. */
+html.questPlaying,.combinedPetbotFrame.questPlaying{background:transparent!important;}
+.combinedPetbotFrame.questPlaying{background:transparent!important;}
+.combinedPetbotFrame.questPlaying #app{background:transparent!important;}
+.combinedPetbotFrame.questPlaying .lcd{background:transparent!important;box-shadow:inset 0 0 0 2px rgba(21,34,63,.35)!important;}
+.combinedPetbotFrame.questPlaying .lcd:before{opacity:.22!important;z-index:20!important;}
+.combinedPetbotFrame.questPlaying .top,.combinedPetbotFrame.questPlaying .body{display:none!important;}
+.combinedPetbotFrame .questGameGlass{position:absolute;inset:0;pointer-events:none;background:transparent!important;}
+.combinedPetbotFrame .petBody .petStage{min-height:72px!important;max-height:96px!important;flex:1 1 58%!important;overflow:hidden!important;}
+.combinedPetbotFrame .petBody .petImg{max-width:96%!important;max-height:96%!important;filter:drop-shadow(0 5px 5px rgba(35,37,62,.18))!important;}
+.combinedPetbotFrame .petBody .details{font-size:clamp(7px,.82vw,10px)!important;margin-top:0!important;}
+.combinedPetbotFrame .petBody .stats{gap:4px!important;margin-top:2px!important;}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:18px 1fr 28px!important;padding:4px 5px!important;font-size:clamp(8px,.95vw,12px)!important;}
+.combinedPetbotFrame .petBody .bar{height:8px!important;}
+.combinedPetbotFrame .habitatView,.combinedPetbotFrame .hookGameView{width:100%;height:100%;display:flex;flex-direction:column;gap:4px;align-items:center;justify-content:center;overflow:hidden;}
+.combinedPetbotFrame .habitatFrame{position:relative;width:100%;flex:1 1 auto;min-height:92px;border:1.5px solid rgba(22,34,63,.25);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.30),rgba(118,199,216,.16));overflow:hidden;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35);}
+.combinedPetbotFrame .habitatFrame.withImage{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.combinedPetbotFrame .habitatFrame .habitatEmpty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;font-weight:1000;font-size:clamp(9px,1vw,13px);padding:8px;}
+.combinedPetbotFrame .habitatPet{position:absolute;left:50%;bottom:6%;width:34%;height:42%;transform:translateX(-50%);background:center/contain no-repeat;filter:drop-shadow(0 5px 5px rgba(20,30,50,.2));}
+.combinedPetbotFrame .habitatTitle,.combinedPetbotFrame .hookTitle{font-weight:1000;text-align:center;font-size:clamp(8px,1vw,12px);line-height:1.08;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.combinedPetbotFrame .habitatSub,.combinedPetbotFrame .hookSub{font-weight:900;text-align:center;font-size:clamp(6px,.78vw,9px);opacity:.78;line-height:1.05;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%;}
+.combinedPetbotFrame .hookPond{position:relative;width:100%;flex:1 1 auto;min-height:96px;border:1.5px solid rgba(22,34,63,.25);border-radius:12px;overflow:hidden;background:linear-gradient(#b9f5ff 0 48%,#6dd6f1 49% 66%,#23a6d5 67% 100%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.45);}
+.combinedPetbotFrame .hookLine{position:absolute;left:50%;top:0;width:2px;height:45%;background:#17223f;transform-origin:top center;animation:hookSwing 1.8s ease-in-out infinite;}
+.combinedPetbotFrame .hookLine:after{content:'🪝';position:absolute;left:50%;bottom:-18px;transform:translateX(-50%);font-size:20px;}
+.combinedPetbotFrame .hookPrize{position:absolute;left:50%;bottom:14%;transform:translateX(-50%);font-size:28px;animation:floatPrize 1.4s ease-in-out infinite;}
+.combinedPetbotFrame .hookWave{position:absolute;left:-8%;right:-8%;bottom:30%;height:14px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.75) 0 18px,transparent 18px 36px);opacity:.55;border-radius:999px;animation:waveSlide 2.2s linear infinite;}
+.combinedPetbotFrame .hookResult{position:absolute;left:4px;right:4px;bottom:4px;text-align:center;font-weight:1000;font-size:clamp(7px,.85vw,10px);background:rgba(255,255,255,.62);border-radius:8px;padding:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+@keyframes hookSwing{0%,100%{transform:rotate(-7deg)}50%{transform:rotate(7deg)}}
+@keyframes floatPrize{0%,100%{bottom:14%}50%{bottom:19%}}
+@keyframes waveSlide{to{transform:translateX(36px)}}
+.combinedPetbotFrame .hookCasting .hookLine{animation:hookCast .55s ease-in-out 1;}
+@keyframes hookCast{0%{height:38%}50%{height:72%}100%{height:45%}}
+.combinedPetbotFrame /* Stage 9: habitat uses the selected pet's actual loadout image/layers and fills the LCD. */
+.habitatView{gap:2px!important;justify-content:stretch!important;align-items:stretch!important;}
+.combinedPetbotFrame .habitatTitle,.combinedPetbotFrame .habitatSub{display:none!important;}
+.combinedPetbotFrame .habitatFrame{width:100%!important;height:100%!important;min-height:0!important;flex:1 1 100%!important;border-radius:12px!important;border:1px solid rgba(22,34,63,.18)!important;background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .habitatLayer{position:absolute;background:center/contain no-repeat;pointer-events:none;filter:drop-shadow(0 3px 4px rgba(0,0,0,.18));}
+.combinedPetbotFrame .habitatLayer.background{inset:0!important;width:100%!important;height:100%!important;background-size:cover!important;filter:none!important;}
+.combinedPetbotFrame .habitatPet{position:absolute!important;left:52%!important;bottom:10%!important;width:28%!important;height:42%!important;transform:translateX(-50%)!important;background:center/contain no-repeat!important;filter:drop-shadow(0 7px 6px rgba(0,0,0,.23))!important;}
+.combinedPetbotFrame .habitatEmpty{font-size:clamp(8px,.9vw,12px)!important;padding:10px!important;}
+.combinedPetbotFrame /* Stage 9: real hook-a-waa is a fairground hook-a-duck style screen,.combinedPetbotFrame not a prize list. */
+.hookGameView{gap:2px!important;justify-content:stretch!important;align-items:stretch!important;}
+.combinedPetbotFrame .hookTitle,.combinedPetbotFrame .hookSub{display:none!important;}
+.combinedPetbotFrame .hookPond{width:100%!important;height:100%!important;min-height:0!important;flex:1 1 100%!important;border-radius:12px!important;background-image:linear-gradient(rgba(255,255,255,.05),rgba(255,255,255,.10)),url('https://res.cloudinary.com/dpwlfmhia/image/upload/v1782271198/hook_a_waaambulance.png')!important;background-size:cover!important;background-position:center bottom!important;}
+.combinedPetbotFrame .hookLine{left:50%;top:7%;height:43%;width:2px;background:#1a2445;box-shadow:0 0 0 1px rgba(255,255,255,.55);}
+.combinedPetbotFrame .hookLine:after{font-size:23px;bottom:-20px;}
+.combinedPetbotFrame .hookPrize{font-size:24px;bottom:19%;left:50%;}
+.combinedPetbotFrame .hookWave{bottom:18%;height:12px;opacity:.50;}
+.combinedPetbotFrame .hookResult{left:5px;right:5px;bottom:4px;font-size:clamp(7px,.82vw,10px);background:rgba(255,255,255,.75);}
+.combinedPetbotFrame .hookFloatPrize{position:absolute;font-size:20px;animation:floatPrize 1.6s ease-in-out infinite;filter:drop-shadow(0 3px 2px rgba(0,0,0,.25));}
+.combinedPetbotFrame .hookFloatPrize.p1{left:20%;bottom:24%;animation-delay:.1s}
+.combinedPetbotFrame .hookFloatPrize.p2{left:41%;bottom:20%;animation-delay:.35s}
+.combinedPetbotFrame .hookFloatPrize.p3{left:64%;bottom:25%;animation-delay:.7s}
+.combinedPetbotFrame .hookFloatPrize.p4{left:78%;bottom:18%;animation-delay:.95s}
+.combinedPetbotFrame /* Stage 9: keep detailed pet images readable but not huge. */
+.petBody .petStage{min-height:66px!important;max-height:100px!important;}
+.combinedPetbotFrame .petBody .petImg{max-width:76%!important;max-height:76%!important;}
+.combinedPetbotFrame /* Stage 10: habitat must show the full user_habitats_layout loadout,.combinedPetbotFrame not only the background. */
+.habitatFrame.stage10Full{background:#dff7fb!important;}
+.combinedPetbotFrame .habitatLayer.base{background-size:cover!important;filter:none!important;}
+.combinedPetbotFrame .habitatLayer.decor{background-size:contain!important;}
+.combinedPetbotFrame .habitatLayer.petLayer{filter:drop-shadow(0 6px 5px rgba(0,0,0,.28))!important;}
+.combinedPetbotFrame /* Stage 10: Hook-a-Waaambulance uses real prize art from hook_waaambulance.image_url. */
+.hookFloatPrize{width:19%!important;height:26%!important;font-size:0!important;background:center/contain no-repeat!important;}
+.combinedPetbotFrame .hookFloatPrize.noImg{font-size:20px!important;width:auto!important;height:auto!important;background:none!important;}
+.combinedPetbotFrame .hookFloatPrize.p1{left:17%!important;bottom:25%!important}
+.combinedPetbotFrame .hookFloatPrize.p2{left:38%!important;bottom:20%!important}
+.combinedPetbotFrame .hookFloatPrize.p3{left:59%!important;bottom:25%!important}
+.combinedPetbotFrame .hookFloatPrize.p4{left:76%!important;bottom:19%!important}
+.combinedPetbotFrame .hookPrizeImage{position:absolute;left:50%;top:40%;width:34%;height:42%;transform:translate(-50%,-50%);background:center/contain no-repeat;filter:drop-shadow(0 8px 7px rgba(0,0,0,.28));animation:floatPrize 1.4s ease-in-out infinite;}
+.combinedPetbotFrame .hookResult.hasPrize{white-space:normal!important;line-height:1.05!important;}
+@media (max-width:520px){.combinedPetbotFrame .petBody .petStage{max-height:82px!important}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:15px 1fr 24px!important;font-size:clamp(7px,.9vw,10px)!important}
+.combinedPetbotFrame .petBody .bar{height:7px!important}
+.combinedPetbotFrame .habitatFrame,.combinedPetbotFrame .hookPond{min-height:82px}
+.combinedPetbotFrame .hookPrize{font-size:24px}}
+.combinedPetbotFrame /* Stage 11: cleaner real-data screens. No fake shop items,.combinedPetbotFrame no accidental item use by tapping cards. */
+.panelHead{font-size:clamp(7px,.82vw,10px)!important;line-height:1.05!important;min-height:0!important;padding:0!important;margin:0!important;opacity:.78!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+.combinedPetbotFrame .panelActionMsg{font-size:clamp(7px,.82vw,10px)!important;line-height:1.05!important;min-height:12px!important;max-height:18px!important;overflow:hidden!important;text-align:center!important;font-weight:900!important}
+.combinedPetbotFrame .panelHelp{display:none!important}
+.combinedPetbotFrame .panelCard{cursor:pointer!important}
+.combinedPetbotFrame .habitatFrame.stage11Simple{background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important}
+.combinedPetbotFrame .habitatPet.stage11Pet{left:50%!important;bottom:7%!important;width:24%!important;height:36%!important;z-index:80!important;opacity:.98!important}
+.combinedPetbotFrame .habitatLabel{position:absolute;left:6px;right:6px;bottom:4px;z-index:120;background:rgba(255,255,255,.62);border-radius:7px;padding:2px 4px;font-size:clamp(7px,.78vw,10px);font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.combinedPetbotFrame .hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center center!important}
+.combinedPetbotFrame .hookFloatPrize{width:16%!important;height:20%!important;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25))!important}
+.combinedPetbotFrame .hookLine{top:-2%!important;height:55%!important}
+.combinedPetbotFrame .hookLine:after{font-size:20px!important;bottom:-18px!important}
+.combinedPetbotFrame .hookPrizeImage{top:46%!important;width:30%!important;height:36%!important}
+.combinedPetbotFrame .hookResult{font-size:clamp(6px,.72vw,9px)!important;bottom:2px!important;padding:2px 3px!important;background:rgba(255,255,255,.72)!important}
+.combinedPetbotFrame .petBody .petStage{min-height:58px!important;max-height:86px!important;flex:1 1 52%!important;overflow:hidden!important}
+.combinedPetbotFrame .petBody .petImg{max-width:68%!important;max-height:68%!important}
+.combinedPetbotFrame .petBody .stats{gap:2px!important;margin-top:1px!important}
+.combinedPetbotFrame .petBody .stat{padding:2px 4px!important;font-size:clamp(6px,.75vw,9px)!important;grid-template-columns:15px 1fr 22px!important}
+.combinedPetbotFrame .petBody .bar{height:6px!important}
+.combinedPetbotFrame /* Stage 12: menu-first,.combinedPetbotFrame no button focus rings,.combinedPetbotFrame shop animal/quantity flow,.combinedPetbotFrame cleaner embedded game. */
+.hit,.combinedPetbotFrame .hit:focus,.combinedPetbotFrame .hit:active,.combinedPetbotFrame .hit:focus-visible{outline:none!important;box-shadow:none!important;background:transparent!important;border:0!important;-webkit-tap-highlight-color:transparent!important;}
+.combinedPetbotFrame .hit::-moz-focus-inner{border:0!important;}
+.combinedPetbotFrame .shopTargetCard,.combinedPetbotFrame .shopQtyCard{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:4px;font-weight:1000;}
+.combinedPetbotFrame .shopTargetPetPic{width:52%;height:52%;max-height:80px;background:center/contain no-repeat;filter:drop-shadow(0 5px 5px rgba(0,0,0,.20));}
+.combinedPetbotFrame .shopTargetPetName{font-size:clamp(11px,1.25vw,15px);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:96%;}
+.combinedPetbotFrame .shopFlowNote{font-size:clamp(7px,.78vw,10px);opacity:.72;font-weight:900;line-height:1.05;}
+.combinedPetbotFrame .shopQtyNumber{font-size:clamp(22px,3vw,40px);line-height:1;font-weight:1000;background:rgba(255,255,255,.42);border-radius:12px;padding:4px 16px;box-shadow:inset 0 0 0 1px rgba(22,34,63,.20);}
+.combinedPetbotFrame .shopQtyItem{font-size:clamp(9px,1vw,13px);max-width:95%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.combinedPetbotFrame.questPlaying .lcd{background:transparent!important;box-shadow:none!important;}
+.combinedPetbotFrame.questPlaying .lcd:before{opacity:.08!important;}
+.combinedPetbotFrame.questPlaying .device::after{z-index:12!important;}
+.combinedPetbotFrame.questPlaying .hit{pointer-events:auto!important;}
+.combinedPetbotFrame /* Stage 15: habitat fills the full Tamagotchi LCD,.combinedPetbotFrame with no extra title/body padding. */
+.habitatFullScreen{position:absolute!important;inset:0!important;z-index:4!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#dff7fb!important;border-radius:inherit!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatView{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;margin:0!important;padding:0!important;display:block!important;overflow:hidden!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;min-height:0!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;overflow:hidden!important;background-color:#dff7fb!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.background{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;background-size:cover!important;background-position:center!important;background-repeat:no-repeat!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.base{background-size:cover!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatEmpty{font-size:clamp(8px,.9vw,12px)!important;padding:14px!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLabel,.combinedPetbotFrame .habitatFullScreen .panelActionMsg{display:none!important;}
+.combinedPetbotFrame /* Stage 16: make the toy feel more like the Discord PetBot screens. */
+.menuGrid.main7{grid-template-columns:1fr 1fr!important;grid-template-rows:repeat(4,1fr)!important;gap:3px!important;width:100%;height:100%;overflow:hidden!important;align-items:stretch!important;}
+.combinedPetbotFrame .menuGrid.main7 .menuItem{min-height:0!important;padding:2px 2px!important;border-radius:8px!important;font-size:clamp(7px,.78vw,10px)!important;line-height:1.02!important;}
+.combinedPetbotFrame .menuGrid.main7 .menuItem b{font-size:clamp(12px,1.4vw,18px)!important;margin-bottom:1px!important;}
+.combinedPetbotFrame .body.petBody{padding:2px 8px 5px!important;gap:1px!important;justify-content:flex-start!important;}
+.combinedPetbotFrame .petBody .petStage{min-height:86px!important;max-height:124px!important;flex:1 1 68%!important;overflow:visible!important;margin-top:0!important;}
+.combinedPetbotFrame .petBody .petImg{width:100%!important;height:100%!important;max-width:96%!important;max-height:96%!important;background-size:contain!important;}
+.combinedPetbotFrame .petBody .details{font-size:clamp(7px,.82vw,10px)!important;margin:0!important;opacity:.8!important;}
+.combinedPetbotFrame .petBody .stats{grid-template-columns:1fr 1fr!important;gap:2px 3px!important;margin-top:auto!important;}
+.combinedPetbotFrame .petBody .stat{grid-template-columns:16px 1fr 24px!important;padding:3px 4px!important;font-size:clamp(7px,.82vw,10px)!important;border-radius:8px!important;}
+.combinedPetbotFrame .petBody .bar{height:7px!important;}
+.combinedPetbotFrame .panelCard.hasImage{display:grid!important;grid-template-columns:34px 1fr!important;align-items:center!important;text-align:left!important;gap:5px!important;}
+.combinedPetbotFrame .panelThumb{width:32px!important;height:32px!important;border-radius:8px!important;background:center/contain no-repeat!important;background-color:rgba(255,255,255,.55)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.22)!important;display:block!important;flex:0 0 auto!important;}
+.combinedPetbotFrame .panelIcon{display:grid!important;place-items:center!important;font-size:18px!important;width:32px!important;height:32px!important;}
+.combinedPetbotFrame .panelText{display:block!important;min-width:0!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .panelText small{display:block!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .careBody{justify-content:stretch!important;padding:5px 7px!important;gap:4px!important;}
+.combinedPetbotFrame .carePetLine{font-size:clamp(8px,.9vw,11px);font-weight:1000;text-align:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.combinedPetbotFrame .careGrid{width:100%;flex:1;display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.combinedPetbotFrame .careCard{border:1.5px solid rgba(22,34,63,.28);border-radius:9px;background:rgba(255,255,255,.30);display:flex;align-items:center;justify-content:center;gap:4px;font-size:clamp(8px,.9vw,12px);font-weight:1000;}
+.combinedPetbotFrame .careCard b{font-size:1.25em;}
+.combinedPetbotFrame .careCard.active{background:rgba(255,255,255,.75);outline:2px solid rgba(22,34,63,.35);}
+.combinedPetbotFrame .careMsg{min-height:16px!important;font-size:clamp(7px,.78vw,10px)!important;}
+.combinedPetbotFrame .hookFullScreen{position:absolute!important;inset:0!important;z-index:4!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#67d7f2!important;border-radius:inherit!important;}
+.combinedPetbotFrame .hookFullScreen .hookGameView{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;overflow:hidden!important;}
+.combinedPetbotFrame .hookFullScreen .hookPond{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;min-height:0!important;background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .hookFullScreen .hookLine{height:62%!important;top:-10%!important;left:50%!important;border-left-width:3px!important;}
+.combinedPetbotFrame .hookFullScreen .hookResult{left:3%!important;right:3%!important;bottom:2%!important;font-size:clamp(8px,.9vw,12px)!important;background:rgba(255,255,255,.82)!important;border-radius:8px!important;padding:2px 4px!important;font-weight:1000!important;}
+.combinedPetbotFrame .hookFullScreen .hookFloatPrize{width:21%!important;height:21%!important;}
+.combinedPetbotFrame .hookFullScreen .hookPrizeImage{width:26%!important;height:26%!important;bottom:12%!important;right:8%!important;}
+@media (max-width:520px){.combinedPetbotFrame .panelCard.hasImage{grid-template-columns:28px 1fr!important}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:27px!important;height:27px!important}
+.combinedPetbotFrame .petBody .petStage{min-height:76px!important;max-height:110px!important}}
+.combinedPetbotFrame /* Stage 17: corrected Tamagotchi flow and tighter screen fitting.
+   Flow: login -> main menu -> pets -> selected pet stats/actions. */
+.lcd{left:20.7%!important;top:39.25%!important;width:58.8%!important;height:27.55%!important;border-radius:8%/13%!important;}
+.combinedPetbotFrame .top{height:13.5%!important;min-height:14px!important;padding:1px 10px!important;}
+.combinedPetbotFrame .top span:nth-child(2){font-size:clamp(7px,.86vw,11px)!important;}
+.combinedPetbotFrame .body{padding:3px 6px 5px!important;}
+.combinedPetbotFrame .mainMenuGrid{grid-template-columns:1fr!important;gap:5px!important;width:92%!important;}
+.combinedPetbotFrame .mainMenuGrid .menuItem{min-height:33px!important;display:grid!important;grid-template-columns:26px 1fr!important;align-items:center!important;text-align:left!important;padding:5px 9px!important;font-size:clamp(9px,.95vw,12px)!important;}
+.combinedPetbotFrame .mainMenuGrid .menuItem b{font-size:1.35em!important;text-align:center!important;}
+.combinedPetbotFrame .petSelectBody{justify-content:center!important;gap:2px!important;padding:2px 8px 5px!important;}
+.combinedPetbotFrame .petSelectStage{position:relative;width:100%;height:58%;min-height:70px;overflow:visible;}
+.combinedPetbotFrame .petSelectStage .petImg{width:80%!important;height:80%!important;left:50%!important;top:52%!important;max-width:94%!important;max-height:94%!important;}
+.combinedPetbotFrame .petSelectStage .petEmoji{font-size:clamp(42px,6.8vw,76px)!important;}
+.combinedPetbotFrame .petSelectName{width:100%;text-align:center;font-size:clamp(11px,1.15vw,15px);line-height:1.05;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.combinedPetbotFrame .petSelectSub{width:100%;text-align:center;font-size:clamp(7px,.76vw,10px);line-height:1.05;font-weight:900;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.combinedPetbotFrame .petSelectDots{height:10px;display:flex;gap:3px;align-items:center;justify-content:center;max-width:96%;overflow:hidden;}
+.combinedPetbotFrame .petSelectDots i{width:5px;height:5px;border-radius:999px;background:rgba(22,34,63,.28);display:block;flex:0 0 auto;}
+.combinedPetbotFrame .petSelectDots i.on{background:rgba(22,34,63,.88);transform:scale(1.25);}
+.combinedPetbotFrame .petHomeBody{display:grid!important;grid-template-rows:1fr auto!important;gap:4px!important;padding:3px 7px 5px!important;overflow:hidden!important;}
+.combinedPetbotFrame .petHomeTop{min-height:0;display:grid;grid-template-columns:34% 1fr;gap:5px;align-items:center;width:100%;}
+.combinedPetbotFrame .petHomePet{position:relative;width:100%;height:100%;min-height:60px;overflow:visible;}
+.combinedPetbotFrame .petHomePet .petImg{width:105%!important;height:105%!important;left:50%!important;top:52%!important;max-width:120%!important;max-height:120%!important;}
+.combinedPetbotFrame .petHomePet .petEmoji{font-size:clamp(34px,4.5vw,58px)!important;}
+.combinedPetbotFrame .petHomeStats{min-width:0;display:grid;grid-template-columns:1fr 1fr;gap:2px 3px;align-content:center;}
+.combinedPetbotFrame .petHomeSub{grid-column:1/-1;text-align:center;font-size:clamp(6px,.68vw,9px);font-weight:900;opacity:.78;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1;}
+.combinedPetbotFrame .petHomeStats .stat{display:grid;grid-template-columns:12px 1fr 17px;align-items:center;gap:2px;padding:2px;border-radius:7px;background:rgba(255,255,255,.26);box-shadow:inset 0 0 0 1px rgba(22,34,63,.12);font-size:clamp(5px,.58vw,8px);line-height:1;}
+.combinedPetbotFrame .petHomeStats .bar{height:4px!important;}
+.combinedPetbotFrame .petActionGrid{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:3px;}
+.combinedPetbotFrame .petAction{border:1.5px solid rgba(22,34,63,.28);border-radius:8px;background:rgba(255,255,255,.28);min-height:25px;display:grid;grid-template-columns:22px 1fr;align-items:center;gap:2px;padding:3px 5px;font-weight:1000;font-size:clamp(7px,.78vw,10px);}
+.combinedPetbotFrame .petAction b{text-align:center;font-size:1.2em;}
+.combinedPetbotFrame .petAction.active{background:rgba(255,255,255,.76);outline:2px solid rgba(22,34,63,.35);}
+.combinedPetbotFrame .careBody{display:grid!important;grid-template-rows:auto 1fr auto!important;gap:3px!important;padding:3px 7px 5px!important;}
+.combinedPetbotFrame .careGrid{gap:3px!important;}
+.combinedPetbotFrame .careCard{min-height:28px!important;font-size:clamp(7px,.78vw,10px)!important;}
+.combinedPetbotFrame .panelGrid{gap:3px!important;}
+.combinedPetbotFrame .panelCard{min-height:35px!important;padding:4px!important;font-size:clamp(7px,.75vw,10px)!important;}
+.combinedPetbotFrame .panelHead{font-size:clamp(6px,.7vw,9px)!important;min-height:10px!important;line-height:1!important;}
+.combinedPetbotFrame .panelActionMsg{font-size:clamp(6px,.7vw,9px)!important;line-height:1.05!important;max-height:20px!important;overflow:hidden!important;}
+.combinedPetbotFrame .shopTargetCard,.combinedPetbotFrame .shopQtyCard{height:100%!important;}
+@media (max-width:520px){.combinedPetbotFrame .lcd{left:20.55%!important;top:39.15%!important;width:59.1%!important;height:27.75%!important}
+.combinedPetbotFrame .mainMenuGrid .menuItem{min-height:31px!important}
+.combinedPetbotFrame .petSelectStage{height:56%;min-height:66px}
+.combinedPetbotFrame .petHomeTop{grid-template-columns:32% 1fr;gap:4px}
+.combinedPetbotFrame .petAction{min-height:24px;padding:3px 4px}
+.combinedPetbotFrame .petHomeStats .stat{grid-template-columns:11px 1fr 15px}}
+.combinedPetbotFrame /* Stage 18: final readable Tamagotchi LCD pass.
+   This overrides the older stage CSS above so the screens stop fighting each other. */
+.device{width:min(98vw,calc(99svh * .6667))!important;max-height:99svh!important;}
+.combinedPetbotFrame .lcd{left:20.6%!important;top:39.1%!important;width:59.0%!important;height:28.0%!important;border-radius:8%/13%!important;background:linear-gradient(180deg,#e9fbff,#c7eef5)!important;}
+.combinedPetbotFrame .top{height:13%!important;min-height:0!important;padding:1px 9px!important;display:grid!important;place-items:center!important;background:rgba(255,255,255,.20)!important;}
+.combinedPetbotFrame .top span:nth-child(2){font-size:clamp(8px,.9vw,12px)!important;line-height:1!important;letter-spacing:.02em!important;}
+.combinedPetbotFrame .body{height:87%!important;min-height:0!important;padding:4px 7px!important;overflow:hidden!important;}
+.combinedPetbotFrame .bigText{font-size:clamp(10px,1.05vw,14px)!important;line-height:1.1!important;}
+.combinedPetbotFrame .choiceList{height:100%!important;gap:4px!important;justify-content:center!important;}
+.combinedPetbotFrame .choice{min-height:0!important;padding:5px 7px!important;font-size:clamp(8px,.9vw,12px)!important;border-radius:9px!important;}
+.combinedPetbotFrame .mainMenuGrid{height:100%!important;width:96%!important;display:grid!important;grid-template-columns:1fr!important;grid-template-rows:repeat(3,1fr)!important;gap:5px!important;}
+.combinedPetbotFrame .mainMenuGrid .menuItem{min-height:0!important;height:auto!important;display:grid!important;grid-template-columns:30px 1fr!important;align-items:center!important;text-align:left!important;padding:5px 10px!important;font-size:clamp(10px,1vw,13px)!important;border-radius:10px!important;}
+.combinedPetbotFrame .mainMenuGrid .menuItem b{font-size:clamp(17px,1.8vw,24px)!important;text-align:center!important;}
+.combinedPetbotFrame .petSelectBody{display:grid!important;grid-template-rows:1fr auto auto auto!important;align-items:center!important;justify-items:center!important;gap:1px!important;padding:2px 8px 4px!important;}
+.combinedPetbotFrame .petSelectStage{height:100%!important;min-height:0!important;width:100%!important;overflow:visible!important;}
+.combinedPetbotFrame .petSelectStage .petImg{width:70%!important;height:70%!important;max-width:76%!important;max-height:76%!important;top:52%!important;}
+.combinedPetbotFrame .petSelectStage .petEmoji{font-size:clamp(34px,5.4vw,62px)!important;}
+.combinedPetbotFrame .petSelectName{font-size:clamp(10px,1vw,13px)!important;line-height:1.05!important;}
+.combinedPetbotFrame .petSelectSub{font-size:clamp(6px,.68vw,9px)!important;line-height:1!important;}
+.combinedPetbotFrame .petSelectDots{height:7px!important;}
+.combinedPetbotFrame .petSelectDots i{width:4px!important;height:4px!important;}
+.combinedPetbotFrame .petHomeBody{height:87%!important;display:grid!important;grid-template-rows:54% 46%!important;gap:3px!important;padding:3px 7px 5px!important;overflow:hidden!important;}
+.combinedPetbotFrame .petHomeTop{min-height:0!important;height:100%!important;display:grid!important;grid-template-columns:34% 66%!important;gap:5px!important;align-items:center!important;}
+.combinedPetbotFrame .petHomePet{min-height:0!important;height:100%!important;overflow:visible!important;}
+.combinedPetbotFrame .petHomePet .petImg{width:78%!important;height:78%!important;max-width:82%!important;max-height:82%!important;top:52%!important;}
+.combinedPetbotFrame .petHomePet .petEmoji{font-size:clamp(28px,4.5vw,52px)!important;}
+.combinedPetbotFrame .petHomeStats{height:100%!important;display:grid!important;grid-template-rows:auto repeat(4,1fr)!important;gap:1px!important;min-width:0!important;}
+.combinedPetbotFrame .petHomeSub{font-size:clamp(6px,.68vw,9px)!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;text-align:center!important;font-weight:900!important;opacity:.78!important;}
+.combinedPetbotFrame .petHomeStats .stat{grid-template-columns:13px 1fr 20px!important;gap:2px!important;padding:1px 3px!important;font-size:clamp(5px,.62vw,8px)!important;line-height:1!important;border-radius:6px!important;background:rgba(255,255,255,.22)!important;}
+.combinedPetbotFrame .petHomeStats .bar{height:5px!important;}
+.combinedPetbotFrame .petActionGrid{height:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:4px!important;}
+.combinedPetbotFrame .petAction{min-height:0!important;height:auto!important;padding:3px 3px!important;border-radius:9px!important;display:grid!important;grid-template-columns:22px 1fr!important;align-items:center!important;text-align:left!important;font-size:clamp(8px,.82vw,11px)!important;}
+.combinedPetbotFrame .petAction b{font-size:clamp(14px,1.4vw,20px)!important;text-align:center!important;}
+.combinedPetbotFrame .panelHead{font-size:clamp(6px,.66vw,9px)!important;line-height:1!important;min-height:10px!important;margin:0 0 2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .panelActionMsg{font-size:clamp(6px,.66vw,9px)!important;line-height:1!important;min-height:10px!important;margin:0 0 2px!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .panelGrid{flex:1!important;height:auto!important;min-height:0!important;width:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:repeat(2,1fr)!important;gap:4px!important;overflow:hidden!important;}
+.combinedPetbotFrame .panelCard{min-height:0!important;height:auto!important;padding:4px!important;border-radius:8px!important;font-size:clamp(7px,.76vw,10px)!important;line-height:1.05!important;overflow:hidden!important;}
+.combinedPetbotFrame .panelCard.hasImage{grid-template-columns:30px 1fr!important;gap:4px!important;}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:28px!important;height:28px!important;min-width:28px!important;}
+.combinedPetbotFrame .panelText small{font-size:.72em!important;}
+.combinedPetbotFrame .careBody{height:87%!important;display:grid!important;grid-template-rows:auto 1fr auto!important;gap:3px!important;padding:4px 7px!important;}
+.combinedPetbotFrame .carePetLine{font-size:clamp(7px,.78vw,10px)!important;line-height:1!important;}
+.combinedPetbotFrame .careGrid{height:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-auto-rows:1fr!important;gap:4px!important;}
+.combinedPetbotFrame .careCard{min-height:0!important;padding:2px!important;font-size:clamp(8px,.82vw,11px)!important;}
+.combinedPetbotFrame .shopQtyCard{height:100%!important;gap:3px!important;}
+.combinedPetbotFrame .shopQtyNumber{font-size:clamp(20px,2.5vw,34px)!important;padding:3px 14px!important;}
+.combinedPetbotFrame .habitatFullScreen,.combinedPetbotFrame .hookFullScreen{inset:0!important;border-radius:inherit!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame,.combinedPetbotFrame .hookFullScreen .hookPond{inset:0!important;width:100%!important;height:100%!important;background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .hookFullScreen .hookResult{font-size:clamp(7px,.75vw,10px)!important;line-height:1!important;bottom:2%!important;}
+.combinedPetbotFrame .questGameGlass{position:absolute!important;inset:0!important;background:transparent!important;pointer-events:none!important;}
+.combinedPetbotFrame.questPlaying .lcd{background:transparent!important;box-shadow:none!important;}
+.combinedPetbotFrame.questPlaying .lcd:before{opacity:.04!important;}
+@media(max-width:520px){.combinedPetbotFrame .lcd{left:20.2%!important;top:39.0%!important;width:59.6%!important;height:28.2%!important}
+.combinedPetbotFrame .mainMenuGrid .menuItem{font-size:9px!important}
+.combinedPetbotFrame .petAction{font-size:8px!important}
+.combinedPetbotFrame .panelCard.hasImage{grid-template-columns:25px 1fr!important}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:24px!important;height:24px!important;min-width:24px!important}}
+.combinedPetbotFrame /* Stage 19: stop the screens fighting and make the LCD controls readable. */
+html.cssFullscreen,.combinedPetbotFrame.cssFullscreen{width:100%!important;height:100%!important;overflow:hidden!important;background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 38%,#dff7ff 100%)!important;}
+.combinedPetbotFrame.cssFullscreen #app,.combinedPetbotFrame.cssFullscreen #app{position:fixed!important;inset:0!important;display:grid!important;place-items:center!important;}
+.combinedPetbotFrame.cssFullscreen .device,.combinedPetbotFrame.cssFullscreen .device{width:min(99vw,calc(99dvh * .6667))!important;max-height:99dvh!important;}
+.combinedPetbotFrame .petHomeTop{grid-template-columns:42% 58%!important;gap:4px!important;}
+.combinedPetbotFrame .petHomePet .petImg{width:100%!important;height:100%!important;max-width:108%!important;max-height:108%!important;top:52%!important;}
+.combinedPetbotFrame .petHomeStats .stat{grid-template-columns:14px 1fr 24px!important;font-size:clamp(6px,.72vw,9px)!important;padding:2px 4px!important;}
+.combinedPetbotFrame .petHomeStats .bar{height:6px!important;}
+.combinedPetbotFrame .petAction{font-size:clamp(8px,.88vw,11px)!important;min-height:0!important;}
+.combinedPetbotFrame .panelCard.hasImage{grid-template-columns:34px 1fr!important;}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:32px!important;height:32px!important;min-width:32px!important;}
+.combinedPetbotFrame .careCard{font-size:clamp(8px,.9vw,12px)!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame{background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .hookFullScreen .hookPond{background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame /* Stage 20: exact transparent LCD hole,.combinedPetbotFrame corrected flow,.combinedPetbotFrame and non-overlapping button hit zones. */
+.lcd{left:21.18%!important;top:39.52%!important;width:57.24%!important;height:26.63%!important;border-radius:7.8%/12.5%!important;}
+.combinedPetbotFrame .hit.siren{left:25.5%!important;top:8.2%!important;width:49%!important;height:13.1%!important;border-radius:20px!important;z-index:36!important;}
+.combinedPetbotFrame .hit.exit{left:44.1%!important;top:22.0%!important;width:11.8%!important;height:8.2%!important;border-radius:50%!important;z-index:35!important;}
+.combinedPetbotFrame .top{height:11.5%!important;padding:1px 8px!important;}
+.combinedPetbotFrame .top span:first-child,.combinedPetbotFrame .top span:last-child{font-size:clamp(5px,.58vw,8px)!important;opacity:.55!important;}
+.combinedPetbotFrame .top span:nth-child(2){font-size:clamp(8px,.86vw,11px)!important;}
+.combinedPetbotFrame .body{height:88.5%!important;padding:4px 8px 5px!important;}
+.combinedPetbotFrame .mainMenuGrid{height:74%!important;width:92%!important;margin:auto!important;grid-template-rows:1fr 1fr!important;gap:7px!important;}
+.combinedPetbotFrame .mainMenuGrid .menuItem{font-size:clamp(10px,1.02vw,13px)!important;grid-template-columns:34px 1fr!important;border-radius:12px!important;}
+.combinedPetbotFrame .petSelectBody{grid-template-rows:1fr auto auto auto!important;padding:2px 10px 5px!important;}
+.combinedPetbotFrame .petSelectStage .petImg{width:62%!important;height:62%!important;max-width:68%!important;max-height:68%!important;top:50%!important;}
+.combinedPetbotFrame .petSelectName{font-size:clamp(11px,1.05vw,14px)!important;}
+.combinedPetbotFrame .petSelectSub{font-size:clamp(7px,.72vw,9px)!important;}
+.combinedPetbotFrame .petStatsBody{display:grid!important;grid-template-rows:1fr auto!important;gap:4px!important;overflow:hidden!important;}
+.combinedPetbotFrame .petStatsMain{min-height:0!important;height:100%!important;display:grid!important;grid-template-columns:43% 57%!important;gap:6px!important;align-items:center!important;}
+.combinedPetbotFrame .petStatsPet{position:relative!important;height:100%!important;min-height:0!important;overflow:visible!important;}
+.combinedPetbotFrame .petStatsPet .petImg{width:82%!important;height:82%!important;max-width:88%!important;max-height:88%!important;left:50%!important;top:51%!important;}
+.combinedPetbotFrame .petStatsPet .petEmoji{font-size:clamp(36px,5vw,62px)!important;}
+.combinedPetbotFrame .petStatsBars{min-width:0!important;display:grid!important;grid-template-rows:auto repeat(4,1fr)!important;gap:2px!important;align-content:center!important;}
+.combinedPetbotFrame .petStatsBars .stat{display:grid!important;grid-template-columns:16px 1fr 24px!important;gap:3px!important;align-items:center!important;padding:2px 4px!important;border-radius:7px!important;background:rgba(255,255,255,.24)!important;font-size:clamp(6px,.72vw,9px)!important;line-height:1!important;}
+.combinedPetbotFrame .petStatsBars .bar{height:6px!important;}
+.combinedPetbotFrame .petStatsHint{justify-self:center!important;min-width:42%!important;text-align:center!important;border:1.5px solid rgba(22,34,63,.28)!important;border-radius:999px!important;background:rgba(255,255,255,.58)!important;padding:4px 8px!important;font-size:clamp(8px,.84vw,11px)!important;font-weight:1000!important;line-height:1!important;}
+.combinedPetbotFrame .petActionsBody{display:grid!important;place-items:center!important;padding:6px 9px!important;}
+.combinedPetbotFrame .bigActions{width:100%!important;height:100%!important;display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:repeat(3,1fr)!important;gap:4px!important;}
+.combinedPetbotFrame .bigActions .petAction{min-height:0!important;padding:3px 5px!important;border-radius:9px!important;grid-template-columns:24px 1fr!important;font-size:clamp(8px,.84vw,11px)!important;}
+.combinedPetbotFrame .bigActions .petAction b{font-size:clamp(13px,1.4vw,19px)!important;}
+.combinedPetbotFrame .careBody{padding:3px 8px 5px!important;}
+.combinedPetbotFrame .careGrid{grid-template-columns:1fr 1fr!important;grid-auto-rows:1fr!important;gap:3px!important;}
+.combinedPetbotFrame .careCard{font-size:clamp(7px,.78vw,10px)!important;}
+.combinedPetbotFrame .panelGrid{gap:3px!important;}
+.combinedPetbotFrame .panelCard{font-size:clamp(6px,.70vw,9px)!important;padding:3px!important;}
+.combinedPetbotFrame .panelCard.hasImage{grid-template-columns:28px 1fr!important;}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:26px!important;height:26px!important;min-width:26px!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame,.combinedPetbotFrame .hookFullScreen .hookPond{background-size:cover!important;background-position:center!important;}
+@media(max-width:520px){.combinedPetbotFrame .lcd{left:21.18%!important;top:39.52%!important;width:57.24%!important;height:26.63%!important}
+.combinedPetbotFrame .petStatsMain{grid-template-columns:40% 60%!important}
+.combinedPetbotFrame .bigActions .petAction{font-size:8px!important;grid-template-columns:20px 1fr!important}
+.combinedPetbotFrame .panelThumb,.combinedPetbotFrame .panelIcon{width:23px!important;height:23px!important;min-width:23px!important}}
+.combinedPetbotFrame /* Stage 21: cleaner selected-pet screen and safe outside clicks. */
+#app{pointer-events:none!important;}
+.combinedPetbotFrame .device{pointer-events:auto!important;}
+.combinedPetbotFrame .petHomeStage21{height:100%!important;width:100%!important;display:grid!important;grid-template-columns:44% 56%!important;grid-template-rows:1fr auto!important;gap:4px!important;align-items:center!important;padding:4px 8px 5px!important;overflow:hidden!important;}
+.combinedPetbotFrame .petFocus21{position:relative!important;width:100%!important;height:100%!important;min-height:0!important;display:grid!important;place-items:center!important;overflow:visible!important;}
+.combinedPetbotFrame .petFocus21 .petImg{position:absolute!important;left:50%!important;top:50%!important;width:98%!important;height:98%!important;max-width:108%!important;max-height:108%!important;transform:translate(-50%,-50%)!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;filter:drop-shadow(0 6px 6px rgba(25,35,55,.24))!important;}
+.combinedPetbotFrame .petFocus21 .petEmoji{font-size:clamp(48px,6vw,76px)!important;}
+.combinedPetbotFrame .petInfo21{min-width:0!important;width:100%!important;height:100%!important;display:grid!important;grid-template-rows:auto 1fr!important;gap:3px!important;align-content:center!important;}
+.combinedPetbotFrame .petSub21{text-align:center!important;font-size:clamp(7px,.78vw,10px)!important;line-height:1!important;font-weight:1000!important;opacity:.82!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .petChipGrid21{display:grid!important;grid-template-columns:1fr 1fr!important;grid-template-rows:1fr 1fr!important;gap:4px!important;height:100%!important;min-height:0!important;}
+.combinedPetbotFrame .petChip21{min-width:0!important;min-height:0!important;border:1px solid rgba(22,34,63,.22)!important;border-radius:10px!important;background:rgba(255,255,255,.42)!important;display:grid!important;grid-template-columns:auto 1fr!important;grid-template-rows:1fr auto!important;column-gap:3px!important;align-items:center!important;justify-items:center!important;padding:3px 2px!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.38)!important;}
+.combinedPetbotFrame .petChip21 span{grid-row:1/3!important;font-size:clamp(11px,1.05vw,16px)!important;line-height:1!important;}
+.combinedPetbotFrame .petChip21 b{font-size:clamp(10px,1.05vw,14px)!important;line-height:1!important;font-weight:1000!important;}
+.combinedPetbotFrame .petChip21 small{font-size:clamp(5px,.58vw,8px)!important;line-height:1!important;font-weight:900!important;opacity:.70!important;white-space:nowrap!important;}
+.combinedPetbotFrame .petHint21{grid-column:1/-1!important;justify-self:center!important;max-width:96%!important;text-align:center!important;border:1.5px solid rgba(22,34,63,.25)!important;border-radius:999px!important;background:rgba(255,255,255,.65)!important;padding:4px 9px!important;font-size:clamp(8px,.82vw,11px)!important;font-weight:1000!important;line-height:1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame.questPlaying #app{pointer-events:none!important;}
+.combinedPetbotFrame.questPlaying .device{pointer-events:auto!important;}
+@media(max-width:520px){.combinedPetbotFrame .petHomeStage21{grid-template-columns:42% 58%!important;padding:3px 6px 4px!important}
+.combinedPetbotFrame .petChipGrid21{gap:3px!important}
+.combinedPetbotFrame .petHint21{font-size:8px!important;padding:3px 7px!important}
+.combinedPetbotFrame .petFocus21 .petImg{width:105%!important;height:105%!important}}
+.combinedPetbotFrame /* Stage 22: layout-only repair. Hardware buttons control the screens; pet stats are bars again. */
+.lcd{left:21.18%!important;top:39.52%!important;width:57.24%!important;height:26.63%!important;border-radius:7%/11%!important;}
+.combinedPetbotFrame .lcd .body{overflow:hidden!important;}
+.combinedPetbotFrame .lcd .choice,.combinedPetbotFrame .lcd .menuItem,.combinedPetbotFrame .lcd .panelCard,.combinedPetbotFrame .lcd .petAction,.combinedPetbotFrame .lcd .careCard,.combinedPetbotFrame .lcd [data-pet-index],.combinedPetbotFrame .lcd [data-menu-index],.combinedPetbotFrame .lcd [data-panel-index],.combinedPetbotFrame .lcd [data-pet-action-index],.combinedPetbotFrame .lcd [data-care-index],.combinedPetbotFrame .lcd [data-game-index]{pointer-events:none!important;}
+.combinedPetbotFrame .lcd .passwordCard,.combinedPetbotFrame .lcd .passwordCard input{pointer-events:auto!important;}
+.combinedPetbotFrame .petHint21{display:none!important;}
+.combinedPetbotFrame .petHome22{height:100%!important;width:100%!important;display:grid!important;grid-template-columns:43% 57%!important;grid-template-rows:1fr!important;align-items:center!important;gap:5px!important;padding:4px 10px 7px!important;overflow:hidden!important;}
+.combinedPetbotFrame .petHome22Art{position:relative!important;width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;display:grid!important;place-items:center!important;overflow:hidden!important;}
+.combinedPetbotFrame .petHome22Art .petImg{position:absolute!important;left:50%!important;top:52%!important;width:82%!important;height:82%!important;max-width:92%!important;max-height:92%!important;transform:translate(-50%,-50%)!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;filter:drop-shadow(0 5px 5px rgba(25,35,55,.22))!important;}
+.combinedPetbotFrame .petHome22Art .petEmoji{font-size:clamp(42px,5.6vw,68px)!important;}
+.combinedPetbotFrame .petHome22Stats{min-width:0!important;width:100%!important;height:100%!important;display:grid!important;grid-template-rows:auto repeat(4,1fr)!important;gap:3px!important;align-content:center!important;}
+.combinedPetbotFrame .petHome22Sub{font-size:clamp(6px,.70vw,9px)!important;line-height:1!important;text-align:center!important;font-weight:1000!important;opacity:.78!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;}
+.combinedPetbotFrame .stat22{min-width:0!important;display:grid!important;grid-template-rows:auto 7px!important;gap:2px!important;padding:2px 3px!important;border:1px solid rgba(22,34,63,.18)!important;border-radius:8px!important;background:rgba(255,255,255,.35)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)!important;}
+.combinedPetbotFrame .stat22Top{display:flex!important;align-items:center!important;justify-content:space-between!important;gap:3px!important;font-size:clamp(5px,.60vw,8px)!important;line-height:1!important;font-weight:1000!important;white-space:nowrap!important;}
+.combinedPetbotFrame .stat22Top b{font-size:clamp(7px,.76vw,10px)!important;}
+.combinedPetbotFrame .stat22Bar{height:7px!important;border-radius:999px!important;background:rgba(255,255,255,.58)!important;box-shadow:inset 0 0 0 1px rgba(22,34,63,.18)!important;overflow:hidden!important;}
+.combinedPetbotFrame .stat22Bar i{display:block!important;height:100%!important;border-radius:999px!important;background:#9bb0ff!important;}
+.combinedPetbotFrame .stat22.food .stat22Bar i{background:#ff8faf!important;}
+.combinedPetbotFrame .stat22.happy .stat22Bar i{background:#ffc85f!important;}
+.combinedPetbotFrame .stat22.energy .stat22Bar i{background:#73df9b!important;}
+.combinedPetbotFrame .stat22.health .stat22Bar i{background:#75c7ff!important;}
+.combinedPetbotFrame .petSelectBody{padding:3px 10px 6px!important;gap:2px!important;}
+.combinedPetbotFrame .petSelectStage .petImg{width:70%!important;height:70%!important;max-width:78%!important;max-height:78%!important;top:51%!important;}
+.combinedPetbotFrame .petSelectName{font-size:clamp(11px,1.08vw,14px)!important;}
+.combinedPetbotFrame .petSelectSub{font-size:clamp(7px,.72vw,9px)!important;}
+.combinedPetbotFrame .petActionGrid.bigActions{grid-template-columns:1fr 1fr!important;gap:4px!important;width:100%!important;height:100%!important;}
+.combinedPetbotFrame .bigActions .petAction{min-height:0!important;padding:4px!important;font-size:clamp(7px,.74vw,10px)!important;}
+.combinedPetbotFrame .quests22{padding:5px 9px 7px!important;}
+.combinedPetbotFrame .questGrid22{grid-template-columns:1fr!important;grid-auto-rows:1fr!important;gap:4px!important;height:100%!important;}
+.combinedPetbotFrame .questCard22{min-height:0!important;display:grid!important;grid-template-columns:24px 1fr!important;align-items:center!important;justify-items:start!important;text-align:left!important;font-size:clamp(8px,.86vw,11px)!important;padding:5px 8px!important;}
+.combinedPetbotFrame .questGameGlass{position:absolute!important;inset:0!important;background:transparent!important;pointer-events:none!important;}
+@media(max-width:520px){.combinedPetbotFrame .petHome22{grid-template-columns:41% 59%!important;gap:4px!important;padding:3px 7px 5px!important}
+.combinedPetbotFrame .petHome22Art .petImg{width:78%!important;height:78%!important}
+.combinedPetbotFrame .stat22{grid-template-rows:auto 6px!important;padding:2px!important}
+.combinedPetbotFrame .stat22Bar{height:6px!important}
+.combinedPetbotFrame .questCard22{grid-template-columns:20px 1fr!important;padding:4px 6px!important}}
+.combinedPetbotFrame /* Stage 23: stop blank habitat,.combinedPetbotFrame faster hook,.combinedPetbotFrame and clearer selected pet screen. */
+.petHome22{grid-template-columns:46% 54%!important;padding:4px 8px 6px!important;gap:4px!important;}
+.combinedPetbotFrame .petHome22Art{overflow:visible!important;}
+.combinedPetbotFrame .petHome22Art .petImg{width:100%!important;height:100%!important;max-width:112%!important;max-height:112%!important;top:53%!important;}
+.combinedPetbotFrame .petHome22Stats{gap:2px!important;}
+.combinedPetbotFrame .stat22{padding:2px 3px!important;border-radius:7px!important;}
+.combinedPetbotFrame .habitatFullScreen{background:linear-gradient(180deg,#bff3ff,#eaffff)!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame{background-image:linear-gradient(180deg,#203d97 0%,#3957bb 46%,#5abf83 47%,#5abf83 62%,#326841 63%,#326841 100%)!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatEmpty{display:none!important;}
+.combinedPetbotFrame .habitatLayer.fallbackPet{background-size:contain!important;filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))!important;}
+.combinedPetbotFrame .hookFullScreen .hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .hookResult{font-size:clamp(7px,.76vw,10px)!important;line-height:1.05!important;padding:2px 5px!important;}
+@media(max-width:520px){.combinedPetbotFrame .petHome22{grid-template-columns:45% 55%!important}
+.combinedPetbotFrame .petHome22Art .petImg{width:105%!important;height:105%!important}}
+.combinedPetbotFrame /* Stage 24: Tutorial Town spec support + safer habitat view. */
+.petHome22{grid-template-columns:50% 50%!important;padding:3px 8px 5px!important;gap:3px!important;}
+.combinedPetbotFrame .petHome22Art{overflow:visible!important;}
+.combinedPetbotFrame .petHome22Art .petImg{width:112%!important;height:112%!important;max-width:122%!important;max-height:122%!important;top:53%!important;}
+.combinedPetbotFrame .petHome22Stats{gap:2px!important;grid-template-rows:auto repeat(4,1fr)!important;}
+.combinedPetbotFrame .stat22{min-height:0!important;padding:2px 3px!important;}
+.combinedPetbotFrame .stat22Top span{max-width:80%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.combinedPetbotFrame .quests22 .panelHead:after{content:'Tutorial Town first, Wrong Moon next';display:block;font-size:clamp(6px,.68vw,9px);opacity:.72;margin-top:2px;}
+.combinedPetbotFrame .habitatFullScreen{background:#bff3ff!important;}
+.combinedPetbotFrame .habitatFullScreen::before{content:'';position:absolute!important;inset:0!important;background:linear-gradient(180deg,#203d97 0%,#3957bb 48%,#72d781 49%,#72d781 64%,#2e6d42 65%,#2e6d42 100%)!important;z-index:0!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatView{z-index:1!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame{background-color:transparent!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.background{z-index:1!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.fallbackPet{z-index:90!important;background-size:contain!important;background-repeat:no-repeat!important;background-position:center!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatPetEmoji{position:absolute;left:50%;top:72%;transform:translate(-50%,-50%);font-size:clamp(30px,6vw,62px);z-index:95;filter:drop-shadow(0 5px 4px rgba(0,0,0,.25));}
+.combinedPetbotFrame .hookFullScreen .hookPond{background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .hookFullScreen .hookResult{max-height:34%!important;overflow:hidden!important;}
+.combinedPetbotFrame /* Stage 25: cleaner fitting screens. */
+.petHome22{grid-template-columns:42% 58%!important;padding:4px 9px 6px!important;gap:5px!important;}
+.combinedPetbotFrame .petHome22Art{overflow:hidden!important;border-radius:10px!important;}
+.combinedPetbotFrame .petHome22Art .petImg{width:90%!important;height:90%!important;max-width:98%!important;max-height:98%!important;top:51%!important;background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;}
+.combinedPetbotFrame .petHome22Stats{gap:3px!important;}
+.combinedPetbotFrame .stat22{grid-template-rows:auto 7px!important;padding:3px 5px!important;border-radius:9px!important;}
+.combinedPetbotFrame .stat22Top{font-size:clamp(6px,.7vw,9px)!important;}
+.combinedPetbotFrame .stat22Bar{height:7px!important;}
+.combinedPetbotFrame .habitatFullScreen{background:linear-gradient(180deg,#bff3ff,#eaffff)!important;}
+.combinedPetbotFrame .habitatFullScreen::before{display:block!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatFrame{background-color:transparent!important;background-image:none!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.background{background-size:cover!important;background-position:center!important;}
+.combinedPetbotFrame .habitatFullScreen .habitatLayer.stage11Pet,.combinedPetbotFrame .habitatFullScreen .habitatLayer.fallbackPet{background-size:contain!important;background-position:center!important;background-repeat:no-repeat!important;}
+.combinedPetbotFrame .hookFullScreen .hookPond{background:none!important;overflow:hidden!important;}
+.combinedPetbotFrame .hookFullScreen .hookGifBg{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;object-fit:cover!important;z-index:0!important;}
+.combinedPetbotFrame .hookFullScreen .hookLine,.combinedPetbotFrame .hookFullScreen .hookWave,.combinedPetbotFrame .hookFullScreen .hookFloatPrize,.combinedPetbotFrame .hookFullScreen .hookPrize,.combinedPetbotFrame .hookFullScreen .hookPrizeImage,.combinedPetbotFrame .hookFullScreen .hookResult{position:absolute!important;z-index:3!important;}
+.combinedPetbotFrame .hookFullScreen .hookResult{z-index:6!important;left:3%!important;right:3%!important;bottom:2%!important;max-height:26%!important;overflow:hidden!important;background:rgba(255,255,255,.88)!important;}
+.combinedPetbotFrame .hookFullScreen .hookPrizeImage{z-index:5!important;border-radius:10px!important;background-size:contain!important;background-repeat:no-repeat!important;background-color:rgba(255,255,255,.7)!important;}
+@media(max-width:520px){.combinedPetbotFrame .petHome22{grid-template-columns:40% 60%!important;padding:3px 7px 5px!important}
+.combinedPetbotFrame .petHome22Art .petImg{width:88%!important;height:88%!important}
+.combinedPetbotFrame .stat22{padding:2px 4px!important}
+.combinedPetbotFrame .stat22Bar{height:6px!important}}
+.combinedPetbotFrame /* STAGE 38: habitat loading/error text is a small top label,.combinedPetbotFrame not a fake emoji pet. */
+.habitatLoadingCard{position:absolute;left:8px;right:8px;top:6px;z-index:160;padding:4px 7px;border-radius:10px;background:rgba(255,247,189,.90);color:#24152e;font-weight:1000;font-size:clamp(8px,.9vw,12px);line-height:1.05;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.18);}
+.combinedPetbotFrame .habitatFullScreen .habitatPetEmoji{display:none!important;}
+
+
+
+/* In combined mode, PetBot quest mode lets the real #game show through the LCD. */
+.petbotDock.fullscreen .combinedPetbotFrame.questPlaying .lcd{
+  background:transparent!important;
+  box-shadow:inset 0 0 0 2px rgba(21,34,63,.35)!important;
+}
+.petbotDock.fullscreen .combinedPetbotFrame.questPlaying .lcd .top,
+.petbotDock.fullscreen .combinedPetbotFrame.questPlaying .lcd .body{
+  display:none!important;
+}
+
+</style>
+
+<style id="combined-petbot-final-layer-rules-20260705">
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .combinedPetbotFrame.questPlaying{
+  pointer-events:auto!important;
+  background:transparent!important;
+}
+body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen .combinedPetbotFrame.questPlaying .lcd{
+  background:transparent!important;
+}
+body.petbotOpen.tamaGameEmbedded #game{
+  visibility:visible!important;
+  display:block!important;
+  opacity:1!important;
+}
+</style>
+
 </head>
 
 
@@ -2703,13 +3339,1511 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=204&embed=1&launch=1&choose=1" allow="fullscreen" allowfullscreen></iframe>
+    <div class="petbotDockFrame combinedPetbotFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" role="application" aria-label="Waaambulance PetBot Tamagotchi">
+<div id="app">
+  <div class="device" aria-label="CTW Tamagotchi PetBot">
+    <div class="lcd" id="lcd"></div>
+    <button class="hit siren" id="btnSiren" aria-label="Full screen"></button>
+    <button class="hit exit" id="btnExit" aria-label="Back to game"></button>
+    <button class="hit prev" id="btnPrev" aria-label="Previous"></button>
+    <button class="hit select" id="btnSelect" aria-label="Select"></button>
+    <button class="hit next" id="btnNext" aria-label="Next"></button>
+  </div>
+</div>
+<pre id="debug" class="debug"></pre>
+<script id="combined-petbot-direct-script-20260705">
+
+(function(){
+'use strict';
+const PETBOT_DIRECT_ROOT=document.getElementById('petbotDockFrame')||document;
+window.__PETBOT_COMBINED_DIRECT__=true;
+const SPREADSHEET_ID='1A-Uzz8q32PdNOcTXLwpPLT-9RAmCc3ZtYL-LdRU8avA';
+const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload/';
+const DEFAULT_HABITAT_BG='https://res.cloudinary.com/dpwlfmhia/image/upload/v1781638231/day_sky.png';
+const FAST_HOOK_ITEMS=[
+  {item_id:'hook_dreamy_crowd_magnet',item_name:'Dreamy Crowd Magnet',category:'hook',price:15},
+  {item_id:'hook_branch_climber',item_name:'Branch Climber',category:'hook',price:15},
+  {item_id:'hook_crownforge_tire',item_name:'Crownforge Tire',category:'hook',price:15},
+  {item_id:'hook_shiny_siren_token',item_name:'Shiny Siren Token',category:'hook',price:15},
+  {item_id:'hook_tiny_waa_prize',item_name:'Tiny Waaambulance Prize',category:'hook',price:15},
+  {item_id:'hook_pacifier_charm',item_name:'Pacifier Charm',category:'hook',price:15}
+];
+const PLAYER_LIST=[
+  {key:'ax',label:'Ax',display:"Ryan's Axolotl",userId:'1214671839205396481',password:'Axtok'},
+  {key:'aly',label:'Aly',display:'Ashely with one L',userId:'1407957358683885670',password:'Alytok'},
+  {key:'test',label:'Test',display:'Safe test mode',userId:'test',password:'',test:true}
+];
+const TEST_PETS=[
+  {name:'Test Raven',pet:'raven',category:'birds',code:'test_raven_1',level:3,xp:240,hunger:80,happiness:70,energy:75,health:90,emoji:'🐦‍⬛'},
+  {name:'Test Owl',pet:'owl',category:'birds',code:'test_owl_1',level:2,xp:120,hunger:90,happiness:75,energy:68,health:100,emoji:'🦉'},
+  {name:'Test Dragon',pet:'dragon',category:'mythical',code:'test_dragon_1',level:5,xp:600,hunger:65,happiness:90,energy:60,health:88,emoji:'🐉'}
+];
+const MENU=[
+  {key:'pets',label:'Owned Pets',icon:'🐾'},
+  {key:'switchUser',label:'Switch User',icon:'👤'}
+];
+const PET_ACTIONS=[
+  {key:'care',label:'Care',icon:'💗'},
+  {key:'shop',label:'Shop',icon:'🛍️'},
+  {key:'inventory',label:'Inventory',icon:'🎒'},
+  {key:'habitat',label:'Habitat',icon:'🏡'},
+  {key:'games',label:'Quest',icon:'🎮'},
+  {key:'hook',label:'Hook-a-Waa',icon:'🎣'}
+];
+const GAME_MENU=[
+  {key:'solo',label:'Solo Quest',icon:'🚑',action:'questSolo'},
+  {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
+  {key:'back',label:'Back',icon:'↩️',action:'back'}
+];
+const TUTORIAL_TOWN_SCRIPT={
+  title:'Tutorial Town',
+  next:'Wrong Moon Quest',
+  rewards:{coins:10,xp:25},
+  flow:['Wake up in the Tamagotchi','Collect tokens by touching them','Visit Pet Shop','Try Hook-a-Waaambulance','Open Habitat','Use Quest Selector','Team Quest practice','Stage clear']
+};
+const CARE_ACTIONS=[
+  {key:'feed',label:'Feed',icon:'🍔',mode:'feed_pet'},
+  {key:'play',label:'Play',icon:'🧸',mode:'play_pet'},
+  {key:'rest',label:'Rest',icon:'💤',mode:'rest_pet'},
+  {key:'heal',label:'Heal',icon:'💊',mode:'heal_pet'},
+  {key:'train',label:'Train',icon:'⭐',mode:'train_pet'}
+];
+const PANEL_TTL=5*60*1000;
+const PANEL_CACHE=new Map();
+const $=id=>PETBOT_DIRECT_ROOT.querySelector('#'+String(id).replace(/[^a-zA-Z0-9_\-:.]/g,''));
+const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+const clean=s=>String(s??'').trim();
+function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
+function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let touchStart=null;
+function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
+function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
+function render(){
+  const lcd=$('lcd');
+  if(!lcd)return;
+  lcd.classList.toggle('gameLcd', state.screen==='questGame');
+  PETBOT_DIRECT_ROOT.classList.toggle('questPlaying', state.screen==='questGame');
+  let html='';
+  if(state.screen==='login') html=renderLogin();
+  else if(state.screen==='password') html=renderPassword();
+  else if(state.screen==='loading') html=renderLoading();
+  else if(state.screen==='pet') html=renderPetSelect();
+  else if(state.screen==='petHome') html=renderPetHome();
+  else if(state.screen==='petActions') html=renderPetActions();
+  else if(state.screen==='welcomeBoard') html=renderWelcomeBoard();
+  else if(state.screen==='menu') html=renderMenu();
+  else if(state.screen==='care') html=renderCarePanel();
+  else if(state.screen==='stats') html=renderStats();
+  else if(state.screen==='inventory') html=renderPanel('INVENTORY');
+  else if(state.screen==='games') html=renderGames();
+  else if(state.screen==='questGame') html=renderQuestGame();
+  else if(state.screen==='shop') html=renderPanel('SHOP');
+  else if(state.screen==='habitat') html=renderHabitatPanel();
+  else if(state.screen==='hook') html=renderHookGamePanel();
+  else if(state.screen==='quests') html=renderSimplePanel('QUESTS','Quest history comes after pets/stats are correct.', currentPet()?.quests||[]);
+  else if(state.screen==='error') html=renderError();
+  lcd.innerHTML=html;
+  wireRenderedControls();
+  notifyParent();
+}
+function renderLogin(){
+  return top('WHO IS PLAYING?',`${state.loginIndex+1}/${PLAYER_LIST.length}`)+`<div class="body"><div class="choiceList">${PLAYER_LIST.map((p,i)=>`<div class="choice ${i===state.loginIndex?'active':''}" data-player-index="${i}"><span>${p.test?'🧪':'👤'}</span><div>${esc(p.label)}<small>${esc(p.display)}</small></div></div>`).join('')}</div></div>`;
+}
+function renderPassword(){
+  const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
+  return top('PASSWORD','')+`<div class="body"><div class="passwordCard"><div>${esc(p.label)} password</div><input id="passInput" type="password" autocomplete="off" inputmode="text" value="${esc(state.password)}" placeholder="type password"><div class="error">${esc(state.error)}</div></div></div>`;
+}
+function renderLoading(){return top('LOADING','')+`<div class="body"><div class="loader"></div><div class="bigText">${esc(state.message||'Loading pets')}</div></div>`;}
+function currentPet(){return state.pets[state.petIndex]||null;}
+function renderPetSelect(){
+  const p=currentPet();
+  if(!p)return renderError('No pets loaded.');
+  const count=Math.max(1,state.pets.length);
+  const img=petImage(p);
+  const petName=p.name||p.nickname||p.pet||'Pet';
+  const sub=`${p.pet||p.species||'pet'} · Lv ${p.level||1} · ${state.petIndex+1}/${count}`;
+  return top('PETS',`${state.petIndex+1}/${count}`)+`<div class="body petSelectBody"><div class="petSelectStage" data-pet-index="${state.petIndex}">${img}</div><div class="petSelectName">${esc(petName)}</div><div class="petSelectSub">${esc(sub)}</div><div class="petSelectDots">${state.pets.slice(0,12).map((_,i)=>`<i class="${i===state.petIndex?'on':''}"></i>`).join('')}</div></div>`;
+}
+function renderPetHome(){
+  const p=currentPet();
+  if(!p)return renderError('No pets loaded.');
+  const petName=p.name||p.nickname||p.pet||'Pet';
+  const title=`${petName} · Lv ${p.level||1}`;
+  const sub=`${p.pet||p.species||'pet'} · XP ${p.xp||0}`;
+  const img=petImage(p);
+  return top(title,'')+`<div class="body petHome22"><div class="petHome22Art">${img}</div><div class="petHome22Stats"><div class="petHome22Sub">${esc(sub)}</div>${stat22('🍔','food','Food',p.hunger)}${stat22('😊','happy','Happy',p.happiness)}${stat22('⚡','energy','Energy',p.energy)}${stat22('➕','health','Health',p.health)}</div></div>`;
+}
+function stat22(icon,cls,label,value){
+  const v=clamp(Math.round(n(value,0)),0,100);
+  return `<div class="stat22 ${cls}"><div class="stat22Top"><span>${icon} ${esc(label)}</span><b>${v}</b></div><div class="stat22Bar"><i style="width:${v}%"></i></div></div>`;
+}
+function renderPetActions(){
+  const p=currentPet();
+  if(!p)return renderError('No pets loaded.');
+  const petName=p.name||p.nickname||p.pet||'Pet';
+  const idx=clamp(state.petActionIndex||0,0,PET_ACTIONS.length-1);
+  return top('ACTIONS',petName)+`<div class="body petActionsBody"><div class="petActionGrid bigActions">${PET_ACTIONS.map((a,i)=>`<div class="petAction ${i===idx?'active':''}" data-pet-action-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('')}</div></div>`;
+}
+function petImage(p){
+  if(p.url){
+    const size=clamp(n(p.size,72),54,88); const x=clamp(n(p.x,50),18,82); const y=clamp(n(p.y,48),20,72); const flip=p.flip===-1?' scaleX(-1)':'';
+    return `<div class="petImg" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
+  }
+  return `<div class="petEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
+}
+function emojiFor(s){s=String(s||'').toLowerCase();if(s.includes('raven')||s.includes('crow'))return'🐦‍⬛';if(s.includes('owl'))return'🦉';if(s.includes('dragon'))return'🐉';if(s.includes('unicorn'))return'🦄';if(s.includes('cat'))return'🐈';if(s.includes('dog'))return'🐕';if(s.includes('frog'))return'🐸';if(s.includes('axolotl'))return'🦎';return'🐾';}
+function stat(icon,cls,v){return `<div class="stat"><span>${icon}</span><div class="bar ${cls}"><i style="width:${bar(v)}"></i></div><span>${clamp(Math.round(n(v,0)),0,100)}</span></div>`;}
+function renderMenu(){return top('MAIN MENU','')+`<div class="body"><div class="menuGrid mainMenuGrid">${MENU.map((m,i)=>`<div class="menuItem ${i===state.menuIndex?'active':''}" data-menu-index="${i}"><b>${m.icon}</b>${esc(m.label)}</div>`).join('')}</div></div>`;}
+function renderStats(){
+  const p=currentPet()||{};
+  const rows=[['Owner',state.player?.display||''],['User ID',state.player?.userId||''],['Pet ID',p.userPetId||p.code||''],['Species',p.pet||''],['Category',p.category||''],['Level',p.level||1],['XP',p.xp||0],['Health',p.health||0],['Hunger',p.hunger||0],['Happy',p.happiness||0],['Energy',p.energy||0]];
+  return top('STATS','')+`<div class="body"><div class="panelList">${rows.map(r=>`<div class="panelItem"><b>${esc(r[0])}:</b> ${esc(r[1])}</div>`).join('')}</div></div>`;
+}
+function renderSimplePanel(title,msg,items){
+  const list=Array.isArray(items)?items:[];
+  return top(title,'')+`<div class="body"><div class="panelList">${list.length?list.slice(0,20).map(item=>`<div class="panelItem">${esc(rowLabel(item))}</div>`).join(''):`<div class="panelItem">${esc(msg)}</div>`}</div></div>`;
+}
+function renderWelcomeBoard(){
+  const lines=[
+    ['🎮 Controls','Walk with Left/Right or A/D. Jump with Space, W or Up.'],
+    ['🪧 Tutorial Town','Read signs, visit each stop, then return to the quest.'],
+    ['🏡 Habitat','Shows owned pets and habitat rooms from PetBot.'],
+    ['🐾 Pet Shop','Choose a pet first, then choose the item and amount.'],
+    ['🎣 Hook-a-Waaambulance','Try the hook game, then carry on to Quest Starter.']
+  ];
+  return top('WELCOME BOARD','Tutorial')+`<div class="body"><div class="panelHead">Welcome to the Waaambulance tutorial.</div><div class="panelList welcomeBoardList">${lines.map(r=>`<div class="panelItem"><b>${esc(r[0])}</b><small>${esc(r[1])}</small></div>`).join('')}</div></div>`;
+}
+function renderPanel(title){
+  const kind=String(state.panelKind||title).toLowerCase().replace(/[^a-z]/g,'');
+  if(kind==='shop') return renderShopPanel(title);
+  const isLoading=state.panelLoading&&state.panelKind===kind;
+  const items=Array.isArray(state.panelItems)?state.panelItems:[];
+  const msg=(isLoading&&!items.length)?('Loading '+title+'...'):(state.panelMessage||('No '+title+' rows found yet.'));
+  const pageSize=4;
+  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
+  const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
+  const pageItems=items.slice(startIndex,startIndex+pageSize);
+  const gridClass='panelGrid '+(kind==='inventory'?'invGrid':kind==='habitat'?'habitatGrid':(kind==='hook'||kind==='hookawaa')?'hookGrid':'');
+  return top(title,items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="${gridClass}">${pageItems.length?pageItems.map((it,j)=>renderPanelCard(it,startIndex+j,idx,kind)).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
+}
+function cardImageHtml(it){
+  const url=itemImage(it);
+  if(url)return `<span class="panelThumb" style="background-image:url('${esc(url)}')"></span>`;
+  return `<span class="panelIcon">${esc(iconForItem(it))}</span>`;
+}
+function renderPanelCard(it,realIndex,idx,kind){
+  const hasImg=!!itemImage(it);
+  return `<div class="panelCard ${kind||''}Card ${hasImg?'hasImage':''} ${realIndex===idx?'active':''}" data-panel-index="${realIndex}">${cardImageHtml(it)}<span class="panelText">${esc(itemTitle(it))}<small>${esc(itemSub(it))}</small>${priceForItem(it)?`<small class="priceTag">${esc(priceForItem(it))}</small>`:''}</span></div>`;
+}
+
+
+function renderShopPanel(title){
+  const target=state.pets[state.shopPetIndex]||currentPet()||{};
+  const targetName=target.name||target.pet||'Pet';
+  if(state.shopStep==='pet'){
+    const img=target.url?`<div class="shopTargetPetPic" style="background-image:url('${esc(target.url)}')"></div>`:`<div class="petEmoji" style="position:static;transform:none;font-size:38px">${esc(target.emoji||emojiFor(target.pet||target.category))}</div>`;
+    return top('SHOP PET',state.pets.length?((state.shopPetIndex+1)+'/'+state.pets.length):'')+`<div class="body"><div class="shopTargetCard">${img}<div class="shopTargetPetName">${esc(targetName)}</div><div class="shopFlowNote">Choose which pet/animal this shop is for.</div></div></div>`;
+  }
+  if(state.shopStep==='qty'){
+    const item=state.shopSelected || (state.panelItems||[])[state.panelIndex||0] || {};
+    const price=Number(pick(item.raw||item,['shop_price','price','cost','coins','pet_coins'],item.price||0))||0;
+    const total=price?`Total: 🪙 ${price*Number(state.shopQty||1)}`:'';
+    return top('BUY AMOUNT','')+`<div class="body"><div class="shopQtyCard"><div class="shopQtyItem">${esc(itemTitle(item))}</div><div class="shopFlowNote">For ${esc(targetName)}</div><div class="shopQtyNumber">x${esc(state.shopQty||1)}</div><div class="shopFlowNote">${esc(total)} · left/right changes amount</div></div></div>`;
+  }
+  const items=Array.isArray(state.panelItems)?state.panelItems:[];
+  const isLoading=state.panelLoading;
+  const msg=(isLoading&&!items.length)?'Loading shop...':(state.panelMessage||'No shop rows found for this pet yet.');
+  const pageSize=4;
+  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
+  const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
+  const pageItems=items.slice(startIndex,startIndex+pageSize);
+  return top('SHOP',items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(targetName)} · ${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="panelGrid shopGrid">${pageItems.length?pageItems.map((it,j)=>renderPanelCard(it,startIndex+j,idx,'shop')).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
+}
+
+function itemImage(it){
+  const raw=(it&&it.raw)||it||{};
+  const v=pick(raw,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','thumbnail_url','thumb_url','item_image_url','shop_image_url','item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id'],'');
+  return cleanImageUrl(v);
+}
+function habitatSlot(row){return String(pick(row,['habitat_slot','slot','loadout_slot','layout_slot','layer','section','type','item_type'],'')).toLowerCase();}
+function habitatKey(row){return clean(pick(row,['habitat_key','item_id','item_key','key','id','background_key','base_key','decor_key','decor_1','decor_2','decor_3','special_key','value'],'')).trim();}
+function rowLooksLikeCareItem(row){
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  return /care_item|food|snack|medicine|heal|toy/.test(s) && !/habitat|background|decor|room|loadout|base|wall|floor/.test(s);
+}
+function imageUrlFromValue(v){
+  const url=cleanImageUrl(v);
+  return url;
+}
+function makeHabitatLayer(cls,url,x=50,y=50,w=30,h=30,z=20){
+  if(!url)return null;
+  if(cls==='background')return {cls:'background',url,x:0,y:0,w:100,h:100,z:1};
+  return {cls:cls||'decor',url,x,y,w,h,z};
+}
+function buildHabitatKeyMap(rows){
+  // Exact-key map only. Do not match by loose names, because that was causing random dragon/decor art.
+  const map=new Map();
+  for(const r of rows||[]){
+    if(!r||rowLooksLikeCareItem(r))continue;
+    const url=itemImage(r);
+    if(!url)continue;
+    const keys=[
+      pick(r,['habitat_key','item_id','item_key','key','id','background_key','base_key','decor_key','special_key','loadout_key','asset_key'],''),
+      pick(r,['cloudinary_public_id','public_id'],'')
+    ].map(clean).filter(Boolean);
+    for(const k of keys)map.set(norm(k),r);
+  }
+  return map;
+}
+function resolveHabitatImage(value,keyMap){
+  const direct=imageUrlFromValue(value);
+  if(direct)return direct;
+  const key=norm(clean(value));
+  if(key&&keyMap.has(key))return itemImage(keyMap.get(key));
+  return '';
+}
+function addLayerFromField(layers,row,keyMap,fieldNames,cls,defaults){
+  const value=pick(row,fieldNames,'');
+  const url=resolveHabitatImage(value,keyMap);
+  if(!url)return false;
+  layers.push(makeHabitatLayer(cls,url,defaults.x,defaults.y,defaults.w,defaults.h,defaults.z));
+  return true;
+}
+function fieldAny(row, patterns){
+  if(!row||typeof row!=='object')return'';
+  const keys=Object.keys(row);
+  for(const pat of patterns){
+    const re=pat instanceof RegExp?pat:new RegExp(pat,'i');
+    const k=keys.find(x=>re.test(x));
+    if(k&&clean(row[k])!=='')return row[k];
+  }
+  return'';
+}
+function layoutRowsFromHabitatItems(items){
+  const raw=(items||[]).map(x=>x&&x.raw?x.raw:x).filter(Boolean);
+  const special=raw.find(r=>r&&r.__habitatRender);
+  if(special){return {layoutRows:special.layoutRows||[], catalogRows:special.catalogRows||[]};}
+  return {layoutRows:raw, catalogRows:[]};
+}
+function findBestHabitatLayoutRow(layoutRows,pet,userId){
+  const rows=(layoutRows||[]).filter(r=>r&&!rowLooksLikeCareItem(r));
+  if(!rows.length)return null;
+  const userRows=rows.filter(r=>strictUserMatch(r,userId));
+  const pool=userRows.length?userRows:rows;
+  const petRows=pool.filter(r=>matchPet(r,pet));
+  if(petRows.length)return petRows[0];
+  // Prefer rows that look like actual loadout/layout rows, not inventory item rows.
+  const loadout=pool.find(r=>fieldAny(r,[/background/i,/base/i,/decor/i,/special/i,/loadout/i,/room/i,/render/i,/composite/i]));
+  return loadout||pool[0];
+}
+function firstFieldValue(row,fieldSets){
+  for(const fields of fieldSets){
+    const v=pick(row,fields,'');
+    if(clean(v)!=='')return v;
+  }
+  return '';
+}
+function buildHabitatLayers(items,pet){
+  const {layoutRows,catalogRows}=layoutRowsFromHabitatItems(items);
+  const userId=state.player?.userId||'';
+  const layout=findBestHabitatLayoutRow(layoutRows,pet,userId)||{};
+  const keyMap=buildHabitatKeyMap([...(catalogRows||[]),...(layoutRows||[])]);
+  const petUrl=pet.url||pet.image_url||itemImage(pet.raw||{})||'';
+  const layers=[];
+
+  const compositeFields=['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','loadout_image_url','preview_url','final_image_url','canvas_image_url','image_url'];
+  const compositeUrl=cleanImageUrl(pick(layout,compositeFields,''));
+  if(compositeUrl){
+    layers.push(makeHabitatLayer('background',compositeUrl,0,0,100,100,1));
+    return layers.filter(Boolean);
+  }
+
+  function layerFromValue(cls,value,x,y,w,h,z){
+    const url=resolveHabitatImage(value,keyMap);
+    if(!url)return false;
+    layers.push(makeHabitatLayer(cls,url,x,y,w,h,z));
+    return true;
+  }
+
+  const bgVal=firstFieldValue(layout,[
+    ['background_image_url','habitat_background_url','room_image_url','background_url','bg_url','image_url'],
+    ['background_key','bg_key','background','habitat_background','room_background','room_key']
+  ]);
+  layerFromValue('background',bgVal,0,0,100,100,1);
+
+  const baseVal=firstFieldValue(layout,[
+    ['base_image_url','floor_image_url','ground_image_url','base_url'],
+    ['base_key','floor_key','ground_key','base','floor','ground']
+  ]);
+  layerFromValue('base',baseVal,50,62,100,78,8);
+
+  const decorSets=[
+    [['decor_1_image_url','decor1_image_url','decor_1_url'],['decor_1_key','decor1_key','decor_1','decor1','decor_key_1']],
+    [['decor_2_image_url','decor2_image_url','decor_2_url'],['decor_2_key','decor2_key','decor_2','decor2','decor_key_2']],
+    [['decor_3_image_url','decor3_image_url','decor_3_url'],['decor_3_key','decor3_key','decor_3','decor3','decor_key_3']],
+    [['special_image_url','special_url'],['special_key','special','special_item_key']]
+  ];
+  decorSets.forEach((sets,i)=>{
+    const v=firstFieldValue(layout,sets);
+    if(v)layerFromValue('decor',v,28+i*15,55,24,32,25+i);
+  });
+
+  const hasRoomLayer=layers.some(l=>l.cls==='background'||l.cls==='base'||l.cls==='decor');
+  const rowPetUrl=cleanImageUrl(fieldAny(layout,[/pet.*image.*url/i,/overlay.*pet.*url/i,/pet_url/i]));
+  if(hasRoomLayer){
+    const finalPetUrl=rowPetUrl||petUrl;
+    if(finalPetUrl)layers.push(makeHabitatLayer('petLayer stage11Pet',finalPetUrl,50,72,22,32,80));
+  }
+  // Stage 24: Habitat must never become an empty/blank LCD.
+  // If a real user_habitats_layout image fails, keep a default room plus the selected pet.
+  if(!layers.some(l=>l&&l.cls==='background')){
+    layers.unshift(makeHabitatLayer('background',DEFAULT_HABITAT_BG,0,0,100,100,1));
+  }
+  if(!layers.some(l=>/petLayer|fallbackPet/.test(String(l&&l.cls||'')))){
+    if(petUrl)layers.push(makeHabitatLayer('fallbackPet',petUrl,50,74,34,44,80));
+  }
+  return layers.filter(Boolean);
+}
+
+function habitatLayerHtml(layer){
+  if(!layer||!layer.url)return'';
+  if(layer.cls==='background') return `<div class="habitatLayer background" style="background-image:url('${esc(layer.url)}');z-index:${esc(layer.z)}"></div>`;
+  return `<div class="habitatLayer ${esc(layer.cls||'decor')}" style="background-image:url('${esc(layer.url)}');left:${esc(layer.x)}%;top:${esc(layer.y)}%;width:${esc(layer.w)}%;height:${esc(layer.h)}%;z-index:${esc(layer.z)};transform:translate(-50%,-50%)"></div>`;
+}
+function habitatCacheKey(){const p=currentPet()||{};return 'waa-habitat-layers-'+(state.player?.userId||'')+'-'+(p.code||p.userPetId||p.name||p.pet||'pet');}
+function readCachedHabitatLayers(){try{return JSON.parse(localStorage.getItem(habitatCacheKey())||'[]')||[];}catch(e){return []}}
+function writeCachedHabitatLayers(layers){try{if((layers||[]).some(l=>l&&l.url&&l.cls==='background'))localStorage.setItem(habitatCacheKey(),JSON.stringify(layers.slice(0,12)));}catch(e){}}
+function renderHabitatPanel(){
+  const items=Array.isArray(state.panelItems)?state.panelItems:[];
+  const pet=currentPet()||{};
+  let layers=buildHabitatLayers(items,pet);
+  if(layers.length)writeCachedHabitatLayers(layers);
+  if((!layers.length||state.panelLoading)&&readCachedHabitatLayers().length)layers=readCachedHabitatLayers();
+  const msg=state.panelLoading?'Loading habitat...':(layers.length?'':(state.panelMessage||'No habitat loadout image found yet.'));
+  // Stage 36: do not draw emoji pets in Habitat. Show real image layers only.
+  const empty = !layers.length ? `<div class="habitatEmpty">${esc(msg||'Default habitat')}</div>` : '';
+  return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${empty}</div></div></div>`;
+}
+function hookPrizeFloatHtml(it,cls,emoji){
+  const url=itemImage(it);
+  if(url)return `<div class="hookFloatPrize ${cls}" style="background-image:url('${esc(url)}')"></div>`;
+  return `<div class="hookFloatPrize noImg ${cls}">${emoji}</div>`;
+}
+function renderHookGamePanel(){
+  const items=Array.isArray(state.panelItems)?state.panelItems:[];
+  const idx=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));
+  const selected=state.hookPrize||items[idx]||{};
+  const loading=state.panelLoading;
+  const floats=[0,1,2,3,4,5].map((n)=>items[(idx+n)%Math.max(1,items.length)]||{});
+  const wonUrl=state.hookPrize&&itemImage(state.hookPrize);
+  const prizeImg=wonUrl?`<div class="hookPrizeImage" style="background-image:url('${esc(wonUrl)}')"></div>`:'';
+  const prizeName=itemTitle(selected);
+  const prizeTitle=loading?'Loading prize pool...':(state.panelActionMsg|| (selected&&prizeName!=='Item'?('Prize: '+prizeName):'Pacifier casts the hook'));
+  const floatHtml=floats.map((it,i)=>hookPrizeFloatHtml(it,'p'+((i%4)+1),'🚑')).join('');
+  return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="hook_a_waaambulance.gif?v=stage25" alt="Hook-a-Waaambulance game">${floatHtml}<div class="hookLine"></div><div class="hookWave"></div>${prizeImg||'<div class="hookPrize">🚑</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
+}
+
+function renderCarePanel(){
+  const p=currentPet()||{};
+  const idx=clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1);
+  return top('CARE',p.name||'')+`<div class="body careBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careGrid">${CARE_ACTIONS.map((a,i)=>`<div class="careCard ${i===idx?'active':''}" data-care-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('')}</div><div class="panelActionMsg careMsg">${esc(state.panelActionMsg||'Choose care action')}</div></div>`;
+}
+async function runCareAction(){
+  const action=CARE_ACTIONS[clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1)]||CARE_ACTIONS[0];
+  const p=currentPet()||{};
+  state.panelActionMsg=action.label+' for '+(p.name||p.pet||'pet')+'...';render();
+  try{
+    const data=await postPetbotAction({mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''});
+    const msg=data.message||data.response||data.result||('Done: '+action.label);
+    state.panelActionMsg=msg;
+    clearPanelCache('inventory');
+    try{
+      const fresh=await loadUserPetsFast(state.player?.userId||'');
+      if(fresh&&fresh.length){
+        const oldCode=p.code||p.userPetId||p.name;
+        state.pets=preservePetVisuals(fresh);
+        const same=state.pets.findIndex(x=>(x.code||x.userPetId||x.name)===oldCode);
+        if(same>=0)state.petIndex=same;
+        preloadPetImages(state.pets);
+        writeCachedPets(state.player.userId,state.pets);
+      }
+    }catch(e){}
+  }catch(e){state.panelActionMsg='Care not saved yet: '+(e.message||e);}
+  render();
+}
+function renderGames(){
+  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Tutorial Town</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span><small>${g.key==='solo'?'One pet tutorial':g.key==='team'?'Team Quest tutorial':'Return to pet'}</small></div>`).join('')}</div></div>`;
+}
+function renderQuestGame(){
+  return `<div class="questGameGlass" aria-label="${esc(state.quest.mode||'Quest')} running inside Tamagotchi"></div>`;
+}
+function iconForItem(it){
+  const s=String(itemTitle(it)+' '+itemSub(it)).toLowerCase();
+  if(s.includes('seed')||s.includes('food')||s.includes('snack')||s.includes('pellet')||s.includes('cricket'))return'🍔';
+  if(s.includes('toy')||s.includes('ball')||s.includes('play')||s.includes('trinket'))return'🧸';
+  if(s.includes('heal')||s.includes('med')||s.includes('cure')||s.includes('potion'))return'💊';
+  if(s.includes('habitat')||s.includes('perch')||s.includes('blanket')||s.includes('lamp')||s.includes('cave'))return'🏡';
+  return'📦';
+}
+function priceForItem(it){
+  const price=pick(it,['shop_price','price','cost','coins','pet_coins'],'');
+  return price ? '🪙 '+price : '';
+}
+
+function itemTitle(it){return pick(it,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name'],'Item');}
+function itemSub(it){
+  const qty=pick(it,['quantity','qty','count','amount'],'');
+  const price=pick(it,['shop_price','price','cost','coins','pet_coins'],'');
+  const type=pick(it,['category','item_type','type','target_category','rarity'],'');
+  return [qty?('x'+qty):'', price?('🪙 '+price):'', type].filter(Boolean).join(' · ');
+}
+function renderError(msg){return top('ERROR','')+`<div class="body"><div class="bigText">${esc(msg||state.lastError||'Something went wrong')}</div></div>`;}
+function rowLabel(r){if(!r||typeof r!=='object')return String(r||'');return pick(r,['item_name','name','label','title','quest_name','trait_name','skill_name','effect_name','description'],'Row');}
+function wireRenderedControls(){
+  document.querySelectorAll('[data-player-index]').forEach(el=>el.addEventListener('click',()=>{state.loginIndex=Number(el.dataset.playerIndex)||0;choosePlayer();}));
+  document.querySelectorAll('[data-menu-index]').forEach(el=>el.addEventListener('click',()=>{state.menuIndex=Number(el.dataset.menuIndex)||0;activateMenu();}));
+  document.querySelectorAll('[data-pet-index]').forEach(el=>el.addEventListener('click',()=>{state.petIndex=Number(el.dataset.petIndex)||state.petIndex;state.petActionIndex=0;state.screen='petHome';render();}));
+  document.querySelectorAll('[data-pet-action-index]').forEach(el=>el.addEventListener('click',()=>{state.petActionIndex=Number(el.dataset.petActionIndex)||0;activatePetAction();}));
+  document.querySelectorAll('[data-game-index]').forEach(el=>el.addEventListener('click',()=>{state.gameIndex=Number(el.dataset.gameIndex)||0;activateGameMenu();}));
+  document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;state.panelActionMsg='';render();}));
+  document.querySelectorAll('[data-care-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.careIndex)||0;runCareAction();}));
+  const input=$('passInput');
+  if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
+}
+function choosePlayer(){
+  const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
+  if(p.test){startPlayer(p);return;}
+  state.screen='password';state.password='';state.error='';render();
+}
+function submitPassword(){
+  const p=PLAYER_LIST[state.loginIndex]||PLAYER_LIST[0];
+  const input=$('passInput'); const pass=input?input.value:state.password;
+  if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
+  startPlayer(p);
+}
+function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v4_'+String(userId||'none');}
+function readCachedPets(userId){
+  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>60*60*1000)return null;return pack.pets;}catch(e){return null;}
+}
+function writeCachedPets(userId,pets){
+  try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30)}));}catch(e){}
+}
+async function startPlayer(player){
+  state.player={...player,password:undefined};state.pets=[];state.petIndex=0;state.petActionIndex=0;state.menuIndex=0;state.screen='loading';state.message='Loading '+player.label+' pets';render();
+  try{
+    if(player.test){
+      const pets=TEST_PETS.map(p=>({...p}));
+      state.pets=pets.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded test pets';render();return;
+    }
+    const cached=readCachedPets(player.userId);
+    if(cached&&cached.length){
+      state.pets=cached.map((p,i)=>withDefaults(p,i));preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded cached pets';render();prefetchCurrentPetPanels();
+      loadUserPets(player.userId).then(fresh=>{
+        if(!fresh||!fresh.length||!state.player||state.player.userId!==player.userId)return;
+        const ready=fresh.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=preservePetVisuals(ready);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);state.screen='petHome';state.message='Updated '+state.pets.length+' pets';render();prefetchCurrentPetPanels();
+      }).catch(e=>log('background refresh failed',e.message||e));
+      return;
+    }
+    const pets=await loadUserPetsFast(player.userId);
+    if(!pets.length)throw new Error('No owned pets found for '+player.label+'. This is safer than showing everyone.');
+    const ready=pets.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,ready);state.pets=ready;preloadPetImages(state.pets);state.petIndex=0;state.menuIndex=0;state.screen='petHome';state.message='Loaded '+pets.length+' pets';render();prefetchCurrentPetPanels();
+    enrichPets(ready,player.userId).then(enriched=>{
+      if(!enriched||!enriched.length||!state.player||state.player.userId!==player.userId)return;
+      const updated=enriched.map((p,i)=>withDefaults(p,i));writeCachedPets(player.userId,updated);state.pets=preservePetVisuals(updated);preloadPetImages(state.pets);state.petIndex=Math.min(state.petIndex,state.pets.length-1);render();
+    }).catch(e=>log('background visual enrich failed',e.message||e));
+  }catch(err){state.lastError=err.message||String(err);state.screen='error';render();}
+}
+function withDefaults(p,i){return {hunger:100,happiness:100,energy:100,health:100,level:1,xp:0,size:72,x:50,y:49,emoji:emojiFor(p.pet||p.category||p.name),...p};}
+async function loadUserPetsFast(userId){
+  // Fast path: get owned pets and stats first, then images/layout can enrich in the background.
+  let proxyPets=[];
+  try{
+    const sheetRows=await fetchSheetRows('user_pets');
+    const direct=dedupePets(sheetRows.filter(r=>strictUserMatch(r,userId)).map(r=>normalisePet(r,userId)));
+    if(direct.length)return direct;
+  }catch(e){log('fast direct user_pets failed',e.message||e);}
+  try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('fast proxy failed',e.message||e);}
+  return dedupePets(proxyPets.filter(p=>strictUserMatch(p.raw||p,userId)).map(p=>p.raw?p:normalisePet(p,userId)));
+}
+async function loadUserPets(userId){
+  let proxyPets=[];
+  // Try direct user_pets first because that is where your real Discord-owned pet names/stats live.
+  try{
+    const sheetRows=await fetchSheetRows('user_pets');
+    const direct=dedupePets(sheetRows.filter(r=>strictUserMatch(r,userId)).map(r=>normalisePet(r,userId)));
+    if(direct.length){
+      try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('proxy failed after direct',e.message||e);}
+      return await enrichPets(mergePetLists(direct,proxyPets),userId);
+    }
+  }catch(e){log('direct user_pets failed',e.message||e);}
+  // Fallback to Apps Script proxy, but still strict-filter to the selected user.
+  try{proxyPets=await fetchPetsViaProxy(userId);}catch(e){log('proxy failed',e.message||e);}
+  const strict=dedupePets(proxyPets.filter(p=>strictUserMatch(p.raw||p,userId)).map(p=>p.raw?p:normalisePet(p,userId)));
+  return await enrichPets(strict,userId);
+}
+function mergePetLists(primary,secondary){
+  const out=[]; const byKey=new Map();
+  function keyFor(p){return norm(p.userPetId||p.code||p.name||p.pet||'');}
+  for(const p of primary||[]){const k=keyFor(p);if(k&&!byKey.has(k)){byKey.set(k,{...p});out.push(byKey.get(k));}}
+  for(const p of secondary||[]){const k=keyFor(p);if(k&&byKey.has(k)){Object.assign(byKey.get(k),{...p,name:byKey.get(k).name||p.name});}else if(k){const v={...p};byKey.set(k,v);out.push(v);}}
+  return out;
+}
+async function fetchPetsViaProxy(userId){
+  const url='/api/petbot?'+new URLSearchParams({mode:'view_pets',user_id:String(userId),per_page:'100',v:'stable-tama-2'});
+  const data=await fetchJson(url,14000);
+  const rootUser=clean(pick(data,['user_id','discord_user_id','discord_id','requested_user_id','player_id'],''));
+  let arr=findArray(data,['pets','owned_pets','user_pets','rows','data','items','results']);
+  // Never stamp catalogue rows as owned. Rows must contain the selected user ID themselves.
+  return arr.map(r=>normalisePet(r,userId));
+}
+function findArray(data,names){
+  if(Array.isArray(data))return data;
+  if(!data||typeof data!=='object')return[];
+  for(const name of names){if(Array.isArray(data[name]))return data[name];}
+  for(const val of Object.values(data)){if(Array.isArray(val)&&val.some(x=>x&&typeof x==='object'))return val;}
+  return [];
+}
+async function enrichPets(pets,userId){
+  const visualRows=[];
+  const tabs=['Sheet51','user_pet_images','pet_action_images'];
+  const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
+  results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))visualRows.push(...r.value);});
+  return (pets||[]).map(pet=>{
+    const p={...pet};
+    try{
+      const owned=visualRows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
+      const generic=owned||visualRows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
+      if(generic)applyVisual(p,generic);
+    }catch(e){log('visual failed',e.message||e);}
+    return p;
+  });
+}
+function applyVisual(p,row){
+  const url=cleanImageUrl(pick(row,['image_url','url','cloudinary_image_url','image','pet_image','sprite_url','public_url','cloudinary_public_id'],''));
+  if(url)p.url=url;
+  const w=pick(row,['overlay_width','width','size','pet_size','display_width','w'],''); if(w)p.size=screenSize(w,p.size);
+  const x=pick(row,['overlay_x','x','x_pos','screen_x','display_x'],''); if(x!==''&&x!=null)p.x=screenPos(x,p.x);
+  const y=pick(row,['overlay_y','y','y_pos','screen_y','display_y'],''); if(y!==''&&y!=null)p.y=screenPos(y,p.y);
+  const f=String(pick(row,['flip','facing','direction','scale_x'],'')).toLowerCase(); if(f.includes('-1')||f.includes('left')||f.includes('flip'))p.flip=-1;
+}
+function screenSize(v,f=72){let x=n(v,f);if(x>220)x=x/4.8;else if(x>140)x=x*.42;return clamp(x,54,88);}
+function screenPos(v,f=50){let x=n(v,f);if(x>100)x=50;return clamp(x,15,85);}
+async function findVisualForPet(p,userId){
+  // Existing Cloudflare lookup first.
+  try{
+    const q=new URLSearchParams({user_id:userId,pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',action:'main',v:'stable-51'});
+    const d=await fetchJson('/api/sheet51?'+q.toString(),9000);
+    const u=cleanImageUrl(pick(d,['image_url','url','cloudinary_image_url','cloudinary_public_id'],''));
+    if(u)return d;
+  }catch(e){}
+  for(const tab of ['Sheet51','user_pet_images','pet_action_images']){
+    try{
+      const rows=await fetchSheetRows(tab);
+      const owned=rows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
+      if(owned)return owned;
+      const generic=rows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
+      if(generic)return generic;
+    }catch(e){}
+  }
+  return null;
+}
+function cleanImageUrl(v){v=clean(v).replace(/^['"]|['"]$/g,'');if(!v)return'';if(/^https?:\/\//i.test(v))return v;if(v.includes('res.cloudinary.com'))return 'https://'+v.replace(/^\/+/,'');return CLOUD+v.replace(/^\/+/,'');}
+function normalisePet(row,userId){
+  // Rows may arrive as normal objects or raw array rows from Apps Script.
+  if(Array.isArray(row)){
+    row={
+      user_id:row[0], owner_display:row[1], user_pet_id:row[2], pet_code:row[3], pet:row[4], category:row[5],
+      pet_name:row[6], level:row[7], xp:row[8], hunger:row[9], happiness:row[10], energy:row[11], health:row[12],
+      adopted_at:row[13], updated_at:row[14]
+    };
+  }
+  const vals=Object.values(row||{}).map(clean);
+  const indexLooks=vals[0]===String(userId)||vals.includes(String(userId));
+  const fromIndex={};
+  if(indexLooks&&vals.length>=9){Object.assign(fromIndex,{userId:vals[0],owner:vals[1],userPetId:vals[2],code:vals[3],pet:vals[4],category:vals[5],name:vals[6],level:vals[7],xp:vals[8],hunger:vals[9],happiness:vals[10],energy:vals[11],health:vals[12]});}
+  const userPetId=pick(row,['user_pet_id','owned_pet_id','pet_instance_id','instance_id','id'],fromIndex.userPetId||'');
+  const code=pick(row,['pet_code','code','pet_key','pet_id'],fromIndex.code||userPetId||'');
+  const pet=pick(row,['pet','species','animal','pet_type','type','base_pet','pet_key'],fromIndex.pet||code||'');
+  let name=pick(row,['nickname','pet_nickname','custom_name','given_name','pet_display_name','display_pet_name','display_name','pet_given_name','petName','name_given'],fromIndex.name||'');
+  if(!name)name=pick(row,['pet_name','name','Name'],fromIndex.name||'');
+  if(!name||norm(name)===norm(pet)||norm(name)===norm(code)) name=fromIndex.name||name||pet||code||'Pet';
+  return {raw:row,userId:pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],fromIndex.userId||userId||''),owner:pick(row,['owner_display','display_name','username','user_name'],fromIndex.owner||''),userPetId,code,pet,category:pick(row,['category','pet_category','class'],fromIndex.category||''),name,level:n(pick(row,['level','lvl'],fromIndex.level||1),1),xp:n(pick(row,['xp','experience','exp'],fromIndex.xp||0),0),hunger:n(pick(row,['hunger','food','feed'],fromIndex.hunger||100),100),happiness:n(pick(row,['happiness','happy','mood'],fromIndex.happiness||100),100),energy:n(pick(row,['energy','stamina'],fromIndex.energy||100),100),health:n(pick(row,['health','hp'],fromIndex.health||100),100)};
+}
+function pick(row,names,fallback=''){
+  if(!row||typeof row!=='object')return fallback;
+  const keys=Object.keys(row); const map=new Map(keys.map(k=>[norm(k),k]));
+  for(const name of names){const k=map.get(norm(name));if(k!=null&&clean(row[k])!=='')return row[k];}
+  // loose contains match for awkward sheet headers
+  for(const name of names){const want=norm(name);const k=keys.find(key=>norm(key).includes(want)||want.includes(norm(key)));if(k&&clean(row[k])!=='')return row[k];}
+  return fallback;
+}
+function strictUserMatch(row,userId){
+  userId=String(userId||''); if(!userId)return false;
+  const direct=clean(pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','guild_user_id','recipient_id','owner_user_id','player_id','User ID','Discord User ID'],''));
+  if(direct)return direct===userId;
+  return Object.values(row||{}).some(v=>clean(v)===userId);
+}
+function hasOtherUser(row,userId){
+  const other=clean(pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],''));
+  return !!other && other!==String(userId||'');
+}
+function matchPet(row,p){
+  const hay=Object.values(row||{}).map(v=>clean(v).toLowerCase()).join(' | ');
+  const bits=[p.userPetId,p.code,p.pet,p.name].map(v=>clean(v).toLowerCase()).filter(Boolean);
+  return bits.some(b=>hay.includes(b));
+}
+function dedupePets(pets){
+  const seen=new Set(),out=[];
+  for(const p of pets){const key=clean(p.userPetId||p.code||p.name||JSON.stringify(p.raw||p));if(!key||seen.has(key))continue;seen.add(key);out.push(p);}return out;
+}
+async function fetchJson(url,timeoutMs){
+  const ctrl=new AbortController(); const t=setTimeout(()=>ctrl.abort(),timeoutMs||12000);
+  try{const res=await fetch(url,{headers:{accept:'application/json,text/plain,*/*'},cache:'no-store',signal:ctrl.signal});const text=await res.text();if(!res.ok)throw new Error('HTTP '+res.status+' '+text.slice(0,120));try{return JSON.parse(text);}catch(e){return {response:text};}}finally{clearTimeout(t);}
+}
+const SHEET_CACHE=new Map();
+async function fetchSheetRows(tab){
+  const cacheKey=tab;
+  const cached=SHEET_CACHE.get(cacheKey);
+  if(cached&&Date.now()-cached.t<45000)return cached.rows;
+  const url=`https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?`+new URLSearchParams({tqx:'out:json',sheet:tab,tq:'select *'}).toString();
+  const text=await (await fetch(url,{cache:'no-store'})).text();
+  const rows=parseGviz(text);
+  SHEET_CACHE.set(cacheKey,{t:Date.now(),rows});
+  return rows;
+}
+function parseGviz(text){
+  const start=text.indexOf('{'),end=text.lastIndexOf('}'); if(start<0||end<start)throw new Error('Sheet not readable');
+  const data=JSON.parse(text.slice(start,end+1)); const table=data.table||{};
+  let headers=(table.cols||[]).map((c,i)=>clean(c.label||c.id||('col'+i))||('col'+i));
+  let rows=(table.rows||[]).map(r=>{const o={};(r.c||[]).forEach((cell,i)=>o[headers[i]||('col'+i)]=cell?clean(cell.f??cell.v??''):'');return o;});
+  if(rows.length){
+    const first=headers.map(h=>clean(rows[0][h])); const low=first.map(x=>x.toLowerCase());
+    if(low.includes('user_id')||low.includes('pet_code')||low.includes('image_url')||low.includes('section')){
+      const old=headers; headers=first.map((v,i)=>v||('col'+i));
+      rows=rows.slice(1).map(r=>{const o={};old.forEach((h,i)=>o[headers[i]||('col'+i)]=r[h]);return o;});
+    }
+  }
+  return rows.filter(r=>Object.values(r).some(v=>clean(v)!==''));
+}
+
+
+function isRealShopRow(row){
+  const titleRaw=String(pick(row,['item_name','shop_name','name','label','title'],'')).trim();
+  const title=norm(titleRaw);
+  if(!title)return false;
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  // Hide generic/demo/fallback stock. Only real sheet shop rows should appear.
+  if(['caresnack','happytoy','restblanket','smallhealkit','testsnack','testtoyball'].includes(title))return false;
+  if(/care\s*snack|happy\s*toy|rest\s*blanket|small\s*heal|demo item|sample item|fallback|placeholder/.test(s))return false;
+  if(/hook_waaambulance|hook-a-waa|prize pool/.test(s))return false;
+  const enabled=String(pick(row,['shop_enabled','enabled','active','is_active'],'true')).toLowerCase();
+  if(['false','no','0','off','disabled'].includes(enabled))return false;
+  return true;
+}
+function isHookPrizeRow(row){
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  if(/level_config|how to play|game config|tutorial|booth config/.test(s))return false;
+  const key=String(pick(row,['hook_key','item_id','reward_item_key','key','id'],'')).toLowerCase();
+  const cat=String(pick(row,['category','type'],'')).toLowerCase();
+  const title=String(pick(row,['name','reward_item_name','hook_name','title','item_name'],'')).toLowerCase();
+  const img=cleanImageUrl(pick(row,['image_url','image','url','cloudinary_image_url'],''));
+  return /^hook_waaambulance_\d+/.test(key) || (cat==='hook_waaambulance' && !!img && !!title);
+}
+function normaliseHookRow(row){
+  const r=normaliseStoreRow(row);
+  r.item_id=pick(row,['hook_key','reward_item_key','item_id','item_key','key','id'],r.item_id||'');
+  r.item_name=pick(row,['name','reward_item_name','hook_name','title','item_name'],r.item_name||'Hook prize');
+  r.price=pick(row,['play_cost','cost'],r.price||'');
+  r.category=pick(row,['rarity','collection_name','category'],r.category||'');
+  r.image_url=pick(row,['image_url','image','url','cloudinary_image_url'],r.image_url||'');
+  return r;
+}
+function weightedPrize(pool){
+  const arr=(pool||[]).filter(Boolean);
+  if(!arr.length)return null;
+  const total=arr.reduce((sum,it)=>sum+Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0)),0);
+  if(total<=0)return arr[Math.floor(Math.random()*arr.length)];
+  let roll=Math.random()*total;
+  for(const it of arr){
+    roll-=Math.max(0,Number(pick(it.raw||it,['roll_weight','weight'],'')||0));
+    if(roll<=0)return it;
+  }
+  return arr[arr.length-1];
+}
+
+function panelCacheKey(kind){
+  const p=currentPet()||{};
+  return [state.player?.userId||'', kind, p.code||p.userPetId||p.name||'', p.category||'', p.pet||''].join('|');
+}
+function clearPanelCache(kind){
+  try{
+    if(kind){PANEL_CACHE.delete(panelCacheKey(kind));return;}
+    for(const key of Array.from(PANEL_CACHE.keys())){
+      if(key.startsWith((state.player?.userId||'')+'|')) PANEL_CACHE.delete(key);
+    }
+  }catch(e){}
+}
+async function cachedLoadPanelData(kind,force=false){
+  const key=panelCacheKey(kind);
+  const hit=PANEL_CACHE.get(key);
+  if(!force&&hit&&Date.now()-hit.t<PANEL_TTL){preloadPanelImages(hit.items);return hit.items;}
+  const items=await loadPanelData(kind);
+  PANEL_CACHE.set(key,{t:Date.now(),items});
+  preloadPanelImages(items);
+  return items;
+}
+function getCachedPanelItems(kind){
+  const hit=PANEL_CACHE.get(panelCacheKey(kind));
+  if(hit&&Date.now()-hit.t<PANEL_TTL)return hit.items||[];
+  return null;
+}
+function preloadOne(url){try{url=cleanImageUrl(url);if(!url)return;const img=new Image();img.decoding='async';img.loading='eager';img.src=url;}catch(e){}}
+function preloadPanelImages(items){try{(items||[]).slice(0,30).forEach(it=>preloadOne(itemImage(it)));}catch(e){}}
+function preloadPetImages(pets){try{(pets||state.pets||[]).slice(0,30).forEach(p=>preloadOne(p.url||p.image_url||itemImage(p.raw||{})));}catch(e){}}
+function petVisualKey(p){return norm(p&&((p.code||'')+'|'+(p.userPetId||'')+'|'+(p.name||'')+'|'+(p.pet||'')));}
+function preservePetVisuals(freshPets){
+  const old=state.pets||[];
+  const oldByKey=new Map(old.map(p=>[petVisualKey(p),p]));
+  return (freshPets||[]).map((np,i)=>{
+    const fp=withDefaults(np,i);
+    const op=oldByKey.get(petVisualKey(fp))||old.find(x=>norm(x.code||x.userPetId||x.name)===norm(fp.code||fp.userPetId||fp.name));
+    if(op){
+      ['url','image_url','cloudinary_image_url','size','x','y','flip','emoji'].forEach(k=>{if((fp[k]===''||fp[k]==null||k==='size'||k==='x'||k==='y') && op[k]!=null)fp[k]=op[k];});
+      if(!fp.url && (op.url||op.image_url||op.cloudinary_image_url))fp.url=op.url||op.image_url||op.cloudinary_image_url;
+    }
+    return fp;
+  });
+}
+function prefetchCurrentPetPanels(){
+  if(!state.player||state.player.test||!currentPet())return;
+  ['inventory','shop','habitat','hook'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
+}
+function isRealInventoryRow(row){
+  const title=String(pick(row,['item_name','name','label','title','display_name'],'')).trim();
+  const key=String(pick(row,['item_id','item_key','key','id'],'')).trim();
+  const qty=String(pick(row,['quantity','qty','count','amount'],'')).trim();
+  const t=norm(title||key);
+  if(!t||['none','noitem','noitems','empty','item'].includes(t))return false;
+  const s=String(Object.values(row||{}).join(' ')).toLowerCase();
+  if(/no inventory|nothing found|empty inventory|none found|placeholder|sample item|demo item/.test(s))return false;
+  if(qty&&Number(qty)===0)return false;
+  return true;
+}
+async function loadPanelData(kind){
+  const userId=state.player?.userId||'';
+  const p=currentPet()||{};
+  if(state.player?.test){
+    if(kind==='inventory')return [{item_name:'Test snack',quantity:3,item_type:'food'},{item_name:'Test toy ball',quantity:1,item_type:'toy'},{item_name:'Test blanket',quantity:1,item_type:'comfort'}];
+    if(kind==='shop')return [{item_id:'bird_seed_mix',item_name:'Bird seed mix',price:10,item_type:'food'},{item_id:'soft_blanket',item_name:'Soft blanket',price:25,item_type:'comfort'},{item_id:'perch_upgrade',item_name:'Perch upgrade',price:40,item_type:'habitat'}];
+    if(kind==='habitat')return [{item_name:'Default habitat room',item_type:'background'},{item_name:'Soft blanket slot',item_type:'decor'},{item_name:'Perch upgrade slot',item_type:'decor'}];
+    if(kind==='hook')return [{item_id:'hook_common',item_name:'Common Waaambulance prize',price:15,rarity:'common'},{item_id:'hook_rare',item_name:'Rare siren toy',price:15,rarity:'rare'},{item_id:'hook_epic',item_name:'Epic shiny trinket',price:15,rarity:'epic'}];
+  }
+  let rows=[];
+  if(kind==='inventory'){
+    rows=await loadRowsFromProxyAndSheets(['view_inventory','inventory'],['user_inventory'],userId,p);
+    return rows.filter(r=>(strictUserMatch(r,userId)||!hasOtherUser(r,userId))&&isRealInventoryRow(r)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+  }
+  if(kind==='shop'){
+    rows=await loadRowsFromProxyAndSheets(['view_shop'],['shop','pet_shop','shop_items','habitat_shop'],userId,p);
+    const shop=rows.filter(r=>isRealShopRow(r)&&shopRowForPet(r,p)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    return shop;
+  }
+  if(kind==='habitat'){
+    let layoutRows=[];
+    // Ask the Apps Script/Worker first as it may already know the composite habitat image,
+    // then add sheet rows. If one source fails, the others still render.
+    try{ layoutRows.push(...await loadRowsFromProxyAndSheets(['view_habitat','get_pet_habitat','view_pet_habitat','pet_habitat'],[],userId,p)); }catch(e){}
+    const layoutTabs=['user_habitats_layout','user_habitat_layouts','user_habitat_loadout','user_habitat_inventory'];
+    const layoutResults=await Promise.allSettled(layoutTabs.map(tab=>fetchSheetRows(tab)));
+    layoutResults.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))layoutRows.push(...r.value);});
+    layoutRows=dedupeRows(layoutRows).filter(r=>r&&!rowLooksLikeCareItem(r));
+    const userRows=layoutRows.filter(r=>strictUserMatch(r,userId));
+    const petRows=(userRows.length?userRows:layoutRows).filter(r=>matchPet(r,p));
+    const chosen=(petRows.length?petRows:(userRows.length?userRows:layoutRows));
+    let catalogRows=[];
+    const catalogTabs=['habitat_shop','habitats','habitat_assets','Sheet51'];
+    const catalogResults=await Promise.allSettled(catalogTabs.map(tab=>fetchSheetRows(tab)));
+    catalogResults.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))catalogRows.push(...r.value);});
+    catalogRows=dedupeRows(catalogRows).filter(r=>!rowLooksLikeCareItem(r)&&itemImage(r));
+    return [{item_name:'Habitat loadout',item_type:'habitat_render',raw:{__habitatRender:true,layoutRows:chosen,catalogRows}}];
+  }
+  if(kind==='hook'){
+    try{
+      rows=await loadRowsFromProxyAndSheets(['view_hook_prizes'],['hook_waaambulance'],userId,p);
+      const prizes=rows.filter(isHookPrizeRow).map(normaliseHookRow).filter(x=>itemTitle(x)!=='Item' && (itemImage(x)||x.item_id));
+      return prizes.length?prizes:FAST_HOOK_ITEMS;
+    }catch(e){return FAST_HOOK_ITEMS;}
+  }
+  return [];
+}
+function fallbackShopItems(p){ return []; }
+async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
+  const all=[];
+  for(const mode of modes){
+    try{
+      const q=new URLSearchParams({mode,user_id:String(userId||''),selected_pet_code:p.code||'',pet_code:p.code||'',pet_name:p.name||'',pet:p.pet||'',v:'stage20'});
+      const data=await fetchJson('/api/petbot?'+q.toString(),12000);
+      if(data&&typeof data==='object'&&!Array.isArray(data)&&data.found!==false){
+        const rootImage=itemImage(data);
+        const hasUsefulRoot=rootImage||pick(data,['pet_name','pet_code','habitat_title','background_habitat_key','base_habitat_key','decor_1_item_key','prize_1_name','hook_name','quest_name'],'');
+        if(hasUsefulRoot) all.push(data);
+      }
+      all.push(...findArray(data,['inventory','shop','items','rows','data','results','prizes','catalogue','catalog']));
+      for(let i=1;i<=25;i++){
+        const name=data&&pick(data,[`prize_${i}_name`,`hook_${i}_name`,`item_${i}_name`,`menu_item_${i}_name`],'');
+        const img=data&&pick(data,[`prize_${i}_image`,`hook_${i}_image`,`item_${i}_image`,`menu_item_${i}_image`],'');
+        const key=data&&pick(data,[`prize_${i}_key`,`hook_${i}_key`,`item_${i}_key`,`menu_item_${i}_value`],'');
+        if(name||img||key) all.push({item_name:name||key||`Prize ${i}`,item_id:key,hook_key:key,image_url:img,quantity:pick(data,[`prize_${i}_quantity`,`prize_${i}_owned_count`],''),category:pick(data,[`prize_${i}_type`,`prize_${i}_rarity`,`hook_${i}_rarity`],'')});
+      }
+    }catch(e){log('panel proxy '+mode+' failed',e.message||e);}
+  }
+  for(const tab of tabs){
+    try{all.push(...await fetchSheetRows(tab));}catch(e){log('panel sheet '+tab+' failed',e.message||e);}
+  }
+  return dedupeRows(all);
+}
+function normaliseStoreRow(row){
+  return {raw:row,item_name:pick(row,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name','hook_name','habitat_title'],'Item'),item_id:pick(row,['item_id','item_key','key','id','habitat_key','prize_key','hook_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins','play_cost'],''),category:pick(row,['category','item_type','type','target_category','rarity','hook_rarity'],''),image_url:pick(row,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','background_image_url','loadout_image_url','preview_url','thumbnail_url','thumb_url','item_image_url','shop_image_url','item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id','public_id'],'')};
+}
+function normaliseHabitatRow(row){
+  const slot=pick(row,['slot','habitat_slot','loadout_slot','layer','section','type'],'');
+  const title=pick(row,['habitat_name','habitat_key','loadout_name','room_name','background_key','base_key','decor_key','item_name','name','title'], slot||'Habitat');
+  return {raw:row,item_name:title,item_id:pick(row,['habitat_key','item_id','item_key','key','id','background_key','base_key','decor_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins'],''),category:pick(row,['category','item_type','habitat_slot','slot','type','target_category','rarity'],''),image_url:pick(row,['full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','thumbnail_url','thumb_url','item_image_url','shop_image_url','item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id'],'')};
+}
+function shopRowForPet(row,p){
+  const enabled=String(pick(row,['enabled','shop_enabled','active','is_active'],'true')).toLowerCase();
+  if(['false','no','0','off','disabled'].includes(enabled))return false;
+  const targetPet=clean(pick(row,['target_pet','pet','species','for_pet'],''));
+  const targetCat=clean(pick(row,['target_category','category','for_category'],''));
+  if(targetPet && !norm(targetPet).includes(norm(p.pet||p.code||p.name)) && !norm(p.pet||p.code||p.name).includes(norm(targetPet)))return false;
+  if(targetCat && p.category && !norm(targetCat).includes(norm(p.category)) && !norm(p.category).includes(norm(targetCat)))return false;
+  return true;
+}
+function dedupeRows(rows){const seen=new Set(),out=[];for(const r of rows||[]){const k=norm(pick(r,['item_id','item_key','key','id','name','item_name','habitat_key'],JSON.stringify(r).slice(0,100)));if(!k||seen.has(k))continue;seen.add(k);out.push(r);}return out;}
+function handlePrev(){
+  if(state.screen==='login'){state.loginIndex=(state.loginIndex+PLAYER_LIST.length-1)%PLAYER_LIST.length;render();return;}
+  if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.petActionIndex=0;render();return;}
+  if(state.screen==='petActions'){state.petActionIndex=(state.petActionIndex+PET_ACTIONS.length-1)%PET_ACTIONS.length;render();return;}
+  if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
+  if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
+  if(state.screen==='care'){state.panelIndex=(state.panelIndex+CARE_ACTIONS.length-1)%CARE_ACTIONS.length;render();return;}
+  if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+state.pets.length-1)%state.pets.length;render();return;}
+  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.max(1,(Number(state.shopQty)||1)-1);render();return;}
+  if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+state.panelItems.length-1)%state.panelItems.length;render();return;}
+  if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'moveLeft'});return;}
+}
+function handleNext(){
+  if(state.screen==='login'){state.loginIndex=(state.loginIndex+1)%PLAYER_LIST.length;render();return;}
+  if(state.screen==='pet'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.petActionIndex=0;render();return;}
+  if(state.screen==='petActions'){state.petActionIndex=(state.petActionIndex+1)%PET_ACTIONS.length;render();return;}
+  if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
+  if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
+  if(state.screen==='care'){state.panelIndex=(state.panelIndex+1)%CARE_ACTIONS.length;render();return;}
+  if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+1)%state.pets.length;render();return;}
+  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.min(99,(Number(state.shopQty)||1)+1);render();return;}
+  if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+1)%state.panelItems.length;render();return;}
+  if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'moveRight'});return;}
+}
+function handleSelect(){
+  if(state.screen==='login')return choosePlayer();
+  if(state.screen==='password')return submitPassword();
+  if(state.screen==='error'&&state.player)return startPlayer(state.player);
+  if(state.screen==='pet'){state.petActionIndex=0;state.screen='petHome';render();prefetchCurrentPetPanels();return;}
+  if(state.screen==='petHome'){state.screen='petActions';render();return;}
+  if(state.screen==='petActions')return activatePetAction();
+  if(state.screen==='menu')return activateMenu();
+  if(state.screen==='games')return activateGameMenu();
+  if(state.screen==='care')return runCareAction();
+  if(state.screen==='questGame')return questJump();
+  if(['shop','inventory','habitat','hook'].includes(state.screen))return activatePanelItem();
+  if(['stats','quests'].includes(state.screen)){state.screen='menu';render();}
+}
+function activateMenu(){
+  const item=MENU[state.menuIndex]||MENU[0];
+  if(item.key==='pets'){state.screen='pet';state.petActionIndex=0;render();return;}
+  if(item.key==='switchUser'){
+    state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player',petActionIndex:0};
+    render();return;
+  }
+  state.screen='pet';render();
+}
+function activatePetAction(){
+  const item=PET_ACTIONS[state.petActionIndex]||PET_ACTIONS[0];
+  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.panelActionMsg='Choose care action';render();return;}
+  if(item.key==='shop'){openShopPanel();return;}
+  if(item.key==='inventory'){openDataPanel('inventory');return;}
+  if(item.key==='habitat'){openDataPanel('habitat');return;}
+  if(item.key==='hook'){openDataPanel('hook');return;}
+  if(item.key==='games'){state.screen='games';state.gameIndex=0;render();return;}
+  state.screen='petActions';render();
+}
+function activateGameMenu(){
+  const item=GAME_MENU[state.gameIndex]||GAME_MENU[0];
+  if(item.action==='back'){state.screen='petActions';render();return;}
+  if(item.action==='questSolo'){
+    state.quest={mode:'Solo Quest · Tutorial Town',embedded:true,score:0};
+    state.screen='questGame';
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSoloEmbedded'}),80);
+    return;
+  }
+  if(item.action==='questTeam'){
+    state.quest={mode:'Team Quest · Tutorial Town',embedded:true,score:0};
+    state.screen='questGame';
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startTeamEmbedded'}),80);
+    return;
+  }
+  if(item.action==='questPlatform'){
+    state.quest={mode:'Platform Game',embedded:true,score:0};
+    state.screen='questGame';
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSoloEmbedded'}),80);
+    return;
+  }
+  state.screen='petActions';render();
+}
+
+function openShopPanel(){
+  state.screen='shop';
+  state.panelKind='shop';
+  state.shopStep='items';
+  state.shopPetIndex=state.petIndex||0;
+  state.shopQty=1;
+  state.shopSelected=null;
+  const cached=getCachedPanelItems('shop');
+  state.panelItems=cached||[];
+  state.panelIndex=0;
+  state.panelLoading=!cached;
+  state.panelActionMsg='';
+  state.panelMessage=cached?(cached.length+' shop item'+(cached.length===1?'':'s')):'Loading shop for '+((currentPet()||{}).name||(currentPet()||{}).pet||'pet')+'...';
+  preloadPanelImages(state.panelItems);
+  render();
+  cachedLoadPanelData('shop').then(items=>{
+    if(state.panelKind!=='shop')return;
+    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' shop item'+(items.length===1?'':'s')):'No shop items found for this pet yet.';preloadPanelImages(items);render();
+  }).catch(err=>{if(state.panelKind!=='shop')return;state.panelItems=cached||[];state.panelLoading=false;state.panelMessage='Shop failed to load: '+(err.message||String(err));render();});
+}
+function loadShopItemsForTarget(){
+  state.shopStep='items';
+  state.petIndex=clamp(state.shopPetIndex||0,0,Math.max(0,state.pets.length-1));
+  state.panelLoading=true;
+  state.panelItems=[];
+  state.panelIndex=0;
+  state.panelActionMsg='';
+  state.panelMessage='Loading shop...';
+  render();
+  cachedLoadPanelData('shop').then(items=>{
+    if(state.panelKind!=='shop')return;
+    state.panelItems=items;state.panelLoading=false;state.panelMessage=items.length?(items.length+' shop item'+(items.length===1?'':'s')):'No shop items found for this pet yet.';render();
+  }).catch(err=>{if(state.panelKind!=='shop')return;state.panelItems=[];state.panelLoading=false;state.panelMessage='Shop failed to load: '+(err.message||String(err));render();});
+}
+
+function openDataPanel(kind){
+  const cached=getCachedPanelItems(kind);
+  const instant=(kind==='hook'&&!cached)?FAST_HOOK_ITEMS:[];
+  state.screen=kind;state.panelKind=kind;state.panelLoading=!cached;state.panelItems=cached||instant;state.panelIndex=0;state.panelActionMsg='';state.panelMessage=cached?(cached.length+' '+kind+' item'+(cached.length===1?'':'s')):(kind==='hook'?'Pacifier casts the hook':'Loading '+kind+'...');if(kind==='hook'){state.hookPrize=null;state.hookCasting=false;}preloadPanelImages(state.panelItems);render();
+  cachedLoadPanelData(kind).then(items=>{
+    if(state.panelKind!==kind)return;
+    state.panelItems=items;state.panelLoading=false;state.panelActionMsg='';state.panelMessage=items.length?(items.length+' '+kind+' item'+(items.length===1?'':'s')):('No '+kind+' items found for this player/pet yet.');preloadPanelImages(items);render();
+  }).catch(err=>{
+    if(state.panelKind!==kind)return;
+    state.panelItems=cached||[];state.panelLoading=false;state.panelMessage=kind+' failed to load: '+(err.message||String(err));render();
+  });
+}
+async function activatePanelItem(){
+  const kind=state.panelKind;
+  if(kind==='shop'&&state.shopStep==='pet')return loadShopItemsForTarget();
+  const item=(state.panelItems||[])[state.panelIndex||0];
+  if(!item){state.panelActionMsg='Nothing selected';render();return;}
+  if(kind==='shop'){
+    if(state.shopStep==='pet')return loadShopItemsForTarget();
+    if(state.shopStep==='items'){state.shopSelected=item;state.shopQty=1;state.shopStep='qty';render();return;}
+    if(state.shopStep==='qty')return buySelectedItem(state.shopSelected||item);
+  }
+  if(kind==='inventory') return useSelectedItem(item);
+  if(kind==='hook') return playHook(item);
+  if(kind==='habitat'){state.panelActionMsg='Viewing '+itemTitle(item);render();return;}
+}
+async function postPetbotAction(payload){
+  const res=await fetch('/api/petbot',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(payload)});
+  let data={}; try{data=await res.json();}catch(e){}
+  if(!res.ok || data.success===false || data.ok===false) throw new Error(data.error||data.response||('HTTP '+res.status));
+  return data;
+}
+async function buySelectedItem(item){
+  const target=state.pets[state.shopPetIndex]||currentPet()||{};
+  const qty=Math.max(1,Math.min(99,Number(state.shopQty)||1));
+  state.panelActionMsg='Buying x'+qty+' '+itemTitle(item)+'...';render();
+  try{
+    let data=null, lastErr=null;
+    for(const mode of ['buy_item','shop_buy','purchase_item']){
+      try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:target.code||currentPet()?.code||'',selected_pet_code:target.code||'',target_pet_code:target.code||'',target_pet_name:target.name||'',item_id:item.item_id||'',item_key:item.item_id||'',item_name:itemTitle(item),quantity:qty,amount:qty,price:item.price||pick(item.raw||{},['price','shop_price','cost'],'')});break;}
+      catch(err){lastErr=err;}
+    }
+    if(!data)throw lastErr||new Error('buy failed');
+    state.panelActionMsg=data.message||data.response||('Bought x'+qty+' '+itemTitle(item));
+    clearPanelCache('inventory'); clearPanelCache('shop');
+    state.shopStep='items';
+    await openPanelReload('shop');
+  }catch(e){state.panelActionMsg='Buy not enabled yet: '+(e.message||e);render();}
+}
+async function useSelectedItem(item){
+  state.panelActionMsg='Using '+itemTitle(item)+'...';render();
+  try{
+    const data=await postPetbotAction({mode:'use_inventory_item',user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',item_id:item.item_id||'',item_name:itemTitle(item)});
+    state.panelActionMsg=data.message||('Used '+itemTitle(item));
+    clearPanelCache('inventory');
+    await openPanelReload('inventory');
+  }catch(e){state.panelActionMsg='Use not enabled yet: '+(e.message||e);render();}
+}
+async function playHook(item){
+  const pool=(state.panelItems&&state.panelItems.length?state.panelItems:[item]).filter(Boolean);
+  const prize=weightedPrize(pool) || item || FAST_HOOK_ITEMS[0] || {item_name:'Mystery Waaambulance prize',price:15};
+  state.hookPrize=prize; state.hookCasting=true; state.panelActionMsg='Casting hook...'; render();
+  await new Promise(r=>setTimeout(r,180));
+  state.hookCasting=false;
+  state.panelActionMsg='You hooked '+itemTitle(prize);
+  render();
+  // Save in the background so the mini game does not feel frozen. If the backend returns
+  // the real PetBot prize, replace the local prize with that response.
+  (async()=>{
+    try{
+      let data=null, lastErr=null;
+      for(const mode of ['play_hook_waaambulance','cast_hook_waaambulance','complete_hook_waaambulance']){
+        try{data=await postPetbotAction({mode,user_id:state.player?.userId||'',pet_code:currentPet()?.code||'',selected_pet_code:currentPet()?.code||'',prize_id:prize.item_id||'',prize_name:itemTitle(prize),hook_key:prize.item_id||'',coins:pick(prize.raw||prize,['coins'],''),xp:pick(prize.raw||prize,['xp'],''),effect_stat:pick(prize.raw||prize,['effect_stat'],''),effect_amount:pick(prize.raw||prize,['effect_amount'],'')});break;}
+        catch(err){lastErr=err;}
+      }
+      if(!data)throw lastErr||new Error('hook save failed');
+      if(state.screen!=='hook')return;
+      state.panelActionMsg=data.message||data.response||data.hook_name||data.prize_name||data.item_earned||('Saved: '+itemTitle(prize));
+      const realPrize={...prize,raw:{...(prize.raw||{}),...data},item_name:data.hook_name||data.prize_name||data.item_earned||itemTitle(prize),item_id:data.hook_key||data.prize_key||prize.item_id,image_url:data.image_url||data.hook_image_url||data.prize_image||prize.image_url};
+      state.hookPrize=realPrize; clearPanelCache('inventory'); clearPanelCache('hook'); render();
+    }catch(e){ if(state.screen==='hook'){ state.panelActionMsg='You hooked '+itemTitle(prize)+' · check inventory after refresh'; render(); } }
+  })();
+}
+async function openPanelReload(kind){
+  state.panelKind=kind;state.panelLoading=true;render();
+  const oldMsg=state.panelActionMsg; const items=await cachedLoadPanelData(kind,true);state.panelItems=items;state.panelLoading=false;state.panelActionMsg=oldMsg||'';state.panelIndex=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));render();
+}
+function questJump(){
+  if(state.screen!=='questGame')return;
+  sendParent('waa-petbot-game-action',{action:'selectOrJump'});
+}
+function handleBack(){
+  if(state.screen==='password'){state.screen='login';state.password='';state.error='';render();return;}
+  if(state.screen==='login'){sendParent('waa-petbot-close');return;}
+  if(state.screen==='pet'){state.screen='menu';render();return;}
+  if(state.screen==='petHome'){state.screen='pet';render();return;}
+  if(state.screen==='petActions'){state.screen='petHome';render();return;}
+  if(state.screen==='welcomeBoard'){state.screen='petActions';render();return;}
+  if(state.screen==='care'){state.screen='petActions';render();return;}
+  if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
+  if(state.screen==='shop'&&state.shopStep==='qty'){state.shopStep='items';render();return;}
+  if(state.screen==='shop'&&state.shopStep==='items'){state.screen='petActions';state.shopStep='items';state.panelActionMsg='';render();return;}
+  if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'stopEmbedded'});state.screen='games';render();return;}
+  if(state.screen==='games'){state.screen='petActions';render();return;}
+  if(['inventory','habitat','hook'].includes(state.screen)){state.screen='petActions';render();return;}
+  if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
+  state.screen='petActions';render();
+}
+function sendParent(type,extra){try{window.postMessage({type,...(extra||{}),combinedPetbot:true},location.origin);}catch(e){}}
+function requestLocalFullscreen(){
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
+  try{PETBOT_DIRECT_ROOT.classList.add('cssFullscreen');}catch(e){}
+}
+function notifyParent(){
+  const p=currentPet(); if(!p)return;
+  sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:p.url||'',image_url:p.url||'',level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
+}
+$('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
+$('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
+$('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
+function bindQuestHoldButton(id,startAction){
+  const btn=$(id); if(!btn)return;
+  const stop=e=>{
+    if(state.screen==='questGame'){ try{e&&e.preventDefault();}catch(_e){} sendParent('waa-petbot-game-action',{action:'moveStop'}); }
+  };
+  btn.addEventListener('pointerdown',e=>{
+    if(state.screen==='questGame'){
+      e.preventDefault(); try{btn.setPointerCapture(e.pointerId);}catch(_e){}
+      // One start message, one stop message. Repeating postMessages made the embedded game feel laggy.
+      sendParent('waa-petbot-game-action',{action:startAction});
+    }
+  });
+  btn.addEventListener('pointerup',stop);
+  btn.addEventListener('pointercancel',stop);
+  btn.addEventListener('pointerleave',stop);
+  window.addEventListener('blur',stop);
+}
+bindQuestHoldButton('btnPrev','moveLeftStart');
+bindQuestHoldButton('btnNext','moveRightStart');
+$('btnExit').addEventListener('click',e=>{e.preventDefault();handleBack();});
+$('btnSiren').addEventListener('click',e=>{e.preventDefault(); if(state.screen==='questGame'){ sendParent('waa-petbot-game-action',{action:'expandEmbedded'}); } else { requestLocalFullscreen(); sendParent('waa-petbot-toggle-fullscreen'); }});
+$('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,t:Date.now()};});
+$('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
+document.addEventListener('keydown',e=>{
+  if(state.screen==='questGame'){
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveLeftStart'});return;}
+    if(code==='ArrowRight'||code==='KeyD'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveRightStart'});return;}
+    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){if(e.target&&e.target.tagName==='INPUT')return;e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'jumpOnly'});return;}
+    if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'selectOrJump'});return;}
+    if(code==='Escape'){e.preventDefault();handleBack();return;}
+  }
+  if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}
+});
+// Stage 21: clicks outside the toy should not change the menu or steal focus.
+document.addEventListener('pointerdown',e=>{
+  if(!e.target.closest('.device')){e.preventDefault();e.stopPropagation();}
+},true);
+document.addEventListener('click',e=>{
+  if(!e.target.closest('.device')){e.preventDefault();e.stopPropagation();}
+},true);
+
+// STAGE 29: parent quest buildings can open the real PetBot/Tamagotchi screens reliably.
+function petbotOpenParentScreen(screen){
+  screen=String(screen||'petHome');
+  if(!state.player || !currentPet()){
+    state._pendingParentScreen=screen;
+    return false;
+  }
+  try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
+  state._pendingParentScreen='';
+  state.panelActionMsg='';
+  state.panelMessage='';
+  if(screen==='welcomeBoard' || screen==='welcome' || screen==='tutorial') { state.screen='welcomeBoard'; state.panelActionMsg=''; state.panelMessage=''; render(); return true; }
+  if(screen==='shop') { openShopPanel(); return true; }
+  if(screen==='habitat') { openDataPanel('habitat'); return true; }
+  if(screen==='hook') { openDataPanel('hook'); return true; }
+  if(screen==='inventory') { openDataPanel('inventory'); return true; }
+  if(screen==='games' || screen==='quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
+  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.panelActionMsg='Choose care action'; render(); return true; }
+  if(screen==='petActions' || screen==='actions') { state.screen='petActions'; state.petActionIndex=0; render(); return true; }
+  state.screen='petHome'; render(); return true;
+}
+function petbotConsumePendingParentScreen(){
+  let pending=state._pendingParentScreen||'';
+  try{
+    const raw=localStorage.getItem('waaPendingPetbotScreen');
+    if(raw){
+      const pack=JSON.parse(raw);
+      if(pack && pack.t && Date.now()-Number(pack.t)<15000) pending=pack.screen||pending;
+      else localStorage.removeItem('waaPendingPetbotScreen');
+    }
+  }catch(e){}
+  if(pending) petbotOpenParentScreen(pending);
+}
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin)return;
+  const d=e.data||{};
+  if(d.type==='waa-parent-open-screen'){
+    petbotOpenParentScreen(d.screen||'petHome');
+  }
+});
+let stage29PendingTries=0;
+const stage29PendingTimer=setInterval(()=>{
+  stage29PendingTries++;
+  petbotConsumePendingParentScreen();
+  if(stage29PendingTries>45 && !state._pendingParentScreen){clearInterval(stage29PendingTimer);}
+},250);
+
+// Stage 21: when the parent returns from expanded platform mode, do not leave the LCD transparent/blank.
+window.addEventListener('message',e=>{
+  if(e.origin!==location.origin)return;
+  const d=e.data||{};
+  if(d.type==='waa-parent-return-to-tamagotchi'){
+    try{PETBOT_DIRECT_ROOT.classList.remove('cssFullscreen','questPlaying');}catch(_e){}
+    if(state.screen==='questGame'||state.screen==='games'){
+      state.screen=currentPet()?'petHome':'menu';
+      state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
+      render();
+    }
+  }
+});
+
+
+// STAGE 34: quest keyboard + Back-to-Quest support.
+(function(){
+  let questKeyLeft=false, questKeyRight=false;
+  function inQuest(){return state && state.screen==='questGame';}
+  function send(action){sendParent('waa-petbot-game-action',{action});}
+  function markReturnToQuest(mode){
+    state.returnToQuest=true;
+    state.returnQuestMode=mode||state.returnQuestMode||'embedded';
+  }
+  window.addEventListener('message',e=>{
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-open-screen' && d.returnToQuest){
+      markReturnToQuest(d.returnMode||'embedded');
+    }
+  },true);
+  try{
+    const raw=localStorage.getItem('waaPendingPetbotScreen');
+    if(raw){
+      const pack=JSON.parse(raw);
+      if(pack && pack.returnToQuest && Date.now()-Number(pack.t)<15000) markReturnToQuest(pack.returnMode||'embedded');
+    }
+  }catch(e){}
+  window.petbotReturnToQuest34=function(){
+    questKeyLeft=false; questKeyRight=false;
+    send('moveStop');
+    state.screen='questGame';
+    state.quest={...(state.quest||{}),started:true,embedded:true};
+    render();
+    send('returnToQuest');
+  };
+  const oldHandleBack34=handleBack;
+  handleBack=function(){
+    if(state.returnToQuest && ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','welcomeBoard'].includes(state.screen)){
+      if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
+      petbotReturnToQuest34();
+      return;
+    }
+    return oldHandleBack34();
+  };
+  document.addEventListener('keydown',e=>{
+    if(!inQuest())return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if(!questKeyLeft){questKeyLeft=true; questKeyRight=false; send('moveLeftStart');}
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if(!questKeyRight){questKeyRight=true; questKeyLeft=false; send('moveRightStart');}
+      return;
+    }
+    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if(!e.repeat) send('jumpOnly');
+      return;
+    }
+    if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      if(!e.repeat) send('selectOrJump');
+      return;
+    }
+    if(code==='Escape'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      handleBack();
+      return;
+    }
+  },true);
+  document.addEventListener('keyup',e=>{
+    if(!inQuest())return;
+    const code=e.code||'';
+    if(code==='ArrowLeft'||code==='KeyA'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      questKeyLeft=false; send('moveStop');
+      return;
+    }
+    if(code==='ArrowRight'||code==='KeyD'){
+      e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
+      questKeyRight=false; send('moveStop');
+      return;
+    }
+  },true);
+})();
+
+
+// STAGE 35: keep return-to-quest state alive when parent opens shop/habitat/hook from the quest.
+(function(){
+  window.addEventListener('message',e=>{
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-open-screen' && d.returnToQuest){
+      state.returnToQuest=true;
+      state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
+    }
+  },true);
+  const oldReturn=window.petbotReturnToQuest34;
+  window.petbotReturnToQuest34=function(){
+    state.returnToQuest=false;
+    if(oldReturn) return oldReturn();
+    sendParent('waa-petbot-game-action',{action:'returnToQuest'});
+  };
+})();
+
+
+// STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
+(function(){
+  function showQuestFromParent(){
+    try{
+      state.screen='questGame';
+      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+      state.returnToQuest=false;
+      render();
+    }catch(e){ console.warn('Stage 37 quest LCD restore failed',e); }
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-quest-active') showQuestFromParent();
+    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(showQuestFromParent,0);
+  },true);
+})();
+
+
+// STAGE 38: restore real Habitat rendering while keeping emoji fallbacks out.
+// The old patch could cache the plain stripe default during loading, which then hid the real habitat.
+(function(){
+  function layerIsDefaultBg(l){
+    return !!(l && l.cls==='background' && String(l.url||'')===String(DEFAULT_HABITAT_BG||''));
+  }
+  function habitatHasRealArt(layers){
+    return (layers||[]).some(l=>l && l.url && !layerIsDefaultBg(l));
+  }
+  function habitatIsOnlyDefault(layers){
+    layers=(layers||[]).filter(Boolean);
+    return layers.length>0 && !habitatHasRealArt(layers);
+  }
+  function realHabitatCacheKey(){
+    const p=currentPet()||{};
+    return 'waa-habitat-layers-'+(state.player?.userId||'')+'-'+(p.code||p.userPetId||p.name||p.pet||'pet');
+  }
+  function readRealCachedHabitatLayers(){
+    try{
+      const raw=localStorage.getItem(realHabitatCacheKey())||'[]';
+      const layers=JSON.parse(raw)||[];
+      if(habitatIsOnlyDefault(layers)){
+        localStorage.removeItem(realHabitatCacheKey());
+        return [];
+      }
+      return Array.isArray(layers)?layers:[];
+    }catch(e){return []}
+  }
+  function writeRealCachedHabitatLayers(layers){
+    try{
+      if(habitatHasRealArt(layers)) localStorage.setItem(realHabitatCacheKey(),JSON.stringify((layers||[]).slice(0,12)));
+    }catch(e){}
+  }
+  readCachedHabitatLayers=readRealCachedHabitatLayers;
+  writeCachedHabitatLayers=writeRealCachedHabitatLayers;
+
+  function loadingCard(msg){
+    return `<div class="habitatLoadingCard">${esc(msg||'Loading habitat...')}</div>`;
+  }
+
+  renderHabitatPanel=function(){
+    const items=Array.isArray(state.panelItems)?state.panelItems:[];
+    const pet=currentPet()||{};
+    let layers=[];
+    const cached=readRealCachedHabitatLayers();
+
+    // While the sheet/API is still loading, show a real cached room if one exists.
+    // Do not build/cache the stripe default from an empty item list.
+    if(state.panelLoading && !items.length){
+      layers=cached;
+      const msg=layers.length?'Refreshing habitat...':'Loading habitat...';
+      return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${loadingCard(msg)}</div></div></div>`;
+    }
+
+    layers=buildHabitatLayers(items,pet);
+
+    // If buildHabitatLayers only produced the stripe default, prefer the last real habitat cache.
+    if(habitatIsOnlyDefault(layers) && cached.length){
+      layers=cached;
+    }else if(habitatHasRealArt(layers)){
+      writeRealCachedHabitatLayers(layers);
+    }
+
+    const onlyDefault=habitatIsOnlyDefault(layers);
+    const msg=state.panelLoading?'Loading habitat...':(state.panelMessage||'No habitat loadout image found yet.');
+    const label = (!layers.length || onlyDefault) ? loadingCard(msg) : '';
+
+    // No emoji pet fallback here. Real pet art is shown only if PetBot/Sheet provides an image URL.
+    return `<div class="habitatFullScreen"><div class="habitatView"><div class="habitatFrame stage15Full stage10Full stage11Simple withImage">${layers.map(habitatLayerHtml).join('')}${label}</div></div></div>`;
+  };
+
+  const oldOpenDataPanel38=openDataPanel;
+  openDataPanel=function(kind){
+    if(kind==='habitat'){
+      // Clear bad same-session default-cache before opening habitat.
+      try{
+        const hit=PANEL_CACHE.get(panelCacheKey('habitat'));
+        if(hit && Array.isArray(hit.items) && hit.items.length===1){
+          const raw=(hit.items[0]&&hit.items[0].raw)||{};
+          if(raw.__habitatRender && !(raw.layoutRows||[]).length && !(raw.catalogRows||[]).length) PANEL_CACHE.delete(panelCacheKey('habitat'));
+        }
+      }catch(e){}
+    }
+    return oldOpenDataPanel38(kind);
+  };
+})();
+
+// STAGE 42: normal Tamagotchi mode must never stay on the transparent quest LCD.
+// The quest LCD is only for embedded platform play; when the parent asks for PetBot
+// home, render a real user/pet screen so the device is not blank.
+(function(){
+  function showRealPetbotHome(){
+    try{
+      PETBOT_DIRECT_ROOT.classList.remove('cssFullscreen','questPlaying');
+      state.returnToQuest=false;
+      state.returnQuestMode='';
+      state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
+      if(state.player && currentPet()){
+        state.screen='petHome';
+      }else if(state.player && state.pets && state.pets.length){
+        state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
+        state.screen='petHome';
+      }else{
+        state.screen='login';
+        state.player=null;
+        state.pets=[];
+        state.petIndex=0;
+        state.password='';
+        state.error='';
+        state.message='Choose player';
+      }
+      render();
+    }catch(e){ console.warn('Stage 42 PetBot home restore failed',e); }
+  }
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+    if(d.type==='waa-parent-show-petbot-home'){
+      showRealPetbotHome();
+      try{e.stopImmediatePropagation();}catch(_e){}
+    }
+  },true);
+})();
+
+render();
+})();
+
+</script>
+</div>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
     </div>
   </div>
   <button class="petbotBackBtn" id="petbotBackBtn" type="button" aria-label="Back to game">← Back to game</button>
+
+<script id="combined-petbot-bridge-20260705">
+(function(){
+  function q(id){return document.getElementById(id);}
+  const frame=q('petbotDockFrame');
+  if(frame){
+    try{
+      frame.contentWindow={
+        postMessage:function(msg,origin){
+          try{ window.postMessage(msg, origin || location.origin); }catch(e){}
+        }
+      };
+    }catch(e){}
+  }
+  // Combined mode helper: when the old code tries to reload petbot_test.html, keep this direct PetBot alive.
+  try{ window.__COMBINED_PETBOT_DIRECT__=true; }catch(e){}
+})();
+</script>
+
 
   <!-- EDIT SECTION 11: LIVE GAME OBJECTS - characters, world objects, toast, drag hint, touch controls -->
   <div id="teamShadow2"></div><div id="buddyShadow"></div><div id="shadow"></div><div id="teamShadow3"></div><div id="teamMate2" class="character teamMate editableTarget" data-layer="team2"><img id="teamSprite2" alt="team character 3"></div><div id="buddy" class="character editableTarget" data-layer="buddy"><img id="buddySprite" alt="side character"></div><div id="player" class="character editableTarget" data-layer="player"><img id="sprite" alt="main character"></div><div id="teamMate3" class="character teamMate editableTarget" data-layer="team3"><img id="teamSprite3" alt="team character 4"></div><div id="worldObjects"></div><div class="toast" id="toast">Waaambulance activated</div><div class="tamaGameCaption" id="tamaGameCaption" aria-live="polite"></div><div class="axFrameDebug" id="axFrameDebug">Ax frame: —</div><div class="dragHint" id="dragHint">drag selected layer</div>
