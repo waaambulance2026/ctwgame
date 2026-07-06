@@ -5315,7 +5315,7 @@ quest inside Tamagotchi, and quest fullscreen.
   const root=d.documentElement;
   const DESIGN_W=1920;
   const DESIGN_H=1080;
-  const PETBOT_URL='petbot_test.html?v=20260706-real-fullscreen-v3&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=20260706-parent-fullscreen-v4&embed=1&launch=1&choose=1';
   const NEW_CLASSES=['ctwRouterSmall','ctwRouterTamaFull','ctwRouterQuestEmbedded','ctwRouterQuestFull','ctwRouterLock'];
   const OLD_CLASSES=['waaTamaStartMode','tamagotchiLanding','petbotOpen','tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','waaFs40Petbot','waaFs40Embedded','waaFs40Expanded','waaFs40Lock','questPlaying','cssFullscreen'];
   const GAME_PROPS=['display','visibility','opacity','position','left','top','right','bottom','inset','width','height','min-width','min-height','max-width','max-height','z-index','transform','transform-origin','pointer-events','clip-path','-webkit-clip-path','border-radius','box-shadow','filter'];
@@ -5479,10 +5479,10 @@ quest inside Tamagotchi, and quest fullscreen.
     delays.forEach(ms=>setTimeout(()=>{try{frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin);}catch(e){}},ms));
   }
   function requestBrowserFullscreen(){
-    // Real browser fullscreen for the FIRST Tamagotchi/PetBot mode.
-    // This may only work from a direct tap/click, so the PetBot iframe also tries it.
+    // Real browser fullscreen for the whole parent page.
+    // Do NOT fullscreen only #petbotDock, because quest mode lives outside the dock.
     try{
-      const el=dock||d.documentElement;
+      const el=d.documentElement;
       const already=d.fullscreenElement||d.webkitFullscreenElement||d.msFullscreenElement;
       const request=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
       if(!already && request){
@@ -5750,6 +5750,14 @@ quest inside Tamagotchi, and quest fullscreen.
       e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation();
     }
   },true);
+
+  function onRealFullscreenChange(){
+    try{ setTimeout(fitCurrent,40); setTimeout(fitCurrent,220); }catch(e){}
+  }
+  ['fullscreenchange','webkitfullscreenchange','msfullscreenchange'].forEach(function(ev){
+    try{d.addEventListener(ev,onRealFullscreenChange,true);}catch(e){}
+  });
+
   window.addEventListener('resize',function(){setTimeout(fitCurrent,60);},{passive:true});
   window.addEventListener('orientationchange',function(){setTimeout(fitCurrent,180);},{passive:true});
 
