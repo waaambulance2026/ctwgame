@@ -1663,21 +1663,13 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // First Tamagotchi mode must be able to enter REAL browser fullscreen.
-  // CSS fullscreen is only the fallback if the browser blocks fullscreen from the iframe.
+  // Stage 19: browser fullscreen can be blocked inside iframes. CSS fullscreen is always applied.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
   try{
     const el=document.documentElement;
-    const doc=document;
-    const already=doc.fullscreenElement||doc.webkitFullscreenElement||doc.msFullscreenElement;
-    const request=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
-    if(!already && request){
-      const r=request.call(el);
-      if(r&&r.catch) r.catch(()=>{});
-    }
+    if(!document.fullscreenElement && el.requestFullscreen){ const r=el.requestFullscreen(); if(r&&r.catch)r.catch(()=>{}); }
   }catch(e){}
 }
-
 function notifyParent(){
   const p=currentPet(); if(!p)return;
   sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:p.url||'',image_url:p.url||'',level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
