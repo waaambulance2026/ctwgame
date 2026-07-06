@@ -7108,7 +7108,7 @@ Do not put level data or sprite links here.
     scale=Math.max(.24,Math.min(.54,scale));
     const cropW=Math.min(DESIGN_W,r.width/scale);
     const cropH=Math.min(DESIGN_H,r.height/scale);
-    const cropLeft=Math.max(0,Math.min(DESIGN_W-cropW,playerDesignX()-210));
+    const cropLeft=Math.max(0, Math.min(DESIGN_W - cropW, 12));
     const cropTop=Math.max(0,Math.min(DESIGN_H-cropH,DESIGN_H-cropH-52));
 
     setImp(game,'position','absolute');
