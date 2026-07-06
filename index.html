@@ -4692,6 +4692,9 @@ function receivePetbotIframeState(payload){
   }
 }
 window.addEventListener('message',function(e){
+  // SAFETY: the final single router at the bottom owns Tamagotchi / quest messages.
+  // Without this guard, the old listener also runs and can close the quest after it has returned to Tamagotchi.
+  if(window.__CTW_SINGLE_ROUTER_20260706_V2__) return;
   if(e.origin !== location.origin) return;
   const d=e.data || {};
   if(d.type === 'waa-petbot-toggle-fullscreen'){
@@ -4975,7 +4978,7 @@ function toggleDayNightManual(){
 
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;applySpriteTransform();};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=toggleDayNightManual;$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+addEventListener('keydown',e=>{if(document.body.classList.contains('ctwPetbot')||document.body.classList.contains('ctwEmbedded')||document.body.classList.contains('ctwExpanded'))return;if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
   btn.onpointerdown=e=>{e.preventDefault();down();};
@@ -5790,6 +5793,11 @@ This is the only final controller. Do not add another Stage controller under it.
     if(e.origin!==location.origin) return;
     const msg=e.data||{};
     if(!msg || !msg.type) return;
+    // The final router owns these messages. Stop older Stage listeners in this file
+    // from also handling them and undoing the router state.
+    if(['waa-petbot-game-action','waa-petbot-toggle-fullscreen','waa-petbot-close','waa-parent-return-to-quest'].indexOf(msg.type)!==-1){
+      try{ e.stopImmediatePropagation(); }catch(_e){}
+    }
     setTimeout(function(){
       if(msg.type==='waa-petbot-game-action') handleAction(msg.action);
       if(msg.type==='waa-petbot-toggle-fullscreen') showPetbot({});
