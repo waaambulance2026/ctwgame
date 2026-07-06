@@ -7436,23 +7436,35 @@ if(action === 'jumpOnly'){
   try{
     if(typeof jump === 'function') jump();
   }catch(e){}
-  return;
+  return true;
 }
 
 if(action === 'jump' || action === 'selectOrJump'){
   let opened = false;
 
-  // Select / pacifier / Enter should try buildings and signs first.
+  // Best helper for Tamagotchi embedded/fullscreen building selection.
   try{
-    if(typeof window.selectNearestWorldStop === 'function'){
-      opened = !!window.selectNearestWorldStop({
-        embedded: document.body.classList.contains('tamaGameEmbedded'),
-        expanded: document.body.classList.contains('gameExpandedFromTama')
+    if(typeof window.stage31SelectNearestWorldStop === 'function'){
+      opened = !!window.stage31SelectNearestWorldStop({
+        embedded: document.body.classList.contains('tamaGameEmbedded') || document.body.classList.contains('waaFs40Embedded'),
+        expanded: document.body.classList.contains('gameExpandedFromTama') || document.body.classList.contains('waaFs40Expanded')
       });
     }
   }catch(e){}
 
-  // Backup: use the normal nearby building checker.
+  // Backup helper.
+  if(!opened){
+    try{
+      if(typeof window.selectNearestWorldStop === 'function'){
+        opened = !!window.selectNearestWorldStop({
+          embedded: document.body.classList.contains('tamaGameEmbedded') || document.body.classList.contains('waaFs40Embedded'),
+          expanded: document.body.classList.contains('gameExpandedFromTama') || document.body.classList.contains('waaFs40Expanded')
+        });
+      }
+    }catch(e){}
+  }
+
+  // Backup: normal building checker.
   if(!opened){
     try{
       if(typeof window.enterNearbyBuilding === 'function'){
@@ -7470,26 +7482,47 @@ if(action === 'jump' || action === 'selectOrJump'){
     }catch(e){}
   }
 
-  // Only jump if there was nothing to open.
+  // Only jump if nothing opened.
   if(!opened){
     try{
       if(typeof jump === 'function') jump();
     }catch(e){}
   }
 
-  return;
+return true;
 }
     if(previousAction) return previousAction(action);
   };
 
   window.addEventListener('message',function(e){
-    if(e.origin!==location.origin) return;
-    const msg=e.data||{};
-    if(!msg || !msg.type) return;
-    if(msg.type==='waa-petbot-game-action') window.handlePetbotGameAction(msg.action);
-    if(msg.type==='waa-petbot-toggle-fullscreen') setPetbotMenu();
-    if(msg.type==='waa-petbot-close') window.closePetbotFull();
-    if(msg.type==='waa-parent-return-to-quest') returnToQuest(getQuestReturnMode());
+if(
+  msg.type === 'waa-petbot-game-action' ||
+  msg.type === 'waa-petbot-toggle-fullscreen' ||
+  msg.type === 'waa-petbot-close' ||
+  msg.type === 'waa-parent-return-to-quest'
+){
+  try{
+    e.preventDefault();
+    e.stopPropagation();
+    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+  }catch(err){}
+}
+
+if(msg.type === 'waa-petbot-game-action'){
+  return window.handlePetbotGameAction(msg.action);
+}
+
+if(msg.type === 'waa-petbot-toggle-fullscreen'){
+  return setPetbotMenu();
+}
+
+if(msg.type === 'waa-petbot-close'){
+  return window.closePetbotFull();
+}
+
+if(msg.type === 'waa-parent-return-to-quest'){
+  return returnToQuest(getQuestReturnMode());
+}
   },true);
 
   window.addEventListener('keydown',function(e){
@@ -7525,5 +7558,6 @@ if(action === 'jump' || action === 'selectOrJump'){
     },ms);
   });
 })();
+</script>
 </body>
 </html>
