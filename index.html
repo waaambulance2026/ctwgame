@@ -4597,15 +4597,27 @@ function receivePetbotIframeState(payload){
 window.addEventListener('message',function(e){
   if(e.origin !== location.origin) return;
   const d=e.data || {};
-  if(d.type === 'waa-petbot-toggle-fullscreen'){
-    // Stage 19: this is a CSS fullscreen first. Browser Fullscreen API can be blocked
-    // when the click started inside an iframe, so the game must still visibly expand.
-    try{ document.body.classList.remove('gameExpandedFromTama'); }catch(err){}
-    try{ if(typeof window.openPetbotFull === 'function') window.openPetbotFull(); }catch(err){}
-    // Browser fullscreen disabled on purpose.
-    // CSS fullscreen is used instead so users do not get trapped needing Esc.
-    return;
-  }
+if(d.type === 'waa-petbot-toggle-fullscreen'){
+  try{ document.body.classList.remove('gameExpandedFromTama'); }catch(err){}
+
+  // First open the PetBot/Tamagotchi visually.
+  try{
+    if(typeof window.openPetbotFull === 'function') {
+      window.openPetbotFull();
+    }
+  }catch(err){}
+
+  // Then try real browser fullscreen on the parent page.
+  try{
+    const el = document.documentElement;
+    if(!document.fullscreenElement && el.requestFullscreen){
+      const r = el.requestFullscreen();
+      if(r && r.catch) r.catch(function(){});
+    }
+  }catch(err){}
+
+  return;
+}
   if(d.type === 'waa-petbot-close'){
     try{ if(typeof window.closePetbotFull === 'function') window.closePetbotFull(); }catch(err){}
     return;
