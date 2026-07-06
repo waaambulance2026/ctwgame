@@ -5563,7 +5563,7 @@ window.addEventListener('keyup',function(e){
       scale=Math.max(.34,Math.min(.74,scale));
       const cropW=Math.min(DESIGN_W,lcdPxW/scale), cropH=Math.min(DESIGN_H,lcdPxH/scale);
       const playerDesignX=(typeof cssNumber==='function'?cssNumber('--playerX',150):150)+((typeof player!=='undefined'&&player&&Number(player.x))||0);
-      const cropLeft=Math.max(0,Math.min(DESIGN_W-cropW,playerDesignX-185));
+      var cropLeft = Math.max(0, Math.min(GAME_W - cropW, 12));
       const cropTop=Math.max(0,Math.min(DESIGN_H-cropH,DESIGN_H-cropH-46));
       const cropCenterX=cropLeft+cropW/2, cropCenterY=cropTop+cropH/2;
       const cx=lcdCenterX-((cropCenterX-(DESIGN_W/2))*scale);
@@ -6101,7 +6101,7 @@ if(openBtn){
     if(action==='startTeamEmbedded'){ startEmbeddedTamaGame('team'); return; }
     if(action==='expandEmbedded'){ expandEmbeddedTamaGame(); return; }
     if(action==='stopEmbedded'){ stopEmbeddedTamaGame(); return; }
-    if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){ tapEmbeddedControl(action); return; }
+        if(action === 'moveLeft' || action === 'moveLeftStart'){       try{         keys.left = true;         keys.right = false;         if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true);       }catch(e){}       return;     }      if(action === 'moveRight' || action === 'moveRightStart'){       try{         keys.right = true;         keys.left = false;         if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true);       }catch(e){}       return;     }      if(action === 'moveStop'){       try{         keys.left = false;         keys.right = false;         if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(false);       }catch(e){}       return;     }      if(action === 'jump' || action === 'jumpOnly' || action === 'selectOrJump'){       try{         if(typeof jump === 'function') jump();       }catch(e){}       return;     }
     body.classList.remove('tamagotchiLanding','tamaGameEmbedded','tamaLiteRender33');
     releaseGame();
     if(action==='startSolo'||action==='startPlatform'){ try{ if(typeof window.closePetbotFull==='function') window.closePetbotFull(); }catch(e){} startSoloQuest(); return; }
@@ -6717,7 +6717,7 @@ function showPetbot(){
       if(typeof cssNumber==='function') playerDesign=cssNumber('--playerX',150);
       if(typeof player!=='undefined' && player && Number.isFinite(Number(player.x))) playerDesign+=Number(player.x);
     }catch(e){}
-    var cropLeft=Math.max(0, Math.min(GAME_W-cropW, playerDesign-255));
+    var cropLeft = Math.max(0, Math.min(GAME_W - cropW, 12));
     var cropTop=Math.max(0, Math.min(GAME_H-cropH, GAME_H-cropH-38));
     game.style.setProperty('position','absolute','important');
     game.style.setProperty('left','0px','important');
@@ -6737,7 +6737,7 @@ function showPetbot(){
   window.waaPolishTamagotchiLCD=fitTamaPolish;
   window.addEventListener('load',function(){ [250,600,1000,1600].forEach(function(ms){ setTimeout(fitTamaPolish,ms); }); });
   window.addEventListener('resize',function(){ setTimeout(fitTamaPolish,80); });
-  setInterval(fitTamaPolish,800);
+  // Disabled because this old fitter fights the final Tamagotchi router. // setInterval(fitTamaPolish,800);
 })();
 </script>
 
