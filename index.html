@@ -7142,6 +7142,66 @@ This is the only final controller. Do not add another Stage controller under it.
   window.addEventListener('pageshow',function(){ setTimeout(function(){ if(!modeFromBody()) boot(); },80); });
 })();
 </script>
+<script id="ctw-route-debug">
+(function(){
+  function makeBox(){
+    let box = document.getElementById('ctwRouteDebug');
+    if(box) return box;
+
+    box = document.createElement('pre');
+    box.id = 'ctwRouteDebug';
+    box.style.cssText = `
+      position:fixed;
+      left:10px;
+      bottom:10px;
+      z-index:2147483647;
+      max-width:92vw;
+      max-height:35vh;
+      overflow:auto;
+      padding:10px;
+      border-radius:12px;
+      background:rgba(0,0,0,.82);
+      color:#00ff99;
+      font:12px/1.35 monospace;
+      white-space:pre-wrap;
+      pointer-events:none;
+    `;
+    document.body.appendChild(box);
+    return box;
+  }
+
+  function log(msg, data){
+    const box = makeBox();
+    const time = new Date().toLocaleTimeString();
+    const line =
+      `[${time}] ${msg}\n` +
+      `body: ${document.body.className}\n` +
+      (data ? `data: ${JSON.stringify(data)}\n` : '') +
+      `-----------------------------\n`;
+
+    box.textContent = line + box.textContent;
+    console.log('[CTW ROUTE DEBUG]', msg, data || '', document.body.className);
+  }
+
+  window.addEventListener('message', function(e){
+    const d = e.data || {};
+    if(String(d.type || '').includes('waa-petbot')){
+      log('PETBOT MESSAGE', d);
+    }
+  });
+
+  const obs = new MutationObserver(function(){
+    log('BODY CLASS CHANGED');
+  });
+
+  obs.observe(document.body, {
+    attributes:true,
+    attributeFilter:['class']
+  });
+
+  log('DEBUG STARTED');
+})();
+</script>
 
 </body>
 </html>
