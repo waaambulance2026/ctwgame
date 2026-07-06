@@ -7402,9 +7402,43 @@ Do not put level data or sprite links here.
     if(action==='expandEmbedded') { setExpanded({start:false}); tryNativeFullscreen(); return true; }
     if(action==='returnToQuest' || action==='resumeQuest') return returnToQuest(getQuestReturnMode());
     if(action==='stopEmbedded') return window.stopEmbeddedTamaGame();
-    if(['moveLeft','moveRight','moveLeftStart','moveRightStart','moveStop','jump','jumpOnly','selectOrJump'].includes(action)){
-      try{ if(typeof tapEmbeddedControl==='function') return tapEmbeddedControl(action); }catch(e){}
-    }
+if(action === 'moveLeft' || action === 'moveLeftStart'){
+  try{
+    keys.left = true;
+    keys.right = false;
+    if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true);
+  }catch(e){}
+  if(typeof scheduleFit === 'function') scheduleFit();
+  return true;
+}
+
+if(action === 'moveRight' || action === 'moveRightStart'){
+  try{
+    keys.right = true;
+    keys.left = false;
+    if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(true);
+  }catch(e){}
+  if(typeof scheduleFit === 'function') scheduleFit();
+  return true;
+}
+
+if(action === 'moveStop'){
+  try{
+    keys.left = false;
+    keys.right = false;
+    if(typeof stage27SetMovingClass === 'function') stage27SetMovingClass(false);
+  }catch(e){}
+  if(typeof scheduleFit === 'function') scheduleFit();
+  return true;
+}
+
+if(action === 'jump' || action === 'jumpOnly' || action === 'selectOrJump'){
+  try{
+    if(typeof jump === 'function') jump();
+  }catch(e){}
+  if(typeof scheduleFit === 'function') scheduleFit();
+  return true;
+}
     if(previousAction) return previousAction(action);
   };
 
@@ -7451,63 +7485,5 @@ Do not put level data or sprite links here.
     },ms);
   });
 })();
-</script>
-<script id="fix-blue-static-tamagotchi-after-fullscreen-exit">
-(function(){
-  function hideOldBlueTamaStart(){
-    try{
-      document.body.classList.remove(
-        'waaTamaStartMode',
-        'tamagotchiLanding'
-      );
-    }catch(e){}
-
-    const oldOverlay = document.getElementById('waaTamaStartOverlay');
-    if(oldOverlay){
-      oldOverlay.style.setProperty('display','none','important');
-      oldOverlay.style.setProperty('visibility','hidden','important');
-      oldOverlay.style.setProperty('pointer-events','none','important');
-    }
-
-    const oldBtn = document.getElementById('waaTamaFullBtn20260702c');
-    if(oldBtn){
-      oldBtn.style.setProperty('display','none','important');
-      oldBtn.style.setProperty('visibility','hidden','important');
-      oldBtn.style.setProperty('pointer-events','none','important');
-    }
-  }
-
-  window.addEventListener('fullscreenchange', function(){
-    if(document.fullscreenElement) return;
-
-    const oldOverlay = document.getElementById('waaTamaStartOverlay');
-    const oldOverlayVisible =
-      oldOverlay && getComputedStyle(oldOverlay).display !== 'none';
-
-    if(document.body.classList.contains('waaTamaStartMode') || oldOverlayVisible){
-      hideOldBlueTamaStart();
-
-      setTimeout(function(){
-        try{
-          if(typeof window.openPetbotFull === 'function'){
-            window.openPetbotFull();
-          }
-        }catch(e){}
-      }, 60);
-    }
-  }, true);
-
-  setTimeout(function(){
-    if(document.body.classList.contains('waaTamaStartMode')){
-      hideOldBlueTamaStart();
-      try{
-        if(typeof window.openPetbotFull === 'function'){
-          window.openPetbotFull();
-        }
-      }catch(e){}
-    }
-  }, 250);
-})();
-</script>
 </body>
 </html>
