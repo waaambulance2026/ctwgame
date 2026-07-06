@@ -7141,67 +7141,80 @@ This is the only final controller. Do not add another Stage controller under it.
   else boot();
   window.addEventListener('pageshow',function(){ setTimeout(function(){ if(!modeFromBody()) boot(); },80); });
 })();
-</script>
-<script id="ctw-route-debug">
+<script id="ctw-route-debug-clean">
 (function(){
-  function makeBox(){
-    let box = document.getElementById('ctwRouteDebug');
-    if(box) return box;
+  function box(){
+    let b = document.getElementById('ctwRouteDebug');
+    if(b) return b;
 
-    box = document.createElement('pre');
-    box.id = 'ctwRouteDebug';
-    box.style.cssText = `
+    b = document.createElement('pre');
+    b.id = 'ctwRouteDebug';
+    b.style.cssText = `
       position:fixed;
       left:10px;
       bottom:10px;
       z-index:2147483647;
-      max-width:92vw;
-      max-height:35vh;
+      width:calc(100vw - 20px);
+      max-height:38vh;
       overflow:auto;
       padding:10px;
       border-radius:12px;
-      background:rgba(0,0,0,.82);
+      background:rgba(0,0,0,.86);
       color:#00ff99;
-      font:12px/1.35 monospace;
+      font:13px/1.35 monospace;
       white-space:pre-wrap;
       pointer-events:none;
     `;
-    document.body.appendChild(box);
-    return box;
+    document.body.appendChild(b);
+    return b;
   }
 
-  function log(msg, data){
-    const box = makeBox();
+  function log(title, data){
+    const b = box();
     const time = new Date().toLocaleTimeString();
+
+    const game = document.getElementById('game');
+    const petbotDock = document.getElementById('petbotDock');
+    const petbotFrame = document.getElementById('petbotDockFrame');
+
     const line =
-      `[${time}] ${msg}\n` +
-      `body: ${document.body.className}\n` +
-      (data ? `data: ${JSON.stringify(data)}\n` : '') +
+      `[${time}] ${title}\n` +
+      `body classes: ${document.body.className || '(none)'}\n` +
+      `#game display: ${game ? getComputedStyle(game).display : 'missing'}\n` +
+      `#game visibility: ${game ? getComputedStyle(game).visibility : 'missing'}\n` +
+      `#game z-index: ${game ? getComputedStyle(game).zIndex : 'missing'}\n` +
+      `#petbotDock display: ${petbotDock ? getComputedStyle(petbotDock).display : 'missing'}\n` +
+      `#petbotFrame display: ${petbotFrame ? getComputedStyle(petbotFrame).display : 'missing'}\n` +
+      (data ? `message: ${JSON.stringify(data)}\n` : '') +
       `-----------------------------\n`;
 
-    box.textContent = line + box.textContent;
-    console.log('[CTW ROUTE DEBUG]', msg, data || '', document.body.className);
+    b.textContent = line + b.textContent;
+    console.log('[CTW ROUTE DEBUG]', title, data || '', document.body.className);
   }
+
+  window.ctwRouteDebugLog = log;
 
   window.addEventListener('message', function(e){
     const d = e.data || {};
-    if(String(d.type || '').includes('waa-petbot')){
-      log('PETBOT MESSAGE', d);
+    const type = String(d.type || '');
+    const action = String(d.action || '');
+
+    if(type === 'waa-petbot-state') return;
+
+    if(type.includes('waa-petbot') || action.includes('Embedded') || action.includes('Quest')){
+      log('IMPORTANT MESSAGE FROM PETBOT', d);
     }
   });
 
-  const obs = new MutationObserver(function(){
+  new MutationObserver(function(){
     log('BODY CLASS CHANGED');
-  });
-
-  obs.observe(document.body, {
+  }).observe(document.body, {
     attributes:true,
     attributeFilter:['class']
   });
 
-  log('DEBUG STARTED');
+  log('DEBUG READY');
 })();
 </script>
-
 </body>
 </html>
