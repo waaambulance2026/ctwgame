@@ -1945,6 +1945,15 @@ Do NOT put level data here.Do NOT put sprite image links here.Do NOT put JavaScr
       display: block;
     }
 
+    .petbotDockMiniLcd .miniPet .miniPetArt {
+      display: block;
+      width: 100%;
+      height: 100%;
+      background-position: center;
+      background-size: contain;
+      background-repeat: no-repeat;
+    }
+
     .petbotDockMiniLcd .miniPet span {
       font-size: 18px;
       line-height: 1;
@@ -4442,7 +4451,17 @@ function updateMiniTamagotchiDock(){
   title.textContent=name.length>10 ? name.slice(0,9)+'…' : name;
   const img=currentPetImage || (p && (p.url || p.image_url || p.cloudinary_image_url)) || '';
   if(img){
-    pet.innerHTML='<img src="'+String(img).replace(/"/g,'&quot;')+'" alt="">';
+    pet.innerHTML='';
+    const art=document.createElement('span');
+    art.className='miniPetArt';
+    art.style.display='block';
+    art.style.width='100%';
+    art.style.height='100%';
+    art.style.backgroundPosition='center';
+    art.style.backgroundSize='contain';
+    art.style.backgroundRepeat='no-repeat';
+    art.style.backgroundImage='url("'+String(img).replace(/"/g,'%22')+'")';
+    pet.appendChild(art);
   } else {
     pet.innerHTML='<span>♡</span>';
   }
@@ -5774,15 +5793,9 @@ This router owns:
   }
 
   function tryNativeFullscreen(){
-    try{
-      if(d.fullscreenElement) return;
-      const el = d.documentElement;
-      const fn = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
-      if(fn){
-        const result = fn.call(el);
-        if(result && result.catch) result.catch(function(){});
-      }
-    }catch(e){}
+    // CSS fullscreen only. Do not call browser requestFullscreen(),
+    // because that was fighting Tamagotchi mode and trapping the layout.
+    return false;
   }
 
   function exitNativeFullscreen(){
@@ -6051,7 +6064,7 @@ This router owns:
     return false;
   }
 
-  window.openBuilding = openBuilding = function(o){
+  window.openBuilding = function(o){
     if(openBuildingFromQuest(o)) return true;
     return safeCall(helpers.oldOpenBuilding, o);
   };
@@ -6073,22 +6086,22 @@ This router owns:
     return true;
   }
 
-  window.openPetbotFull = openPetbotFull = function(){
+  window.openPetbotFull = function(){
     if(isExpanded()){
       return window.stage37ReturnExpandedQuestToTamagotchi();
     }
     return setPetbotMenu();
   };
 
-  window.closePetbotFull = closePetbotFull = function(){
+  window.closePetbotFull = function(){
     return closeRouterMode();
   };
 
-  window.startEmbeddedTamaGame = startEmbeddedTamaGame = function(kind){
+  window.startEmbeddedTamaGame = function(kind){
     return setEmbedded(kind || 'solo', {start:true});
   };
 
-  window.stopEmbeddedTamaGame = stopEmbeddedTamaGame = function(){
+  window.stopEmbeddedTamaGame = function(){
     currentMode = '';
     clearForMode();
     releaseGame();
@@ -6098,7 +6111,7 @@ This router owns:
     return true;
   };
 
-  window.expandEmbeddedTamaGame = expandEmbeddedTamaGame = function(){
+  window.expandEmbeddedTamaGame = function(){
     setExpanded({start:false});
     tryNativeFullscreen();
     showCaption('Full screen quest: Enter opens buildings. Space jumps.', 1700);
@@ -6126,11 +6139,11 @@ This router owns:
     return setPetbotMenu();
   };
 
-  window.fitEmbeddedTamaGame = fitEmbeddedTamaGame = function(){
+  window.fitEmbeddedTamaGame = function(){
     return fitEmbedded();
   };
 
-  window.fitGameToScreen = fitGameToScreen = function(){
+  window.fitGameToScreen = function(){
     if(isEmbedded()) return fitEmbedded();
     if(isExpanded()) return fitExpanded();
     return safeCall(helpers.fitGameToScreen);
@@ -6140,7 +6153,7 @@ This router owns:
     if(isEmbedded()) fitEmbedded();
   };
 
-  window.handlePetbotGameAction = handlePetbotGameAction = function(action){
+  window.handlePetbotGameAction = function(action){
     if(action === 'startSoloEmbedded' || action === 'startPlatformEmbedded'){
       return setEmbedded('solo', {start:true});
     }

@@ -698,10 +698,15 @@ function renderPetActions(){
   const idx=clamp(state.petActionIndex||0,0,PET_ACTIONS.length-1);
   return top('ACTIONS',petName)+`<div class="body petActionsBody"><div class="petActionGrid bigActions">${PET_ACTIONS.map((a,i)=>`<div class="petAction ${i===idx?'active':''}" data-pet-action-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('')}</div></div>`;
 }
+function getPetArtUrl(p){
+  if(!p)return'';
+  return cleanImageUrl(p.url||p.image_url||p.cloudinary_image_url||p.pet_image||p.sprite_url||itemImage(p.raw||{}));
+}
 function petImage(p){
-  if(p.url){
+  const url=getPetArtUrl(p);
+  if(url){
     const size=clamp(n(p.size,72),54,88); const x=clamp(n(p.x,50),18,82); const y=clamp(n(p.y,48),20,72); const flip=p.flip===-1?' scaleX(-1)':'';
-    return `<div class="petImg" style="background-image:url('${esc(p.url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
+    return `<div class="petImg" style="background-image:url('${esc(url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
   }
   return `<div class="petEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
 }
@@ -1035,7 +1040,7 @@ function submitPassword(){
   if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
   startPlayer(p);
 }
-function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v4_'+String(userId||'none');}
+function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v5_fixed_images_'+String(userId||'none');}
 function readCachedPets(userId){
   try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>60*60*1000)return null;return pack.pets;}catch(e){return null;}
 }
@@ -1134,7 +1139,7 @@ async function enrichPets(pets,userId){
 }
 function applyVisual(p,row){
   const url=cleanImageUrl(pick(row,['image_url','url','cloudinary_image_url','image','pet_image','sprite_url','public_url','cloudinary_public_id'],''));
-  if(url)p.url=url;
+  if(url){p.url=url;p.image_url=url;p.cloudinary_image_url=url;}
   const w=pick(row,['overlay_width','width','size','pet_size','display_width','w'],''); if(w)p.size=screenSize(w,p.size);
   const x=pick(row,['overlay_x','x','x_pos','screen_x','display_x'],''); if(x!==''&&x!=null)p.x=screenPos(x,p.x);
   const y=pick(row,['overlay_y','y','y_pos','screen_y','display_y'],''); if(y!==''&&y!=null)p.y=screenPos(y,p.y);
@@ -1313,7 +1318,7 @@ function getCachedPanelItems(kind){
 }
 function preloadOne(url){try{url=cleanImageUrl(url);if(!url)return;const img=new Image();img.decoding='async';img.loading='eager';img.src=url;}catch(e){}}
 function preloadPanelImages(items){try{(items||[]).slice(0,30).forEach(it=>preloadOne(itemImage(it)));}catch(e){}}
-function preloadPetImages(pets){try{(pets||state.pets||[]).slice(0,30).forEach(p=>preloadOne(p.url||p.image_url||itemImage(p.raw||{})));}catch(e){}}
+function preloadPetImages(pets){try{(pets||state.pets||[]).slice(0,30).forEach(p=>preloadOne(getPetArtUrl(p)));}catch(e){}}
 function petVisualKey(p){return norm(p&&((p.code||'')+'|'+(p.userPetId||'')+'|'+(p.name||'')+'|'+(p.pet||'')));}
 function preservePetVisuals(freshPets){
   const old=state.pets||[];
@@ -1670,7 +1675,8 @@ function requestLocalFullscreen(){
 }
 function notifyParent(){
   const p=currentPet(); if(!p)return;
-  sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:p.url||'',image_url:p.url||'',level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
+  const artUrl=getPetArtUrl(p);
+  sendParent('waa-petbot-state',{mode:state.screen,message:state.message,pet:{name:p.name||'',code:p.code||'',pet:p.pet||'',type:p.pet||'',category:p.category||'',url:artUrl,image_url:artUrl,cloudinary_image_url:artUrl,level:p.level||1,xp:p.xp||0,hunger:p.hunger||0,happy:p.happiness||0,happiness:p.happiness||0,energy:p.energy||0,health:p.health||0,size:p.size||58,x:p.x||50,y:p.y||52}});
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
