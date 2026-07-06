@@ -6400,22 +6400,65 @@ This router owns:
     scheduleFit();
   });
 
+  function bootTamagotchiMenu(reason){
+    try{ wireControls(); }catch(e){}
+
+    // If a quest is already running, never force the menu over it.
+    if(isQuestMode()){
+      scheduleFit();
+      return true;
+    }
+
+    // If the clean router already owns the menu, just keep it fitted/clickable.
+    if(isMenu()){
+      showDock();
+      scheduleFit();
+      return true;
+    }
+
+    // Normal first page load: open the real PetBot/Tamagotchi iframe menu.
+    return setPetbotMenu({bootReason:reason || 'boot'});
+  }
+
+  window.ctwBootTamagotchiMenu = bootTamagotchiMenu;
+
   wireControls();
 
-  setTimeout(function(){
-    wireControls();
-    if(!isQuestMode()){
-      setPetbotMenu();
-    }
-  }, 320);
+  // Boot after DOM/load and retry a few times because older game code also runs during startup.
+  function scheduleBoots(){
+    [50, 320, 900, 1700, 2900, 4200].forEach(function(ms){
+      setTimeout(function(){
+        bootTamagotchiMenu('startup-' + ms);
+      }, ms);
+    });
+  }
 
-  [900, 1700, 2900].forEach(function(ms){
-    setTimeout(function(){
-      wireControls();
-      if(isEmbedded()) fitEmbedded();
-      else if(isExpanded()) fitExpanded();
-    }, ms);
-  });
+  if(d.readyState === 'loading'){
+    d.addEventListener('DOMContentLoaded', scheduleBoots, {once:true});
+  }else{
+    scheduleBoots();
+  }
+
+  window.addEventListener('load', function(){
+    [80, 450, 1200].forEach(function(ms){
+      setTimeout(function(){
+        bootTamagotchiMenu('window-load-' + ms);
+      }, ms);
+    });
+  }, {once:true});
+})();
+</script>
+
+<script id="ctw-router-emergency-boot-guard">
+(function(){
+  function boot(){
+    try{
+      if(document.body.classList.contains('ctwRouterEmbedded') || document.body.classList.contains('ctwRouterExpanded')) return;
+      if(typeof window.ctwBootTamagotchiMenu === 'function') return window.ctwBootTamagotchiMenu('external-guard');
+      if(typeof window.openPetbotFull === 'function') return window.openPetbotFull();
+    }catch(e){}
+  }
+  [500, 1500, 3000, 5000].forEach(function(ms){ setTimeout(boot, ms); });
 })();
 </script>
 
