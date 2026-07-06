@@ -7432,12 +7432,52 @@ if(action === 'moveStop'){
   return true;
 }
 
-if(action === 'jump' || action === 'jumpOnly' || action === 'selectOrJump'){
+if(action === 'jumpOnly'){
   try{
     if(typeof jump === 'function') jump();
   }catch(e){}
-  if(typeof scheduleFit === 'function') scheduleFit();
-  return true;
+  return;
+}
+
+if(action === 'jump' || action === 'selectOrJump'){
+  let opened = false;
+
+  // Select / pacifier / Enter should try buildings and signs first.
+  try{
+    if(typeof window.selectNearestWorldStop === 'function'){
+      opened = !!window.selectNearestWorldStop({
+        embedded: document.body.classList.contains('tamaGameEmbedded'),
+        expanded: document.body.classList.contains('gameExpandedFromTama')
+      });
+    }
+  }catch(e){}
+
+  // Backup: use the normal nearby building checker.
+  if(!opened){
+    try{
+      if(typeof window.enterNearbyBuilding === 'function'){
+        opened = !!window.enterNearbyBuilding();
+      }
+    }catch(e){}
+  }
+
+  // Backup: signs / task blocks.
+  if(!opened){
+    try{
+      if(typeof window.enterNearbyInteractable === 'function'){
+        opened = !!window.enterNearbyInteractable();
+      }
+    }catch(e){}
+  }
+
+  // Only jump if there was nothing to open.
+  if(!opened){
+    try{
+      if(typeof jump === 'function') jump();
+    }catch(e){}
+  }
+
+  return;
 }
     if(previousAction) return previousAction(action);
   };
