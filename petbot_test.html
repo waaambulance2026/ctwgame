@@ -1706,12 +1706,9 @@ $('lcd').addEventListener('pointerdown',e=>{touchStart={x:e.clientX,y:e.clientY,
 $('lcd').addEventListener('pointerup',e=>{if(!touchStart||state.screen!=='pet')return;const dx=e.clientX-touchStart.x,dy=e.clientY-touchStart.y;if(Math.abs(dx)>34&&Math.abs(dx)>Math.abs(dy)){dx<0?handleNext():handlePrev();}touchStart=null;});
 document.addEventListener('keydown',e=>{
   if(state.screen==='questGame'){
-    const code=e.code||'';
-    if(code==='ArrowLeft'||code==='KeyA'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveLeftStart'});return;}
-    if(code==='ArrowRight'||code==='KeyD'){e.preventDefault();sendParent('waa-petbot-game-action',{action:'moveRightStart'});return;}
-    if(code==='Space'||code==='ArrowUp'||code==='KeyW'){if(e.target&&e.target.tagName==='INPUT')return;e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'jumpOnly'});return;}
-    if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){e.preventDefault();if(!e.repeat)sendParent('waa-petbot-game-action',{action:'selectOrJump'});return;}
-    if(code==='Escape'){e.preventDefault();handleBack();return;}
+    // Stage 34 owns quest keyboard controls. Keep this older general
+    // menu listener out of quest mode so one key press sends one action.
+    return;
   }
   if(e.key==='ArrowLeft')handlePrev();else if(e.key==='ArrowRight')handleNext();else if(e.key==='Enter'||e.key===' '){if(e.target&&e.target.tagName==='INPUT'&&e.key===' ')return;e.preventDefault();handleSelect();}else if(e.key==='Escape')handleBack();else if(e.key==='~'||(e.ctrlKey&&e.key.toLowerCase()==='d')){const d=$('debug');d.style.display=d.style.display==='block'?'none':'block';d.textContent=JSON.stringify({state},null,2);}
 });
