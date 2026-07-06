@@ -1663,8 +1663,19 @@ function handleBack(){
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
 function requestLocalFullscreen(){
-  // CSS fullscreen only. The parent index.html owns the real display mode.
+  // First Tamagotchi mode must be able to enter REAL browser fullscreen.
+  // CSS fullscreen is only the fallback if the browser blocks fullscreen from the iframe.
   try{document.documentElement.classList.add('cssFullscreen');document.body.classList.add('cssFullscreen');}catch(e){}
+  try{
+    const el=document.documentElement;
+    const doc=document;
+    const already=doc.fullscreenElement||doc.webkitFullscreenElement||doc.msFullscreenElement;
+    const request=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+    if(!already && request){
+      const r=request.call(el);
+      if(r&&r.catch) r.catch(()=>{});
+    }
+  }catch(e){}
 }
 
 function notifyParent(){

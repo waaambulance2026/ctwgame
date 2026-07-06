@@ -5124,8 +5124,15 @@ quest inside Tamagotchi, and quest fullscreen.
     background:#101022!important;
   }
 
+
+  body.ctwRouterTamaFull #ctwTamaGameMask,
+  body.ctwRouterTamaFull #tamaGameMask33{
+    display:none!important;
+  }
   body.ctwRouterTamaFull #game{
+    display:block!important;
     visibility:hidden!important;
+    opacity:0!important;
     pointer-events:none!important;
   }
 
@@ -5308,7 +5315,7 @@ quest inside Tamagotchi, and quest fullscreen.
   const root=d.documentElement;
   const DESIGN_W=1920;
   const DESIGN_H=1080;
-  const PETBOT_URL='petbot_test.html?v=20260706-clean-router&embed=1&launch=1&choose=1';
+  const PETBOT_URL='petbot_test.html?v=20260706-real-fullscreen-v3&embed=1&launch=1&choose=1';
   const NEW_CLASSES=['ctwRouterSmall','ctwRouterTamaFull','ctwRouterQuestEmbedded','ctwRouterQuestFull','ctwRouterLock'];
   const OLD_CLASSES=['waaTamaStartMode','tamagotchiLanding','petbotOpen','tamaGameEmbedded','gameExpandedFromTama','tamaLiteRender33','waaFs40Petbot','waaFs40Embedded','waaFs40Expanded','waaFs40Lock','questPlaying','cssFullscreen'];
   const GAME_PROPS=['display','visibility','opacity','position','left','top','right','bottom','inset','width','height','min-width','min-height','max-width','max-height','z-index','transform','transform-origin','pointer-events','clip-path','-webkit-clip-path','border-radius','box-shadow','filter'];
@@ -5471,6 +5478,28 @@ quest inside Tamagotchi, and quest fullscreen.
     delays=delays||[40,140,360,760,1200];
     delays.forEach(ms=>setTimeout(()=>{try{frame.contentWindow&&frame.contentWindow.postMessage(msg,location.origin);}catch(e){}},ms));
   }
+  function requestBrowserFullscreen(){
+    // Real browser fullscreen for the FIRST Tamagotchi/PetBot mode.
+    // This may only work from a direct tap/click, so the PetBot iframe also tries it.
+    try{
+      const el=dock||d.documentElement;
+      const already=d.fullscreenElement||d.webkitFullscreenElement||d.msFullscreenElement;
+      const request=el.requestFullscreen||el.webkitRequestFullscreen||el.msRequestFullscreen;
+      if(!already && request){
+        const r=request.call(el);
+        if(r&&r.catch) r.catch(()=>{});
+      }
+    }catch(e){}
+  }
+  function exitBrowserFullscreen(){
+    try{
+      const exit=d.exitFullscreen||d.webkitExitFullscreen||d.msExitFullscreen;
+      if((d.fullscreenElement||d.webkitFullscreenElement||d.msFullscreenElement) && exit){
+        const r=exit.call(d);
+        if(r&&r.catch) r.catch(()=>{});
+      }
+    }catch(e){}
+  }
   function postHome(){postToPetbot({type:'waa-parent-show-petbot-home',t:Date.now()},[50,180,420,900]);}
   function postQuestActive(){postToPetbot({type:'waa-parent-quest-active',mode:'Tutorial Town',embedded:true,t:Date.now()},[30,120,280,620,1000]);}
   function startQuest(kind){
@@ -5631,6 +5660,7 @@ quest inside Tamagotchi, and quest fullscreen.
   window.openPetbotFull=function(){return enterPetbotFull({home:true});};
   window.closePetbotFull=function(){
     if(mode==='tamaFull' && (window.waaQuestReturnMode || (function(){try{return sessionStorage.getItem('waaQuestReturnMode');}catch(e){return ''}})())) return returnToQuest();
+    exitBrowserFullscreen();
     enterPetbotSmall();
     return true;
   };
@@ -5669,7 +5699,8 @@ quest inside Tamagotchi, and quest fullscreen.
     cloneButton('petbotExpandBtn',function(){
       if(mode==='questEmbedded') return enterQuestFull({start:false});
       if(mode==='tamaFull' && (window.waaQuestReturnMode || (function(){try{return sessionStorage.getItem('waaQuestReturnMode');}catch(e){return ''}})())) return returnToQuest();
-      if(mode==='small') return enterPetbotFull({home:true});
+      if(mode==='small'){ requestBrowserFullscreen(); return enterPetbotFull({home:true}); }
+      exitBrowserFullscreen();
       return enterPetbotSmall();
     });
     cloneButton('petbotHideBtn',function(){
@@ -5689,7 +5720,7 @@ quest inside Tamagotchi, and quest fullscreen.
     if(!msg || !msg.type) return;
     if(msg.type==='waa-petbot-state') return;
     if(msg.type==='waa-petbot-game-action'){e.stopImmediatePropagation(); handleAction(msg.action); return;}
-    if(msg.type==='waa-petbot-toggle-fullscreen'){e.stopImmediatePropagation(); enterPetbotFull({home:true}); return;}
+    if(msg.type==='waa-petbot-toggle-fullscreen'){e.stopImmediatePropagation(); requestBrowserFullscreen(); enterPetbotFull({home:true}); return;}
     if(msg.type==='waa-petbot-close'){e.stopImmediatePropagation(); window.closePetbotFull(); return;}
     if(msg.type==='waa-parent-return-to-quest'){e.stopImmediatePropagation(); returnToQuest(); return;}
   },true);
