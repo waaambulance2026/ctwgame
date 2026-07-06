@@ -1765,16 +1765,33 @@ const stage29PendingTimer=setInterval(()=>{
 },250);
 
 // Stage 21: when the parent returns from expanded platform mode, do not leave the LCD transparent/blank.
-window.addEventListener('message',e=>{
-  if(e.origin!==location.origin)return;
-  const d=e.data||{};
-  if(d.type==='waa-parent-return-to-tamagotchi'){
-    try{document.documentElement.classList.remove('cssFullscreen','questPlaying');document.body.classList.remove('cssFullscreen','questPlaying');}catch(_e){}
-    if(state.screen==='questGame'||state.screen==='games'){
-      state.screen=currentPet()?'petHome':'menu';
-      state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
-      render();
-    }
+window.addEventListener('message', e => {
+  if (e.origin !== location.origin) return;
+
+  const d = e.data || {};
+
+  if (d.type === 'waa-parent-return-to-tamagotchi') {
+    try {
+      document.documentElement.classList.remove('cssFullscreen', 'questPlaying');
+      document.body.classList.remove('cssFullscreen', 'questPlaying');
+    } catch (_e) {}
+
+    // IMPORTANT:
+    // Returning from fullscreen quest should keep the PetBot LCD in quest controls.
+    // Do NOT reset to petHome here.
+    state.screen = 'questGame';
+    state.quest = {
+      ...(state.quest || {}),
+      mode: (state.quest && state.quest.mode) || 'Solo Quest',
+      x: (state.quest && state.quest.x) || 42,
+      jump: false,
+      score: (state.quest && state.quest.score) || 0,
+      started: true,
+      embedded: true
+    };
+
+    render();
+    return;
   }
 });
 
