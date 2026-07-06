@@ -7494,54 +7494,68 @@ return true;
     if(previousAction) return previousAction(action);
   };
 
-  window.addEventListener('message',function(e){
-if(
-  msg.type === 'waa-petbot-game-action' ||
-  msg.type === 'waa-petbot-toggle-fullscreen' ||
-  msg.type === 'waa-petbot-close' ||
-  msg.type === 'waa-parent-return-to-quest'
-){
-  try{
-    e.preventDefault();
-    e.stopPropagation();
-    if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-  }catch(err){}
-}
+  window.addEventListener('message', function(e){
+    if(e.origin !== location.origin) return;
 
-if(msg.type === 'waa-petbot-game-action'){
-  return window.handlePetbotGameAction(msg.action);
-}
+    const msg = e.data || {};
+    if(!msg || !msg.type) return;
 
-if(msg.type === 'waa-petbot-toggle-fullscreen'){
-  return setPetbotMenu();
-}
+    const ownsMessage =
+      msg.type === 'waa-petbot-game-action' ||
+      msg.type === 'waa-petbot-toggle-fullscreen' ||
+      msg.type === 'waa-petbot-close' ||
+      msg.type === 'waa-parent-return-to-quest';
 
-if(msg.type === 'waa-petbot-close'){
-  return window.closePetbotFull();
-}
+    if(!ownsMessage) return;
 
-if(msg.type === 'waa-parent-return-to-quest'){
-  return returnToQuest(getQuestReturnMode());
-}
-  },true);
+    try{
+      e.preventDefault();
+      e.stopPropagation();
+      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+    }catch(err){}
 
-  window.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){
+    if(msg.type === 'waa-petbot-game-action'){
+      return window.handlePetbotGameAction(msg.action);
+    }
+
+    if(msg.type === 'waa-petbot-toggle-fullscreen'){
+      return setPetbotMenu();
+    }
+
+    if(msg.type === 'waa-petbot-close'){
+      return window.closePetbotFull();
+    }
+
+    if(msg.type === 'waa-parent-return-to-quest'){
+      return returnToQuest(getQuestReturnMode());
+    }
+  }, true);
+
+  window.addEventListener('keydown', function(e){
+    if(e.key === 'Escape'){
       if(isExpanded()){
-        e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
         window.stage37ReturnExpandedQuestToTamagotchi();
         return;
       }
-      if(currentMode==='petbot' && (window.waaQuestReturnMode || sessionStorage.getItem('waaQuestReturnMode'))){
-        e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation)e.stopImmediatePropagation();
+
+      if(currentMode === 'petbot' && (window.waaQuestReturnMode || sessionStorage.getItem('waaQuestReturnMode'))){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
         returnToQuest(getQuestReturnMode());
       }
     }
-  },true);
+  }, true);
 
-  window.addEventListener('resize',scheduleFit,{passive:true});
-  window.addEventListener('orientationchange',function(){ setTimeout(scheduleFit,120); },{passive:true});
-  window.addEventListener('fullscreenchange',scheduleFit);
+  window.addEventListener('resize', scheduleFit, {passive:true});
+  window.addEventListener('orientationchange', function(){
+    setTimeout(scheduleFit, 120);
+  }, {passive:true});
+
+  window.addEventListener('fullscreenchange', scheduleFit);
 
   wireControls();
 
@@ -7549,13 +7563,18 @@ if(msg.type === 'waa-parent-return-to-quest'){
   setTimeout(function(){
     wireControls();
     if(!isQuestMode()) setPetbotMenu();
-  },320);
-  [900,1700,2900].forEach(function(ms){
+  }, 320);
+
+  [900, 1700, 2900].forEach(function(ms){
     setTimeout(function(){
       wireControls();
-      if(isEmbedded()) fitEmbedded();
-      else if(isExpanded()) fitExpanded();
-    },ms);
+
+      if(isEmbedded()){
+        fitEmbedded();
+      }else if(isExpanded()){
+        fitExpanded();
+      }
+    }, ms);
   });
 })();
 </script>
