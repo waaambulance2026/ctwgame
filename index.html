@@ -5747,6 +5747,14 @@ This router owns:
     return isEmbedded() || isExpanded();
   }
 
+  function normalizeQuestAction(action){
+    action = String(action || '');
+    // STAGE 59: old pacifier/select code sometimes says "jump".
+    // In quest mode, that is the B button, so normalize it to the same route as Enter.
+    if(action === 'jump' || action === 'select' || action === 'confirm' || action === 'petbotSelect') return 'selectOrJump';
+    return action;
+  }
+
   function hasQuestReturn(){
     if(window.waaQuestReturnMode) return true;
     try{ if(sessionStorage.getItem('waaQuestReturnMode')) return true; }catch(e){}
@@ -6604,7 +6612,7 @@ This router owns:
       return true;
     }
 
-    if(action === 'jump' || action === 'selectOrJump'){
+    if(action === 'selectOrJump'){
       const opened = selectNearestStopFirst();
       if(!opened){
         doJump();
@@ -6752,12 +6760,14 @@ This router owns:
 
   window.handlePetbotGameAction = function(action, msg){
     msg = msg || {};
+    action = normalizeQuestAction(action);
 
-    if(action === 'selectOrJump' || action === 'jump'){
-      // STAGE 56/57: guard against one physical press being delivered twice by old/new
-      // controller layers. Movement keys are not throttled, only the select/open action.
+    if(action === 'selectOrJump'){
+      // STAGE 59: Enter and pacifier are one shared select route.
+      // This prevents the same physical press from opening a PetBot menu and then
+      // letting an older delayed handler run behind it.
       const now = Date.now();
-      if(now - lastSelectActionAt < 320) return true;
+      if(now - lastSelectActionAt < 380) return true;
       lastSelectActionAt = now;
     }
 
@@ -6992,12 +7002,40 @@ This router owns:
       }
     }
 
-    if(isExpanded() && (e.key === 'Enter' || e.code === 'NumpadEnter' || e.code === 'KeyE')){
-      e.preventDefault();
-      e.stopPropagation();
-      if(e.stopImmediatePropagation) e.stopImmediatePropagation();
-      window.handlePetbotGameAction('selectOrJump');
-      return;
+    if(isQuestMode()){
+      const code = e.code || '';
+
+      if(code === 'ArrowLeft' || code === 'KeyA'){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(!e.repeat) window.handlePetbotGameAction('moveLeftStart');
+        return;
+      }
+
+      if(code === 'ArrowRight' || code === 'KeyD'){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(!e.repeat) window.handlePetbotGameAction('moveRightStart');
+        return;
+      }
+
+      if(code === 'Space' || code === 'ArrowUp' || code === 'KeyW'){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(!e.repeat) window.handlePetbotGameAction('jumpOnly');
+        return;
+      }
+
+      if(code === 'Enter' || code === 'NumpadEnter' || code === 'KeyE'){
+        e.preventDefault();
+        e.stopPropagation();
+        if(e.stopImmediatePropagation) e.stopImmediatePropagation();
+        if(!e.repeat) window.handlePetbotGameAction('selectOrJump');
+        return;
+      }
     }
   }, true);
 

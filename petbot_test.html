@@ -665,6 +665,17 @@ const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
 let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let lastQuestSelectSentAt=0;
+function sendQuestSelectOrJump(source){
+  // STAGE 59: Enter and the pacifier must be the SAME quest button.
+  // Both use selectOrJump, and one physical press is allowed to send one message only.
+  if(state.screen!=='questGame')return false;
+  const now=Date.now();
+  if(now-Number(lastQuestSelectSentAt||0)<360)return true;
+  lastQuestSelectSentAt=now;
+  sendParent('waa-petbot-game-action',{action:'selectOrJump',source:source||'select'});
+  return true;
+}
 let lastParentRoute={sig:'',t:0};
 let lastVisibleParentOpen={sig:'',t:0};
 function shouldProcessVisibleOpen(screen, place, returnToQuest){
@@ -1792,8 +1803,7 @@ async function openPanelReload(kind){
   const oldMsg=state.panelActionMsg; const items=await cachedLoadPanelData(kind,true);state.panelItems=items;state.panelLoading=false;state.panelActionMsg=oldMsg||'';state.panelIndex=clamp(state.panelIndex||0,0,Math.max(0,items.length-1));render();
 }
 function questJump(){
-  if(state.screen!=='questGame')return;
-  sendParent('waa-petbot-game-action',{action:'selectOrJump'});
+  return sendQuestSelectOrJump('pacifier');
 }
 function handleBack(){
   if(state.screen==='password'){state.screen='login';state.password='';state.error='';render();return;}
@@ -1839,7 +1849,7 @@ function notifyParent(){
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
-$('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
+$('btnSelect').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(state.screen==='questGame')return sendQuestSelectOrJump('pacifier');handleSelect();},true);
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
   const stop=e=>{
@@ -2047,7 +2057,7 @@ window.addEventListener('message', e => {
     }
     if(code==='Enter'||code==='NumpadEnter'||code==='KeyE'){
       e.preventDefault(); e.stopPropagation(); e.stopImmediatePropagation();
-      if(!e.repeat) send('selectOrJump');
+      if(!e.repeat) sendQuestSelectOrJump('enter');
       return;
     }
     if(code==='Escape'){
