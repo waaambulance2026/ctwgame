@@ -2595,6 +2595,46 @@ and gives the LCD a cleaner game crop.
   }
 </style>
 
+
+
+<!-- STAGE 46: caption is a body overlay, not part of the scaled game canvas -->
+<style id="ctw-stage46-caption-refit-fix">
+  body.ctwRouterEmbedded > #tamaGameCaption.show,
+  body.petbotOpen.tamaGameEmbedded > #tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left, 50vw) + 8px)!important;
+    top:calc(var(--tama-lcd-top, 50dvh) + 8px)!important;
+    width:calc(var(--tama-lcd-w, 360px) - 16px)!important;
+    min-height:36px!important;
+    max-height:72px!important;
+    z-index:2147483647!important;
+    transform:none!important;
+    pointer-events:none!important;
+    padding:7px 9px!important;
+    border-radius:12px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(14px,1.45vw,19px)!important;
+    line-height:1.08!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    overflow:hidden!important;
+    box-shadow:0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+  body.ctwRouterExpanded > #tamaGameCaption.show,
+  body.gameExpandedFromTama > #tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    width:min(850px,88vw)!important;
+    z-index:2147483647!important;
+    transform:translateX(-50%)!important;
+    pointer-events:none!important;
+  }
+</style>
+
 </head>
 
 
@@ -4917,7 +4957,17 @@ fitGameToScreen();
 // PART 3 EXTRA: reliable building select, visible Tamagotchi quest text, and smoother moving state.
 function stage27EnsureCaption(){
   let cap=document.getElementById('tamaGameCaption');
-  if(!cap){cap=document.createElement('div');cap.id='tamaGameCaption';cap.className='tamaGameCaption';cap.setAttribute('aria-live','polite');document.body.appendChild(cap);}
+  if(!cap){
+    cap=document.createElement('div');
+    cap.id='tamaGameCaption';
+    cap.className='tamaGameCaption';
+    cap.setAttribute('aria-live','polite');
+  }
+  // STAGE 46: the game itself is moved into the tiny LCD mask during Tamagotchi quest mode.
+  // If the caption stays inside #game, it gets scaled/cropped with the quest and the text vanishes.
+  // Keep the caption as a direct body overlay so it can sit above both the Tamagotchi shell and full quest.
+  if(cap.parentNode!==document.body) document.body.appendChild(cap);
+  if(!cap.classList.contains('tamaGameCaption')) cap.classList.add('tamaGameCaption');
   return cap;
 }
 function stage45ForceCaptionStyle(cap){
@@ -5499,7 +5549,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-screen-stabilize-20260707&embed=1&launch=1&choose=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage46-caption-refit-20260707&embed=1&launch=1&choose=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5981,8 +6031,21 @@ This router owns:
   }
 
   function keepFitSoon(){
-    [60, 160, 320, 700, 1200, 1900, 2800, 4000, 6000].forEach(function(ms){
-      setTimeout(scheduleFit, ms);
+    // STAGE 46: returning from native fullscreen/browser back can resize Chrome in two steps.
+    // One normal resize event is not enough, which is why the Tamagotchi sometimes fixes only
+    // after minimise/maximise. Refit immediately, on animation frames, and after delayed viewport settling.
+    const run = function(){
+      try{
+        if(isEmbedded()) fitEmbedded();
+        else if(isExpanded()) fitExpanded();
+        else scheduleFit();
+      }catch(e){
+        scheduleFit();
+      }
+    };
+    try{ requestAnimationFrame(function(){ run(); requestAnimationFrame(run); }); }catch(e){}
+    [0, 30, 80, 160, 320, 520, 760, 1200, 1900, 2800, 4000, 6000].forEach(function(ms){
+      setTimeout(run, ms);
     });
   }
 
