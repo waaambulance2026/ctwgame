@@ -583,6 +583,32 @@ const PLAYER_LIST=[
   {key:'aly',label:'Aly',display:'Ashely with one L',userId:'1407957358683885670',password:'Alytok'},
   {key:'test',label:'Test',display:'Safe test mode',userId:'test',password:'',test:true}
 ];
+const SELECTED_PLAYER_KEY='ctw_tamagotchi_selected_player_v1';
+function saveSelectedPlayer(player){
+  try{
+    if(player && player.key) localStorage.setItem(SELECTED_PLAYER_KEY, JSON.stringify({key:player.key,t:Date.now()}));
+  }catch(e){}
+}
+function clearSelectedPlayer(){
+  try{localStorage.removeItem(SELECTED_PLAYER_KEY);}catch(e){}
+}
+function readSelectedPlayer(){
+  try{
+    const raw=localStorage.getItem(SELECTED_PLAYER_KEY);
+    if(!raw)return null;
+    const pack=JSON.parse(raw);
+    if(!pack || !pack.key)return null;
+    return PLAYER_LIST.find(p=>p.key===pack.key)||null;
+  }catch(e){return null;}
+}
+function restoreSelectedPlayer(){
+  const saved=readSelectedPlayer();
+  if(!saved)return false;
+  const idx=PLAYER_LIST.findIndex(p=>p.key===saved.key);
+  state.loginIndex=Math.max(0,idx);
+  startPlayer(saved);
+  return true;
+}
 const TEST_PETS=[
   {name:'Test Raven',pet:'raven',category:'birds',code:'test_raven_1',level:3,xp:240,hunger:80,happiness:70,energy:75,health:90,emoji:'🐦‍⬛'},
   {name:'Test Owl',pet:'owl',category:'birds',code:'test_owl_1',level:2,xp:120,hunger:90,happiness:75,energy:68,health:100,emoji:'🦉'},
@@ -1058,6 +1084,7 @@ function writeCachedPets(userId,pets){
   try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30)}));}catch(e){}
 }
 async function startPlayer(player){
+  saveSelectedPlayer(player);
   state.player={...player,password:undefined};state.pets=[];state.petIndex=0;state.petActionIndex=0;state.menuIndex=0;state.screen='loading';state.message='Loading '+player.label+' pets';render();
   try{
     if(player.test){
@@ -1491,6 +1518,7 @@ function activateMenu(){
   const item=MENU[state.menuIndex]||MENU[0];
   if(item.key==='pets'){state.screen='pet';state.petActionIndex=0;render();return;}
   if(item.key==='switchUser'){
+    clearSelectedPlayer();
     state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player',petActionIndex:0};
     render();return;
   }
@@ -2046,6 +2074,11 @@ window.addEventListener('message', e => {
         state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
         state.screen='petHome';
       }else{
+        const saved=readSelectedPlayer();
+        if(saved){
+          startPlayer(saved);
+          return;
+        }
         state.screen='login';
         state.player=null;
         state.pets=[];
@@ -2067,7 +2100,9 @@ window.addEventListener('message', e => {
   },true);
 })();
 
-render();
+// STAGE 48: remember the selected player on this browser.
+// This stops the iframe/parent boot retries from making the player choose Ax/Aly/Test again.
+if(!restoreSelectedPlayer()) render();
 })();
 </script>
 </body>
