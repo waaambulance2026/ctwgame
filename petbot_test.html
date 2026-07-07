@@ -2108,9 +2108,27 @@ window.addEventListener('message', e => {
   },true);
 })();
 
-// STAGE 48: remember the selected player on this browser.
-// This stops the iframe/parent boot retries from making the player choose Ax/Aly/Test again.
-if(!restoreSelectedPlayer()) render();
+// STAGE 50: start a new page on the player picker.
+// The selected player is still saved after choosing so parent return/back messages can restore it,
+// but a fresh page load should not skip straight to Odin/Aly/Test.
+function shouldRestoreSelectedPlayerOnBoot(){
+  try{
+    const params=new URLSearchParams(location.search||'');
+    return params.get('restorePlayer')==='1' || params.get('resumePlayer')==='1';
+  }catch(e){return false;}
+}
+if(shouldRestoreSelectedPlayerOnBoot() && restoreSelectedPlayer()){
+  // Restored only when the parent explicitly asks for it.
+}else{
+  state.screen='login';
+  state.player=null;
+  state.pets=[];
+  state.petIndex=0;
+  state.password='';
+  state.error='';
+  state.message='Choose player';
+  render();
+}
 })();
 </script>
 </body>
