@@ -5148,6 +5148,11 @@ This router owns:
     background:#101022!important;
   }
 
+  html.ctwRouterLock:has(body.ctwRouterMenu),
+  body.ctwRouterMenu{
+    background:radial-gradient(circle at 50% 42%, #fff 0, #fff2fb 44%, #def5ff 100%)!important;
+  }
+
   body.ctwRouterMenu #game{
     visibility:hidden!important;
     pointer-events:none!important;
@@ -5440,6 +5445,8 @@ This router owns:
 
   const originalParent = game.parentNode;
   const originalNext = game.nextSibling;
+  const originalDockParent = dock.parentNode;
+  const originalDockNext = dock.nextSibling;
 
   let currentMode = '';
   let fitTimer = 0;
@@ -5530,6 +5537,22 @@ This router owns:
         originalParent.insertBefore(game, originalNext && originalNext.parentNode === originalParent ? originalNext : null);
       }catch(e){
         body.appendChild(game);
+      }
+    }
+  }
+
+  function moveDockToBody(){
+    if(dock.parentNode !== body){
+      body.appendChild(dock);
+    }
+  }
+
+  function restoreDockHome(){
+    if(dock.parentNode !== originalDockParent){
+      try{
+        originalDockParent.insertBefore(dock, originalDockNext && originalDockNext.parentNode === originalDockParent ? originalDockNext : null);
+      }catch(e){
+        body.appendChild(dock);
       }
     }
   }
@@ -5814,6 +5837,7 @@ This router owns:
 
     clearForMode();
     releaseGame();
+    moveDockToBody();
     showDock();
     fixFrameUrl();
 
@@ -5847,6 +5871,7 @@ This router owns:
     currentMode = 'embedded';
 
     clearForMode();
+    moveDockToBody();
     showDock();
     fixFrameUrl();
 
@@ -5880,6 +5905,7 @@ This router owns:
 
     clearForMode();
     releaseGame();
+    restoreDockHome();
     hideDock();
 
     body.classList.add('ctwRouterExpanded', 'gameExpandedFromTama', 'waaFs40Expanded');
@@ -6077,6 +6103,7 @@ This router owns:
     currentMode = '';
     clearForMode();
     releaseGame();
+    restoreDockHome();
     hideDock();
     lockPage(false);
     exitNativeFullscreen();
@@ -6105,6 +6132,7 @@ This router owns:
     currentMode = '';
     clearForMode();
     releaseGame();
+    restoreDockHome();
     hideDock();
     lockPage(false);
     exitNativeFullscreen();
@@ -6472,168 +6500,6 @@ This router owns:
     }catch(e){}
   }
   [500, 1500, 3000, 5000].forEach(function(ms){ setTimeout(boot, ms); });
-})();
-</script>
-
-
-
-<!-- ============================================================
-STAGE 43: PETBOT MENU VIEWPORT FIX
-This fixes the broken desktop view where the Tamagotchi iframe only
-fills the top part of the page and leaves a dark block underneath.
-It does NOT change pet data, images, quests, keyboard controls, or sheets.
-============================================================ -->
-<style id="stage43-petbot-menu-viewport-fix">
-  html.ctwRouterMenu,
-  body.ctwRouterMenu,
-  html.ctwRouterEmbedded,
-  body.ctwRouterEmbedded{
-    width:100vw!important;
-    height:100vh!important;
-    height:100svh!important;
-    min-height:100vh!important;
-    min-height:100svh!important;
-    margin:0!important;
-    overflow:hidden!important;
-    background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 42%,#dff7ff 100%)!important;
-  }
-
-  body.ctwRouterMenu #game{
-    display:none!important;
-    visibility:hidden!important;
-    opacity:0!important;
-    pointer-events:none!important;
-  }
-
-  body.ctwRouterMenu #petbotDock,
-  body.ctwRouterMenu #petbotDock.fullscreen{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    position:fixed!important;
-    left:0!important;
-    top:0!important;
-    right:0!important;
-    bottom:0!important;
-    inset:0!important;
-    width:100vw!important;
-    height:100vh!important;
-    height:100svh!important;
-    min-width:100vw!important;
-    min-height:100vh!important;
-    min-height:100svh!important;
-    max-width:none!important;
-    max-height:none!important;
-    transform:none!important;
-    overflow:hidden!important;
-    z-index:2147483600!important;
-    background:radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 42%,#dff7ff 100%)!important;
-    border:0!important;
-    box-shadow:none!important;
-    pointer-events:auto!important;
-  }
-
-  body.ctwRouterMenu #petbotDockFrame,
-  body.ctwRouterMenu #petbotFrame,
-  body.ctwRouterMenu #petbotDock .petbotDockFrame{
-    display:block!important;
-    visibility:visible!important;
-    opacity:1!important;
-    position:fixed!important;
-    left:0!important;
-    top:0!important;
-    right:0!important;
-    bottom:0!important;
-    inset:0!important;
-    width:100vw!important;
-    height:100vh!important;
-    height:100svh!important;
-    min-width:100vw!important;
-    min-height:100vh!important;
-    min-height:100svh!important;
-    max-width:none!important;
-    max-height:none!important;
-    border:0!important;
-    background:transparent!important;
-    pointer-events:auto!important;
-  }
-
-  body.ctwRouterMenu #petbotDock .petbotDockPreview,
-  body.ctwRouterMenu .petbotDockBar,
-  body.ctwRouterMenu .petbotDockHint{
-    display:none!important;
-  }
-</style>
-<script id="stage43-petbot-menu-viewport-fix-script">
-(function(){
-  'use strict';
-  if(window.__CTW_STAGE43_MENU_VIEWPORT_FIX__) return;
-  window.__CTW_STAGE43_MENU_VIEWPORT_FIX__ = true;
-
-  function forceMenuViewport(){
-    if(!document.body || !document.body.classList.contains('ctwRouterMenu')) return;
-    var dock = document.getElementById('petbotDock');
-    var frame = document.getElementById('petbotDockFrame') || document.getElementById('petbotFrame');
-    var game = document.getElementById('game');
-
-    document.documentElement.style.setProperty('height','100svh','important');
-    document.documentElement.style.setProperty('overflow','hidden','important');
-    document.body.style.setProperty('height','100svh','important');
-    document.body.style.setProperty('overflow','hidden','important');
-    document.body.style.setProperty('background','radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 42%,#dff7ff 100%)','important');
-
-    if(game){
-      game.style.setProperty('display','none','important');
-      game.style.setProperty('visibility','hidden','important');
-      game.style.setProperty('opacity','0','important');
-      game.style.setProperty('pointer-events','none','important');
-    }
-
-    [dock, frame].forEach(function(el){
-      if(!el) return;
-      el.style.setProperty('display','block','important');
-      el.style.setProperty('visibility','visible','important');
-      el.style.setProperty('opacity','1','important');
-      el.style.setProperty('position','fixed','important');
-      el.style.setProperty('left','0','important');
-      el.style.setProperty('top','0','important');
-      el.style.setProperty('right','0','important');
-      el.style.setProperty('bottom','0','important');
-      el.style.setProperty('inset','0','important');
-      el.style.setProperty('width','100vw','important');
-      el.style.setProperty('height','100svh','important');
-      el.style.setProperty('min-width','100vw','important');
-      el.style.setProperty('min-height','100svh','important');
-      el.style.setProperty('max-width','none','important');
-      el.style.setProperty('max-height','none','important');
-      el.style.setProperty('transform','none','important');
-      el.style.setProperty('overflow','hidden','important');
-      el.style.setProperty('border','0','important');
-    });
-
-    if(dock){
-      dock.classList.add('fullscreen');
-      dock.classList.remove('hidden');
-      dock.style.setProperty('z-index','2147483600','important');
-      dock.style.setProperty('background','radial-gradient(circle at 50% 38%,#fff 0,#fff2fb 42%,#dff7ff 100%)','important');
-    }
-  }
-
-  ['load','resize','orientationchange'].forEach(function(name){
-    window.addEventListener(name,function(){
-      setTimeout(forceMenuViewport,20);
-      setTimeout(forceMenuViewport,180);
-    });
-  });
-
-  var obs = new MutationObserver(function(){ forceMenuViewport(); });
-  function start(){
-    if(document.body) obs.observe(document.body,{attributes:true,attributeFilter:['class']});
-    forceMenuViewport();
-    [80,250,600,1200,2200].forEach(function(ms){ setTimeout(forceMenuViewport,ms); });
-  }
-  if(document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start);
-  else start();
 })();
 </script>
 
