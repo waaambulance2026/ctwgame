@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage55-building-menu-lock-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage56-single-route-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage55-building-menu-lock-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage56-single-route-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5668,6 +5668,13 @@ This router owns:
   let currentMode = '';
   let fitTimer = 0;
   let questMenuOpen = false;
+  let routerRouteSeq = 0;
+  let lastSelectActionAt = 0;
+
+  function nextRouterRouteId(prefix){
+    routerRouteSeq += 1;
+    return String(prefix || 'route') + '-' + Date.now() + '-' + routerRouteSeq;
+  }
 
   function q(id){ return d.getElementById(id); }
 
@@ -6243,6 +6250,8 @@ This router owns:
     try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
     try{ const ss = q('startScreen'); if(ss) ss.classList.add('hidden'); }catch(e){}
 
+    const routeId = opts.routeId || nextRouterRouteId(opts.screen ? 'screen' : 'home');
+
     if(opts.screen){
       postToPetbot({
         type:'waa-parent-open-screen',
@@ -6250,10 +6259,11 @@ This router owns:
         place:opts.place || '',
         label:opts.label || '',
         returnToQuest:!!opts.fromQuest,
-        returnMode:opts.returnMode || ''
+        returnMode:opts.returnMode || '',
+        routeId:routeId
       });
     }else{
-      postToPetbot({type:'waa-parent-show-petbot-home'});
+      postToPetbot({type:'waa-parent-show-petbot-home', routeId:routeId});
     }
 
     keepFitSoon();
@@ -6415,26 +6425,13 @@ This router owns:
       }));
     }catch(e){}
 
-    const parentScreenMsg = {
-      type:'waa-parent-open-screen',
-      screen:screen,
-      place:o.place || '',
-      label:label,
-      returnToQuest:true,
-      returnMode:mode,
-      t:Date.now()
-    };
-
-    // STAGE 55: a building is a quest overlay state, not Tamagotchi home.
-    // Switch the parent to protected menu mode immediately so the platform canvas pauses
-    // behind the toy, then repeat the exact building-screen message to the iframe.
-    try{ if(frame.contentWindow) frame.contentWindow.postMessage(parentScreenMsg, location.origin); }catch(e){}
-    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode});
-    [80, 180, 420, 900].forEach(function(ms){
-      setTimeout(function(){
-        try{ if(frame.contentWindow) frame.contentWindow.postMessage(parentScreenMsg, location.origin); }catch(e){}
-      }, ms);
-    });
+    // STAGE 56: a building open must be ONE routed event.
+    // Stage 55 sent the same building-screen command immediately, through setPetbotMenu,
+    // and then several more times. PetBot processed each repeat, so the first route could
+    // look like it failed and the second one appeared to work. Keep the reliability retry
+    // inside postToPetbot, but give all retries one routeId so the iframe processes it once.
+    const routeId = nextRouterRouteId('building-' + screen);
+    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode, routeId:routeId});
 
     return true;
   }
@@ -6624,6 +6621,15 @@ This router owns:
 
   window.handlePetbotGameAction = function(action, msg){
     msg = msg || {};
+
+    if(action === 'selectOrJump' || action === 'jump'){
+      // STAGE 56: guard against one physical press being delivered twice by old/new
+      // controller layers. Movement keys are not throttled, only the select/open action.
+      const now = Date.now();
+      if(now - lastSelectActionAt < 320) return true;
+      lastSelectActionAt = now;
+    }
+
     if(action === 'startSoloEmbedded' || action === 'startPlatformEmbedded'){
       return setEmbedded('solo', {start:true, message:msg, characters:msg.characters || []});
     }
