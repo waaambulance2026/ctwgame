@@ -2082,11 +2082,11 @@ window.addEventListener('message', e => {
         state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
         state.screen='petHome';
       }else{
-        const saved=readSelectedPlayer();
-        if(saved){
-          startPlayer(saved);
-          return;
-        }
+        // STAGE 51: Parent boot messages must not auto-restore the last saved player.
+        // A fresh game load should always show the player picker first, instead of
+        // jumping straight to the previously selected pet such as Odin. Saved player
+        // restore is still allowed only when the iframe URL explicitly uses
+        // ?restorePlayer=1 or ?resumePlayer=1 at boot.
         state.screen='login';
         state.player=null;
         state.pets=[];
