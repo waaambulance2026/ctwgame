@@ -5549,7 +5549,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage46-caption-refit-20260707&embed=1&launch=1&choose=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage47-menu-flow-20260707&embed=1&launch=1&choose=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5869,8 +5869,29 @@ This router owns:
     };
   }
 
+  function calcActualPetbotDeviceRect(){
+    // Stage 47: use the real device rectangle inside the iframe when possible.
+    // The old formula could miss the siren after browser/Windows scaling, so the
+    // parent fullscreen hit button did not catch the click and Chrome stayed windowed.
+    try{
+      const fr = frame.getBoundingClientRect();
+      const doc = frame.contentDocument || (frame.contentWindow && frame.contentWindow.document);
+      const devEl = doc && doc.querySelector && doc.querySelector('.device');
+      const dr = devEl && devEl.getBoundingClientRect();
+      if(fr && dr && dr.width > 40 && dr.height > 60){
+        return {
+          left: fr.left + dr.left,
+          top: fr.top + dr.top,
+          width: dr.width,
+          height: dr.height
+        };
+      }
+    }catch(e){}
+    return calcDeviceRect();
+  }
+
   function calcLcdRect(){
-    const dev = calcDeviceRect();
+    const dev = calcActualPetbotDeviceRect();
     return {
       left: dev.left + dev.width * 0.2118,
       top: dev.top + dev.height * 0.3952,
@@ -5905,7 +5926,7 @@ This router owns:
       setImp(btn, 'display', 'none');
       return;
     }
-    const dev = calcDeviceRect();
+    const dev = calcActualPetbotDeviceRect();
     setImp(btn, 'display', 'block');
     setImp(btn, 'position', 'fixed');
     setImp(btn, 'left', (dev.left + dev.width * 0.31) + 'px');
@@ -5917,6 +5938,7 @@ This router owns:
     setImp(btn, 'background', 'transparent');
     setImp(btn, 'border', '0');
     setImp(btn, 'opacity', '.01');
+    setImp(btn, 'touch-action', 'none');
   }
 
   function fitEmbedded(){
@@ -6268,7 +6290,22 @@ This router owns:
       }));
     }catch(e){}
 
-    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode});
+    const parentScreenMsg = {
+      type:'waa-parent-open-screen',
+      screen:screen,
+      place:o.place || '',
+      label:label,
+      returnToQuest:true,
+      returnMode:mode
+    };
+
+    // Stage 47: tell PetBot to leave questGame/blank-LCD mode before the parent hides
+    // the scaled quest canvas. Then switch to PetBot menu mode and repeat the message.
+    try{ if(frame.contentWindow) frame.contentWindow.postMessage(parentScreenMsg, location.origin); }catch(e){}
+    setTimeout(function(){
+      setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode});
+    }, 90);
+
     showCaption(label + ' opened', 1200);
     return true;
   }

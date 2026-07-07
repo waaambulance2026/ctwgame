@@ -631,6 +631,16 @@ let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
+function leaveQuestVisualMode(){
+  // Stage 47: parent-opened menus must not inherit questGame visual CSS.
+  // Otherwise the toy shell stays visible but .top/.body are hidden, making the LCD look blank.
+  try{
+    document.documentElement.classList.remove('questPlaying','cssFullscreen');
+    document.body.classList.remove('questPlaying','cssFullscreen');
+    const lcdEl = $('lcd');
+    if(lcdEl) lcdEl.classList.remove('gameLcd');
+  }catch(e){}
+}
 function render(){
   const lcd=$('lcd');
   if(!lcd)return;
@@ -1723,6 +1733,7 @@ document.addEventListener('click',e=>{
 // STAGE 29: parent quest buildings can open the real PetBot/Tamagotchi screens reliably.
 function petbotOpenParentScreen(screen){
   screen=String(screen||'petHome');
+  if(screen !== 'questGame') leaveQuestVisualMode();
   if(!state.player || !currentPet()){
     state._pendingParentScreen=screen;
     return false;
@@ -1757,7 +1768,15 @@ window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
   const d=e.data||{};
   if(d.type==='waa-parent-open-screen'){
+    if(d.returnToQuest){
+      state.returnToQuest=true;
+      state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
+    }
+    leaveQuestVisualMode();
     petbotOpenParentScreen(d.screen||'petHome');
+    setTimeout(function(){
+      if(state.screen !== 'questGame'){ leaveQuestVisualMode(); render(); }
+    }, 80);
   }
 });
 let stage29PendingTries=0;
