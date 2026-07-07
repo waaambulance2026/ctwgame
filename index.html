@@ -206,7 +206,7 @@ Tokens / hazards / buildings = PART 3, Section 20 / 20B
 
 FULLSCREEN NOTE:
 This cleaned copy uses CSS fullscreen only.
-Browser requestFullscreen() is used only for PC expanded quest mode. Tamagotchi/menu mode stays CSS controlled.
+Browser requestFullscreen() is disabled so players are not trapped needing Esc.
 ========================================================== -->
 
   <!-- ==========================================================
@@ -2441,6 +2441,200 @@ This CSS starts the page in the real PetBot/Tamagotchi app.
 The player chooses who is playing inside petbot_test.html.
 Pets, shop, habitat, Hook-a-Waaambulance and quest launch from the Tamagotchi.
 ============================================================ -->
+<!-- ============================================================
+PART 1J EXTRA: PETBOT MENU OPENER
+This CSS opens the real PetBot app/menus in CSS fullscreen.
+Quest starts from the PetBot Games menu.
+Browser fullscreen is NOT used in this cleaned copy.
+============================================================ -->
+<!-- ============================================================
+PART 1J EXTRA: TAMAGOTCHI LCD POLISH
+This is CSS only. It removes edit/debug outlines in Tamagotchi mode
+and gives the LCD a cleaner game crop.
+============================================================ -->
+<!-- PART 1J EXTRA: QUEST CAPTION TEXT FOR TAMAGOTCHI AND FULLSCREEN QUEST MODE -->
+<style id="clean-restored-caption-css">
+  .tamaGameCaption{
+    display:none;
+    position:fixed;
+    left:var(--tama-lcd-left,50vw);
+    top:calc(var(--tama-lcd-top,50dvh) + 8px);
+    width:var(--tama-lcd-w,360px);
+    min-height:26px;
+    transform:none;
+    z-index:2147483646;
+    pointer-events:none;
+    text-align:center;
+    padding:5px 10px;
+    border-radius:999px;
+    background:rgba(255,247,189,.96);
+    color:#21142d;
+    font-weight:1000;
+    font-size:clamp(11px,1.45vw,17px);
+    line-height:1.12;
+    box-shadow:0 8px 18px rgba(0,0,0,.22), inset 0 0 0 2px rgba(255,255,255,.45);
+    text-shadow:none;
+  }
+  body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left,50vw) + 8px)!important;
+    top:calc(var(--tama-lcd-top,50dvh) + 6px)!important;
+    bottom:auto!important;
+    width:calc(var(--tama-lcd-w,360px) - 16px)!important;
+    max-height:min(72px, calc(var(--tama-lcd-h,180px) * .34))!important;
+    transform:none!important;
+    z-index:2147483646!important;
+    padding:5px 8px!important;
+    border-radius:10px!important;
+    background:rgba(255,247,189,.96)!important;
+    color:#21142d!important;
+    font-size:clamp(10px,1vw,14px)!important;
+    line-height:1.05!important;
+    overflow:hidden!important;
+  }
+  body.gameExpandedFromTama .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    bottom:auto!important;
+    width:min(780px,88vw)!important;
+    transform:translateX(-50%)!important;
+    z-index:2147483646!important;
+    max-height:24vh!important;
+    overflow:hidden!important;
+    padding:10px 14px!important;
+    border-radius:16px!important;
+    background:rgba(255,247,189,.96)!important;
+    color:#21142d!important;
+    font-size:clamp(14px,1.25vw,20px)!important;
+    line-height:1.15!important;
+  }
+</style>
+
+
+<!-- STAGE 45: real PC fullscreen + Tamagotchi quest text/readability fixes -->
+<style id="ctw-stage45-fullscreen-back-text-fix">
+  body.ctwRouterEmbedded .tamaGameCaption.show,
+  body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left, 50vw) + 10px)!important;
+    top:calc(var(--tama-lcd-top, 50dvh) + var(--tama-lcd-h, 180px) - 52px)!important;
+    width:calc(var(--tama-lcd-w, 360px) - 20px)!important;
+    min-height:34px!important;
+    max-height:48px!important;
+    z-index:2147483647!important;
+    pointer-events:none!important;
+    transform:none!important;
+    padding:7px 10px!important;
+    border-radius:12px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(13px,1.35vw,18px)!important;
+    line-height:1.08!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    overflow:hidden!important;
+    box-shadow:0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+
+  body.ctwRouterExpanded .tamaGameCaption.show,
+  body.gameExpandedFromTama .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    width:min(820px,88vw)!important;
+    z-index:2147483647!important;
+    transform:translateX(-50%)!important;
+    padding:11px 16px!important;
+    border-radius:16px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(15px,1.4vw,22px)!important;
+    line-height:1.15!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+
+  /* In Tamagotchi quest mode the whole game is scaled into a tiny LCD.
+     Make sign/task labels large BEFORE scaling so they are still readable. */
+  body.ctwRouterEmbedded .obj.lessonBlock{
+    width:210px!important;
+    min-height:88px!important;
+    padding:10px 12px!important;
+    border-radius:22px!important;
+  }
+  body.ctwRouterEmbedded .obj.lessonBlock::before{
+    font-size:42px!important;
+  }
+  body.ctwRouterEmbedded .obj.lessonBlock::after{
+    font-size:24px!important;
+    line-height:1.05!important;
+  }
+
+  #ctwRouterNativeFullscreenHit{
+    display:none;
+    position:fixed;
+    z-index:2147483647;
+    border:0;
+    padding:0;
+    margin:0;
+    background:transparent;
+    color:transparent;
+    opacity:.01;
+    cursor:pointer;
+    pointer-events:auto;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body.ctwRouterEmbedded #ctwRouterNativeFullscreenHit{
+    display:block!important;
+  }
+</style>
+
+
+
+<!-- STAGE 46: caption is a body overlay, not part of the scaled game canvas -->
+<style id="ctw-stage46-caption-refit-fix">
+  body.ctwRouterEmbedded > #tamaGameCaption.show,
+  body.petbotOpen.tamaGameEmbedded > #tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left, 50vw) + 8px)!important;
+    top:calc(var(--tama-lcd-top, 50dvh) + 8px)!important;
+    width:calc(var(--tama-lcd-w, 360px) - 16px)!important;
+    min-height:36px!important;
+    max-height:72px!important;
+    z-index:2147483647!important;
+    transform:none!important;
+    pointer-events:none!important;
+    padding:7px 9px!important;
+    border-radius:12px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(14px,1.45vw,19px)!important;
+    line-height:1.08!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    overflow:hidden!important;
+    box-shadow:0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+  body.ctwRouterExpanded > #tamaGameCaption.show,
+  body.gameExpandedFromTama > #tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    width:min(850px,88vw)!important;
+    z-index:2147483647!important;
+    transform:translateX(-50%)!important;
+    pointer-events:none!important;
+  }
+</style>
+
 </head>
 
 
@@ -2578,8 +2772,8 @@ Do NOT randomly edit functions unless you know what they do.
 // EDIT SECTION 25 = dragging, buttons, keyboard, touch and startup
 //
 // FULLSCREEN RULE:
-// Tamagotchi/menu mode uses CSS sizing.
-// Expanded PC quest may use real browser fullscreen so Esc can exit.
+// Use CSS fullscreen classes only.
+// Browser requestFullscreen() is disabled in this cleaned copy.
 // ==========================================================
 // EDIT SECTION 16: BASIC HELPERS, CLOUDINARY BASE, DEFAULT SETTINGS AND SAFE BROWSER SAVE CLEANUP
 const $=id=>document.getElementById(id);const root=document.documentElement;const CLOUD='https://res.cloudinary.com/dpwlfmhia/image/upload';
@@ -4742,6 +4936,9 @@ window.addEventListener('orientationchange',()=>{setTimeout(()=>{try{fitEmbedded
 fitGameToScreen();
 
 
+
+
+
 // ==========================================================
 // PART 3F: TAMAGOTCHI QUEST CONTROLS
 //
@@ -4754,10 +4951,10 @@ fitGameToScreen();
 // - expanding the quest out of the Tamagotchi
 //
 // Safe thing to know:
-// The clean screen router owns Tamagotchi quest sizing and PC fullscreen.
-// Do not add another fullscreen/display controller here.
+// expandEmbeddedTamaGame() now uses CSS fullscreen only.
+// It does NOT call browser requestFullscreen() in this cleaned copy.
 // ==========================================================
-// PART 3 EXTRA: gameplay helpers used by the clean screen router.
+// PART 3 EXTRA: reliable building select, visible Tamagotchi quest text, and smoother moving state.
 function stage27EnsureCaption(){
   let cap=document.getElementById('tamaGameCaption');
   if(!cap){
@@ -4766,13 +4963,14 @@ function stage27EnsureCaption(){
     cap.className='tamaGameCaption';
     cap.setAttribute('aria-live','polite');
   }
-  // The game is scaled into the Tamagotchi LCD.
-  // Keep captions as a direct body overlay so text does not shrink or get cropped.
+  // STAGE 46: the game itself is moved into the tiny LCD mask during Tamagotchi quest mode.
+  // If the caption stays inside #game, it gets scaled/cropped with the quest and the text vanishes.
+  // Keep the caption as a direct body overlay so it can sit above both the Tamagotchi shell and full quest.
   if(cap.parentNode!==document.body) document.body.appendChild(cap);
   if(!cap.classList.contains('tamaGameCaption')) cap.classList.add('tamaGameCaption');
   return cap;
 }
-function forceTamagotchiCaptionStyle(cap){
+function stage45ForceCaptionStyle(cap){
   if(!cap)return;
   const b=document.body;
   const embedded=b.classList.contains('tamaGameEmbedded')||b.classList.contains('ctwRouterEmbedded');
@@ -4813,7 +5011,7 @@ function stage27ShowCaption(msg,duration=1800){
   const cap=stage27EnsureCaption();
   cap.textContent=String(msg||'');
   cap.classList.add('show');
-  forceTamagotchiCaptionStyle(cap);
+  stage45ForceCaptionStyle(cap);
   clearTimeout(stage27ShowCaption.t);
   stage27ShowCaption.t=setTimeout(()=>{cap.classList.remove('show');cap.style.removeProperty('display');},duration);
 }
@@ -4902,7 +5100,9 @@ function enterNearbyInteractable(){
 // Replaced by clean Stage 31 helper-only block below.
 
 
+
 // PART 3 EXTRA: quest-mode repair — fullscreen fit, building select, and smoother walking.
+
 
 
 // PART 3G: CLEAN STAGE 31 GAMEPLAY HELPERS ONLY
@@ -5076,11 +5276,30 @@ function enterNearbyInteractable(){
 // The clean helper router owns expanded quest return.
 
 </script>
+<!-- PART 3C: REAL TAMAGOTCHI START SCRIPT -->
+
+
+
+<!-- PART 3D: REAL PETBOT MENU OPENER SCRIPT -->
+
+
+
+
+<!-- PART 3E: TAMAGOTCHI LCD POLISH SCRIPT -->
+
+
+
+
+
+
+
+
 <!-- ==========================================================
 PART 3Z: SINGLE CLEAN TAMAGOTCHI / PETBOT / QUEST ROUTER
+20260706 HELPER-BASED VERSION
 
-Gameplay helpers stay callable.
-This is the only display/router controller.
+Old gameplay helpers are used.
+Old display/controllers are retired.
 
 PetBot iframe sends messages.
 This router owns:
@@ -5092,16 +5311,6 @@ This router owns:
 ========================================================== -->
 
 <style id="ctw-helper-router-css">
-
-  /* ==========================================================
-     CLEAN SCREEN ROUTER CSS
-
-     One display owner only:
-     - MENU: real PetBot/Tamagotchi fills the browser.
-     - EMBEDDED QUEST: game canvas is masked into the Tamagotchi LCD.
-     - PC FULLSCREEN QUEST: game canvas fills the browser and Esc may exit.
-     ========================================================== */
-
   html.ctwRouterLock,
   body.ctwRouterLock{
     width:100%!important;
@@ -5120,7 +5329,6 @@ This router owns:
     pointer-events:none!important;
   }
 
-  /* MENU + EMBEDDED: show the real PetBot iframe, never the old mini preview. */
   body.ctwRouterMenu #petbotDock,
   body.ctwRouterEmbedded #petbotDock{
     display:block!important;
@@ -5172,6 +5380,7 @@ This router owns:
     display:none!important;
   }
 
+  /* This beats older rules like body.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen { pointer-events:none } */
   body.ctwRouterEmbedded.petbotOpen.tamaGameEmbedded #petbotDock.fullscreen,
   body.ctwRouterMenu.petbotOpen #petbotDock.fullscreen{
     pointer-events:auto!important;
@@ -5192,7 +5401,6 @@ This router owns:
     opacity:1!important;
   }
 
-  /* EMBEDDED QUEST: the platform game is placed inside this LCD-sized mask. */
   body.ctwRouterEmbedded #tamaGameMask33{
     display:block!important;
     position:fixed!important;
@@ -5240,8 +5448,12 @@ This router owns:
     display:none!important;
   }
 
-  /* PC FULLSCREEN QUEST: hide PetBot and show the real platform game. */
-  body.ctwRouterExpanded #petbotDock,
+  body.ctwRouterExpanded #petbotDock{
+    display:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+
   body.ctwRouterExpanded #tamaGameMask33{
     display:none!important;
     visibility:hidden!important;
@@ -5284,84 +5496,6 @@ This router owns:
     opacity:1!important;
   }
 
-  /* One quest caption only. It lives on body so it is not shrunk/cropped with #game. */
-  .tamaGameCaption{
-    display:none;
-    position:fixed;
-    z-index:2147483647;
-    pointer-events:none;
-    text-align:center;
-    padding:7px 9px;
-    border-radius:12px;
-    background:rgba(255,247,189,.98);
-    color:#21142d;
-    font-weight:1000;
-    line-height:1.08;
-    overflow:hidden;
-    box-shadow:0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75);
-  }
-
-  body.ctwRouterEmbedded > #tamaGameCaption.show,
-  body.petbotOpen.tamaGameEmbedded > #tamaGameCaption.show{
-    display:block!important;
-    left:calc(var(--tama-lcd-left, 50vw) + 8px)!important;
-    top:calc(var(--tama-lcd-top, 50dvh) + 8px)!important;
-    width:calc(var(--tama-lcd-w, 360px) - 16px)!important;
-    min-height:36px!important;
-    max-height:72px!important;
-    transform:none!important;
-    font-size:clamp(14px,1.45vw,19px)!important;
-  }
-
-  body.ctwRouterExpanded > #tamaGameCaption.show,
-  body.gameExpandedFromTama > #tamaGameCaption.show{
-    display:block!important;
-    left:50vw!important;
-    top:calc(env(safe-area-inset-top) + 14px)!important;
-    width:min(850px,88vw)!important;
-    transform:translateX(-50%)!important;
-    font-size:clamp(15px,1.4vw,22px)!important;
-    padding:11px 16px!important;
-    border-radius:16px!important;
-  }
-
-  /* Labels are made large before the game is scaled into the LCD. */
-  body.ctwRouterEmbedded .obj.lessonBlock{
-    width:210px!important;
-    min-height:88px!important;
-    padding:10px 12px!important;
-    border-radius:22px!important;
-  }
-
-  body.ctwRouterEmbedded .obj.lessonBlock::before{
-    font-size:42px!important;
-  }
-
-  body.ctwRouterEmbedded .obj.lessonBlock::after{
-    font-size:24px!important;
-    line-height:1.05!important;
-  }
-
-  /* Invisible hit area used to request real PC fullscreen from a user click. */
-  #ctwRouterNativeFullscreenHit{
-    display:none;
-    position:fixed;
-    z-index:2147483647;
-    border:0;
-    padding:0;
-    margin:0;
-    background:transparent;
-    color:transparent;
-    opacity:.01;
-    cursor:pointer;
-    pointer-events:auto;
-    -webkit-tap-highlight-color:transparent;
-  }
-
-  body.ctwRouterEmbedded #ctwRouterNativeFullscreenHit{
-    display:block!important;
-  }
-
   body.ctwRouterMenu #waaTamaStartOverlay,
   body.ctwRouterEmbedded #waaTamaStartOverlay,
   body.ctwRouterExpanded #waaTamaStartOverlay{
@@ -5401,7 +5535,6 @@ This router owns:
   body.ctwRouterExpanded #ctwRouterReturnBtn{
     display:block!important;
   }
-
 </style>
 
 <script id="ctw-helper-router-script">
@@ -5898,8 +6031,9 @@ This router owns:
   }
 
   function keepFitSoon(){
-    // Returning from fullscreen/back can resize Chrome in two steps.
-    // Refit immediately, on animation frames, and after delayed viewport settling.
+    // STAGE 46: returning from native fullscreen/browser back can resize Chrome in two steps.
+    // One normal resize event is not enough, which is why the Tamagotchi sometimes fixes only
+    // after minimise/maximise. Refit immediately, on animation frames, and after delayed viewport settling.
     const run = function(){
       try{
         if(isEmbedded()) fitEmbedded();
@@ -5916,9 +6050,9 @@ This router owns:
   }
 
   function tryNativeFullscreen(){
-    // PC expanded quest can use real browser fullscreen.
+    // STAGE 45: PC expanded quest can use real browser fullscreen.
     // This is only called from a user action while entering expanded quest mode.
-    // Tamagotchi menu/embedded LCD still use CSS layout only.
+    // The Tamagotchi menu/embedded LCD still use CSS layout only.
     try{
       if(!isExpanded()) return false;
       if(d.fullscreenElement) return true;
@@ -6631,17 +6765,19 @@ This router owns:
       }, ms);
     });
   }, {once:true});
+})();
+</script>
 
-  // Final router safety retries. Kept inside the router so there is not a second boot script.
-  [500, 1500, 3000, 5000].forEach(function(ms){
-    setTimeout(function(){
-      try{
-        if(document.body.classList.contains('ctwRouterEmbedded') || document.body.classList.contains('ctwRouterExpanded')) return;
-        bootTamagotchiMenu('router-safety-' + ms);
-      }catch(e){}
-    }, ms);
-  });
-
+<script id="ctw-router-emergency-boot-guard">
+(function(){
+  function boot(){
+    try{
+      if(document.body.classList.contains('ctwRouterEmbedded') || document.body.classList.contains('ctwRouterExpanded')) return;
+      if(typeof window.ctwBootTamagotchiMenu === 'function') return window.ctwBootTamagotchiMenu('external-guard');
+      if(typeof window.openPetbotFull === 'function') return window.openPetbotFull();
+    }catch(e){}
+  }
+  [500, 1500, 3000, 5000].forEach(function(ms){ setTimeout(boot, ms); });
 })();
 </script>
 
