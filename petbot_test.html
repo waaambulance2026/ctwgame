@@ -1885,12 +1885,19 @@ window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
   const d=e.data||{};
   if(d.type==='waa-parent-open-screen'){
+    // STAGE 54: ignore stale/generic home messages while an embedded quest is live.
+    // These were knocking the LCD out of questGame and back to the selected pet screen.
+    const targetScreen=String(d.screen||'petHome');
+    if(state.screen==='questGame' && !d.returnToQuest && (targetScreen==='petHome'||targetScreen==='home'||targetScreen==='pet')){
+      render();
+      return;
+    }
     if(d.returnToQuest){
       state.returnToQuest=true;
       state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
     }
     leaveQuestVisualMode();
-    petbotOpenParentScreen(d.screen||'petHome');
+    petbotOpenParentScreen(targetScreen);
     setTimeout(function(){
       if(state.screen !== 'questGame'){ leaveQuestVisualMode(); render(); }
     }, 80);
@@ -2154,13 +2161,20 @@ window.addEventListener('message', e => {
 (function(){
   function showRealPetbotHome(){
     try{
+      // STAGE 54: a stale parent home ping must never knock a live embedded quest
+      // back to the selected pet screen. Keep the LCD in quest controls.
+      if(state.screen==='questGame' && state.quest && (state.quest.started || state.quest.embedded)){
+        render();
+        return;
+      }
+
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
 
-      // STAGE 53: parent startup/home pings are non-destructive.
-      // They must not interrupt login/password loading, Games, or the quest character picker.
+      // STAGE 53/54: parent startup/home pings are non-destructive.
+      // They must not interrupt login/password loading, Games, Quest playing, or the quest character picker.
       // This fixes the double player selection and the Team picker jumping back to the pet screen.
-      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
+      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','questGame','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
       if(protectedScreens.includes(state.screen)){
         render();
         return;
