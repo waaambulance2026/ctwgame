@@ -667,11 +667,11 @@ function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
 let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let lastQuestSelectSentAt=0;
 function sendQuestSelectOrJump(source){
-  // STAGE 59: Enter and the pacifier must be the SAME quest button.
-  // Both use selectOrJump, and one physical press is allowed to send one message only.
-  if(state.screen!=='questGame')return false;
+  // STAGE 60: Enter and the pacifier use the same quest Select route.
+  // This only runs while the LCD is in questGame, so building/text screens and Back are not blocked.
+  if(state.screen!=='questGame') return false;
   const now=Date.now();
-  if(now-Number(lastQuestSelectSentAt||0)<360)return true;
+  if(now-Number(lastQuestSelectSentAt||0)<220) return true;
   lastQuestSelectSentAt=now;
   sendParent('waa-petbot-game-action',{action:'selectOrJump',source:source||'select'});
   return true;
@@ -703,6 +703,18 @@ function isQuestReturnMenuScreen(screen){
 }
 function isQuestMenuProtected(){
   return !!(state && state.returnToQuest && isQuestReturnMenuScreen(state.screen));
+}
+function hasPendingQuestReturn(){
+  if(!state || !isQuestReturnMenuScreen(state.screen)) return false;
+  if(state.returnToQuest) return true;
+  try{
+    const raw=localStorage.getItem('waaPendingPetbotScreen');
+    if(!raw) return false;
+    const pack=JSON.parse(raw);
+    return !!(pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000);
+  }catch(e){
+    return false;
+  }
 }
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
@@ -1849,7 +1861,7 @@ function notifyParent(){
 }
 $('btnPrev').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handlePrev();});
 $('btnNext').addEventListener('click',e=>{e.preventDefault();if(state.screen==='questGame')return;handleNext();});
-$('btnSelect').addEventListener('click',e=>{e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();if(state.screen==='questGame')return sendQuestSelectOrJump('pacifier');handleSelect();},true);
+$('btnSelect').addEventListener('click',e=>{e.preventDefault();handleSelect();});
 function bindQuestHoldButton(id,startAction){
   const btn=$(id); if(!btn)return;
   const stop=e=>{
@@ -2030,7 +2042,7 @@ window.addEventListener('message', e => {
   };
   const oldHandleBack34=handleBack;
   handleBack=function(){
-    if(state.returnToQuest && ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','welcomeBoard'].includes(state.screen)){
+    if(hasPendingQuestReturn()){
       if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
       petbotReturnToQuest34();
       return;
