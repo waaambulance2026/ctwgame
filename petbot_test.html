@@ -666,6 +666,14 @@ function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.i
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
 let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let lastParentRoute={sig:'',t:0};
+let lastVisibleParentOpen={sig:'',t:0};
+function shouldProcessVisibleOpen(screen, place, returnToQuest){
+  const now=Date.now();
+  const sig=String(screen||'')+':'+String(place||'')+':'+(returnToQuest?'quest':'home');
+  if(lastVisibleParentOpen.sig===sig && now-Number(lastVisibleParentOpen.t||0)<1200) return false;
+  lastVisibleParentOpen={sig,t:now};
+  return true;
+}
 function shouldProcessParentRoute(d,fallbackKey){
   d=d||{};
   const now=Date.now();
@@ -1914,7 +1922,7 @@ window.addEventListener('message',e=>{
     // visible result can look like a failed menu before the second one works.
     const targetScreen=String(d.screen||'petHome');
     const fallbackSig='open:'+targetScreen+':'+String(d.place||'')+':'+(d.returnToQuest?'quest':'home');
-    if(!shouldProcessParentRoute(d,fallbackSig)){
+    if(!shouldProcessParentRoute(d,fallbackSig) || !shouldProcessVisibleOpen(targetScreen, d.place||'', !!d.returnToQuest)){
       render();
       return;
     }

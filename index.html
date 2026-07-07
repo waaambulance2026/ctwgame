@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage56-single-route-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage57-one-action-router-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4712,7 +4712,7 @@ function toggleDayNightManual(){
 
 $('reloadPetsBtn').onclick=()=>loadPetbotPets(true);$('petSelect').onchange=selectPet;$('userSelect').onchange=()=>loadPetbotPets(false);$('userIdInput').addEventListener('change',()=>loadPetbotPets(true));$('usePetBtn').onclick=usePet;if($('petSizeRange'))$('petSizeRange').oninput=()=>{petPlayerW=Math.max(45,Math.min(240,Number($('petSizeRange').value)||115));$('petSizeRange').value=petPlayerW;$('petSizeVal').textContent=petPlayerW+'px';applyCharacterSlotSizes();updateSpriteFacing(0);};if($('petFlipSelect'))$('petFlipSelect').onchange=()=>{petFlip=Number($('petFlipSelect').value)||1;applySpriteTransform();};$('feedVisualBtn').onclick=()=>bumpVisual('feed');$('playVisualBtn').onclick=()=>bumpVisual('play');$('restVisualBtn').onclick=()=>bumpVisual('rest');$('healVisualBtn').onclick=()=>bumpVisual('heal');
 $('startSoloBtn').onclick=startSoloQuest;$('startTeamBtn').onclick=startTeamQuest;$('swapBtn').onclick=()=>{if(!team||!buddy||buddy==='none')return showToast('Solo Quest: no side character.');const a=main;setPair(buddy,a,teamExtra[0]||'none',teamExtra[1]||'none')};$('pauseBtn').onclick=()=>{if(!playing)return openMenu();paused=!paused;$('pauseBtn').textContent=paused?'Resume':'Pause';if(paused)showToast('Paused. Press Menu for options.')} ;$('modeBtn').onclick=toggleDayNightManual;$('helpBtn').onclick=()=>$('instructions').classList.toggle('hidden');$('nextLevelBtn').onclick=()=>{levelIndex++;startLevel()};$('restartBtn').onclick=()=>{score=0;lives=3;levelIndex=0;startLevel();$('endScreen').classList.add('hidden')};
-addEventListener('keydown',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
+addEventListener('keydown',e=>{if(document.body.classList.contains('ctwRouterMenu')||document.body.classList.contains('ctwRouterEmbedded')||document.body.classList.contains('ctwRouterExpanded'))return;if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=true;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=true;if(e.code==='Space'||e.code==='ArrowUp'||e.code==='KeyW')jump();if(e.code==='Enter'||e.code==='NumpadEnter'){if(enterNearbyBuilding()||enterNearbyInteractable())e.preventDefault();}if(e.code==='Escape'){closeBuilder();$('petPanel').classList.add('hidden');$('shopScreen')?.classList.add('hidden');$('welcomeInfoScreen')?.classList.add('hidden');$('hookScreen')?.classList.add('hidden');$('questStartScreen')?.classList.add('hidden')}});addEventListener('keyup',e=>{if(document.body.classList.contains('ctwRouterMenu')||document.body.classList.contains('ctwRouterEmbedded')||document.body.classList.contains('ctwRouterExpanded'))return;if(e.code==='ArrowLeft'||e.code==='KeyA')keys.left=false;if(e.code==='ArrowRight'||e.code==='KeyD')keys.right=false});
 function holdButton(id,down,up){
   const btn=$(id); if(!btn)return;
   btn.onpointerdown=e=>{e.preventDefault();down();};
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage56-single-route-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage57-one-action-router-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5670,6 +5670,35 @@ This router owns:
   let questMenuOpen = false;
   let routerRouteSeq = 0;
   let lastSelectActionAt = 0;
+  let lastQuestBuildingOpen = { sig:'', t:0 };
+
+  function questBuildingSig(o){
+    if(!o) return '';
+    return String(o.place || o.label || o.id || o.at || o.x || 'building');
+  }
+
+  function lockQuestBuilding(o){
+    const sig = questBuildingSig(o);
+    const now = Date.now();
+    if(sig && lastQuestBuildingOpen.sig === sig && now - Number(lastQuestBuildingOpen.t || 0) < 1200){
+      return false;
+    }
+    lastQuestBuildingOpen = { sig:sig, t:now };
+    try{ if(o) o.opening = true; }catch(e){}
+    return true;
+  }
+
+  function unlockQuestBuildingsSoon(){
+    setTimeout(function(){
+      try{
+        if(Array.isArray(window.objects)){
+          window.objects.forEach(function(o){ if(o && o.kind === 'building') o.opening = false; });
+        }else if(typeof objects !== 'undefined' && Array.isArray(objects)){
+          objects.forEach(function(o){ if(o && o.kind === 'building') o.opening = false; });
+        }
+      }catch(e){}
+    }, 250);
+  }
 
   function nextRouterRouteId(prefix){
     routerRouteSeq += 1;
@@ -5795,7 +5824,12 @@ This router owns:
   }
 
   function postToPetbot(msg){
-    [30, 120, 260, 520, 900, 1400].forEach(function(ms){
+    // STAGE 57: quest building menus must be a single visible action.
+    // Boot/home messages can still retry, but a building-open command from a live
+    // quest is sent once so the LCD cannot show a failed first route then a working
+    // second route.
+    const delays = (msg && msg.type === 'waa-parent-open-screen' && msg.returnToQuest) ? [20] : [30, 120, 260, 520, 900, 1400];
+    delays.forEach(function(ms){
       setTimeout(function(){
         try{
           if(frame.contentWindow){
@@ -6312,6 +6346,7 @@ This router owns:
     window.waaSuppressQuestCaptionsUntil = 0;
 
     clearForMode();
+    unlockQuestBuildingsSoon();
     releaseGame();
     restoreDockHome();
     hideDock();
@@ -6380,6 +6415,7 @@ This router owns:
     }
 
     clearQuestReturnSoon();
+    unlockQuestBuildingsSoon();
     showCaption('Back to quest', 1200);
 
     try{
@@ -6404,13 +6440,16 @@ This router owns:
   function openBuildingFromQuest(o){
     if(!o || o.kind !== 'building') return false;
     if(!isQuestMode()) return false;
+    if(!lockQuestBuilding(o)) return true;
 
     const mode = rememberQuestReturn();
     const screen = placeToScreen(o.place);
     const label = o.label || o.place || 'Building';
 
     questMenuOpen = true;
+    window.waaSuppressQuestCaptionsUntil = Date.now() + 12000;
     hideQuestCaption();
+    hideOldOverlays();
     stopMove();
     try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
 
@@ -6425,7 +6464,7 @@ This router owns:
       }));
     }catch(e){}
 
-    // STAGE 56: a building open must be ONE routed event.
+    // STAGE 56/57: a building open must be ONE routed event.
     // Stage 55 sent the same building-screen command immediately, through setPetbotMenu,
     // and then several more times. PetBot processed each repeat, so the first route could
     // look like it failed and the second one appeared to work. Keep the reliability retry
@@ -6436,23 +6475,71 @@ This router owns:
     return true;
   }
 
+  function findNearestQuestObjectForRouter(){
+    try{
+      if(typeof nearbyBuilding !== 'undefined' && nearbyBuilding && !nearbyBuilding.vanished){
+        return nearbyBuilding;
+      }
+    }catch(e){}
+
+    let list = [];
+    try{ list = Array.isArray(objects) ? objects : []; }catch(e){ list = []; }
+    if(!list.length) return null;
+
+    let pcx = window.innerWidth / 2;
+    let pcy = window.innerHeight * 0.62;
+    try{
+      const pe = q('player');
+      if(pe){
+        const pr = pe.getBoundingClientRect();
+        if(pr && pr.width > 3 && pr.height > 3){
+          pcx = pr.left + pr.width / 2;
+          pcy = pr.top + pr.height * 0.70;
+        }
+      }
+    }catch(e){}
+
+    let best = null;
+    list.forEach(function(o){
+      if(!o || o.hit || o.vanished || !o.el) return;
+      if(!(o.kind === 'building' || o.kind === 'task' || o.kind === 'sign')) return;
+      let score = 999999;
+      try{
+        const r = o.el.getBoundingClientRect();
+        if(r && r.width > 3 && r.height > 3 && r.right > 0 && r.left < window.innerWidth && r.bottom > 0 && r.top < window.innerHeight){
+          const dx = Math.abs((r.left + r.width / 2) - pcx);
+          const dy = Math.abs((r.top + r.height / 2) - pcy);
+          const wide = isEmbedded() || isExpanded();
+          const lx = o.kind === 'building' ? (wide ? 780 : 540) : (wide ? 430 : 280);
+          const ly = o.kind === 'building' ? (wide ? 560 : 350) : (wide ? 270 : 180);
+          if(dx <= lx && dy <= ly) score = dx + (dy * 0.32) + (o.kind === 'building' ? 0 : 90);
+        }
+      }catch(e){}
+      if(score < 999998 && (!best || score < best.score)) best = { o:o, score:score };
+    });
+    return best && best.o ? best.o : null;
+  }
+
   function selectNearestStopFirst(){
+    // STAGE 57: in Tamagotchi quest mode, do not ask old helper layers to open a
+    // building first. They can run the old door/overlay path before the clean router
+    // opens the real PetBot menu. Pick the target once, then route it once.
+    const target = findNearestQuestObjectForRouter();
+    if(target){
+      if(target.kind === 'building'){
+        return openBuildingFromQuest(target);
+      }
+      try{ if(typeof interactObject === 'function') return !!interactObject(target); }catch(e){}
+    }
+
     const opts = { embedded:isEmbedded(), expanded:isExpanded() };
-
-    let opened = !!safeCall(helpers.selectStop, opts);
-
-    if(!opened && helpers.backupSelectStop && helpers.backupSelectStop !== helpers.selectStop){
-      opened = !!safeCall(helpers.backupSelectStop, opts);
+    let opened = !!safeCall(helpers.enterInteractable);
+    if(!opened && target && target.kind !== 'building'){
+      opened = !!safeCall(helpers.selectStop, opts);
     }
-
     if(!opened){
-      opened = !!safeCall(helpers.enterBuilding);
+      try{ if(typeof showToast === 'function') showToast('Stand by the glowing building/sign, then press Select or Enter.'); }catch(e){}
     }
-
-    if(!opened){
-      opened = !!safeCall(helpers.enterInteractable);
-    }
-
     return opened;
   }
 
@@ -6623,7 +6710,7 @@ This router owns:
     msg = msg || {};
 
     if(action === 'selectOrJump' || action === 'jump'){
-      // STAGE 56: guard against one physical press being delivered twice by old/new
+      // STAGE 56/57: guard against one physical press being delivered twice by old/new
       // controller layers. Movement keys are not throttled, only the select/open action.
       const now = Date.now();
       if(now - lastSelectActionAt < 320) return true;
