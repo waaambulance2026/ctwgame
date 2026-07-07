@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage57-one-action-router-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage58-quest-menu-hard-lock-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage57-one-action-router-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage58-quest-menu-hard-lock-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5650,7 +5650,8 @@ This router owns:
     'waaFs40Expanded',
     'waaFs40Lock',
     'questPlaying',
-    'cssFullscreen'
+    'cssFullscreen',
+    'ctwQuestMenuLocked'
   ];
 
   const RESET_PROPS = [
@@ -6277,6 +6278,8 @@ This router owns:
     fixFrameUrl();
 
     body.classList.add('ctwRouterMenu', 'petbotOpen', 'waaFs40Petbot');
+    body.classList.toggle('ctwQuestMenuLocked', !!opts.fromQuest);
+    root.classList.toggle('ctwQuestMenuLocked', !!opts.fromQuest);
 
     setImp(game, 'visibility', 'hidden');
     setImp(game, 'pointer-events', 'none');
@@ -6521,6 +6524,14 @@ This router owns:
   }
 
   function selectNearestStopFirst(){
+    // STAGE 58: if we are already showing a building menu from the quest, do not
+    // let any duplicate Select/Enter event try to open the old game overlay.
+    if(questMenuOpen || (isMenu() && hasQuestReturn())){
+      stopMove();
+      hideQuestCaption();
+      return true;
+    }
+
     // STAGE 57: in Tamagotchi quest mode, do not ask old helper layers to open a
     // building first. They can run the old door/overlay path before the clean router
     // opens the real PetBot menu. Pick the target once, then route it once.
@@ -6548,6 +6559,17 @@ This router owns:
   }
 
   function handleQuestAction(action){
+    // STAGE 58: once a quest building menu is open, stale duplicate quest-control
+    // messages must be swallowed. The previous patch still allowed a second
+    // select/jump route to run while the parent was already in menu mode, which
+    // could knock the iframe back to pet screens or wake old overlays behind it.
+    if(questMenuOpen || (isMenu() && hasQuestReturn())){
+      stopMove();
+      hideQuestCaption();
+      return true;
+    }
+    if(!isQuestMode()) return true;
+
     if(action === 'moveLeft' || action === 'moveLeftStart'){
       try{
         keys.left = true;
@@ -6595,8 +6617,30 @@ This router owns:
   }
 
   window.openBuilding = function(o){
+    // STAGE 58: while a quest building menu is already open, old openBuilding()
+    // must be blocked completely. Falling back to the original helper here was
+    // the remaining reason the game appeared to do the action twice: the clean
+    // route opened the PetBot menu, then an old delayed route reopened the pet/old menu.
+    if(questMenuOpen || (isMenu() && hasQuestReturn())){
+      stopMove();
+      hideQuestCaption();
+      return true;
+    }
     if(openBuildingFromQuest(o)) return true;
+    if(isQuestMode()) return true;
     return safeCall(helpers.oldOpenBuilding, o);
+  };
+
+  window.enterNearbyBuilding = function(){
+    if(questMenuOpen || (isMenu() && hasQuestReturn())) return true;
+    if(isQuestMode()) return selectNearestStopFirst();
+    return safeCall(helpers.enterBuilding);
+  };
+
+  window.enterNearbyInteractable = function(){
+    if(questMenuOpen || (isMenu() && hasQuestReturn())) return true;
+    if(isQuestMode()) return selectNearestStopFirst();
+    return safeCall(helpers.enterInteractable);
   };
 
   function closeRouterMode(){
