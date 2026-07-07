@@ -2521,7 +2521,7 @@ and gives the LCD a cleaner game crop.
     display:block!important;
     position:fixed!important;
     left:calc(var(--tama-lcd-left, 50vw) + 10px)!important;
-    top:calc(var(--tama-lcd-top, 50dvh) + var(--tama-lcd-h, 180px) - 52px)!important;
+    top:calc(var(--tama-lcd-top, 50dvh) + 8px)!important;
     width:calc(var(--tama-lcd-w, 360px) - 20px)!important;
     min-height:34px!important;
     max-height:48px!important;
@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage48-player-remember-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage49-back-caption-top-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -4986,7 +4986,8 @@ function stage45ForceCaptionStyle(cap){
   cap.style.setProperty('box-shadow','0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)','important');
   if(embedded){
     cap.style.setProperty('left','calc(var(--tama-lcd-left, 50vw) + 10px)','important');
-    cap.style.setProperty('top','calc(var(--tama-lcd-top, 50dvh) + var(--tama-lcd-h, 180px) - 52px)','important');
+    cap.style.setProperty('top','calc(var(--tama-lcd-top, 50dvh) + 8px)','important');
+    cap.style.setProperty('bottom','auto','important');
     cap.style.setProperty('width','calc(var(--tama-lcd-w, 360px) - 20px)','important');
     cap.style.setProperty('min-height','34px','important');
     cap.style.setProperty('max-height','48px','important');
@@ -5537,6 +5538,16 @@ This router owns:
   }
 </style>
 
+<!-- STAGE 49: embedded quest captions belong at the TOP of the Tamagotchi LCD.
+     This override exists because older Stage 45 rules placed them at the bottom. -->
+<style id="ctw-stage49-caption-top-fix">
+  body.ctwRouterEmbedded > #tamaGameCaption.show,
+  body.petbotOpen.tamaGameEmbedded > #tamaGameCaption.show{
+    top:calc(var(--tama-lcd-top, 50dvh) + 8px)!important;
+    bottom:auto!important;
+  }
+</style>
+
 <script id="ctw-helper-router-script">
 (function(){
   'use strict';
@@ -5549,7 +5560,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage48-player-remember-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage49-back-caption-top-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -6509,7 +6520,10 @@ This router owns:
     }
 
     if(action === 'stopEmbedded'){
-      return window.stopEmbeddedTamaGame();
+      // STAGE 49: PetBot Back during Tamagotchi quest should return to the Games menu,
+      // not close/hide the whole Tamagotchi dock.
+      stopMove();
+      return setPetbotMenu({screen:'games'});
     }
 
     if(handleQuestAction(action)){

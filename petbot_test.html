@@ -1698,7 +1698,15 @@ function handleBack(){
   if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopStep='items';render();return;}
   if(state.screen==='shop'&&state.shopStep==='items'){state.screen='petActions';state.shopStep='items';state.panelActionMsg='';render();return;}
-  if(state.screen==='questGame'){sendParent('waa-petbot-game-action',{action:'stopEmbedded'});state.screen='games';render();return;}
+  if(state.screen==='questGame'){
+    // STAGE 49: Back from the embedded quest goes to the Games menu inside the toy.
+    // The parent must keep the Tamagotchi open; index.html handles stopEmbedded that way.
+    state.screen='games';
+    state.gameIndex=0;
+    render();
+    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'stopEmbedded'}),30);
+    return;
+  }
   if(state.screen==='games'){state.screen='petActions';render();return;}
   if(['inventory','habitat','hook'].includes(state.screen)){state.screen='petActions';render();return;}
   if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
