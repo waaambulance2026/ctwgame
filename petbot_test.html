@@ -2042,19 +2042,21 @@ window.addEventListener('message', e => {
 
 // STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
 (function(){
-  function showQuestFromParent(){
+  function showQuestFromParent(d){
     try{
+      const kind=(d&&d.kind)==='team'?'team':((state.questPick&&state.questPick.kind)==='team'?'team':'solo');
+      const oldQuest=state.quest||{};
       state.screen='questGame';
-      state.quest={...(state.quest||{}),mode:(state.quest&&state.quest.mode)||'Solo Quest · Tutorial Town',started:true,embedded:true};
+      state.quest={...oldQuest,mode:oldQuest.mode||((kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true};
       state.returnToQuest=false;
       render();
-    }catch(e){ console.warn('Stage 37 quest LCD restore failed',e); }
+    }catch(e){ console.warn('Stage 37/53 quest LCD restore failed',e); }
   }
   window.addEventListener('message',function(e){
     if(e.origin!==location.origin)return;
     const d=e.data||{};
-    if(d.type==='waa-parent-quest-active') showQuestFromParent();
-    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(showQuestFromParent,0);
+    if(d.type==='waa-parent-quest-active') showQuestFromParent(d);
+    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(function(){showQuestFromParent(d);},0);
   },true);
 })();
 
@@ -2154,6 +2156,16 @@ window.addEventListener('message', e => {
     try{
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
+
+      // STAGE 53: parent startup/home pings are non-destructive.
+      // They must not interrupt login/password loading, Games, or the quest character picker.
+      // This fixes the double player selection and the Team picker jumping back to the pet screen.
+      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
+      if(protectedScreens.includes(state.screen)){
+        render();
+        return;
+      }
+
       state.returnToQuest=false;
       state.returnQuestMode='';
       state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
@@ -2162,6 +2174,11 @@ window.addEventListener('message', e => {
       }else if(state.player && state.pets && state.pets.length){
         state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
         state.screen='petHome';
+      }else if(state.player){
+        // A player has been chosen but pets are not ready yet. Keep loading instead of
+        // forcing the user back to WHO IS PLAYING?
+        state.screen='loading';
+        state.message=state.message||('Loading '+(state.player.label||'player')+' pets');
       }else{
         // STAGE 51: Parent boot messages must not auto-restore the last saved player.
         // A fresh game load should always show the player picker first, instead of
@@ -2177,7 +2194,7 @@ window.addEventListener('message', e => {
         state.message='Choose player';
       }
       render();
-    }catch(e){ console.warn('Stage 42 PetBot home restore failed',e); }
+    }catch(e){ console.warn('Stage 42/53 PetBot home restore failed',e); }
   }
   window.addEventListener('message',function(e){
     if(e.origin!==location.origin)return;

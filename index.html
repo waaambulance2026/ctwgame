@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage52-quest-character-picker-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage53-quest-flow-lock-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5560,7 +5560,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage52-quest-character-picker-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage53-quest-flow-lock-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5596,6 +5596,20 @@ This router owns:
       return fn.apply(window, args);
     }catch(err){
       console.warn('CTW router helper failed:', err);
+      return false;
+    }
+  }
+
+  function runStartHelper(fn){
+    // STAGE 53: startGame/startTeamQuest/startSoloQuest often return undefined even when
+    // they worked. Do not treat undefined as failure, or Team Quest gets overwritten by Solo.
+    if(typeof fn !== 'function') return false;
+    const args = Array.prototype.slice.call(arguments, 1);
+    try{
+      fn.apply(window, args);
+      return true;
+    }catch(err){
+      console.warn('CTW quest start helper failed:', err);
       return false;
     }
   }
@@ -5898,18 +5912,18 @@ This router owns:
     if(chars && chars.length){
       setHiddenQuestSelectors(kind, chars);
       if(kind === 'team'){
-        if(!safeCall(helpers.startGame, chars[0] || 'ax', chars[1] || 'pura', chars[2] || 'none', chars[3] || 'none')){
-          if(!safeCall(helpers.startTeamQuest)) safeCall(helpers.startSoloQuest);
+        if(!runStartHelper(helpers.startGame, chars[0] || 'ax', chars[1] || 'pura', chars[2] || 'none', chars[3] || 'none')){
+          if(!runStartHelper(helpers.startTeamQuest)) runStartHelper(helpers.startGame, 'ax', 'pura', 'none', 'none');
         }
       }else{
-        if(!safeCall(helpers.startGame, chars[0] || 'ax', 'none', 'none', 'none')){
-          safeCall(helpers.startSoloQuest);
+        if(!runStartHelper(helpers.startGame, chars[0] || 'ax', 'none', 'none', 'none')){
+          runStartHelper(helpers.startSoloQuest);
         }
       }
     }else if(kind === 'team'){
-      if(!safeCall(helpers.startTeamQuest)) safeCall(helpers.startGame, 'ax', 'pura', 'none', 'none');
+      if(!runStartHelper(helpers.startTeamQuest)) runStartHelper(helpers.startGame, 'ax', 'pura', 'none', 'none');
     }else{
-      safeCall(helpers.startSoloQuest);
+      runStartHelper(helpers.startSoloQuest);
     }
 
     try{
