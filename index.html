@@ -2512,6 +2512,89 @@ and gives the LCD a cleaner game crop.
     line-height:1.15!important;
   }
 </style>
+
+
+<!-- STAGE 45: real PC fullscreen + Tamagotchi quest text/readability fixes -->
+<style id="ctw-stage45-fullscreen-back-text-fix">
+  body.ctwRouterEmbedded .tamaGameCaption.show,
+  body.petbotOpen.tamaGameEmbedded .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:calc(var(--tama-lcd-left, 50vw) + 10px)!important;
+    top:calc(var(--tama-lcd-top, 50dvh) + var(--tama-lcd-h, 180px) - 52px)!important;
+    width:calc(var(--tama-lcd-w, 360px) - 20px)!important;
+    min-height:34px!important;
+    max-height:48px!important;
+    z-index:2147483647!important;
+    pointer-events:none!important;
+    transform:none!important;
+    padding:7px 10px!important;
+    border-radius:12px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(13px,1.35vw,18px)!important;
+    line-height:1.08!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    overflow:hidden!important;
+    box-shadow:0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+
+  body.ctwRouterExpanded .tamaGameCaption.show,
+  body.gameExpandedFromTama .tamaGameCaption.show{
+    display:block!important;
+    position:fixed!important;
+    left:50vw!important;
+    top:calc(env(safe-area-inset-top) + 14px)!important;
+    width:min(820px,88vw)!important;
+    z-index:2147483647!important;
+    transform:translateX(-50%)!important;
+    padding:11px 16px!important;
+    border-radius:16px!important;
+    background:rgba(255,247,189,.98)!important;
+    color:#21142d!important;
+    font-size:clamp(15px,1.4vw,22px)!important;
+    line-height:1.15!important;
+    font-weight:1000!important;
+    text-align:center!important;
+    box-shadow:0 10px 24px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)!important;
+  }
+
+  /* In Tamagotchi quest mode the whole game is scaled into a tiny LCD.
+     Make sign/task labels large BEFORE scaling so they are still readable. */
+  body.ctwRouterEmbedded .obj.lessonBlock{
+    width:210px!important;
+    min-height:88px!important;
+    padding:10px 12px!important;
+    border-radius:22px!important;
+  }
+  body.ctwRouterEmbedded .obj.lessonBlock::before{
+    font-size:42px!important;
+  }
+  body.ctwRouterEmbedded .obj.lessonBlock::after{
+    font-size:24px!important;
+    line-height:1.05!important;
+  }
+
+  #ctwRouterNativeFullscreenHit{
+    display:none;
+    position:fixed;
+    z-index:2147483647;
+    border:0;
+    padding:0;
+    margin:0;
+    background:transparent;
+    color:transparent;
+    opacity:.01;
+    cursor:pointer;
+    pointer-events:auto;
+    -webkit-tap-highlight-color:transparent;
+  }
+  body.ctwRouterEmbedded #ctwRouterNativeFullscreenHit{
+    display:block!important;
+  }
+</style>
+
 </head>
 
 
@@ -4837,12 +4920,50 @@ function stage27EnsureCaption(){
   if(!cap){cap=document.createElement('div');cap.id='tamaGameCaption';cap.className='tamaGameCaption';cap.setAttribute('aria-live','polite');document.body.appendChild(cap);}
   return cap;
 }
+function stage45ForceCaptionStyle(cap){
+  if(!cap)return;
+  const b=document.body;
+  const embedded=b.classList.contains('tamaGameEmbedded')||b.classList.contains('ctwRouterEmbedded');
+  const expanded=b.classList.contains('gameExpandedFromTama')||b.classList.contains('ctwRouterExpanded');
+  cap.style.setProperty('display','block','important');
+  cap.style.setProperty('position','fixed','important');
+  cap.style.setProperty('z-index','2147483647','important');
+  cap.style.setProperty('pointer-events','none','important');
+  cap.style.setProperty('background','rgba(255,247,189,.98)','important');
+  cap.style.setProperty('color','#21142d','important');
+  cap.style.setProperty('font-weight','1000','important');
+  cap.style.setProperty('text-align','center','important');
+  cap.style.setProperty('box-shadow','0 8px 20px rgba(0,0,0,.32), inset 0 0 0 2px rgba(255,255,255,.75)','important');
+  if(embedded){
+    cap.style.setProperty('left','calc(var(--tama-lcd-left, 50vw) + 10px)','important');
+    cap.style.setProperty('top','calc(var(--tama-lcd-top, 50dvh) + var(--tama-lcd-h, 180px) - 52px)','important');
+    cap.style.setProperty('width','calc(var(--tama-lcd-w, 360px) - 20px)','important');
+    cap.style.setProperty('min-height','34px','important');
+    cap.style.setProperty('max-height','48px','important');
+    cap.style.setProperty('transform','none','important');
+    cap.style.setProperty('padding','7px 10px','important');
+    cap.style.setProperty('border-radius','12px','important');
+    cap.style.setProperty('font-size','clamp(13px,1.35vw,18px)','important');
+    cap.style.setProperty('line-height','1.08','important');
+    cap.style.setProperty('overflow','hidden','important');
+  }else if(expanded){
+    cap.style.setProperty('left','50vw','important');
+    cap.style.setProperty('top','calc(env(safe-area-inset-top) + 14px)','important');
+    cap.style.setProperty('width','min(820px,88vw)','important');
+    cap.style.setProperty('transform','translateX(-50%)','important');
+    cap.style.setProperty('padding','11px 16px','important');
+    cap.style.setProperty('border-radius','16px','important');
+    cap.style.setProperty('font-size','clamp(15px,1.4vw,22px)','important');
+    cap.style.setProperty('line-height','1.15','important');
+  }
+}
 function stage27ShowCaption(msg,duration=1800){
   const cap=stage27EnsureCaption();
   cap.textContent=String(msg||'');
   cap.classList.add('show');
+  stage45ForceCaptionStyle(cap);
   clearTimeout(stage27ShowCaption.t);
-  stage27ShowCaption.t=setTimeout(()=>cap.classList.remove('show'),duration);
+  stage27ShowCaption.t=setTimeout(()=>{cap.classList.remove('show');cap.style.removeProperty('display');},duration);
 }
 function showToast(msg){
   const t=$('toast');
@@ -5600,6 +5721,7 @@ This router owns:
     removeInline(frame);
     removeInline(q('tamaGameMask33'));
     hideOldOverlays();
+    try{ const fsHit=q('ctwRouterNativeFullscreenHit'); if(fsHit) setImp(fsHit, 'display', 'none'); }catch(e){}
     lockPage(true);
   }
 
@@ -5684,20 +5806,67 @@ This router owns:
     }catch(e){}
   }
 
-  function calcLcdRect(){
+  function calcDeviceRect(){
     const vw = innerWidth || d.documentElement.clientWidth || 1920;
     const vh = innerHeight || d.documentElement.clientHeight || 1080;
     const deviceW = Math.min(vw * 0.98, vh * 0.99 * (1024 / 1536));
     const deviceH = deviceW * (1536 / 1024);
-    const deviceLeft = (vw - deviceW) / 2;
-    const deviceTop = (vh - deviceH) / 2;
-
     return {
-      left: deviceLeft + deviceW * 0.2118,
-      top: deviceTop + deviceH * 0.3952,
-      width: deviceW * 0.5724,
-      height: deviceH * 0.2663
+      left:(vw - deviceW) / 2,
+      top:(vh - deviceH) / 2,
+      width:deviceW,
+      height:deviceH
     };
+  }
+
+  function calcLcdRect(){
+    const dev = calcDeviceRect();
+    return {
+      left: dev.left + dev.width * 0.2118,
+      top: dev.top + dev.height * 0.3952,
+      width: dev.width * 0.5724,
+      height: dev.height * 0.2663
+    };
+  }
+
+  function ensureNativeFullscreenHit(){
+    let btn = q('ctwRouterNativeFullscreenHit');
+    if(!btn){
+      btn = d.createElement('button');
+      btn.id = 'ctwRouterNativeFullscreenHit';
+      btn.type = 'button';
+      btn.setAttribute('aria-label','Open quest in PC fullscreen');
+      btn.textContent = 'Fullscreen';
+      body.appendChild(btn);
+      const go = function(e){
+        try{ e.preventDefault(); e.stopPropagation(); if(e.stopImmediatePropagation) e.stopImmediatePropagation(); }catch(_e){}
+        setExpanded({start:false});
+        tryNativeFullscreen();
+      };
+      btn.addEventListener('click', go, true);
+      btn.addEventListener('touchend', go, {capture:true, passive:false});
+    }
+    return btn;
+  }
+
+  function positionNativeFullscreenHit(){
+    const btn = ensureNativeFullscreenHit();
+    if(!isEmbedded()){
+      setImp(btn, 'display', 'none');
+      return;
+    }
+    const dev = calcDeviceRect();
+    setImp(btn, 'display', 'block');
+    setImp(btn, 'position', 'fixed');
+    setImp(btn, 'left', (dev.left + dev.width * 0.31) + 'px');
+    setImp(btn, 'top', (dev.top + dev.height * 0.065) + 'px');
+    setImp(btn, 'width', (dev.width * 0.38) + 'px');
+    setImp(btn, 'height', (dev.height * 0.12) + 'px');
+    setImp(btn, 'z-index', '2147483647');
+    setImp(btn, 'pointer-events', 'auto');
+    setImp(btn, 'background', 'transparent');
+    setImp(btn, 'border', '0');
+    setImp(btn, 'opacity', '.01');
   }
 
   function fitEmbedded(){
@@ -5724,6 +5893,7 @@ This router owns:
     root.style.setProperty('--tama-lcd-top', r.top + 'px');
     root.style.setProperty('--tama-lcd-w', r.width + 'px');
     root.style.setProperty('--tama-lcd-h', r.height + 'px');
+    positionNativeFullscreenHit();
 
     let scale = Math.max(r.width / 820, r.height / 500);
     scale = Math.max(0.24, Math.min(0.54, scale));
@@ -5763,6 +5933,7 @@ This router owns:
   function fitExpanded(){
     if(!isExpanded()) return;
 
+    try{ const fsHit=q('ctwRouterNativeFullscreenHit'); if(fsHit) setImp(fsHit, 'display', 'none'); }catch(e){}
     releaseGame();
 
     const vw = innerWidth || d.documentElement.clientWidth || DESIGN_W;
@@ -5810,15 +5981,33 @@ This router owns:
   }
 
   function keepFitSoon(){
-    [60, 160, 320, 700, 1200, 1900, 2800].forEach(function(ms){
+    [60, 160, 320, 700, 1200, 1900, 2800, 4000, 6000].forEach(function(ms){
       setTimeout(scheduleFit, ms);
     });
   }
 
   function tryNativeFullscreen(){
-    // CSS fullscreen only. Do not call browser requestFullscreen(),
-    // because that was fighting Tamagotchi mode and trapping the layout.
-    return false;
+    // STAGE 45: PC expanded quest can use real browser fullscreen.
+    // This is only called from a user action while entering expanded quest mode.
+    // The Tamagotchi menu/embedded LCD still use CSS layout only.
+    try{
+      if(!isExpanded()) return false;
+      if(d.fullscreenElement) return true;
+      const target = root || d.documentElement || body;
+      const fn = target.requestFullscreen || target.webkitRequestFullscreen || target.msRequestFullscreen;
+      if(!fn) return false;
+      const result = fn.call(target, {navigationUI:'hide'});
+      if(result && result.then){
+        result.then(function(){ keepFitSoon(); scheduleFit(); }).catch(function(){ keepFitSoon(); scheduleFit(); });
+      }else{
+        keepFitSoon();
+        scheduleFit();
+      }
+      return true;
+    }catch(e){
+      keepFitSoon();
+      return false;
+    }
   }
 
   function exitNativeFullscreen(){
@@ -5827,8 +6016,10 @@ This router owns:
       if(d.fullscreenElement && fn){
         const result = fn.call(d);
         if(result && result.catch) result.catch(function(){});
+        return result || Promise.resolve(true);
       }
     }catch(e){}
+    return Promise.resolve(false);
   }
 
   function setPetbotMenu(opts){
@@ -6147,8 +6338,25 @@ This router owns:
   };
 
   window.stage37ReturnExpandedQuestToTamagotchi = function(){
-    exitNativeFullscreen();
-    return setEmbedded(body.classList.contains('teamMode') ? 'team' : 'solo', {start:false});
+    const kind = body.classList.contains('teamMode') ? 'team' : 'solo';
+    let done = false;
+    function finishReturn(){
+      if(done) return;
+      done = true;
+      setEmbedded(kind, {start:false});
+      postToPetbot({type:'waa-parent-return-to-tamagotchi', keepQuest:true, t:Date.now()});
+      keepFitSoon();
+      scheduleFit();
+    }
+    const p = exitNativeFullscreen();
+    if(d.fullscreenElement){
+      setTimeout(finishReturn, 180);
+      setTimeout(function(){ if(!done) finishReturn(); else { keepFitSoon(); scheduleFit(); } }, 520);
+      try{ if(p && p.finally) p.finally(function(){ setTimeout(finishReturn, 80); }); }catch(e){}
+    }else{
+      finishReturn();
+    }
+    return true;
   };
 
   window.waaResumeQuestFromPetbot = function(mode){
@@ -6428,6 +6636,10 @@ This router owns:
   }, true);
 
   window.addEventListener('resize', scheduleFit, {passive:true});
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', scheduleFit, {passive:true});
+    window.visualViewport.addEventListener('scroll', scheduleFit, {passive:true});
+  }
 
   window.addEventListener('orientationchange', function(){
     setTimeout(scheduleFit, 120);
@@ -6435,9 +6647,12 @@ This router owns:
 
   window.addEventListener('fullscreenchange', function(){
     if(!d.fullscreenElement && isExpanded()){
-      setEmbedded(body.classList.contains('teamMode') ? 'team' : 'solo', {start:false});
+      // Esc exits real PC fullscreen. Return the quest cleanly to the Tamagotchi LCD
+      // after the browser has finished resizing the viewport.
+      setTimeout(function(){ window.stage37ReturnExpandedQuestToTamagotchi(); }, 80);
       return;
     }
+    keepFitSoon();
     scheduleFit();
   });
 
