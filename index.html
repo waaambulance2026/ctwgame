@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage51-start-picker-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage52-quest-character-picker-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5560,7 +5560,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage51-start-picker-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage52-quest-character-picker-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5574,6 +5574,7 @@ This router owns:
   const helpers = {
     startSoloQuest: window.startSoloQuest || (typeof startSoloQuest === 'function' ? startSoloQuest : null),
     startTeamQuest: window.startTeamQuest || (typeof startTeamQuest === 'function' ? startTeamQuest : null),
+    startGame: window.startGame || (typeof startGame === 'function' ? startGame : null),
     jump: window.jump || (typeof jump === 'function' ? jump : null),
     showCaption: window.stage27ShowCaption || window.showToast || null,
     setMovingClass: window.stage27SetMovingClass || null,
@@ -5849,9 +5850,64 @@ This router owns:
     }
   }
 
-  function startPlaying(kind){
+  function cleanQuestChar(ch, allowNone){
+    ch = String(ch || '').trim().toLowerCase();
+    if(allowNone && ch === 'none') return 'none';
+    if(['ax','pura','owl','unicorn','pet'].indexOf(ch) >= 0) return ch;
+    return allowNone ? 'none' : 'ax';
+  }
+
+  function questCharactersFromMessage(kind, msg){
+    const raw = msg && Array.isArray(msg.characters) ? msg.characters : [];
+    if(!raw.length) return null;
+
     if(kind === 'team'){
-      if(!safeCall(helpers.startTeamQuest)) safeCall(helpers.startSoloQuest);
+      const out = [];
+      raw.slice(0,4).forEach(function(ch, i){
+        const clean = cleanQuestChar(ch, i > 0);
+        if(i === 0 && clean !== 'none') out.push(clean);
+        else if(i > 0 && clean !== 'none' && out.indexOf(clean) < 0) out.push(clean);
+      });
+      if(!out.length) out.push('ax');
+      if(out.length < 2) out.push(out[0] === 'pura' ? 'ax' : 'pura');
+      return out.slice(0,4);
+    }
+
+    return [cleanQuestChar(raw[0], false)];
+  }
+
+  function setHiddenQuestSelectors(kind, chars){
+    try{
+      if(kind === 'team'){
+        const ids = ['teamSlot1Select','teamSlot2Select','teamSlot3Select','teamSlot4Select'];
+        ids.forEach(function(id, i){
+          const el = q(id);
+          if(el) el.value = chars[i] || (i === 0 ? 'ax' : 'none');
+        });
+      }else{
+        const el = q('soloCharacterSelect');
+        if(el) el.value = chars[0] || 'ax';
+      }
+    }catch(e){}
+  }
+
+  function startPlaying(kind, msg){
+    kind = kind === 'team' ? 'team' : 'solo';
+    const chars = questCharactersFromMessage(kind, msg);
+
+    if(chars && chars.length){
+      setHiddenQuestSelectors(kind, chars);
+      if(kind === 'team'){
+        if(!safeCall(helpers.startGame, chars[0] || 'ax', chars[1] || 'pura', chars[2] || 'none', chars[3] || 'none')){
+          if(!safeCall(helpers.startTeamQuest)) safeCall(helpers.startSoloQuest);
+        }
+      }else{
+        if(!safeCall(helpers.startGame, chars[0] || 'ax', 'none', 'none', 'none')){
+          safeCall(helpers.startSoloQuest);
+        }
+      }
+    }else if(kind === 'team'){
+      if(!safeCall(helpers.startTeamQuest)) safeCall(helpers.startGame, 'ax', 'pura', 'none', 'none');
     }else{
       safeCall(helpers.startSoloQuest);
     }
@@ -6165,7 +6221,7 @@ This router owns:
     body.classList.add('ctwRouterEmbedded', 'petbotOpen', 'tamaGameEmbedded', 'tamaLiteRender33', 'waaFs40Embedded');
 
     if(opts.start !== false){
-      startPlaying(kind || 'solo');
+      startPlaying(kind || 'solo', opts.message || opts);
     }else{
       try{
         if(typeof paused !== 'undefined') paused = false;
@@ -6500,13 +6556,14 @@ This router owns:
     if(isEmbedded()) fitEmbedded();
   };
 
-  window.handlePetbotGameAction = function(action){
+  window.handlePetbotGameAction = function(action, msg){
+    msg = msg || {};
     if(action === 'startSoloEmbedded' || action === 'startPlatformEmbedded'){
-      return setEmbedded('solo', {start:true});
+      return setEmbedded('solo', {start:true, message:msg, characters:msg.characters || []});
     }
 
     if(action === 'startTeamEmbedded'){
-      return setEmbedded('team', {start:true});
+      return setEmbedded('team', {start:true, message:msg, characters:msg.characters || []});
     }
 
     if(action === 'expandEmbedded'){
@@ -6693,7 +6750,7 @@ This router owns:
     }
 
     if(msg.type === 'waa-petbot-game-action'){
-      return window.handlePetbotGameAction(msg.action);
+      return window.handlePetbotGameAction(msg.action, msg);
     }
 
     if(msg.type === 'waa-petbot-toggle-fullscreen'){

@@ -631,6 +631,17 @@ const GAME_MENU=[
   {key:'team',label:'Team Quest',icon:'👥',action:'questTeam'},
   {key:'back',label:'Back',icon:'↩️',action:'back'}
 ];
+const QUEST_CHARACTERS=[
+  {key:'ax',label:'Ax',icon:'💗'},
+  {key:'pura',label:'Pura',icon:'🐶'},
+  {key:'owl',label:'Owl',icon:'🦉'},
+  {key:'unicorn',label:'Unicorn',icon:'🦄'},
+  {key:'pet',label:'Selected Pet',icon:'🐾'}
+];
+const QUEST_FOLLOWERS=[
+  {key:'none',label:'None',icon:'—'},
+  ...QUEST_CHARACTERS
+];
 const TUTORIAL_TOWN_SCRIPT={
   title:'Tutorial Town',
   next:'Wrong Moon Quest',
@@ -653,7 +664,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -686,6 +697,7 @@ function render(){
   else if(state.screen==='stats') html=renderStats();
   else if(state.screen==='inventory') html=renderPanel('INVENTORY');
   else if(state.screen==='games') html=renderGames();
+  else if(state.screen==='questPick') html=renderQuestPick();
   else if(state.screen==='questGame') html=renderQuestGame();
   else if(state.screen==='shop') html=renderPanel('SHOP');
   else if(state.screen==='habitat') html=renderHabitatPanel();
@@ -1027,7 +1039,30 @@ async function runCareAction(){
   render();
 }
 function renderGames(){
-  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Tutorial Town</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span><small>${g.key==='solo'?'One pet tutorial':g.key==='team'?'Team Quest tutorial':'Return to pet'}</small></div>`).join('')}</div></div>`;
+  return top('QUESTS','')+`<div class="body quests22"><div class="panelHead">Tutorial Town</div><div class="panelGrid questGrid22">${GAME_MENU.map((g,i)=>`<div class="panelCard questCard22 ${i===state.gameIndex?'active':''}" data-game-index="${i}"><span>${g.icon}</span><span>${esc(g.label)}</span><small>${g.key==='solo'?'Choose character first':g.key==='team'?'Choose team first':'Return to pet'}</small></div>`).join('')}</div></div>`;
+}
+function questPickListForSlot(slot){
+  return slot===0 ? QUEST_CHARACTERS : QUEST_FOLLOWERS;
+}
+function questCharInfo(key,slot){
+  const list=questPickListForSlot(slot);
+  return list.find(c=>c.key===key) || list[0] || QUEST_CHARACTERS[0];
+}
+function renderQuestPick(){
+  const pick=state.questPick||{kind:'solo',slot:0,slots:['ax','none','none','none']};
+  const kind=pick.kind==='team'?'team':'solo';
+  const activeSlot=kind==='team'?clamp(Number(pick.slot)||0,0,3):0;
+  const slots=(pick.slots&&pick.slots.length?pick.slots:['ax','none','none','none']).slice(0,4);
+  while(slots.length<4)slots.push('none');
+  const title=kind==='team'?'TEAM PICK':'SOLO PICK';
+  const right=kind==='team'?((activeSlot+1)+'/4'):'1/1';
+  const rows=(kind==='team'?[0,1,2,3]:[0]).map(i=>{
+    const info=questCharInfo(slots[i],i);
+    const role=i===0?'Main':'Slot '+(i+1);
+    const active=i===activeSlot?'active':'';
+    return `<div class="panelCard questCard22 ${active}"><span>${esc(info.icon)}</span><span>${esc(role)}: ${esc(info.label)}</span><small>${i===activeSlot?'A/C change · B '+(kind==='team'&&i<3?'next':'start'):'chosen'}</small></div>`;
+  }).join('');
+  return top(title,right)+`<div class="body quests22"><div class="panelHead">Choose before the quest starts</div><div class="panelGrid questGrid22">${rows}</div></div>`;
 }
 function renderQuestGame(){
   return `<div class="questGameGlass" aria-label="${esc(state.quest.mode||'Quest')} running inside Tamagotchi"></div>`;
@@ -1482,6 +1517,7 @@ function handlePrev(){
   if(state.screen==='petActions'){state.petActionIndex=(state.petActionIndex+PET_ACTIONS.length-1)%PET_ACTIONS.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
+  if(state.screen==='questPick'){cycleQuestPick(-1);return;}
   if(state.screen==='care'){state.panelIndex=(state.panelIndex+CARE_ACTIONS.length-1)%CARE_ACTIONS.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+state.pets.length-1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.max(1,(Number(state.shopQty)||1)-1);render();return;}
@@ -1494,6 +1530,7 @@ function handleNext(){
   if(state.screen==='petActions'){state.petActionIndex=(state.petActionIndex+1)%PET_ACTIONS.length;render();return;}
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
+  if(state.screen==='questPick'){cycleQuestPick(1);return;}
   if(state.screen==='care'){state.panelIndex=(state.panelIndex+1)%CARE_ACTIONS.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.min(99,(Number(state.shopQty)||1)+1);render();return;}
@@ -1509,6 +1546,7 @@ function handleSelect(){
   if(state.screen==='petActions')return activatePetAction();
   if(state.screen==='menu')return activateMenu();
   if(state.screen==='games')return activateGameMenu();
+  if(state.screen==='questPick')return confirmQuestPick();
   if(state.screen==='care')return runCareAction();
   if(state.screen==='questGame')return questJump();
   if(['shop','inventory','habitat','hook'].includes(state.screen))return activatePanelItem();
@@ -1538,27 +1576,65 @@ function activateGameMenu(){
   const item=GAME_MENU[state.gameIndex]||GAME_MENU[0];
   if(item.action==='back'){state.screen='petActions';render();return;}
   if(item.action==='questSolo'){
-    state.quest={mode:'Solo Quest · Tutorial Town',embedded:true,score:0};
-    state.screen='questGame';
+    state.questPick={kind:'solo',slot:0,slots:[(state.questPick&&state.questPick.slots&&state.questPick.slots[0])||'ax','none','none','none']};
+    state.screen='questPick';
     render();
-    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSoloEmbedded'}),80);
     return;
   }
   if(item.action==='questTeam'){
-    state.quest={mode:'Team Quest · Tutorial Town',embedded:true,score:0};
-    state.screen='questGame';
+    const oldSlots=(state.questPick&&state.questPick.slots)||[];
+    state.questPick={kind:'team',slot:0,slots:[oldSlots[0]||'ax',oldSlots[1]&&oldSlots[1]!=='none'?oldSlots[1]:'pura',oldSlots[2]||'none',oldSlots[3]||'none']};
+    state.screen='questPick';
     render();
-    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startTeamEmbedded'}),80);
-    return;
-  }
-  if(item.action==='questPlatform'){
-    state.quest={mode:'Platform Game',embedded:true,score:0};
-    state.screen='questGame';
-    render();
-    setTimeout(()=>sendParent('waa-petbot-game-action',{action:'startSoloEmbedded'}),80);
     return;
   }
   state.screen='petActions';render();
+}
+
+function cycleQuestPick(dir){
+  const pick=state.questPick||{kind:'solo',slot:0,slots:['ax','none','none','none']};
+  const kind=pick.kind==='team'?'team':'solo';
+  const slot=kind==='team'?clamp(Number(pick.slot)||0,0,3):0;
+  const list=questPickListForSlot(slot);
+  const slots=(pick.slots&&pick.slots.length?pick.slots:['ax','none','none','none']).slice(0,4);
+  while(slots.length<4)slots.push('none');
+  const current=slots[slot]||list[0].key;
+  let idx=list.findIndex(c=>c.key===current);
+  if(idx<0)idx=0;
+  idx=(idx+dir+list.length)%list.length;
+  slots[slot]=list[idx].key;
+  state.questPick={...pick,kind,slot,slots};
+  render();
+}
+function questChosenCharacters(){
+  const pick=state.questPick||{kind:'solo',slots:['ax','none','none','none']};
+  const kind=pick.kind==='team'?'team':'solo';
+  const slots=(pick.slots&&pick.slots.length?pick.slots:['ax','none','none','none']).slice(0,4);
+  while(slots.length<4)slots.push('none');
+  if(kind==='solo')return [slots[0]||'ax'];
+  const chars=[];
+  slots.forEach((ch,i)=>{
+    if(i===0){chars.push(ch&&ch!=='none'?ch:'ax');return;}
+    if(ch&&ch!=='none'&&!chars.includes(ch))chars.push(ch);
+  });
+  if(chars.length<2)chars.push(chars[0]==='pura'?'ax':'pura');
+  return chars.slice(0,4);
+}
+function confirmQuestPick(){
+  const pick=state.questPick||{kind:'solo',slot:0,slots:['ax','none','none','none']};
+  const kind=pick.kind==='team'?'team':'solo';
+  const slot=kind==='team'?clamp(Number(pick.slot)||0,0,3):0;
+  if(kind==='team' && slot<3){
+    state.questPick={...pick,slot:slot+1};
+    render();
+    return;
+  }
+  const chars=questChosenCharacters();
+  const action=kind==='team'?'startTeamEmbedded':'startSoloEmbedded';
+  state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',embedded:true,score:0,characters:chars};
+  state.screen='questGame';
+  render();
+  setTimeout(()=>sendParent('waa-petbot-game-action',{action,characters:chars,questKind:kind}),80);
 }
 
 function openShopPanel(){
@@ -1708,6 +1784,11 @@ function handleBack(){
     return;
   }
   if(state.screen==='games'){state.screen='petActions';render();return;}
+  if(state.screen==='questPick'){
+    const pick=state.questPick||{};
+    if(pick.kind==='team' && Number(pick.slot)>0){state.questPick={...pick,slot:Number(pick.slot)-1};render();return;}
+    state.screen='games';render();return;
+  }
   if(['inventory','habitat','hook'].includes(state.screen)){state.screen='petActions';render();return;}
   if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
   state.screen='petActions';render();
