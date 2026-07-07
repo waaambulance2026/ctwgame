@@ -665,6 +665,12 @@ const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
 let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+function isQuestReturnMenuScreen(screen){
+  return ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','welcomeBoard'].includes(String(screen||state.screen||''));
+}
+function isQuestMenuProtected(){
+  return !!(state && state.returnToQuest && isQuestReturnMenuScreen(state.screen));
+}
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -1631,6 +1637,10 @@ function confirmQuestPick(){
   }
   const chars=questChosenCharacters();
   const action=kind==='team'?'startTeamEmbedded':'startSoloEmbedded';
+  state.returnToQuest=false;
+  state.returnQuestMode='';
+  state._questMenuOpenAt=0;
+  state._questMenuScreen='';
   state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',embedded:true,score:0,characters:chars};
   state.screen='questGame';
   render();
@@ -1895,6 +1905,8 @@ window.addEventListener('message',e=>{
     if(d.returnToQuest){
       state.returnToQuest=true;
       state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
+      state._questMenuOpenAt=Date.now();
+      state._questMenuScreen=targetScreen;
     }
     leaveQuestVisualMode();
     petbotOpenParentScreen(targetScreen);
@@ -1950,6 +1962,7 @@ window.addEventListener('message', e => {
   function markReturnToQuest(mode){
     state.returnToQuest=true;
     state.returnQuestMode=mode||state.returnQuestMode||'embedded';
+    state._questMenuOpenAt=Date.now();
   }
   window.addEventListener('message',e=>{
     if(e.origin!==location.origin)return;
@@ -1969,6 +1982,8 @@ window.addEventListener('message', e => {
     questKeyLeft=false; questKeyRight=false;
     send('moveStop');
     state.screen='questGame';
+    state._questMenuOpenAt=0;
+    state._questMenuScreen='';
     state.quest={...(state.quest||{}),started:true,embedded:true};
     render();
     send('returnToQuest');
@@ -2056,13 +2071,25 @@ window.addEventListener('message', e => {
       state.screen='questGame';
       state.quest={...oldQuest,mode:oldQuest.mode||((kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true};
       state.returnToQuest=false;
+      state._questMenuOpenAt=0;
+      state._questMenuScreen='';
       render();
     }catch(e){ console.warn('Stage 37/53 quest LCD restore failed',e); }
   }
   window.addEventListener('message',function(e){
     if(e.origin!==location.origin)return;
     const d=e.data||{};
-    if(d.type==='waa-parent-quest-active') showQuestFromParent(d);
+    if(d.type==='waa-parent-quest-active'){
+      // STAGE 55: start/fit messages are repeated by the parent. If the user has
+      // already opened a quest building, those stale quest-active pings must not
+      // pull the LCD back into questGame over the shop/habitat/hook/menu.
+      const recentMenu=state._questMenuOpenAt && Date.now()-Number(state._questMenuOpenAt)<15000;
+      if((isQuestMenuProtected() || (recentMenu && state.screen!=='questGame')) && !d.forceQuest){
+        render();
+        return;
+      }
+      showQuestFromParent(d);
+    }
     if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(function(){showQuestFromParent(d);},0);
   },true);
 })();

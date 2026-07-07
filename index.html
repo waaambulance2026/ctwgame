@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage54-quest-game-protect-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage55-building-menu-lock-20260707&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5008,7 +5008,27 @@ function stage45ForceCaptionStyle(cap){
     cap.style.setProperty('line-height','1.15','important');
   }
 }
+function stage27HideCaption(){
+  try{
+    const cap=document.getElementById('tamaGameCaption');
+    if(cap){
+      cap.classList.remove('show');
+      cap.textContent='';
+      cap.style.removeProperty('display');
+    }
+  }catch(e){}
+}
 function stage27ShowCaption(msg,duration=1800){
+  try{
+    if(window.waaSuppressQuestCaptionsUntil && Date.now()<Number(window.waaSuppressQuestCaptionsUntil)){
+      stage27HideCaption();
+      return;
+    }
+    if(document.body.classList.contains('ctwRouterMenu')){
+      stage27HideCaption();
+      return;
+    }
+  }catch(e){}
   const cap=stage27EnsureCaption();
   cap.textContent=String(msg||'');
   cap.classList.add('show');
@@ -5019,7 +5039,7 @@ function stage27ShowCaption(msg,duration=1800){
 function showToast(msg){
   const t=$('toast');
   if(t){t.textContent=msg;t.classList.add('show');clearTimeout(showToast.t);showToast.t=setTimeout(()=>t.classList.remove('show'),1300);}
-  if(document.body.classList.contains('tamaGameEmbedded')||document.body.classList.contains('gameExpandedFromTama')) stage27ShowCaption(msg,1900);
+  if((document.body.classList.contains('tamaGameEmbedded')||document.body.classList.contains('gameExpandedFromTama'))&&!document.body.classList.contains('ctwRouterMenu')) stage27ShowCaption(msg,1900);
 }
 function stage27SetMovingClass(moving){
   moving=!!moving;
@@ -5560,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage54-quest-game-protect-20260707&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage55-building-menu-lock-20260707&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5647,6 +5667,7 @@ This router owns:
 
   let currentMode = '';
   let fitTimer = 0;
+  let questMenuOpen = false;
 
   function q(id){ return d.getElementById(id); }
 
@@ -5858,7 +5879,21 @@ This router owns:
     setImp(dock, 'pointer-events', 'none');
   }
 
+  function hideQuestCaption(){
+    try{
+      window.waaSuppressQuestCaptionsUntil = Date.now() + 8000;
+      if(typeof stage27HideCaption === 'function') stage27HideCaption();
+      const cap = q('tamaGameCaption');
+      if(cap){
+        cap.classList.remove('show');
+        cap.textContent = '';
+        cap.style.removeProperty('display');
+      }
+    }catch(e){}
+  }
+
   function showCaption(text, ms){
+    if(questMenuOpen || (isMenu() && hasQuestReturn())){ hideQuestCaption(); return false; }
     if(!safeCall(helpers.showCaption, String(text || ''), ms || 1400)){
       try{ if(typeof showToast === 'function') showToast(String(text || '')); }catch(e){}
     }
@@ -6191,7 +6226,9 @@ This router owns:
   function setPetbotMenu(opts){
     opts = opts || {};
     currentMode = 'menu';
+    questMenuOpen = !!opts.fromQuest;
 
+    if(questMenuOpen) hideQuestCaption();
     clearForMode();
     releaseGame();
     moveDockToBody();
@@ -6226,6 +6263,8 @@ This router owns:
   function setEmbedded(kind, opts){
     opts = opts || {};
     currentMode = 'embedded';
+    questMenuOpen = false;
+    window.waaSuppressQuestCaptionsUntil = 0;
 
     clearForMode();
     moveDockToBody();
@@ -6259,6 +6298,8 @@ This router owns:
   function setExpanded(opts){
     opts = opts || {};
     currentMode = 'expanded';
+    questMenuOpen = false;
+    window.waaSuppressQuestCaptionsUntil = 0;
 
     clearForMode();
     releaseGame();
@@ -6358,7 +6399,10 @@ This router owns:
     const screen = placeToScreen(o.place);
     const label = o.label || o.place || 'Building';
 
+    questMenuOpen = true;
+    hideQuestCaption();
     stopMove();
+    try{ if(typeof paused !== 'undefined') paused = true; }catch(e){}
 
     try{
       localStorage.setItem('waaPendingPetbotScreen', JSON.stringify({
@@ -6377,17 +6421,21 @@ This router owns:
       place:o.place || '',
       label:label,
       returnToQuest:true,
-      returnMode:mode
+      returnMode:mode,
+      t:Date.now()
     };
 
-    // Stage 47: tell PetBot to leave questGame/blank-LCD mode before the parent hides
-    // the scaled quest canvas. Then switch to PetBot menu mode and repeat the message.
+    // STAGE 55: a building is a quest overlay state, not Tamagotchi home.
+    // Switch the parent to protected menu mode immediately so the platform canvas pauses
+    // behind the toy, then repeat the exact building-screen message to the iframe.
     try{ if(frame.contentWindow) frame.contentWindow.postMessage(parentScreenMsg, location.origin); }catch(e){}
-    setTimeout(function(){
-      setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode});
-    }, 90);
+    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode});
+    [80, 180, 420, 900].forEach(function(ms){
+      setTimeout(function(){
+        try{ if(frame.contentWindow) frame.contentWindow.postMessage(parentScreenMsg, location.origin); }catch(e){}
+      }, ms);
+    });
 
-    showCaption(label + ' opened', 1200);
     return true;
   }
 
@@ -6473,6 +6521,8 @@ This router owns:
     }
 
     currentMode = '';
+    questMenuOpen = false;
+    window.waaSuppressQuestCaptionsUntil = 0;
     clearForMode();
     releaseGame();
     restoreDockHome();
@@ -6502,6 +6552,8 @@ This router owns:
 
   window.stopEmbeddedTamaGame = function(){
     currentMode = '';
+    questMenuOpen = false;
+    window.waaSuppressQuestCaptionsUntil = 0;
     clearForMode();
     releaseGame();
     restoreDockHome();
