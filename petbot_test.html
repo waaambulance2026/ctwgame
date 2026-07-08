@@ -1933,7 +1933,25 @@ function petbotConsumePendingParentScreen(){
       else localStorage.removeItem('waaPendingPetbotScreen');
     }
   }catch(e){}
-  if(pending) petbotOpenParentScreen(pending);
+  if(pending){
+    // STAGE 61: if the normal postMessage was missed and the building screen is
+    // opened from localStorage instead, keep the return-to-quest flag BEFORE
+    // petbotOpenParentScreen() clears the pending localStorage item. This was
+    // why Back sometimes went to petActions instead of returning to the quest.
+    try{
+      const raw=localStorage.getItem('waaPendingPetbotScreen');
+      if(raw){
+        const pack=JSON.parse(raw);
+        if(pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000){
+          state.returnToQuest=true;
+          state.returnQuestMode=pack.returnMode||state.returnQuestMode||'embedded';
+          state._questMenuOpenAt=Date.now();
+          state._questMenuScreen=pack.screen||pending;
+        }
+      }
+    }catch(e){}
+    petbotOpenParentScreen(pending);
+  }
 }
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
