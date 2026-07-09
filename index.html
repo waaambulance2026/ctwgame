@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage61-reliable-building-back-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage64-team-clean-router-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage61-reliable-building-back-20260709&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage64-team-clean-router-20260709&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5829,12 +5829,7 @@ This router owns:
     // Boot/home messages can still retry, but a building-open command from a live
     // quest is sent once so the LCD cannot show a failed first route then a working
     // second route.
-    // STAGE 61: quest building/menu opens are allowed to retry again.
-    // The PetBot iframe now dedupes by routeId, so retries no longer cause the
-    // old double-open problem, but they DO stop the first message being missed.
-    const delays = (msg && msg.type === 'waa-parent-open-screen' && msg.returnToQuest)
-      ? [20, 120, 300, 650, 1050]
-      : [30, 120, 260, 520, 900, 1400];
+    const delays = (msg && msg.type === 'waa-parent-open-screen' && msg.returnToQuest) ? [20] : [30, 120, 260, 520, 900, 1400];
     delays.forEach(function(ms){
       setTimeout(function(){
         try{
@@ -5989,6 +5984,9 @@ This router owns:
 
   function startPlaying(kind, msg){
     kind = kind === 'team' ? 'team' : 'solo';
+    clearQuestReturnNow();
+    window.waaCurrentQuestKind = kind;
+    try{ sessionStorage.setItem('waaCurrentQuestKind', kind); }catch(e){}
     const chars = questCharactersFromMessage(kind, msg);
 
     if(chars && chars.length){
@@ -6334,12 +6332,16 @@ This router owns:
       }catch(e){}
     }
 
+    const activeKind = (kind === 'team' || window.waaCurrentQuestKind === 'team' || body.classList.contains('teamMode')) ? 'team' : 'solo';
+    window.waaCurrentQuestKind = activeKind;
+    try{ sessionStorage.setItem('waaCurrentQuestKind', activeKind); }catch(e){}
+
     fitEmbedded();
 
     postToPetbot({
       type:'waa-parent-quest-active',
       mode:'embedded',
-      kind:kind || 'solo',
+      kind:activeKind,
       t:Date.now()
     });
 
@@ -6413,13 +6415,25 @@ This router owns:
     }, 500);
   }
 
+  function clearQuestReturnNow(){
+    // STAGE 64: a new Solo/Team Quest must not inherit a pending return from
+    // the previous building menu. Team Quest was being interrupted by this stale state.
+    window.waaQuestReturnMode = '';
+    questMenuOpen = false;
+    try{ sessionStorage.removeItem('waaQuestReturnMode'); }catch(e){}
+    try{ localStorage.removeItem('waaPendingPetbotScreen'); }catch(e){}
+  }
+
   function returnToQuest(mode){
     mode = mode || getQuestReturnMode();
+
+    let activeKind = body.classList.contains('teamMode') ? 'team' : (window.waaCurrentQuestKind || 'solo');
+    try{ activeKind = activeKind || sessionStorage.getItem('waaCurrentQuestKind') || 'solo'; }catch(e){}
 
     if(mode === 'expanded'){
       setExpanded({start:false});
     }else{
-      setEmbedded(body.classList.contains('teamMode') ? 'team' : 'solo', {start:false});
+      setEmbedded(activeKind === 'team' ? 'team' : 'solo', {start:false});
     }
 
     clearQuestReturnSoon();
@@ -6704,7 +6718,8 @@ This router owns:
   };
 
   window.stage37ReturnExpandedQuestToTamagotchi = function(){
-    const kind = body.classList.contains('teamMode') ? 'team' : 'solo';
+    let kind = body.classList.contains('teamMode') ? 'team' : (window.waaCurrentQuestKind || 'solo');
+    try{ kind = kind || sessionStorage.getItem('waaCurrentQuestKind') || 'solo'; }catch(e){}
     let done = false;
     function finishReturn(){
       if(done) return;

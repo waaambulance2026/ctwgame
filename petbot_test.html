@@ -716,6 +716,17 @@ function hasPendingQuestReturn(){
     return false;
   }
 }
+function clearQuestReturnState(){
+  // STAGE 64: starting a NEW solo/team quest must not inherit an old
+  // "return to previous quest" flag from a building menu. That stale flag was
+  // dragging Team Quest back to the pet/old quest screens.
+  state.returnToQuest=false;
+  state.returnQuestMode='';
+  state._questMenuOpenAt=0;
+  state._questMenuScreen='';
+  state._pendingParentScreen='';
+  try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
+}
 let touchStart=null;
 function log(msg,obj){console.log('[TamaStable]',msg,obj||'');}
 function top(title,right=''){return `<div class="top"><span>${state.player?esc(state.player.label):'CTW'}</span><span>${esc(title)}</span><span>${esc(right)}</span></div>`;}
@@ -1682,11 +1693,8 @@ function confirmQuestPick(){
   }
   const chars=questChosenCharacters();
   const action=kind==='team'?'startTeamEmbedded':'startSoloEmbedded';
-  state.returnToQuest=false;
-  state.returnQuestMode='';
-  state._questMenuOpenAt=0;
-  state._questMenuScreen='';
-  state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',embedded:true,score:0,characters:chars};
+  clearQuestReturnState();
+  state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',kind,embedded:true,started:true,score:0,characters:chars};
   state.screen='questGame';
   render();
   setTimeout(()=>sendParent('waa-petbot-game-action',{action,characters:chars,questKind:kind}),80);
@@ -1818,6 +1826,24 @@ function questJump(){
   return sendQuestSelectOrJump('pacifier');
 }
 function handleBack(){
+  // CLEAN ROUTER RULE: if a shop/habitat/hook/welcome screen was opened from a live quest,
+  // Back always returns to that quest. It must not fall through to petActions/petHome.
+  if(hasPendingQuestReturn && hasPendingQuestReturn()){
+    if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
+    if(typeof window.petbotReturnToQuest34==='function'){window.petbotReturnToQuest34();return;}
+    state.returnToQuest=false;
+    state.returnQuestMode='';
+    state._returnedToQuestAt=Date.now();
+    state.screen='questGame';
+    state.quest={...(state.quest||{}),started:true,embedded:true};
+    render();
+    sendParent('waa-petbot-game-action',{action:'returnToQuest'});
+    return;
+  }
+  if(state.screen==='questGame' && state._returnedToQuestAt && Date.now()-Number(state._returnedToQuestAt)<900){
+    render();
+    return;
+  }
   if(state.screen==='password'){state.screen='login';state.password='';state.error='';render();return;}
   if(state.screen==='login'){sendParent('waa-petbot-close');return;}
   if(state.screen==='pet'){state.screen='menu';render();return;}
@@ -1902,31 +1928,23 @@ document.addEventListener('click',e=>{
 },true);
 
 // STAGE 29: parent quest buildings can open the real PetBot/Tamagotchi screens reliably.
-function petbotOpenParentScreen(screen){
+function petbotOpenParentScreen(screen, opts){
+  opts=opts||{};
   screen=String(screen||'petHome');
+  if(opts.returnToQuest){
+    state.returnToQuest=true;
+    state.returnQuestMode=opts.returnMode||state.returnQuestMode||'embedded';
+    state._questMenuOpenAt=Date.now();
+    state._questMenuScreen=screen;
+  }
   if(screen !== 'questGame') leaveQuestVisualMode();
   if(!state.player || !currentPet()){
     state._pendingParentScreen=screen;
     return false;
   }
-  // STAGE 62: preserve Back-to-quest when a building screen is opened
-  // from the localStorage fallback instead of the normal postMessage route.
-  // Do this here, before clearing waaPendingPetbotScreen.
-  try{
-    const raw=localStorage.getItem('waaPendingPetbotScreen');
-    if(raw){
-      const pack=JSON.parse(raw);
-      const fresh=pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000;
-      const sameScreen=!pack.screen || String(pack.screen)===screen;
-      if(fresh && sameScreen){
-        state.returnToQuest=true;
-        state.returnQuestMode=pack.returnMode||state.returnQuestMode||'embedded';
-        state._questMenuOpenAt=Date.now();
-        state._questMenuScreen=screen;
-      }
-    }
-    localStorage.removeItem('waaPendingPetbotScreen');
-  }catch(e){}
+  if(!opts.returnToQuest){
+    try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
+  }
   state._pendingParentScreen='';
   state.panelActionMsg='';
   state.panelMessage='';
@@ -1942,15 +1960,18 @@ function petbotOpenParentScreen(screen){
 }
 function petbotConsumePendingParentScreen(){
   let pending=state._pendingParentScreen||'';
+  let pendingOpts={};
   try{
     const raw=localStorage.getItem('waaPendingPetbotScreen');
     if(raw){
       const pack=JSON.parse(raw);
-      if(pack && pack.t && Date.now()-Number(pack.t)<15000) pending=pack.screen||pending;
-      else localStorage.removeItem('waaPendingPetbotScreen');
+      if(pack && pack.t && Date.now()-Number(pack.t)<15000){
+        pending=pack.screen||pending;
+        pendingOpts={returnToQuest:!!pack.returnToQuest,returnMode:pack.returnMode||'embedded'};
+      }else localStorage.removeItem('waaPendingPetbotScreen');
     }
   }catch(e){}
-  if(pending) petbotOpenParentScreen(pending);
+  if(pending) petbotOpenParentScreen(pending,pendingOpts);
 }
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
@@ -1978,7 +1999,7 @@ window.addEventListener('message',e=>{
       state._questMenuScreen=targetScreen;
     }
     leaveQuestVisualMode();
-    petbotOpenParentScreen(targetScreen);
+    petbotOpenParentScreen(targetScreen,{returnToQuest:!!d.returnToQuest,returnMode:d.returnMode||'embedded'});
     setTimeout(function(){
       if(state.screen !== 'questGame'){ leaveQuestVisualMode(); render(); }
     }, 80);
@@ -2007,12 +2028,15 @@ window.addEventListener('message', e => {
     // Returning from fullscreen quest should keep the PetBot LCD in quest controls.
     // Do NOT reset to petHome here.
     state.screen = 'questGame';
+    const oldQuest = state.quest || {};
+    const kind = (d && d.kind) === 'team' ? 'team' : (oldQuest.kind === 'team' || /team/i.test(String(oldQuest.mode||'')) ? 'team' : 'solo');
     state.quest = {
-      ...(state.quest || {}),
-      mode: (state.quest && state.quest.mode) || 'Solo Quest',
-      x: (state.quest && state.quest.x) || 42,
+      ...oldQuest,
+      kind,
+      mode: oldQuest.mode || ((kind === 'team' ? 'Team Quest' : 'Solo Quest') + ' · Tutorial Town'),
+      x: oldQuest.x || 42,
       jump: false,
-      score: (state.quest && state.quest.score) || 0,
+      score: oldQuest.score || 0,
       started: true,
       embedded: true
     };
@@ -2050,6 +2074,9 @@ window.addEventListener('message', e => {
   window.petbotReturnToQuest34=function(){
     questKeyLeft=false; questKeyRight=false;
     send('moveStop');
+    state.returnToQuest=false;
+    state.returnQuestMode='';
+    state._returnedToQuestAt=Date.now();
     state.screen='questGame';
     state._questMenuOpenAt=0;
     state._questMenuScreen='';
@@ -2057,15 +2084,7 @@ window.addEventListener('message', e => {
     render();
     send('returnToQuest');
   };
-  const oldHandleBack34=handleBack;
-  handleBack=function(){
-    if(hasPendingQuestReturn()){
-      if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
-      petbotReturnToQuest34();
-      return;
-    }
-    return oldHandleBack34();
-  };
+  // Back-to-quest is handled once inside handleBack().
   document.addEventListener('keydown',e=>{
     if(!inQuest())return;
     const code=e.code||'';
@@ -2112,24 +2131,6 @@ window.addEventListener('message', e => {
 })();
 
 
-// STAGE 35: keep return-to-quest state alive when parent opens shop/habitat/hook from the quest.
-(function(){
-  window.addEventListener('message',e=>{
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-open-screen' && d.returnToQuest){
-      state.returnToQuest=true;
-      state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
-    }
-  },true);
-  const oldReturn=window.petbotReturnToQuest34;
-  window.petbotReturnToQuest34=function(){
-    state.returnToQuest=false;
-    if(oldReturn) return oldReturn();
-    sendParent('waa-petbot-game-action',{action:'returnToQuest'});
-  };
-})();
-
 
 // STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
 (function(){
@@ -2137,11 +2138,16 @@ window.addEventListener('message', e => {
     try{
       const kind=(d&&d.kind)==='team'?'team':((state.questPick&&state.questPick.kind)==='team'?'team':'solo');
       const oldQuest=state.quest||{};
+      const wantedMode=(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town';
+      const oldMode=String(oldQuest.mode||'');
+      const keepOldMode=(kind==='team' && /team/i.test(oldMode)) || (kind!=='team' && /solo/i.test(oldMode));
       state.screen='questGame';
-      state.quest={...oldQuest,mode:oldQuest.mode||((kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true};
+      state.quest={...oldQuest,kind,mode:keepOldMode?oldQuest.mode:wantedMode,started:true,embedded:true};
       state.returnToQuest=false;
+      state.returnQuestMode='';
       state._questMenuOpenAt=0;
       state._questMenuScreen='';
+      try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
       render();
     }catch(e){ console.warn('Stage 37/53 quest LCD restore failed',e); }
   }
