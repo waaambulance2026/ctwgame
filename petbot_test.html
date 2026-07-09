@@ -725,6 +725,20 @@ body.questPlaying .device{pointer-events:auto!important;}
 @keyframes stage73Bite4{0%,74%{opacity:0}75%,100%{opacity:1}}
 </style>
 
+
+
+<style id="stage76-pet-portrait-feed-filter-fix">
+/* STAGE 76: pet portraits and care item types are separate.
+   Feed only shows food for the current pet; heal/train items are not feed items. */
+.carePetStage,.carePickStage,.careAnimStage{background:linear-gradient(180deg,rgba(255,255,255,.58),rgba(184,249,255,.28))!important;}
+.carePetArt,.carePickPet,.careAnimPet{object-fit:contain!important;}
+.carePetEmoji,.carePickEmoji,.careAnimEmoji{z-index:0;opacity:.82;}
+.carePetArt,.carePickPet,.careAnimPet{z-index:1;}
+.careAnimFoodImg{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:contain;}
+.careAnimStage-feed .careAnimItem{overflow:hidden!important;border-radius:10px;}
+.careAnimItem.eatSprite .bite{pointer-events:none;}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -841,6 +855,7 @@ const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
 let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',kind:'solo',x:42,jump:false,score:0,started:false,embedded:false,questRunId:''},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},questRunId:'',hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+const PET_VISUAL_LOADS=new Set();
 let lastQuestSelectSentAt=0;
 function sendQuestSelectOrJump(source){
   // STAGE 60: Enter and the pacifier use the same quest Select route.
@@ -1066,6 +1081,7 @@ function petImage(p){
     const size=clamp(n(p.size,72),54,88); const x=clamp(n(p.x,50),18,82); const y=clamp(n(p.y,48),20,72); const flip=p.flip===-1?' scaleX(-1)':'';
     return `<div class="petImgFallback">${emoji}</div><img class="petImg" src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.style.display='none'" style="width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip};object-fit:contain;">`;
   }
+  queuePetVisualLoad(p);
   return `<div class="petEmoji">${emoji}</div>`;
 }
 function emojiFor(s){s=String(s||'').toLowerCase();if(s.includes('raven')||s.includes('crow'))return'🐦‍⬛';if(s.includes('owl'))return'🦉';if(s.includes('dragon'))return'🐉';if(s.includes('unicorn'))return'🦄';if(s.includes('cat'))return'🐈';if(s.includes('dog'))return'🐕';if(s.includes('frog'))return'🐸';if(s.includes('axolotl'))return'🦎';return'🐾';}
@@ -1355,6 +1371,7 @@ function carePetArtHtml(p, cls, urlOverride){
   const emoji=`<div class="${esc(eclass)}">${esc(p?.emoji||emojiFor(p?.pet||p?.category))}</div>`;
   const url=cleanImageUrl(urlOverride||getPetArtUrl(p));
   if(url)return `${emoji}<img class="${esc(cname)}" src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.style.display='none'">`;
+  queuePetVisualLoad(p);
   return emoji;
 }
 function careDotsHtml(){
@@ -1594,29 +1611,85 @@ function feedDietAllows(action,item,p,text){
   }
   return true;
 }
+
+function explicitCareItemKind(action,item,p,text){
+  const raw=item&&item.raw?item.raw:(item||{});
+  const t=norm(text||[
+    itemTitle(item), itemSub(item), item&&item.item_id, item&&item.category,
+    pick(raw,['item_id','item_key','inventory_item_id','key','id','asset_key','Asset Key','category','Category','section','Section','item_type','type','target_category','target_pet','target_species','Pet / Target','allowed_category','allowed_pet','pet','species','for_pet','for_species','action','care_action','effect_stat','stat','description','name','title','label','asset_name','Asset Name'],'')
+  ].join(' '));
+  // Strong non-feed types win first. This stops Healing Potions and Training Whistles appearing under Feed.
+  if(/heal|healing|health|hp|medicine|meds|potion|bandage|firstaid|firstaidkit|kit/.test(t))return 'heal';
+  if(/train|training|whistle|lesson|skill|drill|practice/.test(t))return 'train';
+  if(/rest|sleep|nap|bed|blanket|pillow/.test(t))return 'rest';
+  if(/play|toy|ball|plush|game|teaser/.test(t))return 'play';
+  if(/feed|food|snack|treat|seed|fruit|berry|berries|grain|nut|suet|flake|flakes|pellet|kibble|hay|morsel|meal|worm|bloodworm|shrimp|algae/.test(t))return 'feed';
+  return '';
+}
+function feedDietAllowsStrict(action,item,p,text){
+  if(String(action&&action.key||'')!=='feed')return true;
+  text=norm(text||'');
+  const bits=petKindBits(p);
+  const isBird=bits.includes('bird')||bits.includes('avian')||bits.includes('raven')||bits.includes('crow');
+  const isFish=bits.includes('fish')||bits.includes('aquatic');
+  const isAxolotl=bits.includes('axolotl')||bits.includes('amphibian');
+  const isReptile=bits.includes('reptile');
+  const explicitAnimal=/bird|avian|raven|crow|owl|fish|aquatic|axolotl|amphibian|reptile|lizard|gecko|snake|turtle|dragon|cat|dog|mammal/.exec(text);
+  if(explicitAnimal && !bits.some(b=>text.includes(norm(b))))return false;
+  if(isBird){
+    // Birds/ravens only get bird food. Reptile/fish food and bug/cricket boxes stay out of Feed.
+    if(/reptile|lizard|gecko|snake|turtle|dragon|axolotl|fishflake|fishflakes|fishfood|cricket|bug|insect|roach|pellet|bloodworm|shrimp|algae/.test(text))return false;
+    return /bird|avian|raven|crow|seed|fruit|berry|berries|grain|nut|suet|treat/.test(text);
+  }
+  if(isFish){
+    if(/bird|seed|reptile|cricket|bug|insect|lizard|dragon/.test(text) && !/fish|aquatic/.test(text))return false;
+    return /fish|aquatic|flake|flakes|fishflake|fishflakes|pellet|algae/.test(text);
+  }
+  if(isAxolotl){
+    if(/bird|seed|reptile/.test(text) && !/axolotl|amphibian/.test(text))return false;
+    return /axolotl|amphibian|worm|bloodworm|pellet|shrimp/.test(text);
+  }
+  if(isReptile){
+    if(/bird|seed|fishflake|fishflakes/.test(text) && !/reptile|lizard|gecko|snake|dragon/.test(text))return false;
+    return /reptile|lizard|gecko|snake|dragon|cricket|bug|insect|roach|mealworm/.test(text);
+  }
+  return /feed|food|snack|treat/.test(text);
+}
 function careInventoryItemMatches(action,item,p){
   if(!item)return false;
+  const actionKey=String(action&&action.key||'');
   const raw=item.raw||item;
-  if(hasOtherUser(raw,state.player?.userId||'') && !strictUserMatch(raw,state.player?.userId||''))return false;
+  const userId=state.player?.userId||'';
+  if(hasOtherUser(raw,userId) && !strictUserMatch(raw,userId))return false;
   const qty=pick(raw,['quantity','qty','count','amount'],'');
   if(qty!=='' && Number(qty)<=0)return false;
   if(rowLooksLikeSheet51CareItem(raw) && !sheet51RowAllowsPet(raw,p))return false;
   const text=norm([
     itemTitle(item), itemSub(item), item.item_id, item.category,
-    pick(raw,['item_id','item_key','key','id','asset_key','Asset Key','category','Category','section','Section','item_type','type','target_category','target_pet','target_species','Pet / Target','allowed_category','allowed_pet','pet','species','for_pet','for_species','action','care_action','effect_stat','mode','description','name','title','label','asset_name','Asset Name'],'')
+    pick(raw,['item_id','item_key','inventory_item_id','key','id','asset_key','Asset Key','category','Category','section','Section','item_type','type','target_category','target_pet','target_species','Pet / Target','allowed_category','allowed_pet','pet','species','for_pet','for_species','action','care_action','effect_stat','stat','description','name','title','label','asset_name','Asset Name'],'')
   ].join(' '));
   if(/habitat|background|decor|room|loadout|wall|floor/.test(text))return false;
-  const words=careItemActionWords(action).map(norm);
-  const actionOk=words.some(w=>w&&text.includes(w)) || (String(action&&action.key||'')==='feed' && rowLooksLikeSheet51CareItem(raw));
-  if(!actionOk)return false;
+  const explicitKind=explicitCareItemKind(action,item,p,text);
+  if(explicitKind && explicitKind!==actionKey)return false;
+  // If the user clicked Feed, do not allow vague bird/category rows; the item itself must look like food.
+  if(actionKey==='feed'){
+    if(explicitKind!=='feed')return false;
+    if(!feedDietAllowsStrict(action,item,p,text))return false;
+  }else{
+    const words=careItemActionWords(action).map(norm);
+    const actionOk=(explicitKind===actionKey) || words.some(w=>w&&text.includes(w));
+    if(!actionOk)return false;
+  }
   const target=targetTextForItem(raw);
   if(!targetAllowsCurrentPet(target,p))return false;
-  if(!feedDietAllows(action,item,p,text))return false;
   return true;
 }
 async function loadCareItemsForAction(action,p){
   const inventory=await cachedLoadPanelData('inventory',true).catch(()=>[]);
   const out=(inventory||[]).filter(it=>careInventoryItemMatches(action,it,p));
+  if(String(action&&action.key||'')==='feed'){
+    out.sort((a,b)=>itemTitle(a).localeCompare(itemTitle(b)));
+  }
   return out;
 }
 async function startCareActionFlow(action){
@@ -1794,7 +1867,7 @@ function submitPassword(){
   if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
   startPlayer(p);
 }
-const PET_CACHE_VERSION='stage75_trusted_portrait_20260709';
+const PET_CACHE_VERSION='stage76_portrait_feed_type_20260709';
 function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_'+PET_CACHE_VERSION+'_'+String(userId||'none');}
 function clearLegacyPetCaches(userId){
   // STAGE 74: old Stage 72/73 localStorage caches can already contain care-item art
@@ -1815,6 +1888,9 @@ function sanitizePetPortraitFields(p){
   // blindly keep image_url/url unless we know it came from a pet portrait lookup.
   if(out._visualSource!=='pet_portrait'){
     delete out.url; delete out.image_url; delete out.cloudinary_image_url;
+  }else{
+    const u=cleanImageUrl(out.url||out.image_url||out.cloudinary_image_url||'');
+    if(u){out.url=u;out.image_url=u;out.cloudinary_image_url=u;}
   }
   return out;
 }
@@ -1907,7 +1983,8 @@ async function enrichPets(pets,userId){
   const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab).then(rows=>({tab,rows}))));
   results.forEach(r=>{
     if(r.status==='fulfilled'&&r.value&&Array.isArray(r.value.rows)){
-      visualRows.push(...safePetVisualRows(r.value.rows,r.value.tab));
+      const safe=safePetVisualRows(r.value.rows,r.value.tab).map(row=>Object.assign({},row,{__sourceTab:r.value.tab}));
+      visualRows.push(...safe);
     }
   });
   return (pets||[]).map(pet=>{
@@ -1915,14 +1992,15 @@ async function enrichPets(pets,userId){
     try{
       const owned=visualRows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
       const generic=owned||visualRows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
-      if(generic)applyVisual(p,generic);
+      if(generic)applyVisual(p,generic,generic.__sourceTab||'pet_images');
     }catch(e){log('visual failed',e.message||e);}
     return p;
   });
 }
-function applyVisual(p,row){
-  const url=petPortraitImageFromRow(row,'applyVisual',p);
-  if(url){p.url=url;p.image_url=url;p.cloudinary_image_url=url;p._visualSource='pet_portrait';}
+function applyVisual(p,row,tabName){
+  const sourceTab=tabName||row&&row.__sourceTab||'pet_images';
+  const url=petPortraitImageFromRow(row,sourceTab,p);
+  if(url){p.url=url;p.image_url=url;p.cloudinary_image_url=url;p._visualSource='pet_portrait';p._visualTab=sourceTab;}
   else return;
   const w=pick(row,['overlay_width','width','size','pet_size','display_width','w'],''); if(w)p.size=screenSize(w,p.size);
   const x=pick(row,['overlay_x','x','x_pos','screen_x','display_x'],''); if(x!==''&&x!=null)p.x=screenPos(x,p.x);
@@ -1941,7 +2019,7 @@ async function findVisualForPet(p,userId){
   }catch(e){}
   for(const tab of ['user_pet_images','owned_pet_images','pet_images','pet_action_images']){
     try{
-      const rows=safePetVisualRows(await fetchSheetRows(tab),tab);
+      const rows=safePetVisualRows(await fetchSheetRows(tab),tab).map(row=>Object.assign({},row,{__sourceTab:tab}));
       const owned=rows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
       if(owned)return owned;
       const generic=rows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
@@ -1949,6 +2027,27 @@ async function findVisualForPet(p,userId){
     }catch(e){}
   }
   return null;
+}
+function queuePetVisualLoad(p){
+  try{
+    if(!p||getPetArtUrl(p)||!state.player||!state.player.userId)return;
+    const key=petVisualKey(p)||String(state.petIndex||0);
+    if(PET_VISUAL_LOADS.has(key))return;
+    PET_VISUAL_LOADS.add(key);
+    findVisualForPet(p,state.player.userId).then(row=>{
+      PET_VISUAL_LOADS.delete(key);
+      if(!row||!state.player)return;
+      const idx=(state.pets||[]).findIndex(x=>petVisualKey(x)===key);
+      if(idx<0)return;
+      const current=state.pets[idx];
+      applyVisual(current,row,row.__sourceTab||'pet_images');
+      if(getPetArtUrl(current)){
+        writeCachedPets(state.player.userId,state.pets);
+        preloadOne(getPetArtUrl(current));
+        render();
+      }
+    }).catch(()=>PET_VISUAL_LOADS.delete(key));
+  }catch(e){}
 }
 function cleanImageUrl(v){v=clean(v).replace(/^['"]|['"]$/g,'');if(!v)return'';if(/^https?:\/\//i.test(v))return v;if(v.includes('res.cloudinary.com'))return 'https://'+v.replace(/^\/+/,'');return CLOUD+v.replace(/^\/+/,'');}
 function normalisePet(row,userId){
@@ -2055,7 +2154,7 @@ function petPortraitImageFromRow(row,tabName,p){
 function rowHasImage(row){return !!petPortraitImageFromObject(row,{}) || imageCandidateLooksUsable(pick(row,['image_url','url','cloudinary_image_url','image','public_url','cloudinary_public_id'],''));}
 function rowIsPetPortraitCandidate(row,tabName){
   if(!row||typeof row!=='object')return false;
-  const tab=norm(tabName||'');
+  const tab=norm(tabName||row.__sourceTab||'');
   const section=sheetRowSectionRaw(row);
   const key=sheetRowAssetKeyRaw(row);
   const action=rowActionText(row);
@@ -2063,17 +2162,22 @@ function rowIsPetPortraitCandidate(row,tabName){
   const hay=norm(Object.values(row).join(' '));
   const hasImage=rowHasImage(row);
   if(!hasImage)return false;
+  // Sheet 51/Tab/gid 339726394 is habitat/care catalogue art unless it explicitly says pet portrait.
   if(tab==='sheet51'||tab==='tab'||tab.startsWith('gid'))return rowIsSheet51PetPortrait(row);
+  // Never use catalogue/care/inventory rows as pet portraits.
+  if(/inventory|shop|careitems|careitem|habitat/.test(tab))return false;
+  if(rowIsKnownCatalogueAsset(row))return false;
   const hasPetId=!!pick(row,['user_pet_id','owned_pet_id','pet_instance_id','pet_code','selected_pet_code','target_pet_code','pet','species','animal','pet_name','nickname','name','Pet / Target','target_pet'],'');
-  const portraitMarker=/petimage|pet_image|petportrait|pet_portrait|portrait|avatar|sprite|idle|character|ownedpet|owned_pet|mainpet|main_pet/.test(headers+' '+section+' '+key+' '+action);
+  if(!hasPetId)return false;
+  const portraitMarker=/petimage|pet_image|petportrait|pet_portrait|portrait|avatar|sprite|idle|character|ownedpet|owned_pet|mainpet|main_pet|imageurl|image_url/.test(headers+' '+section+' '+key+' '+action);
   if(/petactionimages/.test(tab)){
     if(/feed|food|eat|play|rest|heal|medicine|train|care|response/.test(action+' '+section+' '+key))return false;
-    return hasPetId && (portraitMarker || /idle|main|view|pet|home/.test(action+' '+section+' '+key));
+    return portraitMarker || /idle|main|view|home|pet/.test(action+' '+section+' '+key);
   }
-  if(/userpetimages|ownedpetimages|petimages/.test(tab))return hasPetId && !rowIsKnownCatalogueAsset(row);
-  if(/userpets|rawpetrow/.test(tab))return hasPetId && (portraitMarker || !!petPortraitImageFromObject(row,{})) && !rowIsKnownCatalogueAsset(row);
-  if(/applyvisual/.test(tab))return hasPetId && !rowIsKnownCatalogueAsset(row) && (portraitMarker || /user_pet_images|owned_pet_images|pet_images/.test(headers));
-  return hasPetId && portraitMarker && !rowIsKnownCatalogueAsset(row);
+  // These tabs are portrait tables, so image_url is allowed as long as the row matches the pet and is not a catalogue item.
+  if(/userpetimages|ownedpetimages|petimages/.test(tab))return true;
+  if(/userpets|rawpetrow/.test(tab))return !rowIsKnownCatalogueAsset(row) && hasPetId;
+  return portraitMarker;
 }
 function safePetVisualRows(rows,tabName){
   const tab=norm(tabName||'');
