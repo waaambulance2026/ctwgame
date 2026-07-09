@@ -692,7 +692,7 @@ body.questPlaying .device{pointer-events:auto!important;}
 
 
 <style id="stage73-pet-art-care-animation-cleanup">
-/* STAGE 73: do not let Sheet 51 habitat/care rows replace pet portraits; make care animation readable. */
+/* STAGE 74: pet portrait bug fix - purge old pet caches and never copy care/item image_url into pet portraits. */
 .carePetLine{font-size:11px!important;line-height:1.05!important;}
 .careMainBody{padding:6px 11px 7px!important;gap:5px!important;}
 .carePetStage{min-height:82px!important;}
@@ -1045,15 +1045,28 @@ function renderPetActions(){
 }
 function getPetArtUrl(p){
   if(!p)return'';
-  return cleanImageUrl(p.url||p.image_url||p.cloudinary_image_url||p.pet_image||p.sprite_url||itemImage(p.raw||{}));
+  // STAGE 75: separate pet portraits from care/inventory/habitat item art.
+  // Sheet 51 is used for item/habitat/care art, not for replacing the pet portrait unless a row explicitly says portrait/sprite.
+  const direct=petPortraitImageFromObject(p,p);
+  if(direct)return direct;
+  if(p._visualSource==='pet_portrait'){
+    const trusted=petPortraitImageFromObject({url:p.url,image_url:p.image_url,cloudinary_image_url:p.cloudinary_image_url,cloudinary_public_id:p.cloudinary_public_id},p);
+    if(trusted)return trusted;
+  }
+  if(p.raw){
+    const rawUrl=petPortraitImageFromRow(p.raw,'raw_pet_row',p);
+    if(rawUrl)return rawUrl;
+  }
+  return '';
 }
 function petImage(p){
   const url=getPetArtUrl(p);
+  const emoji=esc(p.emoji||emojiFor(p.pet||p.category));
   if(url){
     const size=clamp(n(p.size,72),54,88); const x=clamp(n(p.x,50),18,82); const y=clamp(n(p.y,48),20,72); const flip=p.flip===-1?' scaleX(-1)':'';
-    return `<div class="petImg" style="background-image:url('${esc(url)}');width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip}"></div>`;
+    return `<div class="petImgFallback">${emoji}</div><img class="petImg" src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.style.display='none'" style="width:${size}%;height:${size}%;left:${x}%;top:${y}%;transform:translate(-50%,-50%)${flip};object-fit:contain;">`;
   }
-  return `<div class="petEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
+  return `<div class="petEmoji">${emoji}</div>`;
 }
 function emojiFor(s){s=String(s||'').toLowerCase();if(s.includes('raven')||s.includes('crow'))return'🐦‍⬛';if(s.includes('owl'))return'🦉';if(s.includes('dragon'))return'🐉';if(s.includes('unicorn'))return'🦄';if(s.includes('cat'))return'🐈';if(s.includes('dog'))return'🐕';if(s.includes('frog'))return'🐸';if(s.includes('axolotl'))return'🦎';return'🐾';}
 function stat(icon,cls,v){return `<div class="stat"><span>${icon}</span><div class="bar ${cls}"><i style="width:${bar(v)}"></i></div><span>${clamp(Math.round(n(v,0)),0,100)}</span></div>`;}
@@ -1337,9 +1350,12 @@ function renderHookGamePanel(){
 }
 
 function carePetArtHtml(p, cls, urlOverride){
+  const cname=cls||'carePetArt';
+  const eclass=cname.replace('Art','Emoji').replace('Pet','Pick');
+  const emoji=`<div class="${esc(eclass)}">${esc(p?.emoji||emojiFor(p?.pet||p?.category))}</div>`;
   const url=cleanImageUrl(urlOverride||getPetArtUrl(p));
-  if(url)return `<div class="${esc(cls||'carePetArt')}" style="background-image:url('${esc(url)}')"></div>`;
-  return `<div class="${esc((cls||'carePetArt').replace('Art','Emoji'))}">${esc(p?.emoji||emojiFor(p?.pet||p?.category))}</div>`;
+  if(url)return `${emoji}<img class="${esc(cname)}" src="${esc(url)}" alt="" loading="eager" decoding="async" onerror="this.style.display='none'">`;
+  return emoji;
 }
 function careDotsHtml(){
   const pets=state.pets||[];
@@ -1392,7 +1408,7 @@ function renderCareAnimation(){
   const key=String(action.key||'care');
   const petUrl=cleanImageUrl(result.petUrl||getPetArtUrl(p));
   const itemUrl=cleanImageUrl(result.itemUrl||result.actionUrl||'');
-  const petHtml=petUrl?`<div class="careAnimPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careAnimEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
+  const petHtml=carePetArtHtml(p,'careAnimPet',petUrl);
   const itemHtml=itemUrl?`<div class="careAnimItem eatSprite"><span class="careAnimFoodImg" style="background-image:url('${esc(itemUrl)}')"></span><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i><i class="bite b4"></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName||action.label||'Item')}</span></div>`;
   const label=result.itemName?`${action.label||'Care'} · ${result.itemName}`:(action.label||'Care');
   const msg=(state.careAnimationDone||String(result.message||'').startsWith('Care not saved'))?careMessageShort(result.message||state.panelActionMsg||''):'';
@@ -1778,15 +1794,39 @@ function submitPassword(){
   if(pass!==p.password){state.error='Wrong password';state.password='';render();return;}
   startPlayer(p);
 }
-function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_v5_fixed_images_'+String(userId||'none');}
+const PET_CACHE_VERSION='stage75_trusted_portrait_20260709';
+function petsCacheKey(userId){return 'ctw_tamagotchi_pets_cache_'+PET_CACHE_VERSION+'_'+String(userId||'none');}
+function clearLegacyPetCaches(userId){
+  // STAGE 74: old Stage 72/73 localStorage caches can already contain care-item art
+  // saved into pet.url/image_url. Remove every older pet cache so those bad images
+  // cannot keep coming back after the code is fixed.
+  try{
+    const current=petsCacheKey(userId);
+    for(let i=localStorage.length-1;i>=0;i--){
+      const k=localStorage.key(i)||'';
+      if(k.indexOf('ctw_tamagotchi_pets_cache_')===0 && k!==current) localStorage.removeItem(k);
+    }
+  }catch(e){}
+}
+function sanitizePetPortraitFields(p){
+  const out={...(p||{})};
+  // Only trusted portrait rows may carry these generic image fields.
+  // Inventory/care/habitat rows also use image_url, so cached pet objects must not
+  // blindly keep image_url/url unless we know it came from a pet portrait lookup.
+  if(out._visualSource!=='pet_portrait'){
+    delete out.url; delete out.image_url; delete out.cloudinary_image_url;
+  }
+  return out;
+}
 function readCachedPets(userId){
-  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>60*60*1000)return null;return pack.pets;}catch(e){return null;}
+  try{const raw=localStorage.getItem(petsCacheKey(userId));if(!raw)return null;const pack=JSON.parse(raw);if(!pack||!Array.isArray(pack.pets))return null;if(Date.now()-Number(pack.t||0)>60*60*1000)return null;return pack.pets.map(sanitizePetPortraitFields);}catch(e){return null;}
 }
 function writeCachedPets(userId,pets){
-  try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30)}));}catch(e){}
+  try{localStorage.setItem(petsCacheKey(userId),JSON.stringify({t:Date.now(),pets:(pets||[]).slice(0,30).map(sanitizePetPortraitFields)}));}catch(e){}
 }
 async function startPlayer(player){
   saveSelectedPlayer(player);
+  clearLegacyPetCaches(player&&player.userId);
   state.player={...player,password:undefined};state.pets=[];state.petIndex=0;state.petActionIndex=0;state.menuIndex=0;state.screen='loading';state.message='Loading '+player.label+' pets';render();
   try{
     if(player.test){
@@ -1863,7 +1903,7 @@ function findArray(data,names){
 }
 async function enrichPets(pets,userId){
   const visualRows=[];
-  const tabs=['user_pet_images','pet_action_images','Sheet51','Tab','gid:339726394'];
+  const tabs=['user_pet_images','owned_pet_images','pet_images','pet_action_images'];
   const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab).then(rows=>({tab,rows}))));
   results.forEach(r=>{
     if(r.status==='fulfilled'&&r.value&&Array.isArray(r.value.rows)){
@@ -1881,8 +1921,9 @@ async function enrichPets(pets,userId){
   });
 }
 function applyVisual(p,row){
-  const url=cleanImageUrl(pick(row,['image_url','url','cloudinary_image_url','image','pet_image','sprite_url','public_url','cloudinary_public_id'],''));
-  if(url){p.url=url;p.image_url=url;p.cloudinary_image_url=url;}
+  const url=petPortraitImageFromRow(row,'applyVisual',p);
+  if(url){p.url=url;p.image_url=url;p.cloudinary_image_url=url;p._visualSource='pet_portrait';}
+  else return;
   const w=pick(row,['overlay_width','width','size','pet_size','display_width','w'],''); if(w)p.size=screenSize(w,p.size);
   const x=pick(row,['overlay_x','x','x_pos','screen_x','display_x'],''); if(x!==''&&x!=null)p.x=screenPos(x,p.x);
   const y=pick(row,['overlay_y','y','y_pos','screen_y','display_y'],''); if(y!==''&&y!=null)p.y=screenPos(y,p.y);
@@ -1898,7 +1939,7 @@ async function findVisualForPet(p,userId){
     const u=cleanImageUrl(pick(d,['image_url','url','cloudinary_image_url','cloudinary_public_id'],''));
     if(u)return d;
   }catch(e){}
-  for(const tab of ['user_pet_images','pet_action_images','Sheet51','Tab','gid:339726394']){
+  for(const tab of ['user_pet_images','owned_pet_images','pet_images','pet_action_images']){
     try{
       const rows=safePetVisualRows(await fetchSheetRows(tab),tab);
       const owned=rows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
@@ -1929,7 +1970,10 @@ function normalisePet(row,userId){
   let name=pick(row,['nickname','pet_nickname','custom_name','given_name','pet_display_name','display_pet_name','display_name','pet_given_name','petName','name_given'],fromIndex.name||'');
   if(!name)name=pick(row,['pet_name','name','Name'],fromIndex.name||'');
   if(!name||norm(name)===norm(pet)||norm(name)===norm(code)) name=fromIndex.name||name||pet||code||'Pet';
-  return {raw:row,userId:pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],fromIndex.userId||userId||''),owner:pick(row,['owner_display','display_name','username','user_name'],fromIndex.owner||''),userPetId,code,pet,category:pick(row,['category','pet_category','class'],fromIndex.category||''),name,level:n(pick(row,['level','lvl'],fromIndex.level||1),1),xp:n(pick(row,['xp','experience','exp'],fromIndex.xp||0),0),hunger:n(pick(row,['hunger','food','feed'],fromIndex.hunger||100),100),happiness:n(pick(row,['happiness','happy','mood'],fromIndex.happiness||100),100),energy:n(pick(row,['energy','stamina'],fromIndex.energy||100),100),health:n(pick(row,['health','hp'],fromIndex.health||100),100)};
+  const out={raw:row,userId:pick(row,['user_id','discord_user_id','discord_id','owner_id','member_id','player_id'],fromIndex.userId||userId||''),owner:pick(row,['owner_display','display_name','username','user_name'],fromIndex.owner||''),userPetId,code,pet,category:pick(row,['category','pet_category','class'],fromIndex.category||''),name,level:n(pick(row,['level','lvl'],fromIndex.level||1),1),xp:n(pick(row,['xp','experience','exp'],fromIndex.xp||0),0),hunger:n(pick(row,['hunger','food','feed'],fromIndex.hunger||100),100),happiness:n(pick(row,['happiness','happy','mood'],fromIndex.happiness||100),100),energy:n(pick(row,['energy','stamina'],fromIndex.energy||100),100),health:n(pick(row,['health','hp'],fromIndex.health||100),100)};
+  const img=petPortraitImageFromRow(row,'user_pets',out);
+  if(img){out.url=img;out.image_url=img;out.cloudinary_image_url=img;out._visualSource='pet_portrait';}
+  return out;
 }
 function pick(row,names,fallback=''){
   if(!row||typeof row!=='object')return fallback;
@@ -1956,33 +2000,84 @@ function matchPet(row,p){
 }
 
 function sheetRowSectionRaw(row){
-  return norm(pick(row,['Section','section','slot','type','item_type','category'],''));
+  return norm(pick(row,['Section','section','slot','type','item_type','category','action','care_action'],'')||'');
 }
 function sheetRowAssetKeyRaw(row){
-  return norm(pick(row,['Asset Key','asset_key','BG Key','bg_key','pet_key','item_key','item_id','key','id','Asset Name','asset_name','name','title'],''));
+  return norm(pick(row,['Asset Key','asset_key','BG Key','bg_key','pet_key','item_key','item_id','key','id','Asset Name','asset_name','name','title','action_key','action'],'')||'');
+}
+function rowActionText(row){
+  return norm(pick(row,['action','care_action','Action','mode','animation','animation_key','state','screen','Section','section'],'')||'');
 }
 function rowIsSheet51PetPortrait(row){
   if(!row||typeof row!=='object')return false;
   const section=sheetRowSectionRaw(row);
   const key=sheetRowAssetKeyRaw(row);
   const hay=norm(Object.values(row||{}).join(' '));
-  // The linked Sheet 51/Tab also contains backgrounds, care items, habitat bases and decorations.
-  // Those must never replace the pet portrait on the Pets/Care screens.
-  if(/background|careitem|care_item|base|decoration|decor|habitat|perch|trinket|carousel|lure|puzzle|seed|treat|food/.test(section+' '+key))return false;
-  return /pet|portrait|sprite|character|main|avatar|ownedpet|owned_pet/.test(section+' '+key+' '+hay);
+  // The linked Sheet 51/Tab is mostly habitat and care assets. Only use it as a pet portrait if it explicitly says portrait/sprite/avatar.
+  if(/background|careitem|care_item|care item|base|decoration|decor|habitat|perch|trinket|carousel|lure|puzzle|seed|treat|food|flake|cricket|bug|pellet|medicine|toy|room|wall|floor/.test(section+' '+key+' '+hay))return false;
+  return /petportrait|pet_portrait|portrait|avatar|sprite|idle_sprite|pet_sprite|main_pet|owned_pet/.test(section+' '+key+' '+hay);
 }
 function rowIsKnownCatalogueAsset(row){
   const s=sheetRowSectionRaw(row);
-  return /background|careitem|care_item|base|decoration|decor|habitat/.test(s);
+  const k=sheetRowAssetKeyRaw(row);
+  const hay=norm(Object.values(row||{}).join(' '));
+  return /background|careitem|care_item|care item|food|seed|treat|snack|cricket|bug|pellet|flake|medicine|toy|base|decoration|decor|habitat|perch|trinket|carousel|lure|puzzle|room|wall|floor/.test(s+' '+k+' '+hay);
+}
+function imageCandidateLooksUsable(v){
+  v=clean(v).replace(/^['"]|['"]$/g,'');
+  if(!v)return false;
+  if(/^https?:\/\//i.test(v))return true;
+  if(v.includes('res.cloudinary.com'))return true;
+  // Cloudinary public ids should look like asset ids, not just a species/name like "raven" or "Odin".
+  if(/\.(png|webp|jpg|jpeg|gif)(\?|$)/i.test(v))return true;
+  if(/[\/_-]/.test(v) && v.length>=8 && !/\s/.test(v))return true;
+  return false;
+}
+function petPortraitImageFromObject(obj,p){
+  if(!obj||typeof obj!=='object')return '';
+  const portraitFields=['pet_image_url','pet_image','portrait_url','avatar_url','sprite_url','pet_sprite_url','idle_sprite_url','main_sprite_url','pet_portrait_url'];
+  for(const f of portraitFields){
+    const v=pick(obj,[f],'');
+    if(imageCandidateLooksUsable(v))return cleanImageUrl(v);
+  }
+  return '';
+}
+function petPortraitImageFromRow(row,tabName,p){
+  if(!row||typeof row!=='object')return '';
+  if(!rowIsPetPortraitCandidate(row,tabName))return '';
+  const fields=['pet_image_url','pet_image','portrait_url','avatar_url','sprite_url','pet_sprite_url','idle_sprite_url','main_sprite_url','pet_portrait_url','image_url','url','cloudinary_image_url','image','public_url','cloudinary_public_id'];
+  for(const f of fields){
+    const v=pick(row,[f],'');
+    if(imageCandidateLooksUsable(v))return cleanImageUrl(v);
+  }
+  return '';
+}
+function rowHasImage(row){return !!petPortraitImageFromObject(row,{}) || imageCandidateLooksUsable(pick(row,['image_url','url','cloudinary_image_url','image','public_url','cloudinary_public_id'],''));}
+function rowIsPetPortraitCandidate(row,tabName){
+  if(!row||typeof row!=='object')return false;
+  const tab=norm(tabName||'');
+  const section=sheetRowSectionRaw(row);
+  const key=sheetRowAssetKeyRaw(row);
+  const action=rowActionText(row);
+  const headers=norm(Object.keys(row).join(' '));
+  const hay=norm(Object.values(row).join(' '));
+  const hasImage=rowHasImage(row);
+  if(!hasImage)return false;
+  if(tab==='sheet51'||tab==='tab'||tab.startsWith('gid'))return rowIsSheet51PetPortrait(row);
+  const hasPetId=!!pick(row,['user_pet_id','owned_pet_id','pet_instance_id','pet_code','selected_pet_code','target_pet_code','pet','species','animal','pet_name','nickname','name','Pet / Target','target_pet'],'');
+  const portraitMarker=/petimage|pet_image|petportrait|pet_portrait|portrait|avatar|sprite|idle|character|ownedpet|owned_pet|mainpet|main_pet/.test(headers+' '+section+' '+key+' '+action);
+  if(/petactionimages/.test(tab)){
+    if(/feed|food|eat|play|rest|heal|medicine|train|care|response/.test(action+' '+section+' '+key))return false;
+    return hasPetId && (portraitMarker || /idle|main|view|pet|home/.test(action+' '+section+' '+key));
+  }
+  if(/userpetimages|ownedpetimages|petimages/.test(tab))return hasPetId && !rowIsKnownCatalogueAsset(row);
+  if(/userpets|rawpetrow/.test(tab))return hasPetId && (portraitMarker || !!petPortraitImageFromObject(row,{})) && !rowIsKnownCatalogueAsset(row);
+  if(/applyvisual/.test(tab))return hasPetId && !rowIsKnownCatalogueAsset(row) && (portraitMarker || /user_pet_images|owned_pet_images|pet_images/.test(headers));
+  return hasPetId && portraitMarker && !rowIsKnownCatalogueAsset(row);
 }
 function safePetVisualRows(rows,tabName){
   const tab=norm(tabName||'');
-  return (rows||[]).filter(r=>{
-    if(!r||typeof r!=='object')return false;
-    if(tab==='sheet51'||tab==='tab'||tab.startsWith('gid'))return rowIsSheet51PetPortrait(r);
-    if(rowIsKnownCatalogueAsset(r))return false;
-    return true;
-  });
+  return (rows||[]).filter(r=>rowIsPetPortraitCandidate(r,tab));
 }
 function dedupePets(pets){
   const seen=new Set(),out=[];
@@ -2114,10 +2209,13 @@ function preservePetVisuals(freshPets){
     const fp=withDefaults(np,i);
     const op=oldByKey.get(petVisualKey(fp))||old.find(x=>norm(x.code||x.userPetId||x.name)===norm(fp.code||fp.userPetId||fp.name));
     if(op){
-      ['url','image_url','cloudinary_image_url','size','x','y','flip','emoji'].forEach(k=>{if((fp[k]===''||fp[k]==null||k==='size'||k==='x'||k==='y') && op[k]!=null)fp[k]=op[k];});
-      if(!fp.url && (op.url||op.image_url||op.cloudinary_image_url))fp.url=op.url||op.image_url||op.cloudinary_image_url;
+      // Preserve positioning. Preserve an old URL only if the old pet was already marked as a trusted pet portrait.
+      ['size','x','y','flip','emoji'].forEach(k=>{if((fp[k]===''||fp[k]==null||k==='size'||k==='x'||k==='y') && op[k]!=null)fp[k]=op[k];});
+      if(!getPetArtUrl(fp) && op && op._visualSource==='pet_portrait' && getPetArtUrl(op)){
+        fp.url=getPetArtUrl(op);fp.image_url=fp.url;fp.cloudinary_image_url=fp.url;fp._visualSource='pet_portrait';
+      }
     }
-    return fp;
+    return sanitizePetPortraitFields(fp);
   });
 }
 function prefetchCurrentPetPanels(){
