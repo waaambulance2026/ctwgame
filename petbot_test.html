@@ -631,6 +631,48 @@ body.questPlaying .device{pointer-events:auto!important;}
 .careAnimStage-play .careAnimItem,.careAnimStage-heal .careAnimItem,.careAnimStage-train .careAnimItem{animation:stage70ItemBounce 1.1s ease-in-out infinite alternate!important;}
 @keyframes stage70ItemBounce{from{transform:translateY(-50%) scale(.92)}to{transform:translateY(-58%) scale(1.04)}}
 </style>
+
+
+<style id="stage71-care-diet-image-animation-fixes">
+/* STAGE 71: Care screen is a tiny Tamagotchi screen: bigger text, no help text, real item art, bite animation. */
+.carePetLine{font-size:10px!important;line-height:1.05!important;font-weight:1000!important;letter-spacing:.01em!important;}
+.careMainBody{grid-template-rows:auto minmax(76px,1fr) auto!important;gap:4px!important;padding:5px 9px 6px!important;}
+.carePetStage{min-height:78px!important;}
+.careActionGrid{gap:4px!important;}
+.careActionGrid .careCard{min-height:25px!important;font-size:9px!important;line-height:1!important;padding:2px 4px!important;}
+.careActionGrid .careCard b{font-size:12px!important;}
+.careHint{font-size:8.5px!important;line-height:1.08!important;max-height:19px!important;white-space:normal!important;overflow:hidden!important;}
+.carePickBody{grid-template-rows:auto minmax(48px,58px) 1fr!important;gap:4px!important;padding:5px 9px 6px!important;}
+.carePickBody .careHint{display:none!important;}
+.carePickStage{min-height:48px!important;}
+.carePickPet{width:42%!important;height:90%!important;left:25%!important;}
+.carePickItemPreview{right:7%!important;width:36%!important;height:82%!important;}
+.carePickList{grid-template-columns:1fr 1fr!important;gap:4px!important;align-content:start!important;}
+.careItemCard{min-height:31px!important;grid-template-columns:31px 1fr!important;gap:4px!important;padding:3px 5px!important;font-size:8.5px!important;line-height:1!important;}
+.careItemThumb{width:29px!important;height:29px!important;}
+.careItemThumb.noImg{border:1px dashed rgba(22,34,63,.30);border-radius:7px;background:rgba(255,255,255,.42)!important;}
+.careItemText small{font-size:7.2px!important;line-height:1!important;margin-top:1px!important;}
+.careAnimBody{grid-template-rows:auto minmax(112px,1fr) auto!important;gap:4px!important;padding:5px 9px 6px!important;}
+.careAnimStage{min-height:112px!important;}
+.careAnimStage-feed .careAnimPet{left:38%!important;width:58%!important;height:90%!important;animation:stage71PetNibble 1.8s steps(6,end) 1 forwards!important;}
+.careAnimStage-feed .careAnimItem{right:auto!important;left:67%!important;top:48%!important;width:34%!important;height:44%!important;background-image:none!important;animation:stage71FoodTravel 1.8s steps(6,end) 1 forwards!important;filter:drop-shadow(0 3px 3px rgba(22,34,63,.22));}
+.careAnimFoodImg{position:absolute;inset:0;background-position:center;background-repeat:no-repeat;background-size:contain;animation:stage71FoodShrink 1.8s steps(6,end) 1 forwards;}
+.careAnimItem.eatSprite .bite{position:absolute;z-index:3;border-radius:50%;background:rgba(216,248,255,.98);box-shadow:0 0 0 1px rgba(176,230,242,.72);opacity:0;}
+.careAnimItem.eatSprite .bite.b1{width:18%;height:18%;left:8%;top:40%;animation:stage71Bite1 1.8s steps(6,end) 1 forwards;}
+.careAnimItem.eatSprite .bite.b2{width:20%;height:20%;left:18%;top:25%;animation:stage71Bite2 1.8s steps(6,end) 1 forwards;}
+.careAnimItem.eatSprite .bite.b3{width:22%;height:22%;left:25%;top:52%;animation:stage71Bite3 1.8s steps(6,end) 1 forwards;}
+.careAnimItem.eatSprite .bite.b4{width:26%;height:26%;left:39%;top:34%;animation:stage71Bite4 1.8s steps(6,end) 1 forwards;}
+.careAnimLabel{font-size:8.8px!important;line-height:1.05!important;}
+.careAnimItem.noImg{font-size:7.2px!important;line-height:1.05!important;background:rgba(255,245,188,.82)!important;border:1px solid rgba(22,34,63,.25)!important;border-radius:10px!important;color:#14223f!important;}
+@keyframes stage71PetNibble{0%{transform:translate(-50%,-50%) scale(1)}18%{transform:translate(-48%,-50%) scale(1.035)}32%{transform:translate(-50%,-50%) scale(1)}48%{transform:translate(-48%,-50%) scale(1.04)}64%{transform:translate(-50%,-50%) scale(1)}82%{transform:translate(-48%,-50%) scale(1.03)}100%{transform:translate(-50%,-50%) scale(1.01)}}
+@keyframes stage71FoodTravel{0%{transform:translate(-50%,-50%) scale(1);opacity:1}22%{transform:translate(-66%,-50%) scale(.92);opacity:1}40%{transform:translate(-77%,-50%) scale(.78);opacity:1}58%{transform:translate(-87%,-50%) scale(.60);opacity:.95}76%{transform:translate(-98%,-50%) scale(.38);opacity:.72}100%{transform:translate(-108%,-50%) scale(.08);opacity:0}}
+@keyframes stage71FoodShrink{0%{opacity:1;transform:scale(1)}35%{opacity:1;transform:scale(.88)}55%{opacity:.96;transform:scale(.68)}75%{opacity:.72;transform:scale(.42)}100%{opacity:0;transform:scale(.08)}}
+@keyframes stage71Bite1{0%,17%{opacity:0}18%,100%{opacity:1}}
+@keyframes stage71Bite2{0%,34%{opacity:0}35%,100%{opacity:1}}
+@keyframes stage71Bite3{0%,52%{opacity:0}53%,100%{opacity:1}}
+@keyframes stage71Bite4{0%,70%{opacity:0}71%,100%{opacity:1}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -1028,17 +1070,39 @@ function renderShopPanel(title){
   return top('SHOP',items.length?((idx+1)+'/'+items.length):'')+`<div class="body"><div class="panelHead">${esc(targetName)} · ${esc(msg)}</div><div class="panelActionMsg">${esc(state.panelActionMsg||'')}</div><div class="panelGrid shopGrid">${pageItems.length?pageItems.map((it,j)=>renderPanelCard(it,startIndex+j,idx,'shop')).join(''):`<div class="panelCard" style="grid-column:1/-1">${esc(msg)}</div>`}</div></div>`;
 }
 
-function itemImage(it){
-  const raw=(it&&it.raw)||it||{};
-  const v=pick(raw,[
+function imageKeys(){
+  return [
     'final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','thumbnail_url','thumb_url',
-    'item_image_url','item_img_url','item_image','item_img','item_url','item_cloudinary_url','item_cloudinary_public_id','item_public_id',
-    'food_image_url','food_img_url','food_image','food_url','feed_image_url','feed_item_image_url','snack_image_url','treat_image_url',
+    'item_image_url','item_img_url','item_image','item_img','item_url','item_cloudinary_url','item_cloudinary_public_id','item_public_id','item_publicid','asset_public_id','asset_url','asset_image_url','image_link','image_src','image_source','picture_url','photo_url','art_url','sprite_url','gif_url',
+    'food_image_url','food_img_url','food_image','food_url','feed_image_url','feed_item_image_url','snack_image_url','treat_image_url','food_cloudinary_public_id','food_public_id',
     'toy_image_url','medicine_image_url','heal_image_url','training_image_url','rest_image_url','blanket_image_url',
     'shop_image_url','shop_item_image_url','inventory_image_url','inventory_item_image_url','used_item_image_url','used_image_url','reward_image_url',
-    'item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id','public_id'
-  ],'');
-  return cleanImageUrl(v);
+    'item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id','public_id','Cloudinary Public ID','Image URL','Item Image','Food Image'
+  ];
+}
+function looksLikeImageValue(v, key){
+  const text=clean(v); if(!text)return false;
+  const low=text.toLowerCase();
+  if(/^https?:\/\//i.test(text))return /cloudinary|\.png|\.jpe?g|\.webp|\.gif|\.svg|image\//i.test(text);
+  const k=norm(key||'');
+  if(/image|img|icon|url|cloudinary|publicid|public_id|asset|thumb|photo|picture|sprite|gif|art/.test(k))return true;
+  return (/\.(png|jpe?g|webp|gif|svg)$/i.test(text) || /^v\d+\//.test(text) || text.includes('/'));
+}
+function itemImageFromRow(row){
+  if(!row||typeof row!=='object')return'';
+  const direct=cleanImageUrl(pick(row,imageKeys(),''));
+  if(direct)return direct;
+  for(const [k,v] of Object.entries(row||{})){
+    if(looksLikeImageValue(v,k)){
+      const u=cleanImageUrl(v);
+      if(u)return u;
+    }
+  }
+  return'';
+}
+function itemImage(it){
+  const raw=(it&&it.raw)||it||{};
+  return itemImageFromRow(raw)||itemImageFromRow(it)||'';
 }
 function habitatSlot(row){return String(pick(row,['habitat_slot','slot','loadout_slot','layout_slot','layer','section','type','item_type'],'')).toLowerCase();}
 function habitatKey(row){return clean(pick(row,['habitat_key','item_id','item_key','key','id','background_key','base_key','decor_key','decor_1','decor_2','decor_3','special_key','value'],'')).trim();}
@@ -1252,12 +1316,13 @@ function renderCareItemPicker(){
   const pageItems=items.slice(startIndex,startIndex+pageSize);
   const itemUrl=itemImage(selected);
   const preview=itemUrl?`<div class="carePickItemPreview" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="carePickItemPreview noImg"><span>${esc(itemTitle(selected)||action.label||'Item')}</span></div>`;
-  const msg=state.panelLoading?`Loading ${action.label.toLowerCase()} items...`:(items.length?`Choose ${action.label.toLowerCase()} item · ${idx+1}/${items.length}`:(state.panelActionMsg||`No ${action.label.toLowerCase()} item found for this pet.`));
-  return top(action.label.toUpperCase(),p.name||p.pet||'')+`<div class="body carePickBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="carePickStage">${carePetArtHtml(p,'carePickPet')}${preview}</div><div class="carePickList">${pageItems.length?pageItems.map((it,j)=>renderCareItemCard(it,startIndex+j,idx)).join(''):`<div class="careItemCard" style="grid-column:1/-1"><span>${esc(msg)}</span></div>`}</div><div class="careHint">${esc(msg)}</div></div>`;
+  const msg=state.panelLoading?`Loading ${action.label.toLowerCase()} items...`:(items.length?'':(state.panelActionMsg||`No ${action.label.toLowerCase()} item found for this pet.`));
+  const right=items.length?`${idx+1}/${items.length}`:'';
+  return top(action.label.toUpperCase(),right)+`<div class="body carePickBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="carePickStage">${carePetArtHtml(p,'carePickPet')}${preview}</div><div class="carePickList">${pageItems.length?pageItems.map((it,j)=>renderCareItemCard(it,startIndex+j,idx)).join(''):`<div class="careItemCard" style="grid-column:1/-1"><span>${esc(msg)}</span></div>`}</div></div>`;
 }
 function renderCareItemCard(it,realIndex,idx){
   const url=itemImage(it);
-  const thumb=url?`<span class="careItemThumb" style="background-image:url('${esc(url)}')"></span>`:`<span class="panelIcon">${esc(iconForItem(it))}</span>`;
+  const thumb=url?`<span class="careItemThumb" style="background-image:url('${esc(url)}')"></span>`:`<span class="careItemThumb noImg"></span>`;
   return `<div class="careItemCard ${realIndex===idx?'active':''}" data-care-item-index="${realIndex}">${thumb}<span class="careItemText">${esc(itemTitle(it))}<small>${esc(itemSub(it)||'Inventory item')}</small></span></div>`;
 }
 function renderCareAnimation(){
@@ -1268,9 +1333,9 @@ function renderCareAnimation(){
   const petUrl=cleanImageUrl(result.actionUrl||result.petUrl||getPetArtUrl(p));
   const itemUrl=cleanImageUrl(result.itemUrl||'');
   const petHtml=petUrl?`<div class="careAnimPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careAnimEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
-  const itemHtml=itemUrl?`<div class="careAnimItem" style="background-image:url('${esc(itemUrl)}')"><i></i><i></i><i></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName||action.label||'Item')}</span></div>`;
+  const itemHtml=itemUrl?`<div class="careAnimItem eatSprite"><span class="careAnimFoodImg" style="background-image:url('${esc(itemUrl)}')"></span><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i><i class="bite b4"></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName?'Missing image: '+result.itemName:(action.label||'Item'))}</span></div>`;
   const label=result.itemName?`${action.label||'Care'} · ${result.itemName}`:(action.label||'Care');
-  const msg=result.message||state.panelActionMsg||'';
+  const msg=(state.careAnimationDone||String(result.message||'').startsWith('Care not saved'))?(result.message||state.panelActionMsg||''):'';
   return top((action.label||'CARE').toUpperCase(),p.name||p.pet||'')+`<div class="body careAnimBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careAnimStage careAnimStage-${esc(key)}">${petHtml}${itemHtml}<div class="careAnimLabel">${esc(label)}</div></div>${msg?`<div class="careHint">${esc(msg)}</div>`:''}</div>`;
 }
 function firstImageFromObject(obj,keys){
@@ -1319,11 +1384,7 @@ function careRowMatchesAction(row,action,p,userId){
 }
 async function findCareVisual(action,p,data){
   const actionKeys=['action_image_url','pet_action_image_url','pet_animation_image_url','animation_image_url','animation_url','gif_url','care_image_url','result_image_url','response_image_url','feed_action_image_url','play_action_image_url','rest_action_image_url','heal_action_image_url','train_action_image_url'];
-  const itemKeys=[
-    'item_image_url','item_img_url','item_image','item_img','item_url','item_cloudinary_url','item_cloudinary_public_id','item_public_id',
-    'used_item_image_url','used_image_url','reward_image_url','food_image_url','food_img_url','food_image','food_url','feed_image_url','feed_item_image_url','snack_image_url','treat_image_url',
-    'toy_image_url','medicine_image_url','heal_image_url','training_image_url','rest_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url','inventory_item_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'
-  ];
+  const itemKeys=imageKeys();
   const out={
     actionUrl:firstImageFromObject(data,actionKeys),
     itemUrl:firstImageFromObject(data,itemKeys),
@@ -1332,7 +1393,7 @@ async function findCareVisual(action,p,data){
   try{
     const rows=[];
     const tabs=['user_inventory','care_items','shop_items','pet_items','inventory_items','pet_action_images','care_action_images','Sheet51','user_pet_images'];
-    const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
+    const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRowsSoft(tab,2600)));
     results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))rows.push(...r.value);});
     const userId=state.player?.userId||'';
 
@@ -1370,6 +1431,57 @@ function careItemActionWords(action){
   if(key==='rest')return ['rest','sleep','blanket','bed','comfort'];
   return [key];
 }
+function petKindBits(p){
+  const t=norm([p&&p.pet,p&&p.category,p&&p.code,p&&p.name].filter(Boolean).join(' '));
+  const bits=[];
+  if(/bird|avian|raven|crow|owl|parrot|budgie|chicken|duck|eagle|falcon/.test(t))bits.push('bird','avian');
+  if(/fish|goldfish|koi|betta/.test(t))bits.push('fish','aquatic');
+  if(/axolotl|salamander|frog|toad|newt|amphibian/.test(t))bits.push('amphibian','axolotl');
+  if(/reptile|lizard|gecko|snake|turtle|tortoise|dragon/.test(t))bits.push('reptile');
+  if(/cat|kitten/.test(t))bits.push('cat','mammal');
+  if(/dog|puppy|chihuahua/.test(t))bits.push('dog','mammal');
+  String(t).split(/\s+/).forEach(x=>{if(x&&x.length>2)bits.push(x)});
+  return Array.from(new Set(bits.filter(Boolean)));
+}
+function targetTextForItem(row){
+  return norm(pick(row,[
+    'target_pet','target_pets','for_pet','for_pets','allowed_pet','allowed_pets','pet','pets','species','target_species','for_species','animal','animal_type','target_animal','target_animals',
+    'target_category','target_categories','for_category','allowed_category','pet_category','pet_type','allowed_species'
+  ],''));
+}
+function targetAllowsCurrentPet(target,p){
+  target=norm(target||''); if(!target)return true;
+  if(/all|any|everyone|universal/.test(target))return true;
+  const bits=petKindBits(p);
+  return bits.some(b=>b&&target.includes(norm(b)));
+}
+function feedDietAllows(action,item,p,text){
+  if(String(action&&action.key||'')!=='feed')return true;
+  const bits=petKindBits(p);
+  const isBird=bits.includes('bird')||bits.includes('avian');
+  const isFish=bits.includes('fish')||bits.includes('aquatic');
+  const isAxolotl=bits.includes('axolotl')||bits.includes('amphibian');
+  const isReptile=bits.includes('reptile');
+  const explicitAnimal=/bird|avian|raven|crow|owl|fish|aquatic|axolotl|amphibian|reptile|lizard|gecko|snake|turtle|dragon|cat|dog|mammal/.exec(text);
+  if(explicitAnimal && !bits.some(b=>text.includes(norm(b))))return false;
+  if(isBird){
+    if(/reptile|lizard|gecko|snake|turtle|axolotl|fish\s*flake|fishflakes|fish_food|fish food|pellet/.test(text) && !/bird|avian|raven|crow/.test(text))return false;
+    return /bird|avian|raven|crow|seed|berry|berries|fruit|worm|mealworm|suet|grain|nut/.test(text);
+  }
+  if(isFish){
+    if(/bird|seed|reptile|cricket|bug|insect/.test(text) && !/fish|aquatic/.test(text))return false;
+    return /fish|aquatic|flake|flakes|fishflake|pellet|algae/.test(text);
+  }
+  if(isAxolotl){
+    if(/bird|seed|reptile/.test(text) && !/axolotl|amphibian/.test(text))return false;
+    return /axolotl|amphibian|worm|bloodworm|pellet|shrimp|fish/.test(text);
+  }
+  if(isReptile){
+    if(/bird|seed|fish\s*flake|fishflakes/.test(text) && !/reptile|lizard|gecko|snake|dragon/.test(text))return false;
+    return /reptile|lizard|gecko|snake|dragon|cricket|bug|insect|roach|mealworm/.test(text);
+  }
+  return true;
+}
 function careInventoryItemMatches(action,item,p){
   if(!item)return false;
   const raw=item.raw||item;
@@ -1378,22 +1490,15 @@ function careInventoryItemMatches(action,item,p){
   if(qty!=='' && Number(qty)<=0)return false;
   const text=norm([
     itemTitle(item), itemSub(item), item.item_id, item.category,
-    pick(raw,['item_id','item_key','key','id','category','item_type','type','target_category','target_pet','pet','species','for_pet','action','care_action','effect_stat','mode','description','name','title','label'],'')
+    pick(raw,['item_id','item_key','key','id','category','item_type','type','target_category','target_pet','target_species','allowed_category','allowed_pet','pet','species','for_pet','for_species','action','care_action','effect_stat','mode','description','name','title','label'],'')
   ].join(' '));
   if(/habitat|background|decor|room|loadout|wall|floor/.test(text))return false;
   const words=careItemActionWords(action).map(norm);
   const actionOk=words.some(w=>w&&text.includes(w));
   if(!actionOk)return false;
-  const targetPet=clean(pick(raw,['target_pet','pet','species','for_pet','allowed_pet','pet_type'],''));
-  const targetCat=clean(pick(raw,['target_category','category','for_category','allowed_category'],''));
-  const petName=norm([p.pet,p.code,p.name,p.userPetId].filter(Boolean).join(' '));
-  const catName=norm(p.category||'');
-  if(targetPet && !petName.includes(norm(targetPet)) && !norm(targetPet).includes(norm(p.pet||p.code||p.name||'')))return false;
-  if(targetCat){
-    const tc=norm(targetCat);
-    const genericCare=/food|snack|treat|toy|medicine|heal|training|train|rest|comfort/.test(tc);
-    if(!genericCare && catName && !catName.includes(tc) && !tc.includes(catName))return false;
-  }
+  const target=targetTextForItem(raw);
+  if(!targetAllowsCurrentPet(target,p))return false;
+  if(!feedDietAllows(action,item,p,text))return false;
   return true;
 }
 async function loadCareItemsForAction(action,p){
@@ -1407,6 +1512,7 @@ async function startCareActionFlow(action){
   if(idx>=0){state.careActionIndex=idx;state.panelIndex=idx;}
   state.carePendingAction=action;
   state.careResult=null;
+  state.careAnimationDone=false;
   state.panelActionMsg='';
   if(careActionNeedsInventory(action)){
     state.screen='careItemPick';
@@ -1443,6 +1549,7 @@ async function runCareActionWithItem(action,item){
   const startingMsg=itemName?`${p.name||p.pet||'Pet'} is using ${itemName}...`:`${action.label} for ${p.name||p.pet||'pet'}...`;
   state.screen='careAnimation';
   state.panelActionMsg=startingMsg;
+  state.careAnimationDone=false;
   state.careResult={action,actionKey:action.key,label:action.label,message:startingMsg,petUrl:getPetArtUrl(p),itemUrl,itemName,actionUrl:''};
   render();
   try{
@@ -1469,14 +1576,18 @@ async function runCareActionWithItem(action,item){
     const visual=await findCareVisual(action,p,{...(data||{}),...(item||{})});
     const msg=data.message||data.response||data.result||visual.sheetMessage||(itemName?`${p.name||p.pet||'Pet'} enjoyed ${itemName}.`:'Done: '+action.label);
     state.panelActionMsg=msg;
-    state.careResult={action,actionKey:action.key,label:action.label,message:msg,petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||state.careResult?.actionUrl||'',itemUrl:visual.itemUrl||itemUrl||'',itemName:visual.itemName||itemName||''};
+    state.careAnimationDone=true;
+    state.careResult={action,actionKey:action.key,label:action.label,message:msg,petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||state.careResult?.actionUrl||'',itemUrl:visual.itemUrl||itemUrl||state.careResult?.itemUrl||'',itemName:visual.itemName||itemName||state.careResult?.itemName||''};
     clearPanelCache('inventory');
     try{
       const fresh=await loadUserPetsFast(state.player?.userId||'');
       if(fresh&&fresh.length){
-        const oldCode=p.code||p.userPetId||p.name;
+        const oldUserPetId=clean(p.userPetId||'');
+        const oldName=norm(p.name||'');
+        const oldPet=norm(p.pet||p.code||'');
         state.pets=preservePetVisuals(fresh);
-        const same=state.pets.findIndex(x=>(x.code||x.userPetId||x.name)===oldCode);
+        let same=oldUserPetId?state.pets.findIndex(x=>clean(x.userPetId||'')===oldUserPetId):-1;
+        if(same<0&&oldName)same=state.pets.findIndex(x=>norm(x.name||'')===oldName && (!oldPet||norm(x.pet||x.code||'')===oldPet));
         if(same>=0)state.petIndex=same;
         preloadPetImages(state.pets);
         writeCachedPets(state.player.userId,state.pets);
@@ -1485,6 +1596,7 @@ async function runCareActionWithItem(action,item){
   }catch(e){
     const msg='Care not saved yet: '+(e.message||e);
     state.panelActionMsg=msg;
+    state.careAnimationDone=true;
     state.careResult={...(state.careResult||{}),message:msg};
   }
   render();
@@ -1549,7 +1661,7 @@ function wireRenderedControls(){
   document.querySelectorAll('[data-game-index]').forEach(el=>el.addEventListener('click',()=>{state.gameIndex=Number(el.dataset.gameIndex)||0;activateGameMenu();}));
   document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;state.panelActionMsg='';render();}));
   document.querySelectorAll('[data-care-index]').forEach(el=>el.addEventListener('click',()=>{const i=Number(el.dataset.careIndex)||0;state.careActionIndex=i;state.panelIndex=i;startCareActionFlow(CARE_ACTIONS[i]||CARE_ACTIONS[0]);}));
-  document.querySelectorAll('[data-care-item-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.careItemIndex)||0;runSelectedCareItem();}));
+  document.querySelectorAll('[data-care-item-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.careItemIndex)||0;render();}));
   const input=$('passInput');
   if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
 }
@@ -1914,14 +2026,12 @@ function enrichInventoryRowsWithCatalogue(invRows,catalogRows){
   });
 }
 async function loadInventoryRowsFast(userId,p){
-  const invRows=[];
+  const catalogTabs=['care_items','shop_items','pet_items','inventory_items','shop','pet_shop'];
+  const jobs=[fetchSheetRowsSoft('user_inventory',3600),...catalogTabs.map(tab=>fetchSheetRowsSoft(tab,2600))];
+  const results=await Promise.allSettled(jobs);
+  const invRows=(results[0].status==='fulfilled'&&Array.isArray(results[0].value))?results[0].value:[];
   const catalogRows=[];
-  try{ invRows.push(...await fetchSheetRowsSoft('user_inventory',5200)); }catch(e){ log('inventory sheet failed',e.message||e); }
-  try{
-    const catalogTabs=['care_items','shop_items','shop','pet_shop','pet_items','inventory_items'];
-    const results=await Promise.allSettled(catalogTabs.map(tab=>fetchSheetRowsSoft(tab,3200)));
-    results.forEach(r=>{ if(r.status==='fulfilled'&&Array.isArray(r.value)) catalogRows.push(...r.value); });
-  }catch(e){ log('inventory catalog failed',e.message||e); }
+  results.slice(1).forEach(r=>{ if(r.status==='fulfilled'&&Array.isArray(r.value)) catalogRows.push(...r.value); });
   const owned=invRows.filter(r=>(strictUserMatch(r,userId)||!hasOtherUser(r,userId))&&isRealInventoryRow(r));
   return enrichInventoryRowsWithCatalogue(owned,catalogRows);
 }
@@ -2006,7 +2116,7 @@ async function loadRowsFromProxyAndSheets(modes,tabs,userId,p){
   return dedupeRows(all);
 }
 function normaliseStoreRow(row){
-  return {raw:row,item_name:pick(row,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name','hook_name','habitat_title'],'Item'),item_id:pick(row,['item_id','item_key','key','id','habitat_key','prize_key','hook_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins','play_cost'],''),category:pick(row,['category','item_type','type','target_category','rarity','hook_rarity'],''),image_url:pick(row,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','background_image_url','loadout_image_url','preview_url','thumbnail_url','thumb_url','item_image_url','shop_image_url','item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id','public_id'],'')};
+  return {raw:row,item_name:pick(row,['item_name','shop_name','name','label','title','habitat_name','prize_name','display_name','hook_name','habitat_title','food_name','snack_name'],'Item'),item_id:pick(row,['item_id','item_key','inventory_item_id','selected_item_id','key','id','sku','slug','habitat_key','prize_key','hook_key'],''),quantity:pick(row,['quantity','qty','count','amount'],''),price:pick(row,['shop_price','price','cost','coins','pet_coins','play_cost'],''),category:pick(row,['category','item_type','type','target_category','rarity','hook_rarity'],''),image_url:itemImageFromRow(row)};
 }
 function normaliseHabitatRow(row){
   const slot=pick(row,['slot','habitat_slot','loadout_slot','layer','section','type'],'');
@@ -2030,9 +2140,9 @@ function handlePrev(){
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
   if(state.screen==='questPick'){cycleQuestPick(-1);return;}
-  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.careResult=null;state.panelActionMsg='';render();return;}
+  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.careResult=null;state.careAnimationDone=false;state.panelActionMsg='';render();return;}
   if(state.screen==='careItemPick'&&(state.careItems||[]).length){state.panelIndex=(state.panelIndex+(state.careItems||[]).length-1)%(state.careItems||[]).length;render();return;}
-  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.screen='care';state.panelActionMsg='';render();return;}
+  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.screen='care';state.careAnimationDone=false;state.panelActionMsg='';render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+state.pets.length-1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.max(1,(Number(state.shopQty)||1)-1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+state.panelItems.length-1)%state.panelItems.length;render();return;}
@@ -2045,9 +2155,9 @@ function handleNext(){
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
   if(state.screen==='questPick'){cycleQuestPick(1);return;}
-  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.careResult=null;state.panelActionMsg='';render();return;}
+  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.careResult=null;state.careAnimationDone=false;state.panelActionMsg='';render();return;}
   if(state.screen==='careItemPick'&&(state.careItems||[]).length){state.panelIndex=(state.panelIndex+1)%(state.careItems||[]).length;render();return;}
-  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.screen='care';state.panelActionMsg='';render();return;}
+  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.screen='care';state.careAnimationDone=false;state.panelActionMsg='';render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.min(99,(Number(state.shopQty)||1)+1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+1)%state.panelItems.length;render();return;}
@@ -2065,7 +2175,7 @@ function handleSelect(){
   if(state.screen==='questPick')return confirmQuestPick();
   if(state.screen==='care')return runCareAction();
   if(state.screen==='careItemPick')return runSelectedCareItem();
-  if(state.screen==='careAnimation'){state.screen='care';state.panelActionMsg='';render();return;}
+  if(state.screen==='careAnimation'){state.screen='care';state.careAnimationDone=false;state.panelActionMsg='';render();return;}
   if(state.screen==='questGame')return questJump();
   if(['shop','inventory','habitat','hook'].includes(state.screen))return activatePanelItem();
   if(['stats','quests'].includes(state.screen)){state.screen='menu';render();}
@@ -2082,7 +2192,7 @@ function activateMenu(){
 }
 function activatePetAction(){
   const item=PET_ACTIONS[state.petActionIndex]||PET_ACTIONS[0];
-  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.careActionIndex=0;state.panelActionMsg='';state.careResult=null;state.careItems=[];state.carePendingAction=null;render();return;}
+  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.careActionIndex=0;state.panelActionMsg='';state.careResult=null;state.careAnimationDone=false;state.careItems=[];state.carePendingAction=null;render();return;}
   if(item.key==='shop'){openShopPanel();return;}
   if(item.key==='inventory'){openDataPanel('inventory');return;}
   if(item.key==='habitat'){openDataPanel('habitat');return;}
