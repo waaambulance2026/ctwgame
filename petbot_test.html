@@ -1865,6 +1865,7 @@ function handleBack(){
     // STAGE 49: Back from the embedded quest goes to the Games menu inside the toy.
     // The parent must keep the Tamagotchi open; index.html handles stopEmbedded that way.
     clearQuestReturnState();
+    leaveQuestVisualMode();
     state.screen='games';
     state.gameIndex=0;
     render();
@@ -2091,17 +2092,21 @@ window.addEventListener('message', e => {
     send('moveStop');
     const oldQuest=state.quest||{};
     const keepKind=oldQuest.kind==='team'||/team/i.test(String(oldQuest.mode||''))?'team':'solo';
-    state.returnToQuest=false;
-    state.returnQuestMode='';
-    state._returnedToQuestAt=Date.now();
-    state.screen='questGame';
-    state._questMenuOpenAt=0;
-    state._questMenuScreen='';
+    const keepMode=state.returnQuestMode||'embedded';
+
+    // STAGE 66: do NOT switch PetBot to the transparent quest LCD until the
+    // parent confirms the platform game has been restored behind it. Switching
+    // early is what made the LCD/screen look blank when Back was pressed.
+    state._waitingReturnToQuestAt=Date.now();
+    state._waitingReturnKind=keepKind;
+    state._waitingReturnMode=keepMode;
     state.questRunId=state.questRunId||oldQuest.questRunId||'';
     state.quest={...oldQuest,kind:keepKind,mode:oldQuest.mode||((keepKind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true,questRunId:state.questRunId};
-    try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
+    state.panelActionMsg='Returning to quest...';
+    state.panelMessage='Returning to quest...';
     render();
-    sendParent('waa-petbot-game-action',{action:'returnToQuest',questRunId:state.questRunId||'',questKind:keepKind});
+
+    sendParent('waa-petbot-game-action',{action:'returnToQuest',returnMode:keepMode,questRunId:state.questRunId||'',questKind:keepKind,forceQuest:true});
   };
   // Back-to-quest is handled once inside handleBack().
   document.addEventListener('keydown',e=>{
@@ -2167,6 +2172,9 @@ window.addEventListener('message', e => {
       state.returnQuestMode='';
       state._questMenuOpenAt=0;
       state._questMenuScreen='';
+      state._waitingReturnToQuestAt=0;
+      state._waitingReturnKind='';
+      state._waitingReturnMode='';
       try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
       render();
     }catch(e){ console.warn('Stage 37/53 quest LCD restore failed',e); }

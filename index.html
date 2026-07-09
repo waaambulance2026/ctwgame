@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage65-team-return-clean-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage66-back-safe-return-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage65-team-return-clean-20260709&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage66-back-safe-return-20260709&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -6348,6 +6348,7 @@ This router owns:
       mode:'embedded',
       kind:activeKind,
       questRunId:window.waaQuestRunId || currentQuestRunId || '',
+      forceQuest:!!opts.forceQuest,
       t:Date.now()
     });
 
@@ -6437,9 +6438,9 @@ This router owns:
     try{ activeKind = activeKind || sessionStorage.getItem('waaCurrentQuestKind') || 'solo'; }catch(e){}
 
     if(mode === 'expanded'){
-      setExpanded({start:false});
+      setExpanded({start:false, forceQuest:true});
     }else{
-      setEmbedded(activeKind === 'team' ? 'team' : 'solo', {start:false});
+      setEmbedded(activeKind === 'team' ? 'team' : 'solo', {start:false, forceQuest:true});
     }
 
     clearQuestReturnSoon();
@@ -6804,7 +6805,12 @@ This router owns:
     }
 
     if(action === 'returnToQuest' || action === 'resumeQuest'){
-      return returnToQuest(getQuestReturnMode());
+      const msgKind = (msg.questKind === 'team' || msg.kind === 'team') ? 'team' : ((msg.questKind === 'solo' || msg.kind === 'solo') ? 'solo' : '');
+      if(msgKind){
+        window.waaCurrentQuestKind = msgKind;
+        try{ sessionStorage.setItem('waaCurrentQuestKind', msgKind); }catch(e){}
+      }
+      return returnToQuest(msg.returnMode || getQuestReturnMode());
     }
 
     if(action === 'stopEmbedded'){
