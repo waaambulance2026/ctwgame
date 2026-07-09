@@ -565,6 +565,44 @@ body.questPlaying .device{pointer-events:auto!important;}
 /* STAGE 38: habitat loading/error text is a small top label, not a fake emoji pet. */
 .habitatLoadingCard{position:absolute;left:8px;right:8px;top:6px;z-index:160;padding:4px 7px;border-radius:10px;background:rgba(255,247,189,.90);color:#24152e;font-weight:1000;font-size:clamp(8px,.9vw,12px);line-height:1.05;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,.18);}
 .habitatFullScreen .habitatPetEmoji{display:none!important;}
+
+
+/* STAGE 69 CLEAN CARE FLOW:
+   Care screen keeps the selected pet visible; heart buttons scroll owned pets.
+   Feed/play/heal/train can open a real inventory picker, then show a simple
+   Tamagotchi-style item animation instead of instantly firing a hidden action. */
+.lcd .careCard,.lcd [data-care-index],.lcd .careItemCard,.lcd [data-care-item-index]{pointer-events:auto!important;}
+.careMainBody{display:grid!important;grid-template-rows:auto 1fr auto auto!important;gap:3px!important;padding:4px 7px 5px!important;}
+.carePetStage,.carePickStage,.careAnimStage{position:relative;width:100%;min-height:58px;border:1.5px solid rgba(22,34,63,.25);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(179,245,255,.22));overflow:hidden;}
+.carePetArt,.carePickPet,.careAnimPet{position:absolute;left:50%;top:50%;width:78%;height:84%;transform:translate(-50%,-50%);background-position:center;background-repeat:no-repeat;background-size:contain;image-rendering:auto;}
+.carePetEmoji,.carePickEmoji,.careAnimEmoji{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-size:34px;}
+.carePetDots{position:absolute;left:6px;right:6px;bottom:3px;display:flex;justify-content:center;gap:3px;}
+.carePetDots i{width:5px;height:5px;border-radius:50%;background:rgba(22,34,63,.23);box-shadow:0 1px 0 rgba(255,255,255,.7);}
+.carePetDots i.on{background:rgba(22,34,63,.82);}
+.careActionGrid{display:grid!important;grid-template-columns:repeat(2,1fr)!important;gap:3px!important;}
+.careActionGrid .careCard{min-height:23px!important;padding:1px 3px!important;font-size:clamp(7px,.76vw,10px)!important;}
+.careActionGrid .careCard:nth-child(5){grid-column:1/2;}
+.careCard.active{background:rgba(255,255,255,.82)!important;outline:2px solid rgba(255,30,145,.35)!important;}
+.careHint{font-size:clamp(6.5px,.72vw,9px)!important;line-height:1.05;text-align:center;font-weight:1000;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.carePickBody{display:grid!important;grid-template-rows:auto auto 1fr auto!important;gap:3px!important;padding:4px 7px 5px!important;}
+.carePickStage{min-height:45px!important;}
+.carePickPet{width:42%;height:90%;left:26%;}
+.carePickItemPreview{position:absolute;right:10%;top:50%;width:30%;height:72%;transform:translateY(-50%);background-position:center;background-size:contain;background-repeat:no-repeat;}
+.carePickList{display:grid;grid-template-columns:1fr 1fr;gap:3px;min-height:0;}
+.careItemCard{border:1.5px solid rgba(22,34,63,.25);border-radius:9px;background:rgba(255,255,255,.32);display:grid;grid-template-columns:28px 1fr;align-items:center;gap:3px;min-height:27px;padding:2px 4px;font-size:clamp(6.8px,.74vw,9px);font-weight:1000;overflow:hidden;}
+.careItemCard.active{background:rgba(255,255,255,.85);outline:2px solid rgba(22,34,63,.35);}
+.careItemThumb{width:25px;height:25px;background-position:center;background-size:contain;background-repeat:no-repeat;}
+.careItemText{min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.careItemText small{display:block;font-size:.82em;opacity:.72;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.careAnimBody{display:grid!important;grid-template-rows:auto 1fr auto!important;gap:4px!important;padding:4px 7px 5px!important;}
+.careAnimStage{min-height:92px!important;}
+.careAnimPet{width:58%;height:86%;left:42%;animation:careChomp .55s ease-in-out infinite alternate;}
+.careAnimItem{position:absolute;right:11%;top:46%;width:28%;height:38%;transform:translateY(-50%);background-position:center;background-size:contain;background-repeat:no-repeat;animation:careBites 1.45s steps(4,end) infinite;}
+.careAnimItem.noImg{display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(255,255,255,.55);border-radius:50%;}
+.careAnimLabel{position:absolute;left:5px;right:5px;bottom:3px;text-align:center;font-size:clamp(7px,.76vw,10px);font-weight:1000;text-shadow:0 1px 0 rgba(255,255,255,.8);}
+@keyframes careChomp{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.035) rotate(-1deg)}}
+@keyframes careBites{0%{transform:translateY(-50%) scale(1);opacity:1}25%{transform:translate(-8%,-50%) scale(.86);opacity:1}50%{transform:translate(-16%,-50%) scale(.68);opacity:.95}75%{transform:translate(-24%,-50%) scale(.48);opacity:.8}100%{transform:translate(-28%,-50%) scale(.25);opacity:.25}}
+
 </style>
 </head>
 <body>
@@ -714,7 +752,7 @@ function shouldProcessParentRoute(d,fallbackKey){
   return true;
 }
 function isQuestReturnMenuScreen(screen){
-  return ['shop','inventory','habitat','hook','care','games','petActions','petHome','menu','welcomeBoard'].includes(String(screen||state.screen||''));
+  return ['shop','inventory','habitat','hook','care','careItemPick','careAnimation','games','petActions','petHome','menu','welcomeBoard'].includes(String(screen||state.screen||''));
 }
 function isQuestMenuProtected(){
   return !!(state && state.returnToQuest && isQuestReturnMenuScreen(state.screen));
@@ -761,7 +799,7 @@ function leaveQuestVisualMode(){
   }catch(e){}
 }
 
-const PET_REQUIRED_SCREENS=new Set(['pet','petHome','petActions','care','stats','shop','inventory','habitat','hook','games','questPick','welcomeBoard','menu']);
+const PET_REQUIRED_SCREENS=new Set(['pet','petHome','petActions','care','careItemPick','careAnimation','stats','shop','inventory','habitat','hook','games','questPick','welcomeBoard','menu']);
 let petReloadQueued=false;
 function screenNeedsPet(screen){return PET_REQUIRED_SCREENS.has(String(screen||''));}
 function restoreCachedPetsNow(){
@@ -828,6 +866,8 @@ function render(){
   else if(state.screen==='welcomeBoard') html=renderWelcomeBoard();
   else if(state.screen==='menu') html=renderMenu();
   else if(state.screen==='care') html=renderCarePanel();
+  else if(state.screen==='careItemPick') html=renderCareItemPicker();
+  else if(state.screen==='careAnimation') html=renderCareAnimation();
   else if(state.screen==='stats') html=renderStats();
   else if(state.screen==='inventory') html=renderPanel('INVENTORY');
   else if(state.screen==='games') html=renderGames();
@@ -1144,22 +1184,59 @@ function renderHookGamePanel(){
   return `<div class="hookFullScreen"><div class="hookGameView"><div class="hookPond ${state.hookCasting?'hookCasting':''}"><img class="hookGifBg" src="hook_a_waaambulance.gif?v=stage25" alt="Hook-a-Waaambulance game">${floatHtml}<div class="hookLine"></div><div class="hookWave"></div>${prizeImg||'<div class="hookPrize">🚑</div>'}<div class="hookResult ${state.hookPrize?'hasPrize':''}">${esc(prizeTitle)}</div></div></div></div>`;
 }
 
+function carePetArtHtml(p, cls, urlOverride){
+  const url=cleanImageUrl(urlOverride||getPetArtUrl(p));
+  if(url)return `<div class="${esc(cls||'carePetArt')}" style="background-image:url('${esc(url)}')"></div>`;
+  return `<div class="${esc((cls||'carePetArt').replace('Art','Emoji'))}">${esc(p?.emoji||emojiFor(p?.pet||p?.category))}</div>`;
+}
+function careDotsHtml(){
+  const pets=state.pets||[];
+  if(pets.length<=1)return '';
+  return `<div class="carePetDots">${pets.slice(0,12).map((_,i)=>`<i class="${i===state.petIndex?'on':''}"></i>`).join('')}</div>`;
+}
+function currentCareAction(){
+  const idx=clamp(Number(state.careActionIndex ?? state.panelIndex ?? 0),0,CARE_ACTIONS.length-1);
+  return CARE_ACTIONS[idx]||CARE_ACTIONS[0];
+}
 function renderCarePanel(){
   const p=currentPet()||{};
-  const idx=clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1);
+  const idx=clamp(Number(state.careActionIndex ?? state.panelIndex ?? 0),0,CARE_ACTIONS.length-1);
   const cards=CARE_ACTIONS.map((a,i)=>`<div class="careCard ${i===idx?'active':''}" data-care-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('');
-  const result=state.careResult||null;
-  if(result){
-    const petUrl=cleanImageUrl(result.petUrl||getPetArtUrl(p));
-    const actionUrl=cleanImageUrl(result.actionUrl||'');
-    const itemUrl=cleanImageUrl(result.itemUrl||'');
-    const label=result.itemName?`${result.label||'Care'} · ${result.itemName}`:(result.label||'Care action');
-    const petArt=petUrl?`<div class="careResultPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careResultFallbackPet">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
-    const actionArt=actionUrl?`<div class="careResultAction" style="background-image:url('${esc(actionUrl)}')"></div>`:'';
-    const itemArt=itemUrl?`<div class="careResultItem" style="background-image:url('${esc(itemUrl)}')"></div>`:'';
-    return top('CARE',p.name||'')+`<div class="body careBody careBodyResult"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careResultStage ${esc(result.actionKey||'')}">${petArt}${actionArt}${itemArt}<div class="careResultLabel">${esc(label)}</div></div><div class="careGrid careMiniGrid">${cards}</div><div class="panelActionMsg careMsg">${esc(result.message||state.panelActionMsg||'Choose care action')}</div></div>`;
-  }
-  return top('CARE',p.name||'')+`<div class="body careBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careGrid">${cards}</div><div class="panelActionMsg careMsg">${esc(state.panelActionMsg||'Choose care action')}</div></div>`;
+  const count=Math.max(1,(state.pets||[]).length);
+  const petName=p.name||p.pet||'Pet';
+  const hint=state.panelActionMsg||'Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.';
+  return top('CARE',`${state.petIndex+1}/${count}`)+`<div class="body careMainBody"><div class="carePetLine">${esc(petName)} · Lv ${esc(p.level||1)}</div><div class="carePetStage">${carePetArtHtml(p,'carePetArt')}${careDotsHtml()}</div><div class="careActionGrid">${cards}</div><div class="careHint">${esc(hint)}</div></div>`;
+}
+function renderCareItemPicker(){
+  const p=currentPet()||{};
+  const action=state.carePendingAction||currentCareAction();
+  const items=Array.isArray(state.careItems)?state.careItems:[];
+  const idx=clamp(Number(state.panelIndex||0),0,Math.max(0,items.length-1));
+  const selected=items[idx]||{};
+  const pageSize=4;
+  const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
+  const pageItems=items.slice(startIndex,startIndex+pageSize);
+  const itemUrl=itemImage(selected);
+  const preview=itemUrl?`<div class="carePickItemPreview" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="carePickItemPreview noImg">${esc(action.icon||'🍽️')}</div>`;
+  const msg=state.panelLoading?`Loading ${action.label.toLowerCase()} items...`:(items.length?`Choose ${action.label.toLowerCase()} item · ${idx+1}/${items.length}`:(state.panelActionMsg||`No ${action.label.toLowerCase()} item found for this pet.`));
+  return top(action.label.toUpperCase(),p.name||p.pet||'')+`<div class="body carePickBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="carePickStage">${carePetArtHtml(p,'carePickPet')}${preview}</div><div class="carePickList">${pageItems.length?pageItems.map((it,j)=>renderCareItemCard(it,startIndex+j,idx)).join(''):`<div class="careItemCard" style="grid-column:1/-1"><span>${esc(msg)}</span></div>`}</div><div class="careHint">${esc(msg)}</div></div>`;
+}
+function renderCareItemCard(it,realIndex,idx){
+  const url=itemImage(it);
+  const thumb=url?`<span class="careItemThumb" style="background-image:url('${esc(url)}')"></span>`:`<span class="panelIcon">${esc(iconForItem(it))}</span>`;
+  return `<div class="careItemCard ${realIndex===idx?'active':''}" data-care-item-index="${realIndex}">${thumb}<span class="careItemText">${esc(itemTitle(it))}<small>${esc(itemSub(it)||'Inventory item')}</small></span></div>`;
+}
+function renderCareAnimation(){
+  const p=currentPet()||{};
+  const result=state.careResult||{};
+  const action=result.action||state.carePendingAction||currentCareAction();
+  const petUrl=cleanImageUrl(result.actionUrl||result.petUrl||getPetArtUrl(p));
+  const itemUrl=cleanImageUrl(result.itemUrl||'');
+  const petHtml=petUrl?`<div class="careAnimPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careAnimEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
+  const itemHtml=itemUrl?`<div class="careAnimItem" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="careAnimItem noImg">${esc(action.icon||'🍽️')}</div>`;
+  const label=result.itemName?`${action.label||'Care'} · ${result.itemName}`:(action.label||'Care');
+  const msg=result.message||state.panelActionMsg||'Working...';
+  return top((action.label||'CARE').toUpperCase(),p.name||p.pet||'')+`<div class="body careAnimBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careAnimStage">${petHtml}${itemHtml}<div class="careAnimLabel">${esc(label)}</div></div><div class="careHint">${esc(msg)}</div></div>`;
 }
 function firstImageFromObject(obj,keys){
   try{
@@ -1185,8 +1262,8 @@ function careRowMatchesAction(row,action,p,userId){
   return !!petOk;
 }
 async function findCareVisual(action,p,data){
-  const actionKeys=['action_image_url','pet_action_image_url','animation_image_url','animation_url','gif_url','care_image_url','result_image_url','response_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'];
-  const itemKeys=['item_image_url','used_item_image_url','used_image_url','reward_image_url','food_image_url','toy_image_url','medicine_image_url','snack_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url'];
+  const actionKeys=['action_image_url','pet_action_image_url','pet_animation_image_url','animation_image_url','animation_url','gif_url','care_image_url','result_image_url','response_image_url','feed_action_image_url','play_action_image_url','rest_action_image_url','heal_action_image_url','train_action_image_url'];
+  const itemKeys=['item_image_url','used_item_image_url','used_image_url','reward_image_url','food_image_url','toy_image_url','medicine_image_url','snack_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'];
   const out={
     actionUrl:firstImageFromObject(data,actionKeys),
     itemUrl:firstImageFromObject(data,itemKeys),
@@ -1210,21 +1287,118 @@ async function findCareVisual(action,p,data){
   }catch(e){log('care visual lookup failed',e.message||e);}
   return out;
 }
+function careActionNeedsInventory(action){
+  return ['feed','play','heal','train'].includes(String(action&&action.key||''));
+}
+function careItemActionWords(action){
+  const key=String(action&&action.key||'');
+  if(key==='feed')return ['feed','food','snack','treat','pellet','seed','kibble','tuna','hay','flake','nutrient','meat','grain','morsel','roast'];
+  if(key==='play')return ['play','toy','ball','plush','game'];
+  if(key==='heal')return ['heal','medicine','med','potion','health','kit','bandage'];
+  if(key==='train')return ['train','training','whistle','lesson','skill'];
+  if(key==='rest')return ['rest','sleep','blanket','bed','comfort'];
+  return [key];
+}
+function careInventoryItemMatches(action,item,p){
+  if(!item)return false;
+  const raw=item.raw||item;
+  if(hasOtherUser(raw,state.player?.userId||'') && !strictUserMatch(raw,state.player?.userId||''))return false;
+  const qty=pick(raw,['quantity','qty','count','amount'],'');
+  if(qty!=='' && Number(qty)<=0)return false;
+  const text=norm([
+    itemTitle(item), itemSub(item), item.item_id, item.category,
+    pick(raw,['item_id','item_key','key','id','category','item_type','type','target_category','target_pet','pet','species','for_pet','action','care_action','effect_stat','mode','description','name','title','label'],'')
+  ].join(' '));
+  if(/habitat|background|decor|room|loadout|wall|floor/.test(text))return false;
+  const words=careItemActionWords(action).map(norm);
+  const actionOk=words.some(w=>w&&text.includes(w));
+  if(!actionOk)return false;
+  const targetPet=clean(pick(raw,['target_pet','pet','species','for_pet','allowed_pet','pet_type'],''));
+  const targetCat=clean(pick(raw,['target_category','category','for_category','allowed_category'],''));
+  const petName=norm([p.pet,p.code,p.name,p.userPetId].filter(Boolean).join(' '));
+  const catName=norm(p.category||'');
+  if(targetPet && !petName.includes(norm(targetPet)) && !norm(targetPet).includes(norm(p.pet||p.code||p.name||'')))return false;
+  if(targetCat){
+    const tc=norm(targetCat);
+    const genericCare=/food|snack|treat|toy|medicine|heal|training|train|rest|comfort/.test(tc);
+    if(!genericCare && catName && !catName.includes(tc) && !tc.includes(catName))return false;
+  }
+  return true;
+}
+async function loadCareItemsForAction(action,p){
+  const inventory=await cachedLoadPanelData('inventory',true).catch(()=>[]);
+  const out=(inventory||[]).filter(it=>careInventoryItemMatches(action,it,p));
+  return out;
+}
+async function startCareActionFlow(action){
+  action=action||currentCareAction();
+  const idx=CARE_ACTIONS.findIndex(a=>a.key===action.key);
+  if(idx>=0){state.careActionIndex=idx;state.panelIndex=idx;}
+  state.carePendingAction=action;
+  state.careResult=null;
+  state.panelActionMsg='';
+  if(careActionNeedsInventory(action)){
+    state.screen='careItemPick';
+    state.careItems=[];
+    state.panelIndex=0;
+    state.panelLoading=true;
+    state.panelActionMsg='Loading '+action.label.toLowerCase()+' items...';
+    render();
+    const p=currentPet()||{};
+    const items=await loadCareItemsForAction(action,p);
+    state.careItems=items;
+    state.panelIndex=0;
+    state.panelLoading=false;
+    state.panelActionMsg=items.length?'Choose an item for '+(p.name||p.pet||'pet'):'No '+action.label.toLowerCase()+' item found in inventory for this pet.';
+    preloadPanelImages(items);
+    render();
+    return;
+  }
+  return runCareActionWithItem(action,null);
+}
 async function runCareAction(){
-  const action=CARE_ACTIONS[clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1)]||CARE_ACTIONS[0];
+  return startCareActionFlow(currentCareAction());
+}
+async function runSelectedCareItem(){
+  const action=state.carePendingAction||currentCareAction();
+  const item=(state.careItems||[])[clamp(Number(state.panelIndex||0),0,Math.max(0,(state.careItems||[]).length-1))];
+  if(!item){state.panelActionMsg='No item selected.';render();return;}
+  return runCareActionWithItem(action,item);
+}
+async function runCareActionWithItem(action,item){
   const p=currentPet()||{};
-  const startingMsg=action.label+' for '+(p.name||p.pet||'pet')+'...';
+  const itemName=item?itemTitle(item):'';
+  const itemUrl=item?itemImage(item):'';
+  const startingMsg=itemName?`${p.name||p.pet||'Pet'} is using ${itemName}...`:`${action.label} for ${p.name||p.pet||'pet'}...`;
+  state.screen='careAnimation';
   state.panelActionMsg=startingMsg;
-  state.careResult={actionKey:action.key,label:action.label,message:startingMsg,petUrl:getPetArtUrl(p),itemUrl:'',actionUrl:'',itemName:''};
+  state.careResult={action,actionKey:action.key,label:action.label,message:startingMsg,petUrl:getPetArtUrl(p),itemUrl,itemName,actionUrl:''};
   render();
   try{
-    const data=await postPetbotAction({mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''});
-    const visual=await findCareVisual(action,p,data||{});
-    const msg=data.message||data.response||data.result||visual.sheetMessage||('Done: '+action.label);
+    const visual=await findCareVisual(action,p,{...(item||{}),raw:{...((item&&item.raw)||{}),...(item||{})}});
+    if(state.screen==='careAnimation'){
+      state.careResult={...(state.careResult||{}),actionUrl:visual.actionUrl||'',itemUrl:visual.itemUrl||itemUrl,itemName:visual.itemName||itemName};
+      if(state.careResult.actionUrl)preloadOne(state.careResult.actionUrl);
+      if(state.careResult.itemUrl)preloadOne(state.careResult.itemUrl);
+      render();
+    }
+  }catch(e){}
+  await new Promise(r=>setTimeout(r,950));
+  try{
+    const payload={mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''};
+    if(item){
+      payload.item_id=item.item_id||pick(item.raw||{},['item_id','item_key','key','id'],'');
+      payload.item_key=payload.item_id;
+      payload.item_name=itemName;
+      payload.selected_item_id=payload.item_id;
+      payload.selected_item_name=itemName;
+      payload.inventory_item_id=payload.item_id;
+    }
+    const data=await postPetbotAction(payload);
+    const visual=await findCareVisual(action,p,{...(data||{}),...(item||{})});
+    const msg=data.message||data.response||data.result||visual.sheetMessage||(itemName?`${p.name||p.pet||'Pet'} enjoyed ${itemName}.`:'Done: '+action.label);
     state.panelActionMsg=msg;
-    state.careResult={actionKey:action.key,label:action.label,message:msg,petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||'',itemUrl:visual.itemUrl||'',itemName:visual.itemName||''};
-    if(state.careResult.actionUrl)preloadOne(state.careResult.actionUrl);
-    if(state.careResult.itemUrl)preloadOne(state.careResult.itemUrl);
+    state.careResult={action,actionKey:action.key,label:action.label,message:msg,petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||state.careResult?.actionUrl||'',itemUrl:visual.itemUrl||itemUrl||'',itemName:visual.itemName||itemName||''};
     clearPanelCache('inventory');
     try{
       const fresh=await loadUserPetsFast(state.player?.userId||'');
@@ -1302,7 +1476,8 @@ function wireRenderedControls(){
   document.querySelectorAll('[data-pet-action-index]').forEach(el=>el.addEventListener('click',()=>{state.petActionIndex=Number(el.dataset.petActionIndex)||0;activatePetAction();}));
   document.querySelectorAll('[data-game-index]').forEach(el=>el.addEventListener('click',()=>{state.gameIndex=Number(el.dataset.gameIndex)||0;activateGameMenu();}));
   document.querySelectorAll('[data-panel-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.panelIndex)||0;state.panelActionMsg='';render();}));
-  document.querySelectorAll('[data-care-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.careIndex)||0;runCareAction();}));
+  document.querySelectorAll('[data-care-index]').forEach(el=>el.addEventListener('click',()=>{const i=Number(el.dataset.careIndex)||0;state.careActionIndex=i;state.panelIndex=i;startCareActionFlow(CARE_ACTIONS[i]||CARE_ACTIONS[0]);}));
+  document.querySelectorAll('[data-care-item-index]').forEach(el=>el.addEventListener('click',()=>{state.panelIndex=Number(el.dataset.careItemIndex)||0;runSelectedCareItem();}));
   const input=$('passInput');
   if(input){input.addEventListener('input',()=>state.password=input.value);setTimeout(()=>{try{input.focus();input.select();}catch(e){}},40);input.addEventListener('keydown',e=>{if(e.key==='Enter')submitPassword();});}
 }
@@ -1724,7 +1899,9 @@ function handlePrev(){
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+MENU.length-1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+GAME_MENU.length-1)%GAME_MENU.length;render();return;}
   if(state.screen==='questPick'){cycleQuestPick(-1);return;}
-  if(state.screen==='care'){state.panelIndex=(state.panelIndex+CARE_ACTIONS.length-1)%CARE_ACTIONS.length;render();return;}
+  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.careResult=null;state.panelActionMsg='';render();return;}
+  if(state.screen==='careItemPick'&&(state.careItems||[]).length){state.panelIndex=(state.panelIndex+(state.careItems||[]).length-1)%(state.careItems||[]).length;render();return;}
+  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+state.pets.length-1)%state.pets.length;state.screen='care';state.panelActionMsg='';render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+state.pets.length-1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.max(1,(Number(state.shopQty)||1)-1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+state.panelItems.length-1)%state.panelItems.length;render();return;}
@@ -1737,7 +1914,9 @@ function handleNext(){
   if(state.screen==='menu'){state.menuIndex=(state.menuIndex+1)%MENU.length;render();return;}
   if(state.screen==='games'){state.gameIndex=(state.gameIndex+1)%GAME_MENU.length;render();return;}
   if(state.screen==='questPick'){cycleQuestPick(1);return;}
-  if(state.screen==='care'){state.panelIndex=(state.panelIndex+1)%CARE_ACTIONS.length;render();return;}
+  if(state.screen==='care'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.careResult=null;state.panelActionMsg='';render();return;}
+  if(state.screen==='careItemPick'&&(state.careItems||[]).length){state.panelIndex=(state.panelIndex+1)%(state.careItems||[]).length;render();return;}
+  if(state.screen==='careAnimation'&&state.pets.length){state.petIndex=(state.petIndex+1)%state.pets.length;state.screen='care';state.panelActionMsg='';render();return;}
   if(state.screen==='shop'&&state.shopStep==='pet'&&state.pets.length){state.shopPetIndex=(state.shopPetIndex+1)%state.pets.length;render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopQty=Math.min(99,(Number(state.shopQty)||1)+1);render();return;}
   if(['shop','inventory','habitat','hook'].includes(state.screen)&&state.panelItems.length){state.panelIndex=(state.panelIndex+1)%state.panelItems.length;render();return;}
@@ -1754,6 +1933,8 @@ function handleSelect(){
   if(state.screen==='games')return activateGameMenu();
   if(state.screen==='questPick')return confirmQuestPick();
   if(state.screen==='care')return runCareAction();
+  if(state.screen==='careItemPick')return runSelectedCareItem();
+  if(state.screen==='careAnimation'){state.screen='care';state.panelActionMsg='';render();return;}
   if(state.screen==='questGame')return questJump();
   if(['shop','inventory','habitat','hook'].includes(state.screen))return activatePanelItem();
   if(['stats','quests'].includes(state.screen)){state.screen='menu';render();}
@@ -1770,7 +1951,7 @@ function activateMenu(){
 }
 function activatePetAction(){
   const item=PET_ACTIONS[state.petActionIndex]||PET_ACTIONS[0];
-  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.panelActionMsg='Choose care action';state.careResult=null;render();return;}
+  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.careActionIndex=0;state.panelActionMsg='Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.';state.careResult=null;state.careItems=[];state.carePendingAction=null;render();return;}
   if(item.key==='shop'){openShopPanel();return;}
   if(item.key==='inventory'){openDataPanel('inventory');return;}
   if(item.key==='habitat'){openDataPanel('habitat');return;}
@@ -1996,6 +2177,7 @@ function handleBack(){
   if(state.screen==='petHome'){state.screen='pet';render();return;}
   if(state.screen==='petActions'){state.screen='petHome';render();return;}
   if(state.screen==='welcomeBoard'){state.screen='petActions';render();return;}
+  if(state.screen==='careItemPick'||state.screen==='careAnimation'){state.screen='care';state.panelActionMsg='';state.careResult=null;render();return;}
   if(state.screen==='care'){state.screen='petActions';render();return;}
   if(state.screen==='menu'){state={...state,screen:'login',player:null,pets:[],petIndex:0,password:'',error:'',message:'Choose player'};render();return;}
   if(state.screen==='shop'&&state.shopStep==='qty'){state.shopStep='items';render();return;}
@@ -2107,7 +2289,7 @@ function petbotOpenParentScreen(screen, opts){
   if(screen==='hook') { openDataPanel('hook'); return true; }
   if(screen==='inventory') { openDataPanel('inventory'); return true; }
   if(screen==='games' || screen==='quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
-  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.panelActionMsg='Choose care action'; state.careResult=null; render(); return true; }
+  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.careActionIndex=0; state.panelActionMsg='Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.'; state.careResult=null; state.careItems=[]; state.carePendingAction=null; render(); return true; }
   if(screen==='petActions' || screen==='actions') { state.screen='petActions'; state.petActionIndex=0; render(); return true; }
   state.screen='petHome'; render(); return true;
 }
@@ -2307,7 +2489,7 @@ const stage29PendingTimer=setInterval(()=>{
       }
       document.documentElement.classList.remove('cssFullscreen','questPlaying');
       document.body.classList.remove('cssFullscreen','questPlaying');
-      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','questGame','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
+      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','questGame','shop','inventory','habitat','hook','care','careItemPick','careAnimation','welcomeBoard','stats','quests','error'];
       if(protectedScreens.includes(state.screen)){
         render();
         return;
