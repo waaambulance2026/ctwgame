@@ -588,6 +588,8 @@ body.questPlaying .device{pointer-events:auto!important;}
 .carePickStage{min-height:45px!important;}
 .carePickPet{width:42%;height:90%;left:26%;}
 .carePickItemPreview{position:absolute;right:10%;top:50%;width:30%;height:72%;transform:translateY(-50%);background-position:center;background-size:contain;background-repeat:no-repeat;}
+.carePickItemPreview.noImg{display:grid;place-items:center;border:1px solid rgba(22,34,63,.18);border-radius:10px;background:rgba(255,255,255,.56);font-size:clamp(6px,.68vw,9px);font-weight:1000;text-align:center;line-height:1.05;}
+.carePickItemPreview.noImg span{padding:2px;}
 .carePickList{display:grid;grid-template-columns:1fr 1fr;gap:3px;min-height:0;}
 .careItemCard{border:1.5px solid rgba(22,34,63,.25);border-radius:9px;background:rgba(255,255,255,.32);display:grid;grid-template-columns:28px 1fr;align-items:center;gap:3px;min-height:27px;padding:2px 4px;font-size:clamp(6.8px,.74vw,9px);font-weight:1000;overflow:hidden;}
 .careItemCard.active{background:rgba(255,255,255,.85);outline:2px solid rgba(22,34,63,.35);}
@@ -603,6 +605,31 @@ body.questPlaying .device{pointer-events:auto!important;}
 @keyframes careChomp{from{transform:translate(-50%,-50%) scale(1)}to{transform:translate(-50%,-50%) scale(1.035) rotate(-1deg)}}
 @keyframes careBites{0%{transform:translateY(-50%) scale(1);opacity:1}25%{transform:translate(-8%,-50%) scale(.86);opacity:1}50%{transform:translate(-16%,-50%) scale(.68);opacity:.95}75%{transform:translate(-24%,-50%) scale(.48);opacity:.8}100%{transform:translate(-28%,-50%) scale(.25);opacity:.25}}
 
+</style>
+
+<style id="stage70-care-tamagotchi-clean">
+/* STAGE 70: care is a Tamagotchi screen, not a help screen. */
+.careMainBody{grid-template-rows:auto 1fr auto!important;gap:3px!important;}
+.careMainBody .careHint:empty{display:none!important;}
+.carePetStage{min-height:72px!important;}
+.careActionGrid .careCard{min-height:22px!important;}
+.carePickBody .careHint{opacity:.78!important;}
+.careAnimStage{min-height:95px!important;overflow:hidden!important;}
+.careAnimStage-feed .careAnimPet{left:39%!important;width:56%!important;animation:stage70PetEat 1.35s steps(4,end) 1 forwards!important;transform-origin:50% 62%;}
+.careAnimStage-feed .careAnimItem{right:auto!important;left:64%!important;top:48%!important;width:30%!important;height:40%!important;transform:translate(-50%,-50%) scale(1);animation:stage70FoodBites 1.35s steps(5,end) 1 forwards!important;filter:drop-shadow(0 4px 3px rgba(22,34,63,.25));}
+.careAnimStage-feed .careAnimItem i{position:absolute;width:13%;height:13%;border-radius:50%;background:rgba(217,249,255,.96);opacity:0;box-shadow:0 0 0 1px rgba(180,235,246,.55);}
+.careAnimStage-feed .careAnimItem i:nth-child(1){left:8%;top:45%;animation:stage70Bite1 1.35s steps(5,end) 1 forwards;}
+.careAnimStage-feed .careAnimItem i:nth-child(2){left:17%;top:34%;animation:stage70Bite2 1.35s steps(5,end) 1 forwards;}
+.careAnimStage-feed .careAnimItem i:nth-child(3){left:25%;top:53%;animation:stage70Bite3 1.35s steps(5,end) 1 forwards;}
+.careAnimStage-feed .careAnimItem.noImg{background:rgba(255,255,255,.62)!important;border:1px solid rgba(22,34,63,.18);border-radius:12px;font-size:clamp(6px,.7vw,9px);text-align:center;font-weight:1000;color:#14223f;}
+.careAnimStage-feed .careAnimItem.noImg span{padding:2px;}
+@keyframes stage70PetEat{0%{transform:translate(-50%,-50%) scale(1)}20%{transform:translate(-48%,-50%) scale(1.04)}40%{transform:translate(-50%,-50%) scale(1)}60%{transform:translate(-48%,-50%) scale(1.04)}80%{transform:translate(-50%,-50%) scale(1)}100%{transform:translate(-50%,-50%) scale(1.02)}}
+@keyframes stage70FoodBites{0%{transform:translate(-50%,-50%) scale(1);opacity:1}20%{transform:translate(-66%,-50%) scale(.88);opacity:1}40%{transform:translate(-78%,-50%) scale(.72);opacity:1}60%{transform:translate(-89%,-50%) scale(.54);opacity:.92}80%{transform:translate(-98%,-50%) scale(.35);opacity:.7}100%{transform:translate(-106%,-50%) scale(.12);opacity:0}}
+@keyframes stage70Bite1{0%,19%{opacity:0}20%,100%{opacity:1}}
+@keyframes stage70Bite2{0%,39%{opacity:0}40%,100%{opacity:1}}
+@keyframes stage70Bite3{0%,59%{opacity:0}60%,100%{opacity:1}}
+.careAnimStage-play .careAnimItem,.careAnimStage-heal .careAnimItem,.careAnimStage-train .careAnimItem{animation:stage70ItemBounce 1.1s ease-in-out infinite alternate!important;}
+@keyframes stage70ItemBounce{from{transform:translateY(-50%) scale(.92)}to{transform:translateY(-58%) scale(1.04)}}
 </style>
 </head>
 <body>
@@ -702,7 +729,7 @@ const TUTORIAL_TOWN_SCRIPT={
   flow:['Wake up in the Tamagotchi','Collect tokens by touching them','Visit Pet Shop','Try Hook-a-Waaambulance','Open Habitat','Use Quest Selector','Team Quest practice','Stage clear']
 };
 const CARE_ACTIONS=[
-  {key:'feed',label:'Feed',icon:'🍔',mode:'feed_pet'},
+  {key:'feed',label:'Feed',icon:'🍽️',mode:'feed_pet'},
   {key:'play',label:'Play',icon:'🧸',mode:'play_pet'},
   {key:'rest',label:'Rest',icon:'💤',mode:'rest_pet'},
   {key:'heal',label:'Heal',icon:'💊',mode:'heal_pet'},
@@ -1003,7 +1030,14 @@ function renderShopPanel(title){
 
 function itemImage(it){
   const raw=(it&&it.raw)||it||{};
-  const v=pick(raw,['final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','thumbnail_url','thumb_url','item_image_url','shop_image_url','item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id'],'');
+  const v=pick(raw,[
+    'final_habitat_image_url','habitat_display_image_url','display_image_url','habitat_full_image_url','habitat_saved_full_image_url','full_image_url','full_url','render_url','rendered_url','composite_url','composed_image_url','room_image_url','habitat_image_url','habitat_background_url','background_image_url','background_url','loadout_image_url','preview_url','thumbnail_url','thumb_url',
+    'item_image_url','item_img_url','item_image','item_img','item_url','item_cloudinary_url','item_cloudinary_public_id','item_public_id',
+    'food_image_url','food_img_url','food_image','food_url','feed_image_url','feed_item_image_url','snack_image_url','treat_image_url',
+    'toy_image_url','medicine_image_url','heal_image_url','training_image_url','rest_image_url','blanket_image_url',
+    'shop_image_url','shop_item_image_url','inventory_image_url','inventory_item_image_url','used_item_image_url','used_image_url','reward_image_url',
+    'item_icon_url','icon_url','image_url','cloudinary_image_url','cloudinary_url','url','img','image','overlay_url','public_url','cloudinary_public_id','public_id'
+  ],'');
   return cleanImageUrl(v);
 }
 function habitatSlot(row){return String(pick(row,['habitat_slot','slot','loadout_slot','layout_slot','layer','section','type','item_type'],'')).toLowerCase();}
@@ -1204,8 +1238,8 @@ function renderCarePanel(){
   const cards=CARE_ACTIONS.map((a,i)=>`<div class="careCard ${i===idx?'active':''}" data-care-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('');
   const count=Math.max(1,(state.pets||[]).length);
   const petName=p.name||p.pet||'Pet';
-  const hint=state.panelActionMsg||'Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.';
-  return top('CARE',`${state.petIndex+1}/${count}`)+`<div class="body careMainBody"><div class="carePetLine">${esc(petName)} · Lv ${esc(p.level||1)}</div><div class="carePetStage">${carePetArtHtml(p,'carePetArt')}${careDotsHtml()}</div><div class="careActionGrid">${cards}</div><div class="careHint">${esc(hint)}</div></div>`;
+  const hint=state.panelActionMsg||'';
+  return top('CARE',`${state.petIndex+1}/${count}`)+`<div class="body careMainBody"><div class="carePetLine">${esc(petName)} · Lv ${esc(p.level||1)}</div><div class="carePetStage">${carePetArtHtml(p,'carePetArt')}${careDotsHtml()}</div><div class="careActionGrid">${cards}</div>${hint?`<div class="careHint">${esc(hint)}</div>`:''}</div>`;
 }
 function renderCareItemPicker(){
   const p=currentPet()||{};
@@ -1217,7 +1251,7 @@ function renderCareItemPicker(){
   const startIndex=items.length?Math.floor(idx/pageSize)*pageSize:0;
   const pageItems=items.slice(startIndex,startIndex+pageSize);
   const itemUrl=itemImage(selected);
-  const preview=itemUrl?`<div class="carePickItemPreview" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="carePickItemPreview noImg">${esc(action.icon||'🍽️')}</div>`;
+  const preview=itemUrl?`<div class="carePickItemPreview" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="carePickItemPreview noImg"><span>${esc(itemTitle(selected)||action.label||'Item')}</span></div>`;
   const msg=state.panelLoading?`Loading ${action.label.toLowerCase()} items...`:(items.length?`Choose ${action.label.toLowerCase()} item · ${idx+1}/${items.length}`:(state.panelActionMsg||`No ${action.label.toLowerCase()} item found for this pet.`));
   return top(action.label.toUpperCase(),p.name||p.pet||'')+`<div class="body carePickBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="carePickStage">${carePetArtHtml(p,'carePickPet')}${preview}</div><div class="carePickList">${pageItems.length?pageItems.map((it,j)=>renderCareItemCard(it,startIndex+j,idx)).join(''):`<div class="careItemCard" style="grid-column:1/-1"><span>${esc(msg)}</span></div>`}</div><div class="careHint">${esc(msg)}</div></div>`;
 }
@@ -1230,13 +1264,14 @@ function renderCareAnimation(){
   const p=currentPet()||{};
   const result=state.careResult||{};
   const action=result.action||state.carePendingAction||currentCareAction();
+  const key=String(action.key||'care');
   const petUrl=cleanImageUrl(result.actionUrl||result.petUrl||getPetArtUrl(p));
   const itemUrl=cleanImageUrl(result.itemUrl||'');
   const petHtml=petUrl?`<div class="careAnimPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careAnimEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
-  const itemHtml=itemUrl?`<div class="careAnimItem" style="background-image:url('${esc(itemUrl)}')"></div>`:`<div class="careAnimItem noImg">${esc(action.icon||'🍽️')}</div>`;
+  const itemHtml=itemUrl?`<div class="careAnimItem" style="background-image:url('${esc(itemUrl)}')"><i></i><i></i><i></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName||action.label||'Item')}</span></div>`;
   const label=result.itemName?`${action.label||'Care'} · ${result.itemName}`:(action.label||'Care');
-  const msg=result.message||state.panelActionMsg||'Working...';
-  return top((action.label||'CARE').toUpperCase(),p.name||p.pet||'')+`<div class="body careAnimBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careAnimStage">${petHtml}${itemHtml}<div class="careAnimLabel">${esc(label)}</div></div><div class="careHint">${esc(msg)}</div></div>`;
+  const msg=result.message||state.panelActionMsg||'';
+  return top((action.label||'CARE').toUpperCase(),p.name||p.pet||'')+`<div class="body careAnimBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careAnimStage careAnimStage-${esc(key)}">${petHtml}${itemHtml}<div class="careAnimLabel">${esc(label)}</div></div>${msg?`<div class="careHint">${esc(msg)}</div>`:''}</div>`;
 }
 function firstImageFromObject(obj,keys){
   try{
@@ -1246,6 +1281,27 @@ function firstImageFromObject(obj,keys){
     const raw=obj.raw&&typeof obj.raw==='object'?cleanImageUrl(pick(obj.raw,keys,'')):'';
     return raw||'';
   }catch(e){return'';}
+}
+function careVisualItemNeedles(obj){
+  const raw=obj&&obj.raw&&typeof obj.raw==='object'?obj.raw:{};
+  const keys=['item_id','item_key','selected_item_id','inventory_item_id','used_item_id','key','id','sku','slug','item_name','selected_item_name','used_item_name','food_name','snack_name','name','label','title','display_name','shop_name'];
+  const vals=[];
+  keys.forEach(k=>{ const v=pick(obj||{},[k],''); if(clean(v)!=='') vals.push(v); });
+  keys.forEach(k=>{ const v=pick(raw,[k],''); if(clean(v)!=='') vals.push(v); });
+  const out=[];
+  vals.forEach(v=>{
+    const whole=norm(v); if(whole)out.push(whole);
+    String(v).split(/[|,;:\-_/]+|\s+/).forEach(part=>{ const n=norm(part); if(n&&n.length>2)out.push(n); });
+  });
+  return Array.from(new Set(out));
+}
+function careRowMatchesExactItem(row,itemLike,userId){
+  if(!row||!itemLike)return false;
+  if(hasOtherUser(row,userId) && !strictUserMatch(row,userId))return false;
+  const rowBits=careVisualItemNeedles(row);
+  const itemBits=careVisualItemNeedles(itemLike);
+  if(!rowBits.length||!itemBits.length)return false;
+  return itemBits.some(a=>rowBits.some(b=>a===b || (a.length>3&&b.length>3&&(a.includes(b)||b.includes(a)))));
 }
 function careRowMatchesAction(row,action,p,userId){
   if(!row)return false;
@@ -1263,26 +1319,41 @@ function careRowMatchesAction(row,action,p,userId){
 }
 async function findCareVisual(action,p,data){
   const actionKeys=['action_image_url','pet_action_image_url','pet_animation_image_url','animation_image_url','animation_url','gif_url','care_image_url','result_image_url','response_image_url','feed_action_image_url','play_action_image_url','rest_action_image_url','heal_action_image_url','train_action_image_url'];
-  const itemKeys=['item_image_url','used_item_image_url','used_image_url','reward_image_url','food_image_url','toy_image_url','medicine_image_url','snack_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'];
+  const itemKeys=[
+    'item_image_url','item_img_url','item_image','item_img','item_url','item_cloudinary_url','item_cloudinary_public_id','item_public_id',
+    'used_item_image_url','used_image_url','reward_image_url','food_image_url','food_img_url','food_image','food_url','feed_image_url','feed_item_image_url','snack_image_url','treat_image_url',
+    'toy_image_url','medicine_image_url','heal_image_url','training_image_url','rest_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url','inventory_item_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'
+  ];
   const out={
     actionUrl:firstImageFromObject(data,actionKeys),
     itemUrl:firstImageFromObject(data,itemKeys),
-    itemName:pick(data||{},['item_name','used_item_name','food_name','toy_name','medicine_name','reward_item_name','item_used','used_item'],'')
+    itemName:pick(data||{},['item_name','used_item_name','food_name','toy_name','medicine_name','reward_item_name','item_used','used_item','name','label','title'],'')
   };
   try{
     const rows=[];
-    const tabs=['pet_action_images','care_action_images','Sheet51','user_pet_images','care_items','shop_items','user_inventory'];
+    const tabs=['user_inventory','care_items','shop_items','pet_items','inventory_items','pet_action_images','care_action_images','Sheet51','user_pet_images'];
     const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
     results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))rows.push(...r.value);});
     const userId=state.player?.userId||'';
+
+    // First: exact item match. This is what stops Fish Flakes becoming a generic burger.
+    const exactItem=rows.find(r=>careRowMatchesExactItem(r,data,userId));
+    if(exactItem){
+      const itemUrl=firstImageFromObject(exactItem,itemKeys);
+      if(itemUrl) out.itemUrl=itemUrl;
+      if(!out.itemName) out.itemName=pick(exactItem,['item_name','used_item_name','food_name','toy_name','medicine_name','name','title','label'],'');
+    }
+
+    // Second: pet/action animation art, if you have a separate sheet image for the action.
     const owned=rows.find(r=>strictUserMatch(r,userId)&&careRowMatchesAction(r,action,p,userId));
     const generic=owned||rows.find(r=>careRowMatchesAction(r,action,p,userId));
     if(generic){
       if(!out.actionUrl) out.actionUrl=firstImageFromObject(generic,actionKeys);
+      // Only use generic item art if the selected inventory item still has no image.
       if(!out.itemUrl) out.itemUrl=firstImageFromObject(generic,itemKeys);
       if(!out.itemName) out.itemName=pick(generic,['item_name','used_item_name','food_name','toy_name','medicine_name','name','title','label'],'');
       const sheetMsg=pick(generic,['response','message','action_response','care_response','result','caption','text'],'');
-      if(sheetMsg) out.sheetMessage=sheetMsg;
+      if(sheetMsg)out.sheetMessage=sheetMsg;
     }
   }catch(e){log('care visual lookup failed',e.message||e);}
   return out;
@@ -1349,7 +1420,7 @@ async function startCareActionFlow(action){
     state.careItems=items;
     state.panelIndex=0;
     state.panelLoading=false;
-    state.panelActionMsg=items.length?'Choose an item for '+(p.name||p.pet||'pet'):'No '+action.label.toLowerCase()+' item found in inventory for this pet.';
+    state.panelActionMsg=items.length?'Pick '+action.label.toLowerCase()+': '+(p.name||p.pet||'pet'):'No '+action.label.toLowerCase()+' item found for this pet.';
     preloadPanelImages(items);
     render();
     return;
@@ -1383,7 +1454,7 @@ async function runCareActionWithItem(action,item){
       render();
     }
   }catch(e){}
-  await new Promise(r=>setTimeout(r,950));
+  await new Promise(r=>setTimeout(r,1450));
   try{
     const payload={mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''};
     if(item){
@@ -1449,7 +1520,8 @@ function renderQuestGame(){
 }
 function iconForItem(it){
   const s=String(itemTitle(it)+' '+itemSub(it)).toLowerCase();
-  if(s.includes('seed')||s.includes('food')||s.includes('snack')||s.includes('pellet')||s.includes('cricket'))return'🍔';
+  if(s.includes('fish')||s.includes('flake'))return'🐟';
+  if(s.includes('seed')||s.includes('food')||s.includes('snack')||s.includes('pellet')||s.includes('cricket'))return'🍽️';
   if(s.includes('toy')||s.includes('ball')||s.includes('play')||s.includes('trinket'))return'🧸';
   if(s.includes('heal')||s.includes('med')||s.includes('cure')||s.includes('potion'))return'💊';
   if(s.includes('habitat')||s.includes('perch')||s.includes('blanket')||s.includes('lamp')||s.includes('cave'))return'🏡';
@@ -1683,6 +1755,14 @@ async function fetchSheetRows(tab){
   SHEET_CACHE.set(cacheKey,{t:Date.now(),rows});
   return rows;
 }
+async function fetchSheetRowsSoft(tab,timeoutMs){
+  try{
+    return await Promise.race([
+      fetchSheetRows(tab),
+      new Promise(resolve=>setTimeout(()=>resolve([]),timeoutMs||4200))
+    ]);
+  }catch(e){ return []; }
+}
 function parseGviz(text){
   const start=text.indexOf('{'),end=text.lastIndexOf('}'); if(start<0||end<start)throw new Error('Sheet not readable');
   const data=JSON.parse(text.slice(start,end+1)); const table=data.table||{};
@@ -1787,8 +1867,10 @@ function preservePetVisuals(freshPets){
   });
 }
 function prefetchCurrentPetPanels(){
-  if(!state.player||state.player.test||!currentPet())return;
-  ['inventory','shop','habitat','hook'].forEach((kind,i)=>setTimeout(()=>cachedLoadPanelData(kind).catch(e=>log('prefetch '+kind+' failed',e.message||e)),250+i*180));
+  // STAGE 70: do not prefetch shop/inventory/habitat/hook during first login.
+  // Those background sheet/proxy calls made the Tamagotchi take ages to appear.
+  // Panels now load lazily when opened, using the in-memory cache after the first load.
+  return;
 }
 function isRealInventoryRow(row){
   const title=String(pick(row,['item_name','name','label','title','display_name'],'')).trim();
@@ -1801,6 +1883,48 @@ function isRealInventoryRow(row){
   if(qty&&Number(qty)===0)return false;
   return true;
 }
+
+function inventoryItemKey(row){
+  const r=row&&row.raw?row.raw:row;
+  const key=pick(r,['item_id','item_key','inventory_item_id','selected_item_id','key','id','sku','slug'],'');
+  const name=pick(r,['item_name','name','label','title','display_name','shop_name','food_name','snack_name'],'');
+  return norm(key||name);
+}
+function inventoryItemNameKey(row){
+  const r=row&&row.raw?row.raw:row;
+  return norm(pick(r,['item_name','name','label','title','display_name','shop_name','food_name','snack_name'],''));
+}
+function mergeNonBlank(base, overlay){
+  const out={...(base||{})};
+  Object.entries(overlay||{}).forEach(([k,v])=>{ if(clean(v)!=='') out[k]=v; });
+  return out;
+}
+function enrichInventoryRowsWithCatalogue(invRows,catalogRows){
+  const cats=(catalogRows||[]).filter(Boolean);
+  return (invRows||[]).map(row=>{
+    const key=inventoryItemKey(row);
+    const name=inventoryItemNameKey(row);
+    const match=cats.find(c=>{
+      const ck=inventoryItemKey(c), cn=inventoryItemNameKey(c);
+      return (key&&ck&&key===ck) || (name&&cn&&name===cn) || (key&&cn&&key===cn) || (name&&ck&&name===ck);
+    });
+    if(!match)return row;
+    // Catalogue row supplies the Cloudinary art; inventory row keeps owner, quantity and item name.
+    return mergeNonBlank(match,row);
+  });
+}
+async function loadInventoryRowsFast(userId,p){
+  const invRows=[];
+  const catalogRows=[];
+  try{ invRows.push(...await fetchSheetRowsSoft('user_inventory',5200)); }catch(e){ log('inventory sheet failed',e.message||e); }
+  try{
+    const catalogTabs=['care_items','shop_items','shop','pet_shop','pet_items','inventory_items'];
+    const results=await Promise.allSettled(catalogTabs.map(tab=>fetchSheetRowsSoft(tab,3200)));
+    results.forEach(r=>{ if(r.status==='fulfilled'&&Array.isArray(r.value)) catalogRows.push(...r.value); });
+  }catch(e){ log('inventory catalog failed',e.message||e); }
+  const owned=invRows.filter(r=>(strictUserMatch(r,userId)||!hasOtherUser(r,userId))&&isRealInventoryRow(r));
+  return enrichInventoryRowsWithCatalogue(owned,catalogRows);
+}
 async function loadPanelData(kind){
   const userId=state.player?.userId||'';
   const p=currentPet()||{};
@@ -1812,7 +1936,14 @@ async function loadPanelData(kind){
   }
   let rows=[];
   if(kind==='inventory'){
-    rows=await loadRowsFromProxyAndSheets(['view_inventory','inventory'],['user_inventory'],userId,p);
+    // STAGE 70: inventory should be quick and should carry the catalogue Cloudinary image.
+    // Use user_inventory first, then enrich by matching the same item in care/shop/catalogue sheets.
+    let direct=[];
+    try{ direct=await loadInventoryRowsFast(userId,p); }catch(e){ log('fast inventory failed',e.message||e); }
+    if(direct.length){
+      return direct.map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
+    }
+    rows=await loadRowsFromProxyAndSheets(['view_inventory','inventory'],['user_inventory','care_items','shop_items','pet_items','inventory_items'],userId,p);
     return rows.filter(r=>(strictUserMatch(r,userId)||!hasOtherUser(r,userId))&&isRealInventoryRow(r)).map(normaliseStoreRow).filter(x=>itemTitle(x)!=='Item');
   }
   if(kind==='shop'){
@@ -1951,7 +2082,7 @@ function activateMenu(){
 }
 function activatePetAction(){
   const item=PET_ACTIONS[state.petActionIndex]||PET_ACTIONS[0];
-  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.careActionIndex=0;state.panelActionMsg='Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.';state.careResult=null;state.careItems=[];state.carePendingAction=null;render();return;}
+  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.careActionIndex=0;state.panelActionMsg='';state.careResult=null;state.careItems=[];state.carePendingAction=null;render();return;}
   if(item.key==='shop'){openShopPanel();return;}
   if(item.key==='inventory'){openDataPanel('inventory');return;}
   if(item.key==='habitat'){openDataPanel('habitat');return;}
@@ -2289,7 +2420,7 @@ function petbotOpenParentScreen(screen, opts){
   if(screen==='hook') { openDataPanel('hook'); return true; }
   if(screen==='inventory') { openDataPanel('inventory'); return true; }
   if(screen==='games' || screen==='quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
-  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.careActionIndex=0; state.panelActionMsg='Heart buttons change pet. Tap Feed/Play/Rest/Heal/Train.'; state.careResult=null; state.careItems=[]; state.carePendingAction=null; render(); return true; }
+  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.careActionIndex=0; state.panelActionMsg=''; state.careResult=null; state.careItems=[]; state.carePendingAction=null; render(); return true; }
   if(screen==='petActions' || screen==='actions') { state.screen='petActions'; state.petActionIndex=0; render(); return true; }
   state.screen='petHome'; render(); return true;
 }
