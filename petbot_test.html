@@ -1909,7 +1909,24 @@ function petbotOpenParentScreen(screen){
     state._pendingParentScreen=screen;
     return false;
   }
-  try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
+  // STAGE 62: preserve Back-to-quest when a building screen is opened
+  // from the localStorage fallback instead of the normal postMessage route.
+  // Do this here, before clearing waaPendingPetbotScreen.
+  try{
+    const raw=localStorage.getItem('waaPendingPetbotScreen');
+    if(raw){
+      const pack=JSON.parse(raw);
+      const fresh=pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000;
+      const sameScreen=!pack.screen || String(pack.screen)===screen;
+      if(fresh && sameScreen){
+        state.returnToQuest=true;
+        state.returnQuestMode=pack.returnMode||state.returnQuestMode||'embedded';
+        state._questMenuOpenAt=Date.now();
+        state._questMenuScreen=screen;
+      }
+    }
+    localStorage.removeItem('waaPendingPetbotScreen');
+  }catch(e){}
   state._pendingParentScreen='';
   state.panelActionMsg='';
   state.panelMessage='';
@@ -1933,25 +1950,7 @@ function petbotConsumePendingParentScreen(){
       else localStorage.removeItem('waaPendingPetbotScreen');
     }
   }catch(e){}
-  if(pending){
-    // STAGE 61: if the normal postMessage was missed and the building screen is
-    // opened from localStorage instead, keep the return-to-quest flag BEFORE
-    // petbotOpenParentScreen() clears the pending localStorage item. This was
-    // why Back sometimes went to petActions instead of returning to the quest.
-    try{
-      const raw=localStorage.getItem('waaPendingPetbotScreen');
-      if(raw){
-        const pack=JSON.parse(raw);
-        if(pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000){
-          state.returnToQuest=true;
-          state.returnQuestMode=pack.returnMode||state.returnQuestMode||'embedded';
-          state._questMenuOpenAt=Date.now();
-          state._questMenuScreen=pack.screen||pending;
-        }
-      }
-    }catch(e){}
-    petbotOpenParentScreen(pending);
-  }
+  if(pending) petbotOpenParentScreen(pending);
 }
 window.addEventListener('message',e=>{
   if(e.origin!==location.origin)return;
