@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage64-team-clean-router-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage65-team-return-clean-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5580,7 +5580,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage64-team-clean-router-20260709&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage65-team-return-clean-20260709&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -5672,6 +5672,7 @@ This router owns:
   let routerRouteSeq = 0;
   let lastSelectActionAt = 0;
   let lastQuestBuildingOpen = { sig:'', t:0 };
+  let currentQuestRunId = Number(sessionStorage.getItem('waaQuestRunId') || 0) || 0;
 
   function questBuildingSig(o){
     if(!o) return '';
@@ -5985,6 +5986,9 @@ This router owns:
   function startPlaying(kind, msg){
     kind = kind === 'team' ? 'team' : 'solo';
     clearQuestReturnNow();
+    currentQuestRunId += 1;
+    window.waaQuestRunId = currentQuestRunId;
+    try{ sessionStorage.setItem('waaQuestRunId', String(currentQuestRunId)); }catch(e){}
     window.waaCurrentQuestKind = kind;
     try{ sessionStorage.setItem('waaCurrentQuestKind', kind); }catch(e){}
     const chars = questCharactersFromMessage(kind, msg);
@@ -6300,6 +6304,7 @@ This router owns:
         label:opts.label || '',
         returnToQuest:!!opts.fromQuest,
         returnMode:opts.returnMode || '',
+        questRunId:opts.questRunId || window.waaQuestRunId || currentQuestRunId || '',
         routeId:routeId
       });
     }else{
@@ -6342,6 +6347,7 @@ This router owns:
       type:'waa-parent-quest-active',
       mode:'embedded',
       kind:activeKind,
+      questRunId:window.waaQuestRunId || currentQuestRunId || '',
       t:Date.now()
     });
 
@@ -6482,6 +6488,8 @@ This router owns:
         label:label,
         returnToQuest:true,
         returnMode:mode,
+        questRunId:window.waaQuestRunId || currentQuestRunId || '',
+        questKind:window.waaCurrentQuestKind || (body.classList.contains('teamMode') ? 'team' : 'solo'),
         t:Date.now()
       }));
     }catch(e){}
@@ -6492,7 +6500,7 @@ This router owns:
     // look like it failed and the second one appeared to work. Keep the reliability retry
     // inside postToPetbot, but give all retries one routeId so the iframe processes it once.
     const routeId = nextRouterRouteId('building-' + screen);
-    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode, routeId:routeId});
+    setPetbotMenu({fromQuest:true, screen:screen, place:o.place, label:label, returnMode:mode, questRunId:window.waaQuestRunId || currentQuestRunId || '', routeId:routeId});
 
     return true;
   }
@@ -6725,7 +6733,7 @@ This router owns:
       if(done) return;
       done = true;
       setEmbedded(kind, {start:false});
-      postToPetbot({type:'waa-parent-return-to-tamagotchi', keepQuest:true, t:Date.now()});
+      postToPetbot({type:'waa-parent-return-to-tamagotchi', keepQuest:true, kind:kind, questRunId:window.waaQuestRunId || currentQuestRunId || '', t:Date.now()});
       keepFitSoon();
       scheduleFit();
     }
@@ -6800,9 +6808,10 @@ This router owns:
     }
 
     if(action === 'stopEmbedded'){
-      // STAGE 49: PetBot Back during Tamagotchi quest should return to the Games menu,
-      // not close/hide the whole Tamagotchi dock.
+      // Back from a live LCD quest goes to the Games menu. Clear any stale
+      // building-return flag first so pressing Back again cannot loop to pet screens.
       stopMove();
+      clearQuestReturnNow();
       return setPetbotMenu({screen:'games'});
     }
 

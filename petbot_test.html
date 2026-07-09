@@ -664,7 +664,7 @@ const norm=s=>String(s??'').toLowerCase().replace(/[^a-z0-9]+/g,'');
 const clean=s=>String(s??'').trim();
 function n(v,f=0){const x=Number(String(v??'').replace(/,/g,''));return Number.isFinite(x)?x:f;}
 function bar(v){return clamp(Math.round(n(v,0)),0,100)+'%';}
-let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
+let state={screen:'login',loginIndex:0,password:'',error:'',player:null,pets:[],petIndex:0,menuIndex:0,gameIndex:0,panelKind:'',panelLoading:false,panelItems:[],panelIndex:0,panelActionMsg:'',panelMessage:'',message:'Choose player',loading:false,lastError:'',quest:{mode:'Solo Quest',kind:'solo',x:42,jump:false,score:0,started:false,embedded:false,questRunId:''},questPick:{kind:'solo',slot:0,slots:['ax','none','none','none']},questRunId:'',hookPrize:null,hookCasting:false,shopStep:'pet',shopPetIndex:0,shopQty:1,shopSelected:null,petActionIndex:0};
 let lastQuestSelectSentAt=0;
 function sendQuestSelectOrJump(source){
   // STAGE 60: Enter and the pacifier use the same quest Select route.
@@ -711,7 +711,12 @@ function hasPendingQuestReturn(){
     const raw=localStorage.getItem('waaPendingPetbotScreen');
     if(!raw) return false;
     const pack=JSON.parse(raw);
-    return !!(pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000);
+    if(pack && pack.returnToQuest && Date.now()-Number(pack.t||0)<180000){
+      if(pack.questRunId) state.questRunId = pack.questRunId;
+      if(pack.questKind && state.quest) state.quest.kind = pack.questKind;
+      return true;
+    }
+    return false;
   }catch(e){
     return false;
   }
@@ -1694,10 +1699,12 @@ function confirmQuestPick(){
   const chars=questChosenCharacters();
   const action=kind==='team'?'startTeamEmbedded':'startSoloEmbedded';
   clearQuestReturnState();
-  state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',kind,embedded:true,started:true,score:0,characters:chars};
+  const questRunId='q'+Date.now()+'-'+Math.floor(Math.random()*100000);
+  state.questRunId=questRunId;
+  state.quest={mode:(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town',kind,embedded:true,started:true,score:0,characters:chars,questRunId};
   state.screen='questGame';
   render();
-  setTimeout(()=>sendParent('waa-petbot-game-action',{action,characters:chars,questKind:kind}),80);
+  setTimeout(()=>sendParent('waa-petbot-game-action',{action,characters:chars,questKind:kind,questRunId}),80);
 }
 
 function openShopPanel(){
@@ -1857,6 +1864,7 @@ function handleBack(){
   if(state.screen==='questGame'){
     // STAGE 49: Back from the embedded quest goes to the Games menu inside the toy.
     // The parent must keep the Tamagotchi open; index.html handles stopEmbedded that way.
+    clearQuestReturnState();
     state.screen='games';
     state.gameIndex=0;
     render();
@@ -1995,6 +2003,8 @@ window.addEventListener('message',e=>{
     if(d.returnToQuest){
       state.returnToQuest=true;
       state.returnQuestMode=d.returnMode||state.returnQuestMode||'embedded';
+      state.questRunId=d.questRunId||state.questRunId||((state.quest&&state.quest.questRunId)||'');
+      if(d.questKind && state.quest) state.quest.kind=d.questKind;
       state._questMenuOpenAt=Date.now();
       state._questMenuScreen=targetScreen;
     }
@@ -2030,10 +2040,12 @@ window.addEventListener('message', e => {
     state.screen = 'questGame';
     const oldQuest = state.quest || {};
     const kind = (d && d.kind) === 'team' ? 'team' : (oldQuest.kind === 'team' || /team/i.test(String(oldQuest.mode||'')) ? 'team' : 'solo');
+    state.questRunId=(d&&d.questRunId)||state.questRunId||oldQuest.questRunId||'';
     state.quest = {
       ...oldQuest,
       kind,
       mode: oldQuest.mode || ((kind === 'team' ? 'Team Quest' : 'Solo Quest') + ' · Tutorial Town'),
+      questRunId: state.questRunId,
       x: oldQuest.x || 42,
       jump: false,
       score: oldQuest.score || 0,
@@ -2052,37 +2064,44 @@ window.addEventListener('message', e => {
   let questKeyLeft=false, questKeyRight=false;
   function inQuest(){return state && state.screen==='questGame';}
   function send(action){sendParent('waa-petbot-game-action',{action});}
-  function markReturnToQuest(mode){
+  function markReturnToQuest(mode, pack){
+    pack=pack||{};
     state.returnToQuest=true;
     state.returnQuestMode=mode||state.returnQuestMode||'embedded';
+    state.questRunId=pack.questRunId||state.questRunId||((state.quest&&state.quest.questRunId)||'');
+    if(pack.questKind && state.quest) state.quest.kind=pack.questKind;
     state._questMenuOpenAt=Date.now();
   }
   window.addEventListener('message',e=>{
     if(e.origin!==location.origin)return;
     const d=e.data||{};
     if(d.type==='waa-parent-open-screen' && d.returnToQuest){
-      markReturnToQuest(d.returnMode||'embedded');
+      markReturnToQuest(d.returnMode||'embedded', d);
     }
   },true);
   try{
     const raw=localStorage.getItem('waaPendingPetbotScreen');
     if(raw){
       const pack=JSON.parse(raw);
-      if(pack && pack.returnToQuest && Date.now()-Number(pack.t)<15000) markReturnToQuest(pack.returnMode||'embedded');
+      if(pack && pack.returnToQuest && Date.now()-Number(pack.t)<15000) markReturnToQuest(pack.returnMode||'embedded', pack);
     }
   }catch(e){}
   window.petbotReturnToQuest34=function(){
     questKeyLeft=false; questKeyRight=false;
     send('moveStop');
+    const oldQuest=state.quest||{};
+    const keepKind=oldQuest.kind==='team'||/team/i.test(String(oldQuest.mode||''))?'team':'solo';
     state.returnToQuest=false;
     state.returnQuestMode='';
     state._returnedToQuestAt=Date.now();
     state.screen='questGame';
     state._questMenuOpenAt=0;
     state._questMenuScreen='';
-    state.quest={...(state.quest||{}),started:true,embedded:true};
+    state.questRunId=state.questRunId||oldQuest.questRunId||'';
+    state.quest={...oldQuest,kind:keepKind,mode:oldQuest.mode||((keepKind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true,questRunId:state.questRunId};
+    try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
     render();
-    send('returnToQuest');
+    sendParent('waa-petbot-game-action',{action:'returnToQuest',questRunId:state.questRunId||'',questKind:keepKind});
   };
   // Back-to-quest is handled once inside handleBack().
   document.addEventListener('keydown',e=>{
@@ -2136,13 +2155,14 @@ window.addEventListener('message', e => {
 (function(){
   function showQuestFromParent(d){
     try{
-      const kind=(d&&d.kind)==='team'?'team':((state.questPick&&state.questPick.kind)==='team'?'team':'solo');
       const oldQuest=state.quest||{};
-      const wantedMode=(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town';
       const oldMode=String(oldQuest.mode||'');
+      const kind=(d&&d.kind)==='team' || oldQuest.kind==='team' || /team/i.test(oldMode) || ((state.questPick&&state.questPick.kind)==='team') ? 'team' : 'solo';
+      const wantedMode=(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town';
       const keepOldMode=(kind==='team' && /team/i.test(oldMode)) || (kind!=='team' && /solo/i.test(oldMode));
+      state.questRunId=(d&&d.questRunId)||state.questRunId||oldQuest.questRunId||'';
       state.screen='questGame';
-      state.quest={...oldQuest,kind,mode:keepOldMode?oldQuest.mode:wantedMode,started:true,embedded:true};
+      state.quest={...oldQuest,kind,mode:keepOldMode?oldQuest.mode:wantedMode,started:true,embedded:true,questRunId:state.questRunId};
       state.returnToQuest=false;
       state.returnQuestMode='';
       state._questMenuOpenAt=0;
