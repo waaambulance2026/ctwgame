@@ -2703,7 +2703,7 @@ JavaScript in PART 3 uses the IDs to find buttons and screens.
   <!-- PETBOT APP OVERLAY: shows /petbot_test.html inside this index page -->
   <div class="petbotDock" id="petbotDock" aria-label="PetBot Tamagotchi dock">
     <div class="petbotDockPreview" aria-hidden="true"><div class="petbotDockMiniLcd"><div class="miniTitle" id="dockMiniTitle">PetBot</div><div class="miniPet" id="dockMiniPet"><span>♡</span></div><div class="miniBars" id="dockMiniBars"><i></i><i></i><i></i></div></div><img src="petbot_device.png?v=20260628-dock-screen-05" alt=""></div>
-    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage67-clean-router-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
+    <iframe class="petbotDockFrame" id="petbotDockFrame" title="Waaambulance PetBot Tamagotchi" src="petbot_test.html?v=ctw-stage68-care-back-safe-20260709&embed=1&launch=1" allow="fullscreen" allowfullscreen></iframe>
     <div class="petbotDockBar">
       <button class="petbotDockBtn main" id="petbotExpandBtn" type="button">Small</button>
       <button class="petbotDockBtn" id="petbotHideBtn" type="button">Hide</button>
@@ -5582,7 +5582,7 @@ This router owns:
   const root = d.documentElement;
   const DESIGN_W = 1920;
   const DESIGN_H = 1080;
-  const PETBOT_URL = 'petbot_test.html?v=ctw-stage67-clean-router-20260709&embed=1&launch=1';
+  const PETBOT_URL = 'petbot_test.html?v=ctw-stage68-care-back-safe-20260709&embed=1&launch=1';
 
   const game = d.getElementById('game');
   const dock = d.getElementById('petbotDock');
@@ -6233,7 +6233,7 @@ This router owns:
       }
     };
     try{ requestAnimationFrame(function(){ run(); requestAnimationFrame(run); }); }catch(e){}
-    [0, 30, 90, 180, 360, 720, 1200].forEach(function(ms){
+    [0, 80, 240, 600].forEach(function(ms){
       setTimeout(run, ms);
     });
   }
@@ -6622,13 +6622,11 @@ This router owns:
 
     if(action === 'moveStop'){
       stopMove();
-      scheduleFit();
       return true;
     }
 
     if(action === 'jumpOnly'){
       doJump();
-      scheduleFit();
       return true;
     }
 
@@ -6637,7 +6635,6 @@ This router owns:
       if(!opened){
         doJump();
       }
-      scheduleFit();
       return true;
     }
 
@@ -7045,7 +7042,6 @@ This router owns:
     if(!isQuestMode()) return;
     if(e.code === 'ArrowLeft' || e.code === 'KeyA' || e.code === 'ArrowRight' || e.code === 'KeyD'){
       stopMove();
-      scheduleFit();
     }
   }, true);
 

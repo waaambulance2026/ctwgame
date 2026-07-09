@@ -272,6 +272,21 @@ body.questPlaying .hit{pointer-events:auto!important;}
 .careCard b{font-size:1.25em;}
 .careCard.active{background:rgba(255,255,255,.75);outline:2px solid rgba(22,34,63,.35);}
 .careMsg{min-height:16px!important;font-size:clamp(7px,.78vw,10px)!important;}
+
+/* CLEAN CARE VIEW: show the pet/action/item image after a care button is used. */
+.careBodyResult{grid-template-rows:auto 1fr auto auto!important;}
+.careResultStage{position:relative;width:100%;min-height:70px;border:1.5px solid rgba(22,34,63,.25);border-radius:10px;background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(180,245,255,.20));overflow:hidden;}
+.careResultPet,.careResultAction,.careResultItem{position:absolute;background-position:center;background-repeat:no-repeat;background-size:contain;image-rendering:auto;}
+.careResultPet{left:50%;top:55%;width:52%;height:76%;transform:translate(-50%,-50%);animation:carePetBob .85s ease-in-out infinite alternate;}
+.careResultItem{right:8%;bottom:8%;width:26%;height:32%;animation:careItemPop .65s ease-in-out infinite alternate;}
+.careResultAction{left:7%;top:7%;width:28%;height:32%;animation:careItemPop .75s ease-in-out infinite alternate;}
+.careResultFallbackPet{position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:30px;}
+.careResultLabel{position:absolute;left:6px;right:6px;bottom:3px;text-align:center;font-size:clamp(7px,.74vw,10px);font-weight:1000;text-shadow:0 1px 0 rgba(255,255,255,.75);}
+.careMiniGrid{grid-template-columns:repeat(5,1fr)!important;grid-auto-rows:22px!important;gap:2px!important;}
+.careMiniGrid .careCard{min-height:20px!important;font-size:clamp(6px,.68vw,9px)!important;gap:1px!important;flex-direction:column;}
+.careMiniGrid .careCard b{font-size:1.05em;}
+@keyframes carePetBob{from{transform:translate(-50%,-53%) scale(.98)}to{transform:translate(-50%,-47%) scale(1.02)}}
+@keyframes careItemPop{from{transform:translateY(1px) scale(.95)}to{transform:translateY(-2px) scale(1.04)}}
 .hookFullScreen{position:absolute!important;inset:0!important;z-index:4!important;width:100%!important;height:100%!important;overflow:hidden!important;background:#67d7f2!important;border-radius:inherit!important;}
 .hookFullScreen .hookGameView{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;display:block!important;overflow:hidden!important;}
 .hookFullScreen .hookPond{position:absolute!important;inset:0!important;width:100%!important;height:100%!important;border:0!important;border-radius:0!important;min-height:0!important;background-image:linear-gradient(rgba(255,255,255,.02),rgba(255,255,255,.08)),url('hook_a_waaambulance.gif')!important;background-size:cover!important;background-position:center!important;}
@@ -745,9 +760,61 @@ function leaveQuestVisualMode(){
     if(lcdEl) lcdEl.classList.remove('gameLcd');
   }catch(e){}
 }
+
+const PET_REQUIRED_SCREENS=new Set(['pet','petHome','petActions','care','stats','shop','inventory','habitat','hook','games','questPick','welcomeBoard','menu']);
+let petReloadQueued=false;
+function screenNeedsPet(screen){return PET_REQUIRED_SCREENS.has(String(screen||''));}
+function restoreCachedPetsNow(){
+  try{
+    if(!state || !state.player || !state.player.userId) return false;
+    if(currentPet()) return true;
+    const cached=readCachedPets(state.player.userId);
+    if(cached&&cached.length){
+      state.pets=cached.map((p,i)=>withDefaults(p,i));
+      state.petIndex=clamp(Number(state.petIndex)||0,0,Math.max(0,state.pets.length-1));
+      preloadPetImages(state.pets);
+      return !!currentPet();
+    }
+  }catch(e){}
+  return false;
+}
+function queuePetReload(reason){
+  try{
+    if(petReloadQueued || !state || !state.player || !state.player.userId) return;
+    petReloadQueued=true;
+    setTimeout(function(){
+      petReloadQueued=false;
+      if(!state || !state.player || currentPet()) return;
+      state.message='Reloading pets...';
+      startPlayer(state.player);
+    },80);
+  }catch(e){petReloadQueued=false;}
+}
+function ensurePetStateBeforeRender(){
+  try{
+    if(!screenNeedsPet(state.screen)) return;
+    if(currentPet()) return;
+    if(restoreCachedPetsNow()) return;
+    if(state.player && state.player.userId){
+      state.screen='loading';
+      state.message='Reloading pets...';
+      queuePetReload('render:'+String(state.screen||''));
+      return;
+    }
+    state.screen='login';
+    state.player=null;
+    state.pets=[];
+    state.petIndex=0;
+    state.password='';
+    state.error='';
+    state.message='Choose player';
+  }catch(e){}
+}
+
 function render(){
   const lcd=$('lcd');
   if(!lcd)return;
+  ensurePetStateBeforeRender();
   lcd.classList.toggle('gameLcd', state.screen==='questGame');
   document.body.classList.toggle('questPlaying', state.screen==='questGame');
   document.documentElement.classList.toggle('questPlaying', state.screen==='questGame');
@@ -1080,16 +1147,84 @@ function renderHookGamePanel(){
 function renderCarePanel(){
   const p=currentPet()||{};
   const idx=clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1);
-  return top('CARE',p.name||'')+`<div class="body careBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careGrid">${CARE_ACTIONS.map((a,i)=>`<div class="careCard ${i===idx?'active':''}" data-care-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('')}</div><div class="panelActionMsg careMsg">${esc(state.panelActionMsg||'Choose care action')}</div></div>`;
+  const cards=CARE_ACTIONS.map((a,i)=>`<div class="careCard ${i===idx?'active':''}" data-care-index="${i}"><b>${a.icon}</b><span>${esc(a.label)}</span></div>`).join('');
+  const result=state.careResult||null;
+  if(result){
+    const petUrl=cleanImageUrl(result.petUrl||getPetArtUrl(p));
+    const actionUrl=cleanImageUrl(result.actionUrl||'');
+    const itemUrl=cleanImageUrl(result.itemUrl||'');
+    const label=result.itemName?`${result.label||'Care'} · ${result.itemName}`:(result.label||'Care action');
+    const petArt=petUrl?`<div class="careResultPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careResultFallbackPet">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
+    const actionArt=actionUrl?`<div class="careResultAction" style="background-image:url('${esc(actionUrl)}')"></div>`:'';
+    const itemArt=itemUrl?`<div class="careResultItem" style="background-image:url('${esc(itemUrl)}')"></div>`:'';
+    return top('CARE',p.name||'')+`<div class="body careBody careBodyResult"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careResultStage ${esc(result.actionKey||'')}">${petArt}${actionArt}${itemArt}<div class="careResultLabel">${esc(label)}</div></div><div class="careGrid careMiniGrid">${cards}</div><div class="panelActionMsg careMsg">${esc(result.message||state.panelActionMsg||'Choose care action')}</div></div>`;
+  }
+  return top('CARE',p.name||'')+`<div class="body careBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careGrid">${cards}</div><div class="panelActionMsg careMsg">${esc(state.panelActionMsg||'Choose care action')}</div></div>`;
+}
+function firstImageFromObject(obj,keys){
+  try{
+    if(!obj||typeof obj!=='object')return'';
+    const url=cleanImageUrl(pick(obj,keys,''));
+    if(url)return url;
+    const raw=obj.raw&&typeof obj.raw==='object'?cleanImageUrl(pick(obj.raw,keys,'')):'';
+    return raw||'';
+  }catch(e){return'';}
+}
+function careRowMatchesAction(row,action,p,userId){
+  if(!row)return false;
+  if(hasOtherUser(row,userId) && !strictUserMatch(row,userId))return false;
+  const actionText=norm([
+    pick(row,['action','care_action','action_key','care_key','mode','command','type','category','section','label','name','title','item_type'],''),
+    Object.values(row||{}).join(' ')
+  ].join(' '));
+  const keys=[action.key,action.mode,action.label,action.key+'pet',action.key+'_'+(p.pet||''),action.key+'_'+(p.category||'')].map(norm).filter(Boolean);
+  const actionOk=keys.some(k=>actionText.includes(k));
+  if(!actionOk)return false;
+  const hasPetColumn=pick(row,['pet_code','selected_pet_code','target_pet_code','pet','pet_name','species','category','target_pet','target_category'],'');
+  const petOk=!hasPetColumn || matchPet(row,p) || norm(hasPetColumn)===norm(p.pet||p.category||p.code||p.name||'');
+  return !!petOk;
+}
+async function findCareVisual(action,p,data){
+  const actionKeys=['action_image_url','pet_action_image_url','animation_image_url','animation_url','gif_url','care_image_url','result_image_url','response_image_url','image_url','cloudinary_image_url','cloudinary_url','url','cloudinary_public_id','public_id'];
+  const itemKeys=['item_image_url','used_item_image_url','used_image_url','reward_image_url','food_image_url','toy_image_url','medicine_image_url','snack_image_url','blanket_image_url','item_icon_url','icon_url','inventory_image_url'];
+  const out={
+    actionUrl:firstImageFromObject(data,actionKeys),
+    itemUrl:firstImageFromObject(data,itemKeys),
+    itemName:pick(data||{},['item_name','used_item_name','food_name','toy_name','medicine_name','reward_item_name','item_used','used_item'],'')
+  };
+  try{
+    const rows=[];
+    const tabs=['pet_action_images','care_action_images','Sheet51','user_pet_images','care_items','shop_items','user_inventory'];
+    const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
+    results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))rows.push(...r.value);});
+    const userId=state.player?.userId||'';
+    const owned=rows.find(r=>strictUserMatch(r,userId)&&careRowMatchesAction(r,action,p,userId));
+    const generic=owned||rows.find(r=>careRowMatchesAction(r,action,p,userId));
+    if(generic){
+      if(!out.actionUrl) out.actionUrl=firstImageFromObject(generic,actionKeys);
+      if(!out.itemUrl) out.itemUrl=firstImageFromObject(generic,itemKeys);
+      if(!out.itemName) out.itemName=pick(generic,['item_name','used_item_name','food_name','toy_name','medicine_name','name','title','label'],'');
+      const sheetMsg=pick(generic,['response','message','action_response','care_response','result','caption','text'],'');
+      if(sheetMsg) out.sheetMessage=sheetMsg;
+    }
+  }catch(e){log('care visual lookup failed',e.message||e);}
+  return out;
 }
 async function runCareAction(){
   const action=CARE_ACTIONS[clamp(state.panelIndex||0,0,CARE_ACTIONS.length-1)]||CARE_ACTIONS[0];
   const p=currentPet()||{};
-  state.panelActionMsg=action.label+' for '+(p.name||p.pet||'pet')+'...';render();
+  const startingMsg=action.label+' for '+(p.name||p.pet||'pet')+'...';
+  state.panelActionMsg=startingMsg;
+  state.careResult={actionKey:action.key,label:action.label,message:startingMsg,petUrl:getPetArtUrl(p),itemUrl:'',actionUrl:'',itemName:''};
+  render();
   try{
     const data=await postPetbotAction({mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''});
-    const msg=data.message||data.response||data.result||('Done: '+action.label);
+    const visual=await findCareVisual(action,p,data||{});
+    const msg=data.message||data.response||data.result||visual.sheetMessage||('Done: '+action.label);
     state.panelActionMsg=msg;
+    state.careResult={actionKey:action.key,label:action.label,message:msg,petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||'',itemUrl:visual.itemUrl||'',itemName:visual.itemName||''};
+    if(state.careResult.actionUrl)preloadOne(state.careResult.actionUrl);
+    if(state.careResult.itemUrl)preloadOne(state.careResult.itemUrl);
     clearPanelCache('inventory');
     try{
       const fresh=await loadUserPetsFast(state.player?.userId||'');
@@ -1102,7 +1237,11 @@ async function runCareAction(){
         writeCachedPets(state.player.userId,state.pets);
       }
     }catch(e){}
-  }catch(e){state.panelActionMsg='Care not saved yet: '+(e.message||e);}
+  }catch(e){
+    const msg='Care not saved yet: '+(e.message||e);
+    state.panelActionMsg=msg;
+    state.careResult={...(state.careResult||{}),message:msg};
+  }
   render();
 }
 function renderGames(){
@@ -1631,7 +1770,7 @@ function activateMenu(){
 }
 function activatePetAction(){
   const item=PET_ACTIONS[state.petActionIndex]||PET_ACTIONS[0];
-  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.panelActionMsg='Choose care action';render();return;}
+  if(item.key==='care'){state.screen='care';state.panelIndex=0;state.panelActionMsg='Choose care action';state.careResult=null;render();return;}
   if(item.key==='shop'){openShopPanel();return;}
   if(item.key==='inventory'){openDataPanel('inventory');return;}
   if(item.key==='habitat'){openDataPanel('habitat');return;}
@@ -1837,7 +1976,7 @@ function handleBack(){
   // Back always returns to that quest. It must not fall through to petActions/petHome.
   if(hasPendingQuestReturn && hasPendingQuestReturn()){
     if(state.screen==='shop' && state.shopStep==='qty'){state.shopStep='items';render();return;}
-    if(typeof window.petbotReturnToQuest34==='function'){window.petbotReturnToQuest34();return;}
+    if(typeof window.petbotReturnToQuestClean==='function'){window.petbotReturnToQuestClean();return;}
     state.returnToQuest=false;
     state.returnQuestMode='';
     state._returnedToQuestAt=Date.now();
@@ -1879,7 +2018,7 @@ function handleBack(){
     state.screen='games';render();return;
   }
   if(['inventory','habitat','hook'].includes(state.screen)){state.screen='petActions';render();return;}
-  if(state.screen==='error'){state.screen='login';state.player=null;state.pets=[];render();return;}
+  if(state.screen==='error'){if(state.player&&state.player.userId){state.screen='loading';state.message='Reloading pets...';queuePetReload('error-back');render();return;}state.screen='login';state.player=null;state.pets=[];render();return;}
   state.screen='petActions';render();
 }
 function sendParent(type,extra){try{if(parent&&parent!==window)parent.postMessage({type,...(extra||{})},location.origin);}catch(e){}}
@@ -1948,8 +2087,13 @@ function petbotOpenParentScreen(screen, opts){
   }
   if(screen !== 'questGame') leaveQuestVisualMode();
   if(!state.player || !currentPet()){
-    state._pendingParentScreen=screen;
-    return false;
+    if(state.player && restoreCachedPetsNow()){
+      // recovered cached pets, continue opening the requested screen
+    }else{
+      state._pendingParentScreen=screen;
+      if(state.player){state.screen='loading';state.message='Reloading pets...';queuePetReload('parent-screen:'+screen);render();}
+      return false;
+    }
   }
   if(!opts.returnToQuest){
     try{localStorage.removeItem('waaPendingPetbotScreen');}catch(e){}
@@ -1963,7 +2107,7 @@ function petbotOpenParentScreen(screen, opts){
   if(screen==='hook') { openDataPanel('hook'); return true; }
   if(screen==='inventory') { openDataPanel('inventory'); return true; }
   if(screen==='games' || screen==='quest') { state.screen='games'; state.gameIndex=0; render(); return true; }
-  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.panelActionMsg='Choose care action'; render(); return true; }
+  if(screen==='care') { state.screen='care'; state.panelIndex=0; state.panelActionMsg='Choose care action'; state.careResult=null; render(); return true; }
   if(screen==='petActions' || screen==='actions') { state.screen='petActions'; state.petActionIndex=0; render(); return true; }
   state.screen='petHome'; render(); return true;
 }
@@ -2023,93 +2167,164 @@ const stage29PendingTimer=setInterval(()=>{
   if(stage29PendingTries>45 && !state._pendingParentScreen){clearInterval(stage29PendingTimer);}
 },250);
 
-// Stage 21: when the parent returns from expanded platform mode, do not leave the LCD transparent/blank.
-window.addEventListener('message', e => {
-  if (e.origin !== location.origin) return;
 
-  const d = e.data || {};
-
-  if (d.type === 'waa-parent-return-to-tamagotchi') {
-    try {
-      document.documentElement.classList.remove('cssFullscreen', 'questPlaying');
-      document.body.classList.remove('cssFullscreen', 'questPlaying');
-    } catch (_e) {}
-
-    // IMPORTANT:
-    // Returning from fullscreen quest should keep the PetBot LCD in quest controls.
-    // Do NOT reset to petHome here.
-    state.screen = 'questGame';
-    const oldQuest = state.quest || {};
-    const kind = (d && d.kind) === 'team' ? 'team' : (oldQuest.kind === 'team' || /team/i.test(String(oldQuest.mode||'')) ? 'team' : 'solo');
-    state.questRunId=(d&&d.questRunId)||state.questRunId||oldQuest.questRunId||'';
-    state.quest = {
-      ...oldQuest,
-      kind,
-      mode: oldQuest.mode || ((kind === 'team' ? 'Team Quest' : 'Solo Quest') + ' · Tutorial Town'),
-      questRunId: state.questRunId,
-      x: oldQuest.x || 42,
-      jump: false,
-      score: oldQuest.score || 0,
-      started: true,
-      embedded: true
-    };
-
-    render();
-    return;
-  }
-});
-
-
-// STAGE 34: quest keyboard + Back-to-Quest support.
+// CLEAN PETBOT QUEST BRIDGE: one owner for quest return, parent quest-active messages, and quest keyboard.
 (function(){
-  let questKeyLeft=false, questKeyRight=false;
-  function inQuest(){return state && state.screen==='questGame';}
-  function send(action){sendParent('waa-petbot-game-action',{action});}
-  function markReturnToQuest(mode, pack){
-    pack=pack||{};
-    state.returnToQuest=true;
-    state.returnQuestMode=mode||state.returnQuestMode||'embedded';
-    state.questRunId=pack.questRunId||state.questRunId||((state.quest&&state.quest.questRunId)||'');
-    if(pack.questKind && state.quest) state.quest.kind=pack.questKind;
-    state._questMenuOpenAt=Date.now();
-  }
-  window.addEventListener('message',e=>{
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-open-screen' && d.returnToQuest){
-      markReturnToQuest(d.returnMode||'embedded', d);
-    }
-  },true);
-  try{
-    const raw=localStorage.getItem('waaPendingPetbotScreen');
-    if(raw){
-      const pack=JSON.parse(raw);
-      if(pack && pack.returnToQuest && Date.now()-Number(pack.t)<15000) markReturnToQuest(pack.returnMode||'embedded', pack);
-    }
-  }catch(e){}
-  window.petbotReturnToQuest34=function(){
-    questKeyLeft=false; questKeyRight=false;
-    send('moveStop');
-    const oldQuest=state.quest||{};
-    const keepKind=oldQuest.kind==='team'||/team/i.test(String(oldQuest.mode||''))?'team':'solo';
-    const keepMode=state.returnQuestMode||'embedded';
+  let questKeyLeft=false;
+  let questKeyRight=false;
 
-    // STAGE 66: do NOT switch PetBot to the transparent quest LCD until the
-    // parent confirms the platform game has been restored behind it. Switching
-    // early is what made the LCD/screen look blank when Back was pressed.
+  function inQuest(){return state && state.screen==='questGame';}
+  function send(action, extra){sendParent('waa-petbot-game-action', Object.assign({action}, extra||{}));}
+  function stopQuestMove(){questKeyLeft=false; questKeyRight=false; send('moveStop');}
+
+  function questKindFromState(d){
+    d=d||{};
+    const oldQuest=state.quest||{};
+    const oldMode=String(oldQuest.mode||'');
+    if(d.questKind==='team' || d.kind==='team' || state._waitingReturnKind==='team' || oldQuest.kind==='team' || /team/i.test(oldMode) || ((state.questPick&&state.questPick.kind)==='team')) return 'team';
+    return 'solo';
+  }
+
+  function showQuestFromParent(d){
+    d=d||{};
+    const oldQuest=state.quest||{};
+    const kind=questKindFromState(d);
+    const wantedMode=(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town';
+    const oldMode=String(oldQuest.mode||'');
+    const keepOldMode=(kind==='team' && /team/i.test(oldMode)) || (kind!=='team' && /solo/i.test(oldMode));
+
+    state.screen='questGame';
+    state.questRunId=d.questRunId||state.questRunId||oldQuest.questRunId||'';
+    state.quest=Object.assign({}, oldQuest, {
+      kind,
+      mode: keepOldMode ? oldQuest.mode : wantedMode,
+      started:true,
+      embedded:true,
+      jump:false,
+      questRunId:state.questRunId
+    });
+    state.returnToQuest=false;
+    state.returnQuestMode='';
+    state._questMenuOpenAt=0;
+    state._questMenuScreen='';
+    state._waitingReturnToQuestAt=0;
+    state._waitingReturnKind='';
+    state._waitingReturnMode='';
+    try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
+    render();
+  }
+
+  function askParentToReturnToQuest(){
+    const oldQuest=state.quest||{};
+    const kind=questKindFromState({});
+    const mode=state.returnQuestMode||state._waitingReturnMode||'embedded';
     state._waitingReturnToQuestAt=Date.now();
-    state._waitingReturnKind=keepKind;
-    state._waitingReturnMode=keepMode;
+    state._waitingReturnKind=kind;
+    state._waitingReturnMode=mode;
     state.questRunId=state.questRunId||oldQuest.questRunId||'';
-    state.quest={...oldQuest,kind:keepKind,mode:oldQuest.mode||((keepKind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),started:true,embedded:true,questRunId:state.questRunId};
+    state.quest=Object.assign({}, oldQuest, {
+      kind,
+      mode:oldQuest.mode||((kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town'),
+      started:true,
+      embedded:true,
+      questRunId:state.questRunId
+    });
+
+    // Do not change to questGame here. questGame makes the LCD transparent.
+    // Wait until the parent confirms the platform game is visible behind the LCD.
     state.panelActionMsg='Returning to quest...';
     state.panelMessage='Returning to quest...';
     render();
 
-    sendParent('waa-petbot-game-action',{action:'returnToQuest',returnMode:keepMode,questRunId:state.questRunId||'',questKind:keepKind,forceQuest:true});
+    sendParent('waa-parent-return-to-quest', {
+      returnMode:mode,
+      questKind:kind,
+      kind,
+      questRunId:state.questRunId||'',
+      forceQuest:true
+    });
+  }
+
+  window.petbotReturnToQuestClean=askParentToReturnToQuest;
+  window.petbotShowQuestFromParentClean=showQuestFromParent;
+
+  const normalBack=handleBack;
+  handleBack=function(){
+    if(hasPendingQuestReturn && hasPendingQuestReturn()){
+      if(state.screen==='shop' && state.shopStep==='qty'){
+        state.shopStep='items';
+        render();
+        return;
+      }
+      stopQuestMove();
+      askParentToReturnToQuest();
+      return;
+    }
+
+    if(state.screen==='questGame' && state._returnedToQuestAt && Date.now()-Number(state._returnedToQuestAt)<900){
+      render();
+      return;
+    }
+
+    if(state.screen==='questGame'){
+      clearQuestReturnState();
+      leaveQuestVisualMode();
+      stopQuestMove();
+      state.screen='games';
+      state.gameIndex=0;
+      render();
+      setTimeout(()=>sendParent('waa-petbot-game-action',{action:'stopEmbedded'}),30);
+      return;
+    }
+
+    normalBack();
   };
-  // Back-to-quest is handled once inside handleBack().
-  document.addEventListener('keydown',e=>{
+
+  window.addEventListener('message',function(e){
+    if(e.origin!==location.origin)return;
+    const d=e.data||{};
+
+    if(d.type==='waa-parent-quest-active'){
+      const recentMenu=state._questMenuOpenAt && Date.now()-Number(state._questMenuOpenAt)<15000;
+      if((isQuestMenuProtected() || (recentMenu && state.screen!=='questGame')) && !d.forceQuest){
+        render();
+        return;
+      }
+      showQuestFromParent(d);
+      return;
+    }
+
+    if(d.type==='waa-parent-return-to-tamagotchi'){
+      if(d.keepQuest || d.forceQuest) showQuestFromParent(d);
+      return;
+    }
+
+    if(d.type==='waa-parent-show-petbot-home'){
+      if(!shouldProcessParentRoute(d,'home')){render(); return;}
+      if(state.screen==='questGame' && state.quest && (state.quest.started || state.quest.embedded)){
+        render();
+        return;
+      }
+      document.documentElement.classList.remove('cssFullscreen','questPlaying');
+      document.body.classList.remove('cssFullscreen','questPlaying');
+      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','questGame','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
+      if(protectedScreens.includes(state.screen)){
+        render();
+        return;
+      }
+      state.returnToQuest=false;
+      state.returnQuestMode='';
+      state.quest={mode:'Solo Quest',kind:'solo',x:42,jump:false,score:0,started:false,embedded:false};
+      if(state.player && currentPet()) state.screen='petHome';
+      else if(state.player && state.pets && state.pets.length){state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1)); state.screen='petHome';}
+      else if(state.player){state.screen='loading'; state.message=state.message||('Loading '+(state.player.label||'player')+' pets');}
+      else{state.screen='login'; state.player=null; state.pets=[]; state.petIndex=0; state.password=''; state.error=''; state.message='Choose player';}
+      render();
+      return;
+    }
+  },true);
+
+  document.addEventListener('keydown',function(e){
     if(!inQuest())return;
     const code=e.code||'';
     if(code==='ArrowLeft'||code==='KeyA'){
@@ -2138,7 +2353,8 @@ window.addEventListener('message', e => {
       return;
     }
   },true);
-  document.addEventListener('keyup',e=>{
+
+  document.addEventListener('keyup',function(e){
     if(!inQuest())return;
     const code=e.code||'';
     if(code==='ArrowLeft'||code==='KeyA'){
@@ -2151,49 +2367,6 @@ window.addEventListener('message', e => {
       questKeyRight=false; send('moveStop');
       return;
     }
-  },true);
-})();
-
-
-
-// STAGE 37: when the parent returns from expanded quest view, keep the LCD in quest-control mode.
-(function(){
-  function showQuestFromParent(d){
-    try{
-      const oldQuest=state.quest||{};
-      const oldMode=String(oldQuest.mode||'');
-      const kind=(d&&d.kind)==='team' || oldQuest.kind==='team' || /team/i.test(oldMode) || ((state.questPick&&state.questPick.kind)==='team') ? 'team' : 'solo';
-      const wantedMode=(kind==='team'?'Team Quest':'Solo Quest')+' · Tutorial Town';
-      const keepOldMode=(kind==='team' && /team/i.test(oldMode)) || (kind!=='team' && /solo/i.test(oldMode));
-      state.questRunId=(d&&d.questRunId)||state.questRunId||oldQuest.questRunId||'';
-      state.screen='questGame';
-      state.quest={...oldQuest,kind,mode:keepOldMode?oldQuest.mode:wantedMode,started:true,embedded:true,questRunId:state.questRunId};
-      state.returnToQuest=false;
-      state.returnQuestMode='';
-      state._questMenuOpenAt=0;
-      state._questMenuScreen='';
-      state._waitingReturnToQuestAt=0;
-      state._waitingReturnKind='';
-      state._waitingReturnMode='';
-      try{localStorage.removeItem('waaPendingPetbotScreen');}catch(_e){}
-      render();
-    }catch(e){ console.warn('Stage 37/53 quest LCD restore failed',e); }
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-quest-active'){
-      // STAGE 55: start/fit messages are repeated by the parent. If the user has
-      // already opened a quest building, those stale quest-active pings must not
-      // pull the LCD back into questGame over the shop/habitat/hook/menu.
-      const recentMenu=state._questMenuOpenAt && Date.now()-Number(state._questMenuOpenAt)<15000;
-      if((isQuestMenuProtected() || (recentMenu && state.screen!=='questGame')) && !d.forceQuest){
-        render();
-        return;
-      }
-      showQuestFromParent(d);
-    }
-    if(d.type==='waa-parent-return-to-tamagotchi' && d.keepQuest) setTimeout(function(){showQuestFromParent(d);},0);
   },true);
 })();
 
@@ -2285,71 +2458,6 @@ window.addEventListener('message', e => {
   };
 })();
 
-// STAGE 42: normal Tamagotchi mode must never stay on the transparent quest LCD.
-// The quest LCD is only for embedded platform play; when the parent asks for PetBot
-// home, render a real user/pet screen so the device is not blank.
-(function(){
-  function showRealPetbotHome(){
-    try{
-      // STAGE 54: a stale parent home ping must never knock a live embedded quest
-      // back to the selected pet screen. Keep the LCD in quest controls.
-      if(state.screen==='questGame' && state.quest && (state.quest.started || state.quest.embedded)){
-        render();
-        return;
-      }
-
-      document.documentElement.classList.remove('cssFullscreen','questPlaying');
-      document.body.classList.remove('cssFullscreen','questPlaying');
-
-      // STAGE 53/54: parent startup/home pings are non-destructive.
-      // They must not interrupt login/password loading, Games, Quest playing, or the quest character picker.
-      // This fixes the double player selection and the Team picker jumping back to the pet screen.
-      const protectedScreens=['login','password','loading','pet','petHome','petActions','menu','games','questPick','questGame','shop','inventory','habitat','hook','care','welcomeBoard','stats','quests','error'];
-      if(protectedScreens.includes(state.screen)){
-        render();
-        return;
-      }
-
-      state.returnToQuest=false;
-      state.returnQuestMode='';
-      state.quest={mode:'Solo Quest',x:42,jump:false,score:0,started:false,embedded:false};
-      if(state.player && currentPet()){
-        state.screen='petHome';
-      }else if(state.player && state.pets && state.pets.length){
-        state.petIndex=Math.max(0,Math.min(state.petIndex||0,state.pets.length-1));
-        state.screen='petHome';
-      }else if(state.player){
-        // A player has been chosen but pets are not ready yet. Keep loading instead of
-        // forcing the user back to WHO IS PLAYING?
-        state.screen='loading';
-        state.message=state.message||('Loading '+(state.player.label||'player')+' pets');
-      }else{
-        // STAGE 51: Parent boot messages must not auto-restore the last saved player.
-        // A fresh game load should always show the player picker first, instead of
-        // jumping straight to the previously selected pet such as Odin. Saved player
-        // restore is still allowed only when the iframe URL explicitly uses
-        // ?restorePlayer=1 or ?resumePlayer=1 at boot.
-        state.screen='login';
-        state.player=null;
-        state.pets=[];
-        state.petIndex=0;
-        state.password='';
-        state.error='';
-        state.message='Choose player';
-      }
-      render();
-    }catch(e){ console.warn('Stage 42/53 PetBot home restore failed',e); }
-  }
-  window.addEventListener('message',function(e){
-    if(e.origin!==location.origin)return;
-    const d=e.data||{};
-    if(d.type==='waa-parent-show-petbot-home'){
-      if(shouldProcessParentRoute(d,'home')) showRealPetbotHome();
-      else render();
-      try{e.stopImmediatePropagation();}catch(_e){}
-    }
-  },true);
-})();
 
 // STAGE 50: start a new page on the player picker.
 // The selected player is still saved after choosing so parent return/back messages can restore it,
