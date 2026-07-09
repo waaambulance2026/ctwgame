@@ -690,6 +690,41 @@ body.questPlaying .device{pointer-events:auto!important;}
 .careItemThumb.noImg,.carePickItemPreview.noImg,.careAnimItem.noImg{display:none!important;}
 </style>
 
+
+<style id="stage73-pet-art-care-animation-cleanup">
+/* STAGE 73: do not let Sheet 51 habitat/care rows replace pet portraits; make care animation readable. */
+.carePetLine{font-size:11px!important;line-height:1.05!important;}
+.careMainBody{padding:6px 11px 7px!important;gap:5px!important;}
+.carePetStage{min-height:82px!important;}
+.careActionGrid .careCard{font-size:9.6px!important;min-height:28px!important;}
+.carePickBody{padding:6px 11px 7px!important;gap:5px!important;grid-template-rows:auto minmax(58px,66px) 1fr auto!important;}
+.carePickList{gap:5px!important;}
+.careItemCard{min-height:35px!important;grid-template-columns:34px 1fr!important;font-size:9.2px!important;line-height:1!important;}
+.careItemThumb{width:32px!important;height:32px!important;}
+.careItemText small{font-size:7.4px!important;}
+.carePickBody .careHint{display:block!important;font-size:7.7px!important;line-height:1.05!important;max-height:18px!important;white-space:normal!important;overflow:hidden!important;}
+.careAnimBody{padding:6px 11px 7px!important;gap:5px!important;grid-template-rows:auto minmax(122px,1fr) auto!important;}
+.careAnimStage{min-height:122px!important;background:linear-gradient(180deg,rgba(255,255,255,.56),rgba(184,249,255,.26))!important;}
+.careAnimStage-feed .careAnimPet{left:36%!important;width:62%!important;height:94%!important;animation:stage73PetEat 1.9s steps(7,end) 1 forwards!important;}
+.careAnimStage-feed .careAnimItem{left:69%!important;top:48%!important;width:38%!important;height:50%!important;animation:stage73FoodMove 1.9s steps(7,end) 1 forwards!important;}
+.careAnimFoodImg{animation:stage73FoodShrink 1.9s steps(7,end) 1 forwards!important;}
+.careAnimItem.eatSprite .bite{background:rgba(216,248,255,.98)!important;}
+.careAnimItem.eatSprite .bite.b1{animation:stage73Bite1 1.9s steps(7,end) 1 forwards!important;}
+.careAnimItem.eatSprite .bite.b2{animation:stage73Bite2 1.9s steps(7,end) 1 forwards!important;}
+.careAnimItem.eatSprite .bite.b3{animation:stage73Bite3 1.9s steps(7,end) 1 forwards!important;}
+.careAnimItem.eatSprite .bite.b4{animation:stage73Bite4 1.9s steps(7,end) 1 forwards!important;}
+.careAnimLabel{font-size:8.7px!important;line-height:1!important;}
+.careAnimBody .careHint{font-size:7.6px!important;line-height:1.05!important;max-height:18px!important;white-space:normal!important;}
+.careAnimItem.noImg{display:grid!important;place-items:center!important;border:1px dashed rgba(22,34,63,.30)!important;border-radius:10px!important;background:rgba(255,245,188,.72)!important;color:#14223f!important;font-size:7px!important;line-height:1.05!important;text-align:center!important;}
+@keyframes stage73PetEat{0%{transform:translate(-50%,-50%) scale(1)}14%{transform:translate(-48%,-50%) scale(1.035)}28%{transform:translate(-50%,-50%) scale(1)}42%{transform:translate(-48%,-50%) scale(1.04)}56%{transform:translate(-50%,-50%) scale(1)}70%{transform:translate(-48%,-50%) scale(1.03)}84%,100%{transform:translate(-50%,-50%) scale(1.01)}}
+@keyframes stage73FoodMove{0%{transform:translate(-50%,-50%) scale(1);opacity:1}18%{transform:translate(-64%,-50%) scale(.92);opacity:1}34%{transform:translate(-75%,-50%) scale(.78);opacity:1}50%{transform:translate(-85%,-50%) scale(.60);opacity:.95}66%{transform:translate(-95%,-50%) scale(.42);opacity:.75}82%{transform:translate(-104%,-50%) scale(.22);opacity:.35}100%{transform:translate(-108%,-50%) scale(.05);opacity:0}}
+@keyframes stage73FoodShrink{0%{opacity:1;transform:scale(1)}30%{opacity:1;transform:scale(.88)}48%{opacity:.96;transform:scale(.70)}66%{opacity:.75;transform:scale(.48)}84%{opacity:.38;transform:scale(.24)}100%{opacity:0;transform:scale(.05)}}
+@keyframes stage73Bite1{0%,13%{opacity:0}14%,100%{opacity:1}}
+@keyframes stage73Bite2{0%,33%{opacity:0}34%,100%{opacity:1}}
+@keyframes stage73Bite3{0%,55%{opacity:0}56%,100%{opacity:1}}
+@keyframes stage73Bite4{0%,74%{opacity:0}75%,100%{opacity:1}}
+</style>
+
 </head>
 <body>
 <div id="app">
@@ -1355,10 +1390,10 @@ function renderCareAnimation(){
   const p=result.petSnapshot||currentPet()||{};
   const action=result.action||state.carePendingAction||currentCareAction();
   const key=String(action.key||'care');
-  const petUrl=cleanImageUrl(result.actionUrl||result.petUrl||getPetArtUrl(p));
-  const itemUrl=cleanImageUrl(result.itemUrl||'');
+  const petUrl=cleanImageUrl(result.petUrl||getPetArtUrl(p));
+  const itemUrl=cleanImageUrl(result.itemUrl||result.actionUrl||'');
   const petHtml=petUrl?`<div class="careAnimPet" style="background-image:url('${esc(petUrl)}')"></div>`:`<div class="careAnimEmoji">${esc(p.emoji||emojiFor(p.pet||p.category))}</div>`;
-  const itemHtml=itemUrl?`<div class="careAnimItem eatSprite"><span class="careAnimFoodImg" style="background-image:url('${esc(itemUrl)}')"></span><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i><i class="bite b4"></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName?'Missing image: '+result.itemName:(action.label||'Item'))}</span></div>`;
+  const itemHtml=itemUrl?`<div class="careAnimItem eatSprite"><span class="careAnimFoodImg" style="background-image:url('${esc(itemUrl)}')"></span><i class="bite b1"></i><i class="bite b2"></i><i class="bite b3"></i><i class="bite b4"></i></div>`:`<div class="careAnimItem noImg"><span>${esc(result.itemName||action.label||'Item')}</span></div>`;
   const label=result.itemName?`${action.label||'Care'} · ${result.itemName}`:(action.label||'Care');
   const msg=(state.careAnimationDone||String(result.message||'').startsWith('Care not saved'))?careMessageShort(result.message||state.panelActionMsg||''):'';
   return top((action.label||'CARE').toUpperCase(),p.name||p.pet||'')+`<div class="body careAnimBody"><div class="carePetLine">${esc(p.name||p.pet||'Pet')} · Lv ${esc(p.level||1)}</div><div class="careAnimStage careAnimStage-${esc(key)}">${petHtml}${itemHtml}<div class="careAnimLabel">${esc(label)}</div></div>${msg?`<div class="careHint">${esc(msg)}</div>`:''}</div>`;
@@ -1418,10 +1453,13 @@ function careRowMatchesExactItem(row,itemLike,userId,p){
   if(!row||!itemLike)return false;
   if(hasOtherUser(row,userId) && !strictUserMatch(row,userId))return false;
   if(rowLooksLikeSheet51CareItem(row) && p && !sheet51RowAllowsPet(row,p))return false;
-  const rowBits=careVisualItemNeedles(row);
-  const itemBits=careVisualItemNeedles(itemLike);
-  if(!rowBits.length||!itemBits.length)return false;
-  return itemBits.some(a=>rowBits.some(b=>a===b || (a.length>3&&b.length>3&&(a.includes(b)||b.includes(a)))));
+  const rowKeys=careVisualItemNeedles(row).filter(x=>x.length>2);
+  const itemKeys=careVisualItemNeedles(itemLike).filter(x=>x.length>2);
+  if(!rowKeys.length||!itemKeys.length)return false;
+  // Require an exact key/name match first. This avoids one generic word making Cricket Box match a bird food row.
+  if(itemKeys.some(a=>rowKeys.some(b=>a===b)))return true;
+  // Then allow close phrase matches only for longer names.
+  return itemKeys.some(a=>a.length>=6 && rowKeys.some(b=>b.length>=6 && (a.includes(b)||b.includes(a))));
 }
 function careRowMatchesAction(row,action,p,userId){
   if(!row)return false;
@@ -1604,27 +1642,31 @@ async function runSelectedCareItem(){
 async function runCareActionWithItem(action,item){
   const p=currentPet()||{};
   const itemName=item?itemTitle(item):'';
-  const itemUrl=item?itemImage(item):'';
-  const startingMsg=itemName?`${p.name||p.pet||'Pet'} is using ${itemName}...`:`${action.label} for ${p.name||p.pet||'pet'}...`;
+  const baseItemUrl=item?itemImage(item):'';
+  let visual={actionUrl:'',itemUrl:baseItemUrl,itemName:itemName,sheetMessage:''};
+  try{
+    visual=await findCareVisual(action,p,{...(item||{}),raw:{...((item&&item.raw)||{}),...(item||{})}});
+    visual.itemUrl=visual.itemUrl||baseItemUrl;
+    visual.itemName=visual.itemName||itemName;
+  }catch(e){}
+  if(item && String(action&&action.key||'')==='feed' && !cleanImageUrl(visual.itemUrl)){
+    state.screen='careItemPick';
+    state.panelActionMsg='No Sheet 51 image found for '+(itemName||'this food')+'.';
+    render();
+    return;
+  }
+  const startingMsg=itemName?`${p.name||p.pet||'Pet'} is eating ${itemName}...`:`${action.label} for ${p.name||p.pet||'pet'}...`;
   state.screen='careAnimation';
   state.panelActionMsg=startingMsg;
   state.careAnimationDone=false;
-  state.careResult={action,actionKey:action.key,label:action.label,message:startingMsg,petSnapshot:{...p},petUrl:getPetArtUrl(p),itemUrl,itemName,actionUrl:''};
+  state.careResult={action,actionKey:action.key,label:action.label,message:startingMsg,petSnapshot:{...p},petUrl:getPetArtUrl(p),itemUrl:visual.itemUrl||baseItemUrl,itemName:visual.itemName||itemName,actionUrl:visual.actionUrl||''};
+  if(state.careResult.itemUrl)preloadOne(state.careResult.itemUrl);
   render();
-  try{
-    const visual=await findCareVisual(action,p,{...(item||{}),raw:{...((item&&item.raw)||{}),...(item||{})}});
-    if(state.screen==='careAnimation'){
-      state.careResult={...(state.careResult||{}),petSnapshot:(state.careResult&&state.careResult.petSnapshot)||{...p},actionUrl:visual.actionUrl||'',itemUrl:visual.itemUrl||itemUrl,itemName:visual.itemName||itemName};
-      if(state.careResult.actionUrl)preloadOne(state.careResult.actionUrl);
-      if(state.careResult.itemUrl)preloadOne(state.careResult.itemUrl);
-      render();
-    }
-  }catch(e){}
-  await new Promise(r=>setTimeout(r,1450));
+  await new Promise(r=>setTimeout(r,1950));
   try{
     const payload={mode:action.mode,care_action:action.key,user_id:state.player?.userId||'',pet_code:p.code||'',selected_pet_code:p.code||'',target_pet_code:p.code||'',pet_name:p.name||'',target_pet_name:p.name||''};
     if(item){
-      payload.item_id=item.item_id||pick(item.raw||{},['item_id','item_key','key','id'],'');
+      payload.item_id=item.item_id||pick(item.raw||{},['item_id','item_key','key','id','asset_key','Asset Key'],'');
       payload.item_key=payload.item_id;
       payload.item_name=itemName;
       payload.selected_item_id=payload.item_id;
@@ -1632,11 +1674,11 @@ async function runCareActionWithItem(action,item){
       payload.inventory_item_id=payload.item_id;
     }
     const data=await postPetbotAction(payload);
-    const visual=await findCareVisual(action,p,{...(data||{}),...(item||{})});
-    const msg=data.message||data.response||data.result||visual.sheetMessage||(itemName?`${p.name||p.pet||'Pet'} enjoyed ${itemName}.`:'Done: '+action.label);
+    const visual2=await findCareVisual(action,p,{...(data||{}),...(item||{}),raw:{...((item&&item.raw)||{}),...(data||{})}});
+    const msg=data.message||data.response||data.result||visual2.sheetMessage||visual.sheetMessage||(itemName?`${p.name||p.pet||'Pet'} enjoyed ${itemName}.`:'Done: '+action.label);
     state.panelActionMsg=msg;
     state.careAnimationDone=true;
-    state.careResult={action,actionKey:action.key,label:action.label,message:msg,petSnapshot:(state.careResult&&state.careResult.petSnapshot)||{...p},petUrl:getPetArtUrl(p),actionUrl:visual.actionUrl||state.careResult?.actionUrl||'',itemUrl:visual.itemUrl||itemUrl||state.careResult?.itemUrl||'',itemName:visual.itemName||itemName||state.careResult?.itemName||''};
+    state.careResult={action,actionKey:action.key,label:action.label,message:msg,petSnapshot:(state.careResult&&state.careResult.petSnapshot)||{...p},petUrl:getPetArtUrl(p),actionUrl:visual2.actionUrl||visual.actionUrl||'',itemUrl:visual2.itemUrl||visual.itemUrl||baseItemUrl||'',itemName:visual2.itemName||visual.itemName||itemName||''};
     clearPanelCache('inventory');
     try{
       const fresh=await loadUserPetsFast(state.player?.userId||'');
@@ -1821,9 +1863,13 @@ function findArray(data,names){
 }
 async function enrichPets(pets,userId){
   const visualRows=[];
-  const tabs=['Sheet51','user_pet_images','pet_action_images'];
-  const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab)));
-  results.forEach(r=>{if(r.status==='fulfilled'&&Array.isArray(r.value))visualRows.push(...r.value);});
+  const tabs=['user_pet_images','pet_action_images','Sheet51','Tab','gid:339726394'];
+  const results=await Promise.allSettled(tabs.map(tab=>fetchSheetRows(tab).then(rows=>({tab,rows}))));
+  results.forEach(r=>{
+    if(r.status==='fulfilled'&&r.value&&Array.isArray(r.value.rows)){
+      visualRows.push(...safePetVisualRows(r.value.rows,r.value.tab));
+    }
+  });
   return (pets||[]).map(pet=>{
     const p={...pet};
     try{
@@ -1852,9 +1898,9 @@ async function findVisualForPet(p,userId){
     const u=cleanImageUrl(pick(d,['image_url','url','cloudinary_image_url','cloudinary_public_id'],''));
     if(u)return d;
   }catch(e){}
-  for(const tab of ['Sheet51','user_pet_images','pet_action_images']){
+  for(const tab of ['user_pet_images','pet_action_images','Sheet51','Tab','gid:339726394']){
     try{
-      const rows=await fetchSheetRows(tab);
+      const rows=safePetVisualRows(await fetchSheetRows(tab),tab);
       const owned=rows.find(r=>strictUserMatch(r,userId)&&matchPet(r,p));
       if(owned)return owned;
       const generic=rows.find(r=>!hasOtherUser(r,userId)&&matchPet(r,p));
@@ -1907,6 +1953,36 @@ function matchPet(row,p){
   const hay=Object.values(row||{}).map(v=>clean(v).toLowerCase()).join(' | ');
   const bits=[p.userPetId,p.code,p.pet,p.name].map(v=>clean(v).toLowerCase()).filter(Boolean);
   return bits.some(b=>hay.includes(b));
+}
+
+function sheetRowSectionRaw(row){
+  return norm(pick(row,['Section','section','slot','type','item_type','category'],''));
+}
+function sheetRowAssetKeyRaw(row){
+  return norm(pick(row,['Asset Key','asset_key','BG Key','bg_key','pet_key','item_key','item_id','key','id','Asset Name','asset_name','name','title'],''));
+}
+function rowIsSheet51PetPortrait(row){
+  if(!row||typeof row!=='object')return false;
+  const section=sheetRowSectionRaw(row);
+  const key=sheetRowAssetKeyRaw(row);
+  const hay=norm(Object.values(row||{}).join(' '));
+  // The linked Sheet 51/Tab also contains backgrounds, care items, habitat bases and decorations.
+  // Those must never replace the pet portrait on the Pets/Care screens.
+  if(/background|careitem|care_item|base|decoration|decor|habitat|perch|trinket|carousel|lure|puzzle|seed|treat|food/.test(section+' '+key))return false;
+  return /pet|portrait|sprite|character|main|avatar|ownedpet|owned_pet/.test(section+' '+key+' '+hay);
+}
+function rowIsKnownCatalogueAsset(row){
+  const s=sheetRowSectionRaw(row);
+  return /background|careitem|care_item|base|decoration|decor|habitat/.test(s);
+}
+function safePetVisualRows(rows,tabName){
+  const tab=norm(tabName||'');
+  return (rows||[]).filter(r=>{
+    if(!r||typeof r!=='object')return false;
+    if(tab==='sheet51'||tab==='tab'||tab.startsWith('gid'))return rowIsSheet51PetPortrait(r);
+    if(rowIsKnownCatalogueAsset(r))return false;
+    return true;
+  });
 }
 function dedupePets(pets){
   const seen=new Set(),out=[];
